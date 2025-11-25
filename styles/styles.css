@@ -1,0 +1,160 @@
+/* =========================================
+   GLOBAL THEME VARIABLES
+   Change these 6–8 lines to rebrand site
+   ========================================= */
+:root {
+    --bg: #f4f4f4;
+    --text: #1c1c1c;
+    --header: #7a1c1c;
+    --accent: #b93e3e;
+    --card-bg: #ffffff;
+    --border: #dddddd;
+    --link: #7a1c1c;
+    --link-hover: #b93e3e;
+    --font-main: "Segoe UI", Arial, sans-serif;
+}
+
+/* =========================================
+   RESET
+   ========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-main);
+    line-height: 1.6;
+}
+
+/* =========================================
+   HEADERS / TITLES
+   ========================================= */
+h1, h2, h3, h4 {
+    color: var(--header);
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+/* =========================================
+   LINKS
+   ========================================= */
+a {
+    color: var(--link);
+    text-decoration: none;
+}
+a:hover {
+    color: var(--link-hover);
+}
+
+/* =========================================
+   PAGE CONTAINER
+   ========================================= */
+.page {
+    max-width: 900px;
+    background: var(--card-bg);
+    padding: 25px;
+    margin: 40px auto;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.08);
+}
+
+/* =========================================
+   REFLECTION / NOTES BOXES
+   ========================================= */
+.reflection {
+    padding: 20px;
+    background: #fff7e6;
+    border-left: 5px solid var(--accent);
+    border-radius: 6px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+/* =========================================
+   NAVBAR (OPTIONAL FOR LATER)
+   ========================================= */
+.navbar {
+    width: 100%;
+    background: var(--header);
+    padding: 12px 0;
+}
+.navbar ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+.navbar li a {
+    color: white;
+    font-weight: 500;
+}
+.navbar li a:hover {
+    color: #ffe0e0;
+}
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    background: var(--accent);
+    color: white;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+.button:hover {
+    background: var(--header);
+}
+
+/* =========================================
+   CURRICULUM BADGES
+   ========================================= */
+.badges {
+    margin-bottom: 15px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 13px;
+    border-radius: 6px;
+    margin-right: 6px;
+    color: white;
+}
+
+/* Colour-coded level tags */
+.badge-jc        { background: #2266cc; }
+.badge-lcf       { background: #777777; }
+.badge-lca       { background: #cc7700; }
+.badge-lcol      { background: #009944; }
+.badge-lchl      { background: #aa00aa; }
+
+/* =========================================
+   CARDS (for homepage/strand index)
+   ========================================= */
+.card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    transition: 0.2s;
+}
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    color: #666;
+}

@@ -1,0 +1,1 @@
+Welcome to Mr. Downes’ Maths website — your space to learn, explore, and get exam-ready. You’ll find notes, videos, quizzes, tests, and interactive apps to help you understand each topic and build confidence step by step. Everything here is designed to make maths clearer and more enjoyable.

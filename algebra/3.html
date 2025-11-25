@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expand Perfect Squares</title>
+
+<!-- MathJax -->
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+    :root {
+        --bg-primary: #111;
+        --bg-secondary: #222;
+        --bg-tertiary: #333;
+        --text-primary: #eee;
+        --text-secondary: #ccc;
+        --accent-primary: #4ac;
+        --accent-secondary: #6c6;
+        --accent-tertiary: #c96;
+        --border-radius: 10px;
+    }
+    
+    * {
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        padding: 20px;
+        line-height: 1.6;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        text-align: center;
+        color: #fff;
+        margin-bottom: 10px;
+        font-size: 2.2rem;
+    }
+    
+    .subtitle {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+    }
+
+    .instructions {
+        background: var(--bg-secondary);
+        padding: 15px;
+        border-radius: var(--border-radius);
+        margin-bottom: 25px;
+        border-left: 5px solid var(--accent-primary);
+    }
+    
+    .instructions h2 {
+        margin-top: 0;
+        color: var(--accent-primary);
+    }
+    
+    .instructions ul {
+        padding-left: 20px;
+    }
+    
+    .instructions li {
+        margin-bottom: 8px;
+    }
+
+    .question-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+        gap: 20px;
+    }
+
+    .question {
+        background: var(--bg-secondary);
+        padding: 20px;
+        border-radius: var(--border-radius);
+        border-left: 5px solid var(--accent-primary);
+        transition: transform 0.2s;
+    }
+    
+    .question:hover {
+        transform: translateY(-2px);
+    }
+
+    .question-number {
+        font-weight: bold;
+        color: var(--accent-primary);
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+    }
+    
+    .question-text {
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+    }
+
+    .answer {
+        display: none;
+        background: var(--bg-tertiary);
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--accent-secondary);
+        font-size: 1.1rem;
+    }
+
+    .workings {
+        display: none;
+        background: var(--bg-tertiary);
+        padding: 15px;
+        margin-top: 10px;
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--accent-tertiary);
+        font-size: 1rem;
+    }
+
+    .workings h4 {
+        margin-top: 0;
+        color: var(--accent-tertiary);
+    }
+
+    .workings-method {
+        margin-bottom: 15px;
+    }
+
+    .reveal-btn {
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.2s;
+        margin-right: 10px;
+        margin-bottom: 5px;
+    }
+
+    .reveal-btn:hover {
+        background: #6df;
+    }
+
+    .workings-btn {
+        background: var(--accent-tertiary);
+    }
+
+    .workings-btn:hover {
+        background: #eaa;
+    }
+    
+    .controls {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 30px 0;
+    }
+    
+    .control-btn {
+        background: #555;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.2s;
+    }
+    
+    .control-btn:hover {
+        background: #777;
+    }
+    
+    .back-btn {
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.2s;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 20px;
+    }
+    
+    .back-btn:hover {
+        background: #6df;
+        text-decoration: none;
+        color: white;
+    }
+    
+    .progress {
+        text-align: center;
+        margin: 20px 0;
+        color: var(--text-secondary);
+    }
+    
+    footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #333;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    @media (max-width: 600px) {
+        .question-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .controls {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .control-btn {
+            width: 100%;
+            max-width: 250px;
+        }
+        
+        .reveal-btn {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    }
+</style>
+
+<script>
+let revealedCount = 0;
+const totalQuestions = 8;
+
+function toggleAnswer(id) {
+    const ans = document.getElementById(id);
+    const btn = document.querySelector(`button[onclick="toggleAnswer('${id}')"]`);
+    
+    if (ans.style.display === "block") {
+        ans.style.display = "none";
+        btn.textContent = btn.textContent.replace("Hide", "Show");
+        revealedCount--;
+    } else {
+        ans.style.display = "block";
+        btn.textContent = btn.textContent.replace("Show", "Hide");
+        revealedCount++;
+    }
+    
+    updateProgress();
+}
+
+function toggleWorkings(id) {
+    const work = document.getElementById(id);
+    const btn = document.querySelector(`button[onclick="toggleWorkings('${id}')"]`);
+    
+    if (work.style.display === "block") {
+        work.style.display = "none";
+        btn.textContent = btn.textContent.replace("Hide", "Show");
+    } else {
+        work.style.display = "block";
+        btn.textContent = btn.textContent.replace("Show", "Hide");
+    }
+}
+
+function showAllAnswers() {
+    for (let i = 1; i <= totalQuestions; i++) {
+        const ans = document.getElementById(`a${i}`);
+        const btn = document.querySelector(`button[onclick="toggleAnswer('a${i}')"]`);
+        
+        if (ans && btn) {
+            ans.style.display = "block";
+            btn.textContent = "Hide Answer";
+        }
+    }
+    revealedCount = totalQuestions;
+    updateProgress();
+}
+
+function hideAllAnswers() {
+    for (let i = 1; i <= totalQuestions; i++) {
+        const ans = document.getElementById(`a${i}`);
+        const btn = document.querySelector(`button[onclick="toggleAnswer('a${i}')"]`);
+        
+        if (ans && btn) {
+            ans.style.display = "none";
+            btn.textContent = "Show Answer";
+        }
+    }
+    revealedCount = 0;
+    updateProgress();
+}
+
+function updateProgress() {
+    const progressElement = document.getElementById('progress');
+    if (progressElement) {
+        progressElement.textContent = `${revealedCount}/${totalQuestions} answers revealed`;
+    }
+}
+
+// Initialize progress on load
+window.onload = function() {
+    updateProgress();
+};
+</script>
+
+</head>
+<body>
+
+<h1>Expand Perfect Squares</h1>
+<p class="subtitle">Practice expanding perfect square expressions</p>
+
+<div class="instructions">
+    <h2>How to Use This Worksheet</h2>
+    <ul>
+        <li>Use the formula: \((a \pm b)^2 = a^2 \pm 2ab + b^2\)</li>
+        <li>Try to solve each problem before revealing the answer</li>
+        <li>Click "Show Answer" to check your solution</li>
+        <li>Click "Show Workings" to see step-by-step methods</li>
+        <li>Use the buttons below to reveal or hide all answers at once</li>
+        <li>Track your progress with the counter</li>
+    </ul>
+</div>
+
+<div class="progress" id="progress">0/8 answers revealed</div>
+
+<div class="controls">
+    <button class="control-btn" onclick="showAllAnswers()">Show All Answers</button>
+    <button class="control-btn" onclick="hideAllAnswers()">Hide All Answers</button>
+</div>
+
+<div class="question-container">
+
+<div class="question">
+    <div class="question-number">Question 1</div>
+    <div class="question-text">Expand: \( (x+4)^2 \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a1')">Show Answer</button>
+    <button class="reveal-btn workings-btn" onclick="toggleWorkings('w1')">Show Workings</button>
+    
+    <div class="answer" id="a1">
+        \( x^2 + 8x + 16 \)
+    </div>
+    
+    <div class="workings" id="w1">
+        <h4>Method 1: FOIL Method</h4>
+        <div class="workings-method">
+            \( (x+4)(x+4) \)<br>
+            First: \( x \times x = x^2 \)<br>
+            Outer: \( x \times 4 = 4x \)<br>
+            Inner: \( 4 \times x = 4x \)<br>
+            Last: \( 4 \times 4 = 16 \)<br>
+            Combine: \( x^2 + 4x + 4x + 16 = x^2 + 8x + 16 \)
+        </div>
+        
+        <h4>Method 2: Perfect Square Formula</h4>
+        <div class="workings-method">
+            \( (x+4)^2 = x^2 + 2(x)(4) + 4^2 \)<br>
+            \( = x^2 + 8x + 16 \)
+        </div>
+    </div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 2</div>
+    <div class="question-text">Expand: \( (x+6)^2 \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a2')">Show Answer</button>
+    <button class="reveal-btn workings-btn" onclick="toggleWorkings('w2')">Show Workings</button>
+    
+    <div class="answer" id="a2">
+        \( x^2 + 12x + 36 \)
+    </div>
+    
+    <div class="workings" id="w2">
+        <h4>Method 1: FOIL Method</h4>
+        <div class="workings-method">
+            \( (x+6)(x+6) \)<br>
+            First: \( x \times x = x^2 \)<br>
+            Outer: \( x \times 6 = 6x \)<br>
+            Inner: \( 6 \times x = 6x \)<br>
+            Last: \( 6 \times 6 = 36 \)<br>
+            Combine: \( x^2 + 6x + 6x + 36 = x^2 + 12x + 36 \)
+        </div>
+        
+        <h4>Method 2: Perfect Square Formula</h4>
+        <div class="workings-method">
+            \( (x+6)^2 = x^2 + 2(x)(6) + 6^2 \)<br>
+            \( = x^2 + 12x + 36 \)
+        </div>
+    </div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 3</div>
+    <div class="question-text">Expand: \( (x+8)^2 \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a3')">Show Answer</button>
+    <button class="reveal-btn workings-btn" onclick="toggleWorkings('w3')">Show Workings</button>
+    
+    <div class="answer" id="a3">
+        \( x^2 + 16x + 64 \)
+    </div>
+    
+    <div class="workings" id="w3">
+        <h4>Method 1: FOIL Method</h4>
+        <div class="workings-method">
+            \( (x+8)(x+8) \)<br>
+            First: \( x \times x = x^2 \)<br>
+            Outer: \( x \times 8 = 8x \)<br>
+            Inner: \( 8 \times x = 8x \)<br>
+            Last: \( 8 \times 8 = 64 \)<br>
+            Combine: \( x^2 + 8x + 8x + 64 = x^2 + 16x + 64 \)
+        </div>
+        
+        <h4>Method 2: Perfect Square Formula</h4>
+        <div class="workings-method">
+            \( (x+8)^2 = x^2 + 2(x)(8) + 8^2 \)<br>
+            \( = x^2 + 16x + 64 \)
+        </div>
+    </div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 4</div>
+    <div class="question-text">Expand: \( (x+10)^2 \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a4')">Show Answer</button>
+    <button class="reveal-btn workings-btn" onclick="toggleWorkings('w4')">Show Workings</button>
+    
+    <div class="answer" id="a4">
+        \( x^2 + 20x + 100 \)
+    </div>
+    
+    <div class="workings" id="w4">
+        <h4>Method 1: FOIL Method</h4>
+        <div class="workings-method">
+            \( (x+10)(x+10) \)<br>
+            First: \( x \times x = x^2 \)<br>
+            Outer: \( x \times 10 = 10x \)<br>
+            Inner: \( 10 \times x = 10x \)<br>
+            Last: \( 10 \times 10 = 100 \)<br>
+            Combine: \( x^2 + 10x + 10x + 100 = x^2 + 20x + 100 \)
+        </div>
+        
+        <h4>Method 2: Perfect Square Formula</h4>
+        <div class="workings-method">
+            \( (x+10)^2 = x^2 + 2(x)(10) + 10^2 \)<br>
+            \( = x^2 + 20x + 100 \)
+        </div>
+    </div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 5</div>
+    <div class="question-text">Expand: \( (x-4)^2 \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a5')">Show Answer</button>
+    <button class="reveal-btn workings-btn" onclick="toggleWorkings('w5')">Show Workings</button>
+    
+    <div class="answer" id="a5">
+        \( x^2 - 8x + 16 \)
+    </div>
+    
+    <div class="workings" id="w5">
+        <h4>Method 1: FOIL Method</h4>
+        <div class="workings-method">
+            \( (x-4)(x-4) \)<br>
+            First: \( x \times x = x^2 \)<br>
+            Outer: \( x \times (-4) = -4x \)<br>
+            Inner: \( (-4) \times x = -4x \)<br>
+            Last: \( (-4) \times (-4) = 16 \)<br>
+            Combine: \( x^2 - 4x - 4x + 16 = x^2 - 8x + 16 \)
+        </div>
+        
+        <h4>Method 2: Perfect Square Formula</h4>
+        <div class="workings-method">
+            \( (x-4)^2 = x^2 + 2(x)(-4) + (-4)^2 \)<br>
+            \( = x^2 - 8x + 16 \)
+        </div>
+    </div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 6</div>
+    <div class="question-text">Expand: \( (x-6)^2 \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a6')">Show Answer</button>
+    <button class="reveal-btn workings-btn" onclick="toggleWorkings('w6')">Show Workings</button>
+    
+    <div class="answer" id="a6">
+        \( x^2 - 12x + 36 \)
+    </div>
+    
+    <div class="workings" id="w6">
+        <h4>Method 1: FOIL Method</h4>
+        <div class="workings-method">
+            \( (x-6)(x-6) \)<br>
+            First: \( x \times x = x^2 \)<br>
+            Outer: \( x \times (-6) = -6x \)<br>
+            Inner: \( (-6) \times x = -6x \)<br>
+            Last: \( (-6) \times (-6) = 36 \)<br>
+            Combine: \( x^2 - 6x - 6x + 36 = x^2 - 12x + 36 \)
+        </div>
+        
+        <h4>Method 2: Perfect Square Formula</h4>
+        <div class="workings-method">
+            \( (x-6)^2 = x^2 + 2(x)(-6) + (-6)^2 \)<br>
+            \( = x^2 - 12x + 36 \)
+        </div>
+    </div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 7</div>
+    <div class="question-text">Expand: \( (x-8)^2 \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a7')">Show Answer</button>
+    <button class="reveal-btn workings-btn" onclick="toggleWorkings('w7')">Show Workings</button>
+    
+    <div class="answer" id="a7">
+        \( x^2 - 16x + 64 \)
+    </div>
+    
+    <div class="workings" id="w7">
+        <h4>Method 1: FOIL Method</h4>
+        <div class="workings-method">
+            \( (x-8)(x-8) \)<br>
+            First: \( x \times x = x^2 \)<br>
+            Outer: \( x \times (-8) = -8x \)<br>
+            Inner: \( (-8) \times x = -8x \)<br>
+            Last: \( (-8) \times (-8) = 64 \)<br>
+            Combine: \( x^2 - 8x - 8x + 64 = x^2 - 16x + 64 \)
+        </div>
+        
+        <h4>Method 2: Perfect Square Formula</h4>
+        <div class="workings-method">
+            \( (x-8)^2 = x^2 + 2(x)(-8) + (-8)^2 \)<br>
+            \( = x^2 - 16x + 64 \)
+        </div>
+    </div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 8</div>
+    <div class="question-text">Expand: \( (x-10)^2 \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a8')">Show Answer</button>
+    <button class="reveal-btn workings-btn" onclick="toggleWorkings('w8')">Show Workings</button>
+    
+    <div class="answer" id="a8">
+        \( x^2 - 20x + 100 \)
+    </div>
+    
+    <div class="workings" id="w8">
+        <h4>Method 1: FOIL Method</h4>
+        <div class="workings-method">
+            \( (x-10)(x-10) \)<br>
+            First: \( x \times x = x^2 \)<br>
+            Outer: \( x \times (-10) = -10x \)<br>
+            Inner: \( (-10) \times x = -10x \)<br>
+            Last: \( (-10) \times (-10) = 100 \)<br>
+            Combine: \( x^2 - 10x - 10x + 100 = x^2 - 20x + 100 \)
+        </div>
+        
+        <h4>Method 2: Perfect Square Formula</h4>
+        <div class="workings-method">
+            \( (x-10)^2 = x^2 + 2(x)(-10) + (-10)^2 \)<br>
+            \( = x^2 - 20x + 100 \)
+        </div>
+    </div>
+</div>
+
+</div>
+
+<a href="working-with-quadratics.html" class="back-btn">← Back to Quadratics Menu</a>
+
+<footer>
+    <p>Expand Perfect Squares Worksheet &copy; 2023</p>
+</footer>
+
+</body>
+</html>

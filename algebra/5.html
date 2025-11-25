@@ -1,0 +1,208 @@
+<style>
+.eq-card {padding:12px; border:1px solid #ccc; margin:10px 0; border-radius:8px;}
+.btn {margin-right:6px; margin-top:6px; padding:4px 10px; cursor:pointer;}
+.ans, .sol {display:none; margin-top:6px; padding:6px; background:#f7f7f7; border-left:3px solid #333;}
+</style>
+
+<script>
+function toggle(id){ 
+  var e = document.getElementById(id);
+  e.style.display = (e.style.display==="block") ? "none" : "block";
+}
+</script>
+
+<h2>Solve each equation. Show all work.</h2>
+
+<!-- ---------------- BLOCK 1 ---------------- -->
+
+<div class="eq-card">
+  <b>(1)</b>  (2x + 6)/5 = x/2  
+  <br>
+  <button class="btn" onclick="toggle('a1')">Answer</button>
+  <button class="btn" onclick="toggle('s1')">Solution</button>
+
+  <div id="a1" class="ans">x = 12</div>
+
+  <div id="s1" class="sol">
+    Multiply both sides by 10 (LCM=10):  
+    2·(2x+6) = 5x  
+    → 4x + 12 = 5x → x = 12.
+  </div>
+</div>
+
+<div class="eq-card">
+  <b>(2)</b> (3x + 9)/3 = x/7  
+  <button class="btn" onclick="toggle('a2')">Answer</button>
+  <button class="btn" onclick="toggle('s2')">Solution</button>
+
+  <div id="a2" class="ans">x = -7/2</div>
+
+  <div id="s2" class="sol">
+    Multiply both sides by **21** (a common multiple, not lowest):  
+    7(3x+9) = 3x  
+    21x + 63 = 3x  
+    18x = -63 → x = -63/18 = -7/2.
+  </div>
+</div>
+
+<div class="eq-card">
+  <b>(3)</b> (5x + 2)/5 = x/4  
+  <button class="btn" onclick="toggle('a3')">Answer</button>
+  <button class="btn" onclick="toggle('s3')">Solution</button>
+
+  <div id="a3" class="ans">x = -8/15</div>
+
+  <div id="s3" class="sol">
+    Multiply both sides by 20:  
+    4(5x+2) = 5x  
+    20x + 8 = 5x  
+    15x = -8 → x = -8/15.
+  </div>
+</div>
+
+<div class="eq-card">
+  <b>(4)</b> (3x + 7)/2 = x/3  
+  <button class="btn" onclick="toggle('a4')">Answer</button>
+  <button class="btn" onclick="toggle('s4')">Solution</button>
+
+  <div id="a4" class="ans">x = -3</div>
+
+  <div id="s4" class="sol">
+    Multiply both sides by 6:  
+    3(3x+7) = 2x  
+    9x + 21 = 2x  
+    7x = -21 → x = -3.
+  </div>
+</div>
+
+<!-- ---------------- BLOCK 2 ---------------- -->
+
+<div class="eq-card">
+  <b>(5)</b> (4x + 5)/3 = (2x + 1)/6 + x/4  
+  <button class="btn" onclick="toggle('a5')">Answer</button>
+  <button class="btn" onclick="toggle('s5')">Solution</button>
+
+  <div id="a5" class="ans">x = -2</div>
+
+  <div id="s5" class="sol">
+    Multiply by **12** (not LCM=12, but clear enough):  
+    4(4x+5) = 2(2x+1) + 3x  
+    16x + 20 = 4x + 2 + 3x  
+    16x + 20 = 7x + 2  
+    9x = -18 → x = -2.
+  </div>
+</div>
+
+<div class="eq-card">
+  <b>(6)</b> (7x + 9)/5 = (3x + 4)/2 + x/10  
+  <button class="btn" onclick="toggle('a6')">Answer</button>
+  <button class="btn" onclick="toggle('s6')">Solution</button>
+
+  <div id="a6" class="ans">x = -1</div>
+
+  <div id="s6" class="sol">
+    Multiply by **10**:  
+    2(7x+9) = 5(3x+4) + x  
+    14x + 18 = 15x + 20 + x  
+    14x + 18 = 16x + 20  
+    -2x = 2 → x = -1.
+  </div>
+</div>
+
+<div class="eq-card">
+  <b>(7)</b> (5x + 8)/4 = (x + 7)/3 + 2x/9  
+  <button class="btn" onclick="toggle('a7')">Answer</button>
+  <button class="btn" onclick="toggle('s7')">Solution</button>
+
+  <div id="a7" class="ans">x = 12/25</div>
+
+  <div id="s7" class="sol">
+    Multiply by **36** (12 also works but 36 is easier mentally):  
+    9(5x+8) = 12(x+7) + 8x  
+    45x + 72 = 12x + 84 + 8x  
+    45x + 72 = 20x + 84  
+    25x = 12 → x = 12/25.
+  </div>
+</div>
+
+<div class="eq-card">
+  <b>(8)</b> (2x + 11)/4 = (x + 5)/3 + 2x/9  
+  <button class="btn" onclick="toggle('a8')">Answer</button>
+  <button class="btn" onclick="toggle('s8')">Solution</button>
+
+  <div id="a8" class="ans">x = 39/2</div>
+
+  <div id="s8" class="sol">
+    Multiply by **36**:  
+    9(2x+11) = 12(x+5) + 8x  
+    18x + 99 = 12x + 60 + 8x  
+    18x + 99 = 20x + 60  
+    -2x = -39 → x = 39/2.
+  </div>
+</div>
+
+<!-- ---------------- BLOCK 3 ---------------- -->
+
+<div class="eq-card">
+  <b>(9)</b> (9x − 6)/2 = (3x − 14)/3 + 9x/4  
+  <button class="btn" onclick="toggle('a9')">Answer</button>
+  <button class="btn" onclick="toggle('s9')">Solution</button>
+
+  <div id="a9" class="ans">x = -4/3</div>
+
+  <div id="s9" class="sol">
+    Multiply by **12**:  
+    6(9x−6) = 4(3x−14) + 27x  
+    54x − 36 = 12x − 56 + 27x  
+    54x − 36 = 39x − 56  
+    15x = -20 → x = -4/3.
+  </div>
+</div>
+
+<div class="eq-card">
+  <b>(10)</b> (8x − 5)/3 = (2x − 11)/5 + (3x − 7)/2  
+  <button class="btn" onclick="toggle('a10')">Answer</button>
+  <button class="btn" onclick="toggle('s10')">Solution</button>
+
+  <div id="a10" class="ans">x = -121/23</div>
+
+  <div id="s10" class="sol">
+    Multiply by **30** (LCM):  
+    10(8x−5) = 6(2x−11) + 15(3x−7)  
+    80x − 50 = 12x − 66 + 45x − 105  
+    80x − 50 = 57x − 171  
+    23x = -121 → x = -121/23.
+  </div>
+</div>
+
+<div class="eq-card">
+  <b>(11)</b> (15x − 4)/7 = (5x − 9)/3 + x/9  
+  <button class="btn" onclick="toggle('a11')">Answer</button>
+  <button class="btn" onclick="toggle('s11')">Solution</button>
+
+  <div id="a11" class="ans">x = -153/23</div>
+
+  <div id="s11" class="sol">
+    Multiply by **63**:  
+    9(15x−4) = 21(5x−9) + 7x  
+    135x − 36 = 105x − 189 + 7x  
+    135x − 36 = 112x − 189  
+    23x = -153 → x = -153/23.
+  </div>
+</div>
+
+<div class="eq-card">
+  <b>(12)</b> (9x − 4)/2 = (5x − 12)/3 + 7x/4  
+  <button class="btn" onclick="toggle('a12')">Answer</button>
+  <button class="btn" onclick="toggle('s12')">Solution</button>
+
+  <div id="a12" class="ans">x = -24/13</div>
+
+  <div id="s12" class="sol">
+    Multiply by **12**:  
+    6(9x−4) = 4(5x−12) + 21x  
+    54x − 24 = 20x − 48 + 21x  
+    54x − 24 = 41x − 48  
+    13x = -24 → x = -24/13.
+  </div>
+</div>

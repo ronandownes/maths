@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quadratics – Highest Common Factor (HCF)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- MathJax -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+      color: #fff;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .note {
+      background: #222;
+      border-left: 4px solid #4ac;
+      padding: 10px 15px;
+      margin: 15px 0 25px 0;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 10px;
+      margin-bottom: 30px;
+    }
+
+    .col-labels {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+      font-weight: bold;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .box {
+      background: #1c1c1c;
+      border-radius: 8px;
+      padding: 10px 12px;
+      border: 1px solid #333;
+      font-size: 0.95rem;
+    }
+
+    .question {
+      background: #1c1c1c;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      border: 1px solid #333;
+      font-size: 0.95rem;
+    }
+
+    .question strong {
+      color: #ffd966;
+    }
+
+    .btn-row {
+      margin-top: 6px;
+    }
+
+    button.toggle-btn {
+      background: #4ac;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 8px;
+      margin: 0 4px 4px 0;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    button.toggle-btn:hover {
+      filter: brightness(1.15);
+    }
+
+    .hidden-block {
+      display: none;
+      margin-top: 6px;
+      padding: 6px 8px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+
+    .answer-block {
+      background: #233;
+      border-left: 3px solid #6c6;
+    }
+
+    .workings-block {
+      background: #232;
+      border-left: 3px solid #cc6;
+    }
+
+    .graph-block {
+      background: #223;
+      border-left: 3px solid #69c;
+    }
+
+    .reflection {
+      background: #222;
+      border-radius: 8px;
+      border-left: 4px solid #b93;
+      padding: 10px 15px;
+      margin-top: 25px;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 800px) {
+      .columns, .col-labels {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script>
+    function toggleBlock(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.style.display === "none" || el.style.display === "") {
+        el.style.display = "block";
+      } else {
+        el.style.display = "none";
+      }
+    }
+  </script>
+</head>
+<body>
+<div class="page">
+
+  <h1>Highest Common Factor (HCF) – Linear and Quadratic Forms</h1>
+
+  <div class="note">
+    <strong>Key Idea:</strong> For every quadratic (and linear) expression you meet in this chapter,
+    the <em>first thing</em> to check is whether there is a <strong>Highest Common Factor (HCF)</strong>.
+    If all terms are even, or all are multiples of the same number (and sometimes the same power of \(x\)),
+    you should factor that number (and \(x\)) out <em>before</em> doing anything else.
+    <br><br>
+    This simple habit will make all later work with quadratics easier – factoring, completing the square,
+    using the formula, and sketching graphs.
+  </div>
+
+  <!-- Warm-up (very short) -->
+  <h2>Warm-Up: Spot the Common Factor</h2>
+
+  <div class="columns">
+    <div class="box">
+      <strong>1.</strong> Identify the common factor (number and \(x\)-power) in each expression:
+      <br><br>
+      (a) \(6x + 9x\)<br>
+      (b) \(4x^2 + 6x\)<br>
+      (c) \(10x^2 - 25x\)
+    </div>
+
+    <div class="box">
+      <strong>2.</strong> Which term is missing?<br><br>
+      (a) \(5x^2 + 10x\) – is there a constant term?<br>
+      (b) \(7x^2 - 21\) – is there an \(x\)-term?<br>
+      (c) \(3x + 9\) – is there an \(x^2\)-term?
+    </div>
+
+    <div class="box">
+      <strong>3.</strong> Classify as <em>linear</em> or <em>quadratic</em> and say why:<br><br>
+      (a) \(4x - 12\)<br>
+      (b) \(4x^2 - 12x\)<br>
+      (c) \(9x^2 - 3x\)
+    </div>
+  </div>
+
+  <!-- Column labels -->
+  <div class="col-labels">
+    <div>⬅ Classwork (left column)</div>
+    <div>Homework (middle column)</div>
+    <div>Revision (right column) ➡</div>
+  </div>
+
+  <!-- Section 1: Expansion (pattern first) -->
+  <h2>1. Expansion: Seeing the HCF Pattern</h2>
+
+  <p>
+    In this section you <strong>expand</strong brackets to create expressions of the form
+    \(ax + bx\) and \(ax^2 + bx\). On the next section you will go in reverse and
+    <strong>factor out</strong the HCF.
+  </p>
+
+  <div class="columns">
+
+    <!-- Classwork expansion (left) -->
+    <div>
+      <div class="question">
+        <strong>Classwork – Expand each expression fully.</strong><br><br>
+        (a) \(3x(2 + 3)\)<br>
+        (b) \(4x(2 + 3)\)<br>
+        (c) \(5x(-2 + 5)\)<br>
+        (d) \(2x(2x + 3)\)<br>
+        (e) \(3x(3x - 1)\)<br>
+        (f) \(-6x(2x - 3)\)<br>
+
+        <div class="btn-row">
+          <button class="toggle-btn" onclick="toggleBlock('exp-class-ans')">Show Answers</button>
+          <button class="toggle-btn" onclick="toggleBlock('exp-class-work')">Show Workings</button>
+        </div>
+
+        <div id="exp-class-ans" class="hidden-block answer-block">
+          (a) \(3x(5) = 15x\)<br>
+          (b) \(4x(5) = 20x\)<br>
+          (c) \(5x(3) = 15x\)<br>
+          (d) \(2x(2x) + 2x(3) = 4x^2 + 6x\)<br>
+          (e) \(3x(3x) + 3x(-1) = 9x^2 - 3x\)<br>
+          (f) \(-6x(2x) + (-6x)(-3) = -12x^2 + 18x\)
+        </div>
+
+        <div id="exp-class-work" class="hidden-block workings-block">
+          Multiply the factor outside the bracket by <em>each</em> term inside:
+          <br><br>
+          Example (d):<br>
+          \(2x(2x + 3) = 2x \cdot 2x + 2x \cdot 3 = 4x^2 + 6x\).<br>
+          Notice the pattern: each expression ends up as either \(ax + bx\) or \(ax^2 + bx\).
+        </div>
+      </div>
+    </div>
+
+    <!-- Homework expansion (middle) -->
+    <div>
+      <div class="question">
+        <strong>Homework – Expand each expression fully.</strong><br><br>
+        (a) \(7x(1 + 2)\)<br>
+        (b) \(5x(3 + 4)\)<br>
+        (c) \(2x(-1 + 6)\)<br>
+        (d) \(x(4x + 5)\)<br>
+        (e) \(3x(2x - 4)\)<br>
+        (f) \(-4x(3x + 1)\)<br>
+
+        <div class="btn-row">
+          <button class="toggle-btn" onclick="toggleBlock('exp-home-ans')">Show Answers</button>
+          <button class="toggle-btn" onclick="toggleBlock('exp-home-work')">Show Workings</button>
+        </div>
+
+        <div id="exp-home-ans" class="hidden-block answer-block">
+          (a) \(7x(3) = 21x\)<br>
+          (b) \(5x(7) = 35x\)<br>
+          (c) \(2x(5) = 10x\)<br>
+          (d) \(4x^2 + 5x\)<br>
+          (e) \(6x^2 - 12x\)<br>
+          (f) \(-12x^2 - 4x\)
+        </div>
+
+        <div id="exp-home-work" class="hidden-block workings-block">
+          Same pattern: multiply the outside factor by each inside term.
+          Try to spot which of your answers are of the form \(ax + bx\) and which are \(ax^2 + bx\).
+        </div>
+      </div>
+    </div>
+
+    <!-- Revision expansion (right) -->
+    <div>
+      <div class="question">
+        <strong>Revision – Expand (mental maths and calculator acrobatics).</strong><br><br>
+        (a) \(9x(2x + 5)\)<br>
+        (b) \(-3x(4x - 7)\)<br>
+        (c) \(8x(3x + 2)\)<br>
+        (d) \(-5x(2x + 9)\)<br>
+
+        <div class="btn-row">
+          <button class="toggle-btn" onclick="toggleBlock('exp-rev-ans')">Show Answers</button>
+        </div>
+
+        <div id="exp-rev-ans" class="hidden-block answer-block">
+          (a) \(18x^2 + 45x\)<br>
+          (b) \(-12x^2 + 21x\)<br>
+          (c) \(24x^2 + 16x\)<br>
+          (d) \(-10x^2 - 45x\)
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Section 2: Factorisation (reverse of expansion) -->
+  <h2>2. Factorising by HCF: From \(ax + bx\) and \(ax^2 + bx\)</h2>
+
+  <p>
+    Now work <strong>backwards</strong>. Take expressions of the form \(ax + bx\) and \(ax^2 + bx\),
+    and factor out the highest common factor. This is the first step in almost every
+    quadratic you will meet later.
+  </p>
+
+  <div class="columns">
+
+    <!-- Classwork factorisation -->
+    <div>
+      <div class="question">
+        <strong>Classwork – Factor out the HCF.</strong><br><br>
+        (a) \(15x\)<br>
+        (b) \(20x\)<br>
+        (c) \(15x\)<br>
+        (d) \(4x^2 + 6x\)<br>
+        (e) \(9x^2 - 3x\)<br>
+        (f) \(-12x^2 + 18x\)<br>
+
+        <div class="btn-row">
+          <button class="toggle-btn" onclick="toggleBlock('fac-class-ans')">Show Answers</button>
+          <button class="toggle-btn" onclick="toggleBlock('fac-class-work')">Show Workings</button>
+        </div>
+
+        <div id="fac-class-ans" class="hidden-block answer-block">
+          (a) \(15x = 3x(5)\)<br>
+          (b) \(20x = 4x(5)\)<br>
+          (c) \(15x = 5x(3)\)<br>
+          (d) \(4x^2 + 6x = 2x(2x + 3)\)<br>
+          (e) \(9x^2 - 3x = 3x(3x - 1)\)<br>
+          (f) \(-12x^2 + 18x = -6x(2x - 3)\)
+        </div>
+
+        <div id="fac-class-work" class="hidden-block workings-block">
+          Look for the biggest number and highest power of \(x\) that divides every term.<br>
+          Example (d): Both terms have a factor \(2x\):<br>
+          \(4x^2 = 2x \cdot 2x,\quad 6x = 2x \cdot 3\).<br>
+          So \(4x^2 + 6x = 2x(2x + 3)\).
+        </div>
+      </div>
+    </div>
+
+    <!-- Homework factorisation -->
+    <div>
+      <div class="question">
+        <strong>Homework – Factor out the HCF.</strong><br><br>
+        (a) \(21x\)<br>
+        (b) \(35x\)<br>
+        (c) \(10x\)<br>
+        (d) \(4x^2 + 5x\)<br>
+        (e) \(6x^2 - 12x\)<br>
+        (f) \(-12x^2 - 4x\)<br>
+
+        <div class="btn-row">
+          <button class="toggle-btn" onclick="toggleBlock('fac-home-ans')">Show Answers</button>
+          <button class="toggle-btn" onclick="toggleBlock('fac-home-work')">Show Workings</button>
+        </div>
+
+        <div id="fac-home-ans" class="hidden-block answer-block">
+          (a) \(21x = 7x(3)\)<br>
+          (b) \(35x = 5x(7)\)<br>
+          (c) \(10x = 2x(5)\)<br>
+          (d) \(4x^2 + 5x = x(4x + 5)\)<br>
+          (e) \(6x^2 - 12x = 6x(x - 2)\)<br>
+          (f) \(-12x^2 - 4x = -4x(3x + 1)\)
+        </div>
+
+        <div id="fac-home-work" class="hidden-block workings-block">
+          Try to write each term as (HCF) × (something). The bracket collects all those “somethings”.
+        </div>
+      </div>
+    </div>
+
+    <!-- Revision factorisation -->
+    <div>
+      <div class="question">
+        <strong>Revision – Factor out the HCF.</strong><br><br>
+        (a) \(18x^2 + 45x\)<br>
+        (b) \(-12x^2 + 21x\)<br>
+        (c) \(24x^2 + 16x\)<br>
+        (d) \(-10x^2 - 45x\)<br>
+
+        <div class="btn-row">
+          <button class="toggle-btn" onclick="toggleBlock('fac-rev-ans')">Show Answers</button>
+        </div>
+
+        <div id="fac-rev-ans" class="hidden-block answer-block">
+          (a) \(18x^2 + 45x = 9x(2x + 5)\)<br>
+          (b) \(-12x^2 + 21x = 3x(-4x + 7)\)<br>
+          (c) \(24x^2 + 16x = 8x(3x + 2)\)<br>
+          (d) \(-10x^2 - 45x = -5x(2x + 9)\)
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Section 3: Setting equal to zero, roots, and graphs -->
+  <h2>3. Setting Equal to Zero: Factors, Roots and Simple Graphs</h2>
+
+  <p>
+    When an expression equals zero, your factors become very powerful. You can find the
+    <strong>roots</strong> (solutions) and understand what the graph looks like.
+  </p>
+
+  <div class="columns">
+
+    <!-- Classwork equations -->
+    <div>
+      <div class="question">
+        <strong>Classwork – Solve using HCF and describe the graph.</strong><br><br>
+        (a) \(4x^2 + 6x = 0\)<br>
+        (b) \(6x^2 - 12x = 0\)<br>
+
+        <div class="btn-row">
+          <button class="toggle-btn" onclick="toggleBlock('eq-class-ans')">Show Answers</button>
+          <button class="toggle-btn" onclick="toggleBlock('eq-class-work')">Show Workings</button>
+          <button class="toggle-btn" onclick="toggleBlock('eq-class-graph')">Show Graph Notes</button>
+        </div>
+
+        <div id="eq-class-ans" class="hidden-block answer-block">
+          (a) Roots: \(x = 0\) and \(x = -\dfrac{3}{2}\).<br>
+          (b) Roots: \(x = 0\) and \(x = 2\).
+        </div>
+
+        <div id="eq-class-work" class="hidden-block workings-block">
+          (a) \(4x^2 + 6x = 0 \Rightarrow 2x(2x + 3) = 0\).<br>
+          So \(2x = 0\) or \(2x + 3 = 0\).<br>
+          \(x = 0\) or \(x = -\dfrac{3}{2}\).<br><br>
+          (b) \(6x^2 - 12x = 0 \Rightarrow 6x(x - 2) = 0\).<br>
+          So \(6x = 0\) or \(x - 2 = 0\).<br>
+          \(x = 0\) or \(x = 2\).
+        </div>
+
+        <div id="eq-class-graph" class="hidden-block graph-block">
+          Both are parabolas (quadratic graphs).<br>
+          (a) Crosses the x-axis at \(0\) and \(-1.5\). Opens upwards.<br>
+          (b) Crosses the x-axis at \(0\) and \(2\). Opens upwards. The y-axis is at \(x = 0\),
+          so one root is on the y-axis.
+        </div>
+      </div>
+    </div>
+
+    <!-- Homework equations -->
+    <div>
+      <div class="question">
+        <strong>Homework – Solve using HCF.</strong><br><br>
+        (a) \(9x^2 - 3x = 0\)<br>
+        (b) \(-12x^2 + 18x = 0\)<br>
+
+        <div class="btn-row">
+          <button class="toggle-btn" onclick="toggleBlock('eq-home-ans')">Show Answers</button>
+          <button class="toggle-btn" onclick="toggleBlock('eq-home-work')">Show Workings</button>
+        </div>
+
+        <div id="eq-home-ans" class="hidden-block answer-block">
+          (a) Roots: \(x = 0\) and \(x = \dfrac{1}{3}\).<br>
+          (b) Roots: \(x = 0\) and \(x = \dfrac{3}{2}\).
+        </div>
+
+        <div id="eq-home-work" class="hidden-block workings-block">
+          Factor out the HCF first, then use “factor = 0” on each bracket.
+        </div>
+      </div>
+    </div>
+
+    <!-- Revision equations -->
+    <div>
+      <div class="question">
+        <strong>Revision – Mix of linear and quadratic.</strong><br><br>
+        (a) \(24x^2 + 16x = 0\)<br>
+        (b) \(-10x^2 - 45x = 0\)<br>
+        (c) \(21x = 0\)<br>
+
+        <div class="btn-row">
+          <button class="toggle-btn" onclick="toggleBlock('eq-rev-ans')">Show Answers</button>
+        </div>
+
+        <div id="eq-rev-ans" class="hidden-block answer-block">
+          (a) \(8x(3x + 2) = 0 \Rightarrow x = 0\) or \(x = -\dfrac{2}{3}\).<br>
+          (b) \(-5x(2x + 9) = 0 \Rightarrow x = 0\) or \(x = -\dfrac{9}{2}\).<br>
+          (c) \(21x = 0 \Rightarrow x = 0\) (a straight line through the origin).
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Reflection -->
+  <div class="reflection">
+    <strong>Reflection:</strong><br>
+    In every example on this page, the first step was to look for a Highest Common Factor (HCF).
+    <br><br>
+    • For expressions like \(ax + bx\) and \(ax^2 + bx\), factoring out the HCF changes them into a factor
+    times a bracket.<br>
+    • For equations like \(ax^2 + bx = 0\), factoring out the HCF lets us find the roots quickly and sketch
+    simple graphs.<br><br>
+    This HCF step will appear again and again in all later work with quadratics. Always look for it first.
+  </div>
+
+</div>
+</body>
+</html>

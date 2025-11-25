@@ -1,0 +1,330 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr Downes Mathematics</title>
+<style>
+  :root {
+    --bg:#f3f3f3;
+    --header:#7a1c1c;
+    --accent:#b93e3e;
+    --text:#222;
+    --card-bg:#ffffff;
+  }
+
+  body {
+    margin:0;
+    font-family:"Segoe UI",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+
+  header {
+    background:var(--header);
+    color:#fff;
+    padding:0.6rem 1rem;
+    text-align:center;
+  }
+  header h1 { margin:0; font-size:1.6rem; font-weight:600; }
+  header p  { margin:0.2rem 0 0; font-size:1rem; color:#f7dca5; }
+
+  main {
+    max-width:1100px;
+    margin:2rem auto;
+    padding:0 1rem;
+  }
+
+  .section-title {
+    font-size:1.3rem;
+    margin:1.5rem 0 0.6rem;
+    color:var(--header);
+    border-bottom:2px solid var(--header);
+    padding-bottom:4px;
+  }
+
+  .grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:1.5rem;
+    margin-bottom:2.5rem;
+  }
+
+  .card {
+    background:var(--card-bg);
+    border-radius:10px;
+    padding:1.2rem;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    transition:transform 0.2s ease,box-shadow 0.2s ease;
+    cursor:pointer;
+  }
+  .card:hover {
+    transform:translateY(-3px);
+    box-shadow:0 6px 14px rgba(0,0,0,0.15);
+  }
+
+  .card h2 { color:var(--header); margin-top:0; }
+
+  footer {
+    background:var(--header);
+    color:#f0f0f0;
+    text-align:center;
+    padding:1rem;
+    margin-top:2rem;
+  }
+  footer a { color:#f7dca5; text-decoration:none; margin:0 0.6rem; }
+  footer a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mr Downes Maths</h1>
+  <p>Clear maths for strong results.</p>
+</header>
+
+<main>
+
+  <div class="section-title">Tests</div>
+  <div class="grid">
+
+    <div class="card" onclick="location.href='5.html'">
+      <h2>5th Year OL Test</h2>
+      <p>Ordinary Level test page.</p>
+    </div>
+
+    <div class="card" onclick="location.href='ty.html'">
+      <h2>TY Higher Level Test</h2>
+      <p>Transition Year HL test page.</p>
+    </div>
+
+    <div class="card" onclick="location.href='2.html'">
+      <h2>2nd Year Higher Level Test</h2>
+      <p>Second Year HL test page.</p>
+    </div>
+
+    <div class="card" onclick="location.href='books.html'">
+      <h2>Books</h2>
+      <p>View textbooks — e.g. link to am3.html inside books.</p>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  <div>
+    © <span id="year"></span> Mr Downes |
+    <a href="https://www.youtube.com/@ronandownes3699" target="_blank">YouTube</a> |
+    <a href="https://www.geogebra.org/u/rdownes" target="_blank">GeoGebra</a> |
+    <a href="https://archive.maths.nuim.ie/staff/dmalone/StateExamPapers/" target="_blank">Past Papers</a>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr Downes Mathematics</title>
+<style>
+  :root {
+    --bg:#f3f3f3;
+    --header:#7a1c1c;
+    --accent:#b93e3e;
+    --text:#222;
+    --card-bg:#ffffff;
+  }
+
+  body {
+    margin:0;
+    font-family:"Segoe UI",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+
+  header {
+    background:var(--header);
+    color:#fff;
+    padding:0.6rem 1rem;
+    text-align:center;
+  }
+  header h1 { margin:0; font-size:1.6rem; font-weight:600; }
+  header p  { margin:0.2rem 0 0; font-size:1rem; color:#f7dca5; }
+
+  main {
+    max-width:1100px;
+    margin:2rem auto;
+    padding:0 1rem;
+  }
+
+  .section-title {
+    font-size:1.3rem;
+    margin:1.5rem 0 0.6rem;
+    color:var(--header);
+    border-bottom:2px solid var(--header);
+    padding-bottom:4px;
+  }
+
+  .grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:1.5rem;
+    margin-bottom:2.5rem;
+  }
+
+  .card {
+    background:var(--card-bg);
+    border-radius:10px;
+    padding:1.2rem;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    transition:transform 0.2s ease,box-shadow 0.2s ease;
+    cursor:pointer;
+  }
+  .card:hover {
+    transform:translateY(-3px);
+    box-shadow:0 6px 14px rgba(0,0,0,0.15);
+  }
+
+  .card h2 { color:var(--header); margin-top:0; }
+
+  footer {
+    background:var(--header);
+    color:#f0f0f0;
+    text-align:center;
+    padding:1rem;
+    margin-top:2rem;
+  }
+  footer a { color:#f7dca5; text-decoration:none; margin:0 0.6rem; }
+  footer a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mr Downes Maths</h1>
+  <p>Clear maths for strong results.</p>
+</header>
+
+<main>
+
+  <!-- ============================= -->
+  <!--           CLASSES             -->
+  <!-- ============================= -->
+  <div class="section-title">Classes</div>
+  <div class="grid">
+
+    <div class="card" onclick="location.href='classes/2nd_year_HL.html'">
+      <h2>2nd Year HL</h2>
+      <p>Foundations, scheme of work, exercises, worksheets, and book links.</p>
+    </div>
+
+    <div class="card" onclick="location.href='classes/5th_year_OL.html'">
+      <h2>5th Year OL</h2>
+      <p>Topic lists, homework schedule, revision, exam prep, notes.</p>
+    </div>
+
+    <div class="card" onclick="location.href='classes/6th_year_OL.html'">
+      <h2>6th Year OL</h2>
+      <p>Exam strategies, revision sheets, solutions, and resources.</p>
+    </div>
+<!-- In your Classes section, add these two cards: -->
+<div class="card" onclick="location.href='classes/5th_year_LCA.html'">
+  <h2>5th Year LCA</h2>
+  <p>LCA Mathematics modules, projects, and practical applications.</p>
+</div>
+
+<div class="card" onclick="location.href='classes/6th_year_LCA.html'">
+  <h2>6th Year LCA</h2>
+  <p>LCA exam preparation, portfolio work, and final projects.</p>
+</div>
+  </div>
+
+  <!-- ============================= -->
+  <!--            ALGEBRA            -->
+  <!-- ============================= -->
+  <div class="section-title">Algebra</div>
+  <div class="grid">
+
+    <div class="card" onclick="location.href='algebra/quadratics.html'">
+      <h2>Working With Quadratics</h2>
+      <p>Expand, factor, perfect squares, monic & non-monic patterns.</p>
+    </div>
+
+    <div class="card" onclick="location.href='algebra/expand-nounit-perfect-squares.html'">
+      <h2>Expand Perfect Squares</h2>
+      <p>Prime-based perfect square expansions using structured layouts.</p>
+    </div>
+
+    <div class="card" onclick="location.href='algebra/factor-nounit-perfect-squares.html'">
+      <h2>Factor Perfect Squares</h2>
+      <p>Reverse pattern recognition and structure for factoring.</p>
+    </div>
+
+  </div>
+
+  <!-- ============================= -->
+  <!--             BOOKS             -->
+  <!-- ============================= -->
+  <div class="section-title">Books</div>
+  <div class="grid">
+
+    <div class="card" onclick="location.href='books/tt4_1.html'">
+      <h2>TT4 Book Viewer</h2>
+      <p>Full slideshow viewer for TT4 pages.</p>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  <div>
+    © <span id="year"></span> Mr Downes |
+    <a href="https://www.youtube.com/@ronandownes3699" target="_blank">YouTube</a> |
+    <a href="https://www.geogebra.org/u/rdownes" target="_blank">GeoGebra</a> |
+    <a href="https://archive.maths.nuim.ie/staff/dmalone/StateExamPapers/" target="_blank">Past Papers</a>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html> -->

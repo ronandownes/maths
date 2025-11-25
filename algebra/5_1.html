@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solving Algebraic Fractions</title>
+
+<!-- MathJax -->
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+    :root {
+        --bg-primary: #111;
+        --bg-secondary: #222;
+        --bg-tertiary: #333;
+        --text-primary: #eee;
+        --text-secondary: #ccc;
+        --accent-primary: #4ac;
+        --accent-secondary: #6c6;
+        --accent-tertiary: #c96;
+        --border-radius: 10px;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        padding: 20px;
+        line-height: 1.6;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        text-align: center;
+        color: #fff;
+        margin-bottom: 10px;
+        font-size: 2.2rem;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: var(--text-secondary);
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+    }
+
+    .instructions {
+        background: var(--bg-secondary);
+        padding: 15px;
+        border-radius: var(--border-radius);
+        margin-bottom: 25px;
+        border-left: 5px solid var(--accent-primary);
+    }
+
+    .instructions h2 {
+        margin-top: 0;
+        color: var(--accent-primary);
+    }
+
+    .instructions ul {
+        padding-left: 20px;
+    }
+
+    .instructions li {
+        margin-bottom: 8px;
+    }
+
+    .question-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+        gap: 20px;
+    }
+
+    .question {
+        background: var(--bg-secondary);
+        padding: 20px;
+        border-radius: var(--border-radius);
+        border-left: 5px solid var(--accent-primary);
+    }
+
+    .question-number {
+        font-weight: bold;
+        color: var(--accent-primary);
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+    }
+
+    .question-text {
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+    }
+
+    .answer {
+        display: none;
+        background: var(--bg-tertiary);
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--accent-secondary);
+        font-size: 1.1rem;
+    }
+
+    .reveal-btn {
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.2s;
+        margin-right: 10px;
+    }
+
+    .reveal-btn:hover {
+        background: #6df;
+    }
+
+    .progress {
+        text-align: center;
+        margin: 20px 0;
+        color: var(--text-secondary);
+    }
+
+    .controls {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 30px 0;
+    }
+
+    .control-btn {
+        background: #555;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .control-btn:hover {
+        background: #777;
+    }
+
+</style>
+
+<script>
+let revealedCount = 0;
+const totalQuestions = 12;
+
+function toggleAnswer(id) {
+    const ans = document.getElementById(id);
+    const btn = document.querySelector(`button[onclick="toggleAnswer('${id}')"]`);
+
+    if (ans.style.display === "block") {
+        ans.style.display = "none";
+        btn.textContent = "Show Answer";
+        revealedCount--;
+    } else {
+        ans.style.display = "block";
+        btn.textContent = "Hide Answer";
+        revealedCount++;
+    }
+
+    updateProgress();
+}
+
+function showAllAnswers() {
+    for (let i = 1; i <= totalQuestions; i++) {
+        const ans = document.getElementById(`a${i}`);
+        const btn = document.querySelector(`button[onclick="toggleAnswer('a${i}')"]`);
+        if (ans && btn) {
+            ans.style.display = "block";
+            btn.textContent = "Hide Answer";
+        }
+    }
+    revealedCount = totalQuestions;
+    updateProgress();
+}
+
+function hideAllAnswers() {
+    for (let i = 1; i <= totalQuestions; i++) {
+        const ans = document.getElementById(`a${i}`);
+        const btn = document.querySelector(`button[onclick="toggleAnswer('a${i}')"]`);
+        if (ans && btn) {
+            ans.style.display = "none";
+            btn.textContent = "Show Answer";
+        }
+    }
+    revealedCount = 0;
+    updateProgress();
+}
+
+function updateProgress() {
+    document.getElementById('progress').textContent = `${revealedCount}/${totalQuestions} answers revealed`;
+}
+
+window.onload = updateProgress;
+</script>
+
+</head>
+<body>
+
+<h1>Solving Algebraic Fractions</h1>
+<p class="subtitle">Multiply both sides by any common multiple of the denominators</p>
+
+<div class="instructions">
+    <h2>How to Solve These Equations</h2>
+    <ul>
+        <li>Clear the fractions by multiplying both sides by a <strong>common multiple</strong> of the denominators.</li>
+        <li>The <strong>lowest</strong> common multiple works well — but <strong>any</strong> common multiple is fine.</li>
+        <li>Even multiplying by the <strong>product</strong> of all denominators works perfectly.</li>
+        <li>The equation will <strong>simplify later</strong> and you will get the <strong>same answer</strong>.</li>
+        <li>If unsure, use your calculator to reduce the final fraction.</li>
+    </ul>
+</div>
+
+<div class="progress" id="progress">0/12 answers revealed</div>
+
+<div class="controls">
+    <button class="control-btn" onclick="showAllAnswers()">Show All Answers</button>
+    <button class="control-btn" onclick="hideAllAnswers()">Hide All Answers</button>
+</div>
+
+<div class="question-container">
+
+<!-- BLOCK 1 -->
+<div class="question">
+    <div class="question-number">Question 1</div>
+    <div class="question-text">\( \frac{2x+6}{5} = \frac{x}{2} \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a1')">Show Answer</button>
+    <div class="answer" id="a1">\( x = 12 \)</div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 2</div>
+    <div class="question-text">\( \frac{3x+9}{3} = \frac{x}{7} \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a2')">Show Answer</button>
+    <div class="answer" id="a2">\( x = -\frac{7}{2} \)</div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 3</div>
+    <div class="question-text">\( \frac{5x+2}{5} = \frac{x}{4} \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a3')">Show Answer</button>
+    <div class="answer" id="a3">\( x = -\frac{8}{15} \)</div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 4</div>
+    <div class="question-text">\( \frac{3x+7}{2} = \frac{x}{3} \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a4')">Show Answer</button>
+    <div class="answer" id="a4">\( x = -3 \)</div>
+</div>
+
+<!-- BLOCK 2 -->
+<div class="question">
+    <div class="question-number">Question 5</div>
+    <div class="question-text">\( \frac{4x+5}{3} = \frac{2x+1}{6} + \frac{x}{4} \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a5')">Show Answer</button>
+    <div class="answer" id="a5">\( x = -2 \)</div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 6</div>
+    <div class="question-text">\( \frac{7x+9}{5} = \frac{3x+4}{2} + \frac{x}{10} \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a6')">Show Answer</button>
+    <div class="answer" id="a6">\( x = -1 \)</div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 7</div>
+    <div class="question-text">\( \frac{5x+8}{4} = \frac{x+7}{3} + \frac{2x}{9} \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a7')">Show Answer</button>
+    <div class="answer" id="a7">\( x = \frac{12}{25} \)</div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 8</div>
+    <div class="question-text">\( \frac{2x+11}{4} = \frac{x+5}{3} + \frac{2x}{9} \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a8')">Show Answer</button>
+    <div class="answer" id="a8">\( x = \frac{39}{2} \)</div>
+</div>
+
+<!-- BLOCK 3 -->
+<div class="question">
+    <div class="question-number">Question 9</div>
+    <div class="question-text">\( \frac{9x-6}{2} = \frac{3x-14}{3} + \frac{9x}{4} \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a9')">Show Answer</button>
+    <div class="answer" id="a9">\( x = -\frac{4}{3} \)</div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 10</div>
+    <div class="question-text">\( \frac{8x-5}{3} = \frac{2x-11}{5} + \frac{3x-7}{2} \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a10')">Show Answer</button>
+    <div class="answer" id="a10">\( x = -\frac{121}{23} \)</div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 11</div>
+    <div class="question-text">\( \frac{15x-4}{7} = \frac{5x-9}{3} + \frac{x}{9} \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a11')">Show Answer</button>
+    <div class="answer" id="a11">\( x = -\frac{153}{23} \)</div>
+</div>
+
+<div class="question">
+    <div class="question-number">Question 12</div>
+    <div class="question-text">\( \frac{9x-4}{2} = \frac{5x-12}{3} + \frac{7x}{4} \)</div>
+    <button class="reveal-btn" onclick="toggleAnswer('a12')">Show Answer</button>
+    <div class="answer" id="a12">\( x = -\frac{24}{13} \)</div>
+</div>
+
+</div>
+
+<footer style="text-align:center; margin-top:40px; color:#aaa;">
+    <p>Solving Algebraic Fractions &copy; 2024</p>
+</footer>
+
+</body>
+</html>

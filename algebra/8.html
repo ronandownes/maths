@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Working with Quadratics</title>
+<style>
+    :root {
+        --bg-primary: #111;
+        --bg-secondary: #222;
+        --bg-tertiary: #333;
+        --text-primary: #eee;
+        --text-secondary: #ccc;
+        --accent-primary: #4ac;
+        --accent-secondary: #6c6;
+        --border-radius: 10px;
+    }
+    
+    * {
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        padding: 20px;
+        line-height: 1.6;
+        max-width: 1000px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    h1 {
+        color: #fff;
+        margin-bottom: 10px;
+        font-size: 2.2rem;
+    }
+    
+    .subtitle {
+        color: var(--text-secondary);
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+    }
+
+    .options-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin: 40px 0;
+    }
+
+    .option-card {
+        background: var(--bg-secondary);
+        padding: 30px;
+        border-radius: var(--border-radius);
+        border-left: 5px solid var(--accent-primary);
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .option-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .option-card h2 {
+        color: var(--accent-primary);
+        margin-top: 0;
+        font-size: 1.5rem;
+    }
+
+    .option-card p {
+        margin-bottom: 0;
+        color: var(--text-secondary);
+    }
+
+    .back-btn {
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.2s;
+        margin-top: 20px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .back-btn:hover {
+        background: #6df;
+        text-decoration: none;
+        color: white;
+    }
+
+    footer {
+        text-align: center;
+        margin-top: 60px;
+        padding-top: 20px;
+        border-top: 1px solid #333;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    @media (max-width: 600px) {
+        .options-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+<body>
+
+<h1>Working with Quadratics</h1>
+<p class="subtitle">Choose an activity to practice your quadratic skills</p>
+
+<div class="options-container">
+    <a href="expand-nounit-perfectsquare.html" class="option-card">
+        <h2>Expand Perfect Squares</h2>
+        <p>Practice expanding perfect square expressions without units. Develop your algebraic expansion skills.</p>
+    </a>
+
+    <a href="factor-no-unit-perfect.html" class="option-card">
+        <h2>Factor Perfect Squares</h2>
+        <p>Practice factoring perfect square trinomials. Strengthen your factorization techniques.</p>
+    </a>
+</div>
+
+<a href="../index.html" class="back-btn">← Back to Main Menu</a>
+
+<footer>
+    <p>Working with Quadratics &copy; 2023</p>
+</footer>
+
+</body>
+</html>
