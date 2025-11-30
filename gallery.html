@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Gallery</title>
+
+<style>
+  body { font-family: Arial; margin:20px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .thumb {
+    width: 100%;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  #viewer {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  #pageImage {
+    max-width: 90vw;
+    max-height: 85vh;
+    border: 1px solid #aaa;
+    margin-bottom: 20px;
+  }
+
+  #backBtn {
+    margin-top: 20px;
+  }
+</style>
+
+</head>
+<body>
+
+<h1 id="title"></h1>
+
+<label>Jump to page:</label>
+<select id="pageSelect"></select>
+
+<input id="searchBox" placeholder="Search 000–999" style="margin-left:20px;">
+
+<div id="gallery" class="grid"></div>
+
+<div id="viewer">
+  <img id="pageImage">
+  <div>
+    <button id="prevBtn">Prev</button>
+    <button id="nextBtn">Next</button>
+  </div>
+  <button id="backBtn">Back</button>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const book = params.get("book");
+document.getElementById("title").textContent = book.toUpperCase() + " Gallery";
+
+const gallery = document.getElementById("gallery");
+const viewer = document.getElementById("viewer");
+const pageImage = document.getElementById("pageImage");
+
+let pagelist = [];
+let currentIndex = 0;
+
+// Load list of pages from index.json
+fetch(`/images/${book}/index.json`)
+  .then(r => r.json())
+  .then(list => {
+    pagelist = list;
+    loadGallery();
+    buildDropdown();
+  })
+  .catch(err => {
+    console.error("Error loading index.json:", err);
+  });
+
+function loadGallery() {
+  gallery.innerHTML = "";
+  viewer.style.display = "none";
+  gallery.style.display = "grid";
+
+  for (let fname of pagelist) {
+    const thumb = `/images/${book}/thumbs/${fname}`;
+
+    const img = document.createElement("img");
+    img.className = "thumb";
+    img.loading = "lazy";
+    img.src = thumb;
+    img.onclick = () => openPage(fname);
+
+    gallery.appendChild(img);
+  }
+}
+
+function buildDropdown() {
+  const sel = document.getElementById("pageSelect");
+  sel.innerHTML = "";
+
+  for (let i = 0; i < pagelist.length; i++) {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.text = pagelist[i].replace(".webp", "");
+    sel.appendChild(opt);
+  }
+
+  sel.onchange = e => openPageByIndex(e.target.value);
+}
+
+function openPage(fname) {
+  currentIndex = pagelist.indexOf(fname);
+  showPage();
+}
+
+function openPageByIndex(i) {
+  currentIndex = Number(i);
+  showPage();
+}
+
+function showPage() {
+  pageImage.src = `/images/${book}/${pagelist[currentIndex]}`;
+
+  gallery.style.display = "none";
+  viewer.style.display = "flex";
+
+  document.getElementById("pageSelect").value = currentIndex;
+}
+
+document.getElementById("nextBtn").onclick = () => {
+  if (currentIndex < pagelist.length - 1) {
+    currentIndex++;
+    showPage();
+  }
+};
+
+document.getElementById("prevBtn").onclick = () => {
+  if (currentIndex > 0) {
+    currentIndex--;
+    showPage();
+  }
+};
+
+document.getElementById("backBtn").onclick = loadGallery;
+
+document.getElementById("searchBox").addEventListener("keypress", e => {
+  if (e.key === "Enter") {
+    const q = e.target.value.padStart(3, "0") + ".webp";
+    const i = pagelist.indexOf(q);
+    if (i >= 0) openPageByIndex(i);
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Books</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 40px;
+    }
+    .book {
+      margin: 10px 0;
+      font-size: 20px;
+    }
+    a {
+      text-decoration: none;
+      color: #0066cc;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Book Galleries</h1>
+
+  <div id="book-list"></div>
+
+  <script>
+    // List all book folders here
+    const books = [
+      "am1","am2","am3","am4","am42",
+      "cs","ft",
+      "lca1","lca2","lca3","lca4",
+      "tt2h","tt2o","tt3","tt4","tt5"
+    ];
+
+    const container = document.getElementById("book-list");
+
+    books.forEach(b => {
+      const div = document.createElement("div");
+      div.className = "book";
+
+      // ABSOLUTE PATH — FIXES THE BLANK GALLERY ISSUE
+      div.innerHTML = `<a href="/gallery.html?book=${b}">${b.toUpperCase()}</a>`;
+
+      container.appendChild(div);
+    });
+  </script>
+
+</body>
+</html>
