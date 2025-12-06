@@ -5,7 +5,7 @@
   <title>Books</title>
   <style>
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       padding: 40px;
     }
     .book {
@@ -42,8 +42,8 @@
       const div = document.createElement("div");
       div.className = "book";
 
-      // ABSOLUTE PATH — FIXES THE BLANK GALLERY ISSUE
-      div.innerHTML = `<a href="/gallery.html?book=${b}">${b.toUpperCase()}</a>`;
+      // Absolute path ensures it works on GitHub Pages
+      div.innerHTML = `<a href="/gallery.html?book=${b}" rel="noopener">${b.toUpperCase()}</a>`;
 
       container.appendChild(div);
     });
