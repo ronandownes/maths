@@ -28,7 +28,7 @@
   <div id="book-list"></div>
 
   <script>
-    // List all book folders here
+    // List of all book folder names inside /images/
     const books = [
       "am1","am2","am3","am4","am42",
       "cs","ft",
@@ -42,8 +42,8 @@
       const div = document.createElement("div");
       div.className = "book";
 
-      // Absolute path ensures it works on GitHub Pages
-      div.innerHTML = `<a href="/gallery.html?book=${b}" rel="noopener">${b.toUpperCase()}</a>`;
+      // IMPORTANT FIX: remove leading slash!
+      div.innerHTML = `<a href="gallery.html?book=${b}" rel="noopener">${b.toUpperCase()}</a>`;
 
       container.appendChild(div);
     });

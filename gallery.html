@@ -20,37 +20,54 @@
 </head>
 <body>
 
-  <h1 id="title">Gallery</h1>
-  <div class="img-grid" id="grid"></div>
+<h1 id="title">Gallery</h1>
+<div class="img-grid" id="grid"></div>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const book = params.get("book");
+<script>
+const params = new URLSearchParams(window.location.search);
+const book = params.get("book");
 
-    const titleEl = document.getElementById("title");
-    const grid = document.getElementById("grid");
+const titleEl = document.getElementById("title");
+const grid = document.getElementById("grid");
 
-    if (!book) {
-      titleEl.innerText = "No book selected.";
-    } else {
-      titleEl.innerText = book.toUpperCase();
-      loadGallery(book);
-    }
+if (!book) {
+  titleEl.innerText = "No book selected.";
+} else {
+  titleEl.innerText = book.toUpperCase();
+  loadGallery(book);
+}
 
-    function loadGallery(book) {
-      // CORRECT PATH INSIDE E:/maths/gallery/
-      const folder = "images/" + book + "/";
+function loadGallery(book) {
+  // IMPORTANT — correct relative path
+  const folder = "images/" + book + "/";
 
-      for (let i = 1; i <= 999; i++) {
-        const n = String(i).padStart(3, "0");
-        const img = new Image();
-        img.src = folder + n + ".webp";
-        img.alt = book + " page " + n;
+  let missingCount = 0;
+  let page = 1;
 
-        img.onload = () => grid.appendChild(img);
+  function tryLoad() {
+    const n = String(page).padStart(3, "0");
+    const img = new Image();
+    img.src = folder + n + ".webp";
+
+    img.onload = () => {
+      grid.appendChild(img);
+      page++;
+      missingCount = 0;   // found a valid page
+      tryLoad();          // load next
+    };
+
+    img.onerror = () => {
+      missingCount++;
+      page++;
+      if (missingCount < 5) {
+        tryLoad();        // try next possible page
       }
-    }
-  </script>
+    };
+  }
+
+  tryLoad();
+}
+</script>
 
 </body>
 </html>
