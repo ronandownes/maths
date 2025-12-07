@@ -1,27 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Gallery</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    h1 { margin-bottom: 20px; }
-    .img-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 15px;
-    }
-    .img-grid img {
-      width: 100%;
-      height: auto;
-      border: 1px solid #ccc;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Gallery</title>
+
+<style>
+  body { font-family: Arial; padding: 20px; }
+  h1 { margin-bottom: 10px; }
+
+  .controls { margin-bottom: 20px; }
+
+  .img-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+  }
+  .img-grid img {
+    width: 100%;
+    height: auto;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  /* Fullscreen viewer */
+  #viewer {
+    display: none;
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.9);
+    justify-content:center;
+    align-items:center;
+    flex-direction: column;
+    z-index: 9999;
+  }
+  #viewer img {
+    max-width: 90%;
+    max-height: 85%;
+    margin-bottom: 20px;
+  }
+  #viewer button {
+    margin: 5px;
+    padding: 10px 18px;
+    font-size: 16px;
+  }
+</style>
+
 </head>
 <body>
 
 <h1 id="title">Gallery</h1>
+
+<div class="controls">
+  <label>Go to page: </label>
+  <select id="pageDropdown"></select>
+
+  <input id="pageSearch" type="number" placeholder="Page #" 
+         style="width:90px; margin-left:10px;" />
+  <button onclick="searchPage()">Go</button>
+</div>
+
 <div class="img-grid" id="grid"></div>
+
+<!-- Fullscreen viewer -->
+<div id="viewer">
+  <img id="viewerImg" src="">
+  <div>
+    <button onclick="prevPage()">Prev</button>
+    <button onclick="nextPage()">Next</button>
+    <button onclick="closeViewer()">Close</button>
+  </div>
+</div>
 
 <script>
 const params = new URLSearchParams(window.location.search);
@@ -29,43 +78,112 @@ const book = params.get("book");
 
 const titleEl = document.getElementById("title");
 const grid = document.getElementById("grid");
+const viewer = document.getElementById("viewer");
+const viewerImg = document.getElementById("viewerImg");
+const dropdown = document.getElementById("pageDropdown");
+
+let pages = [];        // "001", "002", ...
+let currentIndex = 0;
+
+const THUMB_PATH = b => `images/${b}/thumbs/`;
+const FULL_PATH  = b => `images/${b}/`;
 
 if (!book) {
-  titleEl.innerText = "No book selected.";
+  titleEl.innerText = "Missing ?book= parameter";
 } else {
   titleEl.innerText = book.toUpperCase();
-  loadGallery(book);
+  loadPages(book);
 }
 
-function loadGallery(book) {
-  // IMPORTANT — correct relative path
-  const folder = "images/" + book + "/";
-
-  let missingCount = 0;
+function loadPages(book) {
+  const tryLimit = 10;
   let page = 1;
+  let misses = 0;
 
-  function tryLoad() {
+  function tryNext() {
     const n = String(page).padStart(3, "0");
     const img = new Image();
-    img.src = folder + n + ".webp";
+    img.src = THUMB_PATH(book) + n + ".webp";
 
     img.onload = () => {
-      grid.appendChild(img);
+      pages.push(n);
+      addThumbnail(n);
       page++;
-      missingCount = 0;   // found a valid page
-      tryLoad();          // load next
+      misses = 0;
+      tryNext();
     };
 
     img.onerror = () => {
-      missingCount++;
+      misses++;
       page++;
-      if (missingCount < 5) {
-        tryLoad();        // try next possible page
-      }
+      if (misses < tryLimit) tryNext();
+      else buildDropdown();
     };
   }
 
-  tryLoad();
+  tryNext();
+}
+
+function addThumbnail(n) {
+  const img = new Image();
+  img.src = THUMB_PATH(book) + n + ".webp";
+  img.onclick = () => openViewer(n);
+  grid.appendChild(img);
+}
+
+function buildDropdown() {
+  dropdown.innerHTML = "";
+
+  pages.forEach((p, idx) => {
+    const opt = document.createElement("option");
+    opt.value = idx;
+    opt.textContent = parseInt(p, 10);
+    dropdown.appendChild(opt);
+  });
+
+  dropdown.onchange = () => {
+    openViewer(pages[dropdown.value]);
+  };
+}
+
+function openViewer(n) {
+  currentIndex = pages.indexOf(n);
+  viewerImg.src = FULL_PATH(book) + n + ".webp";
+  viewer.style.display = "flex";
+  dropdown.value = currentIndex;
+}
+
+function closeViewer() {
+  viewer.style.display = "none";
+}
+
+function nextPage() {
+  if (currentIndex < pages.length - 1) {
+    currentIndex++;
+    openViewer(pages[currentIndex]);
+  }
+}
+
+function prevPage() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    openViewer(pages[currentIndex]);
+  }
+}
+
+function searchPage() {
+  const num = document.getElementById("pageSearch").value;
+  if (!num) return;
+
+  const key = String(num).padStart(3, "0");
+  const idx = pages.indexOf(key);
+
+  if (idx >= 0) {
+    openViewer(pages[idx]);
+    dropdown.value = idx;
+  } else {
+    alert("Page not found.");
+  }
 }
 </script>
 
