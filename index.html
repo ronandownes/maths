@@ -5,11 +5,7 @@
 <title>Mr Downes Mathematics</title>
 
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #f3f3f3;
-  }
+  body { font-family: Arial, sans-serif; margin: 0; background: #f3f3f3; }
 
   /* NAVBAR */
   .navbar {
@@ -70,18 +66,14 @@
     cursor: pointer;
   }
 
-  .card a, .card h2, .card p {
+  .card a {
     text-decoration: none;
     color: #7a1c1c;
+    font-size: 1.2rem;
+    font-weight: bold;
   }
 
-  .card h2 {
-    margin: 0 0 8px;
-  }
-
-  .soft {
-    opacity: 0.75;
-  }
+  .soft { opacity: 0.75; }
 
   /* FOOTER */
   footer {
@@ -91,7 +83,6 @@
     margin-top: 40px;
     text-align: center;
   }
-
   footer a {
     color: #ffeaea;
     margin: 8px;
@@ -118,49 +109,34 @@
 <h1>Welcome to Mr Downes Mathematics</h1>
 
 <!-- PROGRAM BOOKS -->
-<div class="big-card">
-  <a href="jc_book.html">Junior Cycle Maths — A Complete Program</a>
-</div>
-
-<div class="big-card">
-  <a href="lc_book.html">Leaving Certificate Maths — A Complete Program</a>
-</div>
+<div class="big-card"><a href="jc_book.html">Junior Cycle Maths — A Complete Program</a></div>
+<div class="big-card"><a href="lc_book.html">Leaving Certificate Maths — A Complete Program</a></div>
 
 <!-- YEAR GROUPS -->
 <div class="grid">
 
-  <div class="card" onclick="location.href='2_hl.html'">
-    <a>2nd Year Higher Level</a>
-  </div>
+  <div class="card" onclick="location.href='2_hl.html'"><a>2nd Year Higher Level</a></div>
 
-  <div class="card" onclick="location.href='ty_hl.html'">
-    <a>Transition Year Higher Level</a>
-  </div>
+  <div class="card" onclick="location.href='ty_hl.html'"><a>Transition Year Higher Level</a></div>
 
-  <div class="card soft" onclick="location.href='5_hl.html'">
-    <a>5th Year Higher Level</a>
-  </div>
+  <div class="card soft" onclick="location.href='5_hl.html'"><a>5th Year Higher Level</a></div>
 
-  <div class="card" onclick="location.href='5_ol.html'">
-    <a>5th Year Ordinary Level</a>
-  </div>
+  <div class="card" onclick="location.href='5_ol.html'"><a>5th Year Ordinary Level</a></div>
 
-  <div class="card" onclick="location.href='6_ol.html'">
-    <a>6th Year Ordinary Level</a>
-  </div>
+  <div class="card" onclick="location.href='6_ol.html'"><a>6th Year Ordinary Level</a></div>
 
-  <div class="card" onclick="location.href='lca_5.html'">
-    <a>LCA 5th Year Maths</a>
-  </div>
+  <div class="card" onclick="location.href='lca_5.html'"><a>LCA 5th Year Maths</a></div>
 
-  <div class="card" onclick="location.href='lca_6.html'">
-    <a>LCA 6th Year Maths</a>
-  </div>
-
-  <!-- FIXED: this now correctly links to YOUR past paper archive -->
-  <div class="card" onclick="location.href='past_papers.html'">
-    <h2>Past Paper Archive</h2>
-    <p>JC, LC, Physics, Science, LCA — fully browsable.</p>
-  </div>
+  <div class="card" onclick="location.href='lca_6.html'"><a>LCA 6th Year Maths</a></div>
 
 </div>
+
+<!-- FOOTER -->
+<footer>
+  <a href="index.html">Home</a> |
+  <a href="https://www.youtube.com/">YouTube</a> |
+  <a href="https://www.geogebra.org/">GeoGebra</a>
+</footer>
+
+</body>
+</html>
