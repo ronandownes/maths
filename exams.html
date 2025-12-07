@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Exam Papers</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  h1 { margin-bottom: 15px; }
+  .pdf-item {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    background: #f7f7f7;
+  }
+  a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #333;
+  }
+</style>
+</head>
+<body>
+
+<h1 id="title">Exam Papers</h1>
+<div id="list"></div>
+
+<script>
+// EXAMPLE USE:
+// exams.html?folder=JC%20Papers
+// exams.html?folder=LC%20Papers
+
+const params = new URLSearchParams(window.location.search);
+const folder = params.get("folder");
+
+if (!folder) {
+    document.getElementById("title").innerText = "No folder selected.";
+} else {
+    document.getElementById("title").innerText = folder.replace(/%20/g, ' ');
+    loadFolder(folder);
+}
+
+function loadFolder(path) {
+    const apiURL = path + "/";  
+
+    // GitHub Pages cannot list directories dynamically,
+    // so we try to fetch a hidden auto-generated listing
+    // or fallback to guessing .pdf files up to 500 items.
+    // The cleanest method: We search for any file ending with .pdf.
+
+    fetch(apiURL)
+      .then(response => response.text())
+      .then(html => {
+          const pdfs = [...html.matchAll(/href="([^"]+\.pdf)"/g)].map(m => m[1]);
+
+          if (pdfs.length === 0) {
+              document.getElementById("list").innerHTML =
+                "<p>No PDF files found.</p>";
+              return;
+          }
+
+          pdfs.forEach(file => {
+              const div = document.createElement("div");
+              div.className = "pdf-item";
+
+              div.innerHTML = `
+                  <a href="${apiURL}${file}" target="_blank">${file}</a>
+                  <br>
+                  <small>Opens in browser — right-click to download</small>
+              `;
+              document.getElementById("list").appendChild(div);
+          });
+      })
+      .catch(err => {
+          document.getElementById("list").innerHTML =
+            "<p>Error loading folder.</p>";
+      });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,358 @@
+[DIR] .
+   - .gitattributes
+   - 2.html
+   - 5.html
+   - 6.html
+   - books.html
+   - gallery.html
+   - index.html
+   - pdf.html
+   - pdf_index.html
+   - readme.md
+   - ty.html
+[DIR] algebra
+   - 1.html
+   - 2.html
+   - 3.html
+   - 4.html
+   - 5.html
+   - 5_1.html
+   - 6.html
+   - 7.html
+   - 8.html
+   - easyfrac.html
+[DIR] Applied Maths Papers
+[DIR] archive
+   - 2nd Year Christmas Assessment  Questions with marking-scheme.pdf
+   - 2nd Year Christmas Assessment  Questions.pdf
+   - 2nd Year Christmas Test Questions (2).pdf
+   - 2nd Year Christmas Test Questions with marking-scheme (1).pdf
+   - 5th  Questions Xmass Test.pdf
+   - 5th Year Assessment  Questions (1).pdf
+   - 5th Year Assessment  Questions with marking-scheme (1).pdf
+   - 6thYear_XmasTest_PastExam_FilteredQuestions.pdf
+   - FTXmassTest.pdf
+   - HOnotescopy.pdf
+   - index.html
+   - index_old.html
+   - indices (1).pdf
+   - indices (2).pdf
+   - indices (3).pdf
+   - indices.pdf
+   - jchl1.pdf
+   - LargeSampleXmassTest.pdf
+   - normaldist.pdf
+   - Possible Questions Xmass Test.pdf
+   - Quadratic_Formula_Slides_and_ws.pdf
+   - TT4_SolutionsxMASStEST.pdf
+[DIR] audio
+[DIR] Computer Science Papers
+[DIR] homepage
+[DIR] homepage\classes
+   - 2nd_year_HL.html
+   - 5th_year_OL.html
+   - 6th_year_OL.html
+[DIR] JC Papers
+[DIR] JC Papers\HL Paper 1 Archive
+   - Maths-JC-H-2008-P1.pdf
+   - Maths-JC-H-2009-P1.pdf
+   - Maths-JC-H-2010-P1.pdf
+   - Maths-JC-H-2011-P1.pdf
+   - Maths-JC-H-2012-P1.pdf
+   - Maths-JC-H-2013-P1.pdf
+   - Maths-JC-H-2014-P1.pdf
+   - Maths-JC-H-2015-P1.pdf
+   - Maths-JC-H-2016-P1.pdf
+   - Maths-JC-H-2017-P1.pdf
+   - Maths-JC-H-2018-P1.pdf
+   - Maths-JC-H-2019-P1.pdf
+[DIR] JC Papers\HL Paper 2 Archive
+   - Maths-JC-H-2002-P2.pdf
+   - Maths-JC-H-2003-P2.pdf
+   - Maths-JC-H-2004-P2.pdf
+   - Maths-JC-H-2005-P2.pdf
+   - Maths-JC-H-2006-P2.pdf
+   - Maths-JC-H-2007-P2.pdf
+   - Maths-JC-H-2008-P2.pdf
+   - Maths-JC-H-2009-P2.pdf
+   - Maths-JC-H-2010-P2.pdf
+   - Maths-JC-H-2011-P2.pdf
+   - Maths-JC-H-2012-P2.pdf
+   - Maths-JC-H-2013-P2.pdf
+   - Maths-JC-H-2014-P2.pdf
+   - Maths-JC-H-2015-P2.pdf
+   - Maths-JC-H-2016-P2.pdf
+   - Maths-JC-H-2017-P2.pdf
+   - Maths-JC-H-2018-P2.pdf
+   - Maths-JC-H-2019-P2.pdf
+   - Maths-JC-O-1992-P2.pdf
+   - Maths-JC-O-1993-P2.pdf
+   - Maths-JC-O-1994-P2.pdf
+   - Maths-JC-O-1995-P2.pdf
+   - Maths-JC-O-1996-P2.pdf
+   - Maths-JC-O-1997-P2.pdf
+   - Maths-JC-O-1998-P2.pdf
+   - Maths-JC-O-1999-P2.pdf
+   - Maths-JC-O-2000-P2.pdf
+   - Maths-JC-O-2001-P2.pdf
+   - Maths-JC-O-2002-P2.pdf
+   - Maths-JC-O-2003-P2.pdf
+   - Maths-JC-O-2004-P2.pdf
+   - Maths-JC-O-2005-P2.pdf
+   - Maths-JC-O-2006-P2.pdf
+   - Maths-JC-O-2007-P2.pdf
+   - Maths-JC-O-2008-P2.pdf
+   - Maths-JC-O-2009-P2.pdf
+   - Maths-JC-O-2010-P2.pdf
+   - Maths-JC-O-2011-P2.pdf
+   - Maths-JC-O-2012-P2.pdf
+   - Maths-JC-O-2013-P2.pdf
+   - Maths-JC-O-2015-P2.pdf
+   - Maths-JC-O-2016-P2.pdf
+   - Maths-JC-O-2017-P2.pdf
+   - Maths-JC-O-2018-P2.pdf
+   - Maths-JC-O-2019-P2.pdf
+[DIR] JC Papers\JC Maths HL Single Terminal Assessment
+   - Maths-JC-H-2022.pdf
+   - Maths-JC-H-2023.pdf
+   - Maths-JC-H-2024.pdf
+   - Maths-JC-H-2025.pdf
+[DIR] JC Papers\JC Maths OL Single Terminal Assessment
+   - Maths-JC-O-2022.pdf
+   - Maths-JC-O-2023.pdf
+   - Maths-JC-O-2024.pdf
+   - Maths-JC-O-2025.pdf
+[DIR] JC Papers\OL Paper 1 Archive
+   - Maths-JC-O-2006-P1.pdf
+   - Maths-JC-O-2007-P1.pdf
+   - Maths-JC-O-2008-P1.pdf
+   - Maths-JC-O-2009-P1.pdf
+   - Maths-JC-O-2010-P1.pdf
+   - Maths-JC-O-2011-P1.pdf
+   - Maths-JC-O-2012-P1.pdf
+   - Maths-JC-O-2013-P1.pdf
+   - Maths-JC-O-2014-P1.pdf
+   - Maths-JC-O-2015-P1.pdf
+   - Maths-JC-O-2016-P1.pdf
+   - Maths-JC-O-2017-P1.pdf
+   - Maths-JC-O-2018-P1.pdf
+   - Maths-JC-O-2019-P1.pdf
+[DIR] JC Papers\OL Paper 2 Archive
+   - Maths-JC-O-2000-P2.pdf
+   - Maths-JC-O-2001-P2.pdf
+   - Maths-JC-O-2002-P2.pdf
+   - Maths-JC-O-2003-P2.pdf
+   - Maths-JC-O-2004-P2.pdf
+   - Maths-JC-O-2005-P2.pdf
+   - Maths-JC-O-2006-P2.pdf
+   - Maths-JC-O-2007-P2.pdf
+   - Maths-JC-O-2008-P2.pdf
+   - Maths-JC-O-2009-P2.pdf
+   - Maths-JC-O-2010-P2.pdf
+   - Maths-JC-O-2011-P2.pdf
+   - Maths-JC-O-2012-P2.pdf
+   - Maths-JC-O-2013-P2.pdf
+   - Maths-JC-O-2014-P2.pdf
+   - Maths-JC-O-2015-P2.pdf
+   - Maths-JC-O-2016-P2.pdf
+   - Maths-JC-O-2017-P2.pdf
+   - Maths-JC-O-2018-P2.pdf
+   - Maths-JC-O-2019-P2.pdf
+[DIR] LC Applied Papers
+   - 16.pdf
+   - 17.pdf
+   - 18.pdf
+   - 19.pdf
+   - 21.pdf
+   - 23.pdf
+   - 24.pdf
+   - 25.pdf
+[DIR] LC Papers
+[DIR] LC Papers\lcfl
+   - Maths-LC-F-2011-P1.pdf
+   - Maths-LC-F-2012-P1.pdf
+   - Maths-LC-F-2013-P1.pdf
+   - Maths-LC-F-2014-P1.pdf
+   - Maths-LC-F-2015.pdf
+   - Maths-LC-F-2016.pdf
+   - Maths-LC-F-2017.pdf
+   - Maths-LC-F-2018.pdf
+   - Maths-LC-F-2019.pdf
+   - Maths-LC-F-2020.pdf
+   - Maths-LC-F-2021.pdf
+   - Maths-LC-F-2022.pdf
+   - Maths-LC-F-2023.pdf
+   - Maths-LC-F-2024.pdf
+   - Maths-LC-F-2025.pdf
+[DIR] LC Papers\lchl1
+   - Maths-JC-H-1993-P1.pdf
+   - Maths-JC-H-1994-P1.pdf
+   - Maths-JC-H-1995-P1.pdf
+   - Maths-JC-H-1996-P1.pdf
+   - Maths-JC-H-1997-P1.pdf
+   - Maths-JC-H-1998-P1.pdf
+   - Maths-JC-H-1999-P1.pdf
+   - Maths-JC-H-2000-P1.pdf
+   - Maths-JC-H-2001-P1.pdf
+   - Maths-JC-H-2002-P1.pdf
+   - Maths-JC-H-2003-P1.pdf
+   - Maths-JC-H-2004-P1.pdf
+   - Maths-JC-H-2005-P1.pdf
+   - Maths-JC-H-2006-P1.pdf
+   - Maths-JC-H-2007-P1.pdf
+   - Maths-JC-H-2008-P1.pdf
+   - Maths-JC-H-2009-P1.pdf
+   - Maths-JC-H-2010-P1.pdf
+   - Maths-JC-H-2011-P1.pdf
+   - Maths-JC-H-2012-P1.pdf
+   - Maths-JC-H-2013-P1.pdf
+   - Maths-JC-H-2014-P1.pdf
+   - Maths-JC-H-2015-P1.pdf
+   - Maths-JC-H-2016-P1.pdf
+   - Maths-JC-H-2017-P1.pdf
+   - Maths-JC-H-2018-P1.pdf
+   - Maths-JC-H-2019-P1.pdf
+[DIR] LC Papers\lchl2
+   - Maths-LC-H-2008-P2.pdf
+   - Maths-LC-H-2009-P2.pdf
+   - Maths-LC-H-2010-P2.pdf
+   - Maths-LC-H-2011-P2.pdf
+   - Maths-LC-H-2012-P2.pdf
+   - Maths-LC-H-2013-P2.pdf
+   - Maths-LC-H-2014-P2.pdf
+   - Maths-LC-H-2015-P2.pdf
+   - Maths-LC-H-2016-P2.pdf
+   - Maths-LC-H-2017-P2.pdf
+   - Maths-LC-H-2018-P2.pdf
+   - Maths-LC-H-2019-P2.pdf
+   - Maths-LC-H-2020-P2.pdf
+   - Maths-LC-H-2021-P2.pdf
+   - Maths-LC-H-2022-P2.pdf
+   - Maths-LC-H-2022D-P2.pdf
+   - Maths-LC-H-2023-P2.pdf
+   - Maths-LC-H-2023D-P2.pdf
+   - Maths-LC-H-2024-P2.pdf
+   - Maths-LC-H-2024D-P2.pdf
+   - Maths-LC-H-2025-P2.pdf
+[DIR] LC Papers\lcol1
+   - Maths-LC-O-2013-P1.pdf
+   - Maths-LC-O-2014-P1.pdf
+   - Maths-LC-O-2015-P1 (1).pdf
+   - Maths-LC-O-2015-P1.pdf
+   - Maths-LC-O-2016-P1 (1).pdf
+   - Maths-LC-O-2016-P1.pdf
+   - Maths-LC-O-2017-P1.pdf
+   - Maths-LC-O-2018-P1.pdf
+   - Maths-LC-O-2019-P1.pdf
+   - Maths-LC-O-2020-P1.pdf
+   - Maths-LC-O-2021-P1.pdf
+   - Maths-LC-O-2022-P1.pdf
+   - Maths-LC-O-2022D-P1.pdf
+   - Maths-LC-O-2023-P1.pdf
+   - Maths-LC-O-2023D-P1.pdf
+   - Maths-LC-O-2024-P1.pdf
+   - Maths-LC-O-2024D-P1.pdf
+   - Maths-LC-O-2025-P1.pdf
+[DIR] LC Papers\lcol2
+   - Maths-IC-O-1980-P2.pdf
+   - Maths-IC-O-1981-P2.pdf
+   - Maths-IC-O-1982-P2.pdf
+   - Maths-IC-O-1983-P2.pdf
+   - Maths-IC-O-1984-P2.pdf
+   - Maths-IC-O-1985-P2.pdf
+   - Maths-IC-O-1986-P2.pdf
+   - Maths-IC-O-1987-P2.pdf
+   - Maths-IC-O-1988-P2.pdf
+   - Maths-IC-O-1989-P2.pdf
+   - Maths-IC-O-1990-P2.pdf
+   - Maths-IC-O-1991-P2.pdf
+   - Maths-LC-O-2013-P2.pdf
+   - Maths-LC-O-2014-P2.pdf
+   - Maths-LC-O-2015-P2.pdf
+   - Maths-LC-O-2016-P2.pdf
+   - Maths-LC-O-2017-P2.pdf
+   - Maths-LC-O-2018-P2.pdf
+   - Maths-LC-O-2019-P2.pdf
+   - Maths-LC-O-2020-P2.pdf
+   - Maths-LC-O-2021-P2.pdf
+   - Maths-LC-O-2022-P2.pdf
+   - Maths-LC-O-2022D-P2.pdf
+   - Maths-LC-O-2023-P2.pdf
+   - Maths-LC-O-2023D-P2.pdf
+   - Maths-LC-O-2024-P2.pdf
+   - Maths-LC-O-2024D-P2.pdf
+   - Maths-LC-O-2025-P2.pdf
+[DIR] pdf
+   - am1-toc.pdf
+   - am2-toc.pdf
+   - am3-toc.pdf
+   - amlc.pdf
+   - Appendix A Action Verbs.pdf
+   - Appendix B.pdf
+   - cs-toc.pdf
+   - diagramsonlypdf.pdf
+   - ft-toc.pdf
+   - ft.pdf
+   - JC Maths Learning Outcomes.pdf
+   - jchl.pdf
+   - jchl1.pdf
+   - jchl2.pdf
+   - jcms.pdf
+   - jcol.pdf
+   - jcol1.pdf
+   - jcol2.pdf
+   - jc_maths.pdf
+   - JC_maths_Learning_Outcomes_Article.pdf
+   - jol1.pdf
+   - LC Maths OL  SEC Paper 2.pdf
+   - lca.pdf
+   - lca1-toc.pdf
+   - lca1.pdf
+   - lca2-toc.pdf
+   - lca2.pdf
+   - lca3-toc.pdf
+   - lca3.pdf
+   - lca4-toc.pdf
+   - lca4.pdf
+   - lcfl.pdf
+   - lchl1.pdf
+   - lchl2.pdf
+   - lcol.pdf
+   - lcol1.pdf
+   - lc_ol_maths_spec_orig.pdf
+   - SCSEC25all.pdf
+   - tt2h-toc.pdf
+   - tt2o-toc.pdf
+   - tt3-toc.pdf
+   - tt4-toc.pdf
+   - tt5-toc.pdf
+[DIR] Science Papers
+[DIR] Senior Cycle Maths
+[DIR] Senior Cycle Maths\lchlp1
+[DIR] Senior Cycle Maths\lchlp2
+[DIR] Senior Cycle Maths\lcolp1
+[DIR] Senior Cycle Maths\lcolp2
+[DIR] stats
+[DIR] styles
+   - styles.css
+[DIR] worksheets
+   - 2nd Year Christmas Test Questions (2).pdf
+   - 2nd Year Christmas Test Questions with marking-scheme (1).pdf
+   - 6th Year Assessment  Questions (1).pdf
+   - 6th Year Assessment  Questions.pdf
+   - 6thxmasmaths (1).pdf
+   - 6thxmasmaths.pdf
+   - lin_eqn_few_terms.pdf
+   - lin_eqn_need_see_frac.pdf
+   - lin_eqn_terms_only.pdf
+   - Page 313 from lcol1.pdf
+   - rotated.pdf
+   - Solve_Quadratics_by_Factors (1).pdf
+   - Solve_Quadratics_by_Factors (2).pdf
+   - Solve_Quadratics_by_Factors (3).pdf
+   - Solve_Quadratics_by_Factors.pdf
+   - Solving_Monic_Quadratics (1).pdf
+   - Solving_Monic_Quadratics.pdf
+   - Solving_x_2_Quadratics (1).pdf
+   - Solving_x_2_Quadratics.pdf
+   - WhatsApp Installer.exe
