@@ -2,149 +2,165 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mr Downes Mathematics</title>
+
 <style>
-  :root {
-    --bg:#f3f3f3;
-    --header:#7a1c1c;
-    --accent:#b93e3e;
-    --text:#222;
-    --card-bg:#ffffff;
-  }
-
   body {
-    margin:0;
-    font-family:"Segoe UI",Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f3f3f3;
   }
 
-  header {
-    background:var(--header);
-    color:#fff;
-    padding:0.6rem 1rem;
-    text-align:center;
+  /* NAVBAR */
+  .navbar {
+    background: #7a1c1c;
+    padding: 12px 20px;
+    display: flex;
+    gap: 25px;
+    align-items: center;
   }
-  header h1 { margin:0; font-size:1.6rem; font-weight:600; }
-  header p  { margin:0.2rem 0 0; font-size:1rem; color:#f7dca5; }
+  .navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .navbar a:hover { text-decoration: underline; }
 
-  main {
-    max-width:1100px;
-    margin:2rem auto;
-    padding:0 1rem;
+  h1 {
+    text-align: center;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    color: #222;
+    font-size: 2rem;
   }
 
-  .section-title {
-    font-size:1.3rem;
-    margin:1.5rem 0 0.6rem;
-    color:var(--header);
-    border-bottom:2px solid var(--header);
-    padding-bottom:4px;
+  /* LARGE BOOK CARDS */
+  .big-card {
+    background: #f8eaea;
+    border-left: 6px solid #b93e3e;
+    padding: 25px;
+    margin: 25px auto;
+    width: 80%;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  }
+  .big-card a {
+    font-size: 1.5rem;
+    color: #7a1c1c;
+    text-decoration: none;
+    font-weight: bold;
   }
 
+  /* GRID OF YEAR GROUPS */
   .grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:1.5rem;
-    margin-bottom:2.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 20px;
+    padding: 20px;
   }
 
   .card {
-    background:var(--card-bg);
-    border-radius:10px;
-    padding:1.2rem;
-    box-shadow:0 2px 6px rgba(0,0,0,0.1);
-    transition:transform 0.2s ease,box-shadow 0.2s ease;
-    cursor:pointer;
-  }
-  .card:hover {
-    transform:translateY(-3px);
-    box-shadow:0 6px 14px rgba(0,0,0,0.15);
+    background: #ffffff;
+    border: 1px solid #ddd;
+    padding: 22px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    cursor: pointer;
   }
 
-  .card h2 { color:var(--header); margin-top:0; }
+  .card a, .card h2, .card p {
+    text-decoration: none;
+    color: #7a1c1c;
+  }
 
+  .card h2 {
+    margin: 0 0 8px;
+  }
+
+  .soft {
+    opacity: 0.75;
+  }
+
+  /* FOOTER */
   footer {
-    background:var(--header);
-    color:#f0f0f0;
-    text-align:center;
-    padding:1rem;
-    margin-top:2rem;
+    background: #7a1c1c;
+    color: white;
+    padding: 15px;
+    margin-top: 40px;
+    text-align: center;
   }
-  footer a { color:#f7dca5; text-decoration:none; margin:0 0.6rem; }
-  footer a:hover { text-decoration:underline; }
+
+  footer a {
+    color: #ffeaea;
+    margin: 8px;
+    display: inline-block;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  footer a:hover { text-decoration: underline; }
 </style>
+
 </head>
 <body>
 
-<header>
-  <h1>Mr Downes Maths</h1>
-  <p>Clear maths for strong results.</p>
-</header>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html">Home</a>
+  <a href="calculator.html">Calculator</a>
+  <a href="past_papers.html">Past Papers</a>
+  <a href="textbooks.html">Textbooks</a>
+  <a href="pdf.html">PDF Reference</a>
+  <a href="gallery.html">My Books</a>
+</nav>
 
-<main>
+<h1>Welcome to Mr Downes Mathematics</h1>
 
-  <div class="section-title">Tests</div>
-  <div class="grid">
-      <div class="section-title">6th Year Maths</div>
-  <div class="grid">
+<!-- PROGRAM BOOKS -->
+<div class="big-card">
+  <a href="jc_book.html">Junior Cycle Maths — A Complete Program</a>
+</div>
 
-    <div class="card" onclick="location.href='6.html'">
-      <h2>6th Year Maths</h2>
-      <p>Full set of resources for sixth year students.</p>
-    </div>
+<div class="big-card">
+  <a href="lc_book.html">Leaving Certificate Maths — A Complete Program</a>
+</div>
 
-    <div class="card" onclick="location.href='gallery.html?book=am3'">
-      <h2>Prescribed Book: AM3</h2>
-      <p>Open the full AM3 page gallery (all pages). Automatically uses TOC if present.</p>
-    </div>
+<!-- YEAR GROUPS -->
+<div class="grid">
 
+  <div class="card" onclick="location.href='2_hl.html'">
+    <a>2nd Year Higher Level</a>
   </div>
 
-
-    <div class="card" onclick="location.href='5.html'">
-      <h2>5th Year OL Test</h2>
-      <p>Ordinary Level test page.</p>
-    </div>
-
-    <div class="card" onclick="location.href='ty.html'">
-      <h2>TY Higher Level Test</h2>
-      <p>Transition Year HL test page.</p>
-    </div>
-
-    <div class="card" onclick="location.href='2.html'">
-      <h2>2nd Year Higher Level Test</h2>
-      <p>Second Year HL test page.</p>
-    </div>
-
-    <div class="card" onclick="location.href='books.html'">
-      <h2>GalleryLibrary</h2>
-      <p>View textbooks — e.g. link to am3.html inside books.</p>
-    </div>
-
-    <!-- NEW PDF LIBRARY CARD -->
-    <div class="card" onclick="location.href='pdf.html'">
-      <h2>PDF Library</h2>
-      <p>Download worksheets, tests, notes, and exam papers.</p>
-    </div>
-
+  <div class="card" onclick="location.href='ty_hl.html'">
+    <a>Transition Year Higher Level</a>
   </div>
 
-</main>
-
-<footer>
-  <div>
-    © <span id="year"></span> Mr Downes |
-    <a href="https://www.youtube.com/@ronandownes3699" target="_blank">YouTube</a> |
-    <a href="https://www.geogebra.org/u/rdownes" target="_blank">GeoGebra</a> |
-    <a href="https://archive.maths.nuim.ie/staff/dmalone/StateExamPapers/" target="_blank">Past Papers</a>
+  <div class="card soft" onclick="location.href='5_hl.html'">
+    <a>5th Year Higher Level</a>
   </div>
-</footer>
 
-<script>
-  document.getElementById("year").textContent = new Date().getFullYear();
-</script>
+  <div class="card" onclick="location.href='5_ol.html'">
+    <a>5th Year Ordinary Level</a>
+  </div>
 
-</body>
-</html>
+  <div class="card" onclick="location.href='6_ol.html'">
+    <a>6th Year Ordinary Level</a>
+  </div>
+
+  <div class="card" onclick="location.href='lca_5.html'">
+    <a>LCA 5th Year Maths</a>
+  </div>
+
+  <div class="card" onclick="location.href='lca_6.html'">
+    <a>LCA 6th Year Maths</a>
+  </div>
+
+  <!-- FIXED: this now correctly links to YOUR past paper archive -->
+  <div class="card" onclick="location.href='past_papers.html'">
+    <h2>Past Paper Archive</h2>
+    <p>JC, LC, Physics, Science, LCA — fully browsable.</p>
+  </div>
+
+</div>

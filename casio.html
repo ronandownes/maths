@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CASIO Calculator Skills – Mr Downes Maths</title>
+
+  <!-- MathJax ready for examples -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+  <style>
+    :root {
+      --bg:#f3f3f3;
+      --header:#7a1c1c;
+      --accent:#b93e3e;
+      --text:#222;
+      --card-bg:#ffffff;
+    }
+
+    * { box-sizing:border-box; }
+
+    body {
+      margin:0;
+      font-family:"Segoe UI",Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    header {
+      background:var(--header);
+      color:#fff;
+      padding:0.8rem 1.2rem;
+      text-align:center;
+    }
+    header h1 { margin:0; font-size:1.6rem; font-weight:600; }
+    header p  { margin:0.25rem 0 0; font-size:1rem; color:#f7dca5; }
+
+    main {
+      max-width:900px;
+      margin:2rem auto;
+      padding:0 1rem 3rem;
+    }
+
+    h2 {
+      color:var(--header);
+      margin-top:1.5rem;
+      margin-bottom:0.4rem;
+    }
+
+    .note {
+      background:#ffe9cc;
+      border-left:4px solid var(--accent);
+      padding:0.75rem 1rem;
+      margin-bottom:1.5rem;
+      font-size:0.95rem;
+    }
+
+    ul {
+      padding-left:1.2rem;
+    }
+
+    footer {
+      background:var(--header);
+      color:#f0f0f0;
+      text-align:center;
+      padding:1rem;
+      margin-top:2rem;
+      font-size:0.9rem;
+    }
+    footer a { color:#f7dca5; text-decoration:none; margin:0 0.6rem; }
+    footer a:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>CASIO Calculator Skills</h1>
+  <p>ClassWiz and similar models – used properly, not as a crutch.</p>
+</header>
+
+<main>
+
+  <div class="note">
+    These pages will be embedded into lessons (e.g. Functions, Quadratics, Statistics)
+    so you can see exactly how to use the calculator for the learning outcomes in each topic.
+  </div>
+
+  <h2>1. Getting Started</h2>
+  <p>
+    Here we will cover basic setup: modes, clearing, fixing mistakes, and checking that
+    your calculator is in the correct setting for exams.
+  </p>
+
+  <h2>2. Equations and Quadratics</h2>
+  <p>
+    This section will show how to use the equation solver for linear and quadratic equations,
+    and when you should <em>not</em> rely on it (for example, when you still need to show
+    algebraic work for full marks).
+  </p>
+
+  <h2>3. Statistics Mode</h2>
+  <p>
+    Using the STAT mode for mean, standard deviation, regression lines, and checking answers
+    quickly during revision.
+  </p>
+
+  <h2>4. Tables, Functions and Graph Thinking</h2>
+  <p>
+    Using the TABLE mode to explore functions such as $f(x)=2x^2-3x+5$, spot patterns,
+    and connect calculator output back to the algebra and graphs you see in class.
+  </p>
+
+  <h2>5. Logs, Indices and Other Features</h2>
+  <p>
+    Later we can add worked steps for $\log$, powers, absolute values, and the SOLVE feature,
+    aligned with the Number and Algebra learning outcomes.
+  </p>
+
+</main>
+
+<footer>
+  <div>
+    © <span id="year"></span> Mr Downes |
+    <a href="index.html">Home</a> |
+    <a href="https://www.youtube.com/@ronandownes3699" target="_blank">YouTube</a> |
+    <a href="https://www.geogebra.org/u/rdownes" target="_blank">GeoGebra</a>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
