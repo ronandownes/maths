@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>6th Year Mathematics</title>
+
 <style>
   :root {
     --bg:#f3f3f3;
@@ -27,6 +28,20 @@
     text-align:center;
   }
   header h1 { margin:0; font-size:1.6rem; font-weight:600; }
+
+  /* ===== NAV BAR ===== */
+  nav {
+    background:#ddd;
+    padding:0.5rem 1rem;
+    text-align:left;
+    border-bottom:1px solid #bbb;
+  }
+  nav a {
+    color:var(--header);
+    text-decoration:none;
+    font-weight:600;
+  }
+  nav a:hover { text-decoration:underline; }
 
   main {
     max-width:1100px;
@@ -71,18 +86,31 @@
     padding:1rem;
     margin-top:2rem;
   }
+  footer a {
+    color:#f7dca5;
+    text-decoration:none;
+    margin:0 0.6rem;
+  }
+  footer a:hover { text-decoration:underline; }
 </style>
 </head>
+
 <body>
 
 <header>
   <h1>6th Year Mathematics</h1>
 </header>
 
+<!-- NEW HOME NAVIGATION BAR -->
+<nav>
+  <a href="index.html">← Back to Home</a>
+</nav>
+
 <main>
 
   <div class="section-title">Core Materials</div>
   <div class="grid">
+
     <div class="card" onclick="location.href='gallery.html?book=am3'">
       <h2>Prescribed Book: AM3</h2>
       <p>Complete AM3 page-by-page gallery.</p>
@@ -95,16 +123,18 @@
 
     <div class="card" onclick="location.href='sec.html'">
       <h2>Exam Papers</h2>
-      <p>Mock, SEC and school exam sets.</p>
+      <p>Mock, SEC, and school exam sets.</p>
     </div>
+
   </div>
 
 
   <div class="section-title">Notes & Worksheets</div>
   <div class="grid">
+
     <div class="card" onclick="location.href='notes.html?year=6'">
       <h2>Class Notes</h2>
-      <p>All handouts, topic explanations and derivations.</p>
+      <p>Handouts, topic explanations, derivations.</p>
     </div>
 
     <div class="card" onclick="location.href='worksheets.html?year=6'">
@@ -114,15 +144,21 @@
 
     <div class="card" onclick="location.href='revision.html?year=6'">
       <h2>Revision</h2>
-      <p>Targeted revision sets for exam readiness.</p>
+      <p>Targeted revision for exam readiness.</p>
     </div>
+
   </div>
 
 </main>
 
+<!-- FULL FOOTER (same as homepage) -->
 <footer>
-  © <span id="year"></span> Mr Downes
+  © <span id="year"></span> Mr Downes |
+  <a href="https://www.youtube.com/@ronandownes3699" target="_blank">YouTube</a> |
+  <a href="https://www.geogebra.org/u/rdownes" target="_blank">GeoGebra</a> |
+  <a href="https://archive.maths.nuim.ie/staff/dmalone/StateExamPapers/" target="_blank">Past Papers</a>
 </footer>
+
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
