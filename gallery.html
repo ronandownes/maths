@@ -1,96 +1,143 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<title>Gallery</title>
-
-<style>
-  body { font-family: Arial, sans-serif; padding: 20px; }
-  .img-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px;
-  }
-  img {
-    width: 100%;
-    border: 1px solid #ccc;
-  }
-</style>
-
-</head>
-<body>
-
-<h1 id="title">Gallery</h1>
-
-<label>Book:</label>
-<select id="bookSelect"></select>
-
-<div class="img-grid" id="grid"></div>
-
 <script>
-
-const bookSelect = document.getElementById("bookSelect");
-const titleEl = document.getElementById("title");
+// -----------------------------------------------
+// CONFIG
+// -----------------------------------------------
+const params = new URLSearchParams(window.location.search);
+const book = params.get("book") || "";
 const grid = document.getElementById("grid");
+const chapterSelect = document.getElementById("chapterSelect");
+const sectionSelect = document.getElementById("sectionSelect");
+const pageInput = document.getElementById("pageInput");
 
-// ------------------------------------------------------------
-// Load the list of books from books/index.json
-// ------------------------------------------------------------
-fetch("books/index.json")
-  .then(r => r.json())
-  .then(data => {
-    const books = data.books;
+let totalPages = 0;
+let tocEntries = [];   // { code: "1.0", title: "...", page: 1 }
+let chapters = [];
+let sections = [];
 
-    // Populate dropdown
-    books.forEach(book => {
-      const opt = document.createElement("option");
-      opt.value = book;
-      opt.textContent = book;
-      bookSelect.appendChild(opt);
-    });
-
-    // Support ?book= parameter
-    const params = new URLSearchParams(window.location.search);
-    const urlBook = params.get("book");
-
-    if (urlBook && books.includes(urlBook)) {
-      bookSelect.value = urlBook;
-      loadBook(urlBook);
+// -----------------------------------------------
+// LOAD TOC IF EXISTS
+// -----------------------------------------------
+async function loadTOC() {
+  try {
+    const response = await fetch(`${book}/TableOfContents.txt`);
+    if (!response.ok) {
+      console.log("No TOC found, loading simple gallery.");
+      return; // Continue with basic gallery
     }
-  });
-
-// ------------------------------------------------------------
-// When user selects a book
-// ------------------------------------------------------------
-bookSelect.addEventListener("change", () => {
-  loadBook(bookSelect.value);
-});
-
-// ------------------------------------------------------------
-// Load images from books/<book>/index.json
-// ------------------------------------------------------------
-function loadBook(book) {
-  titleEl.textContent = "Gallery: " + book;
-  grid.innerHTML = "";
-
-  fetch(`books/${book}/index.json`)
-    .then(r => r.json())
-    .then(data => {
-      data.images.forEach(file => {
-        const img = document.createElement("img");
-        img.src = `books/${book}/${file}`;
-        grid.appendChild(img);
-      });
-    })
-    .catch(err => {
-      titleEl.textContent = "Error loading gallery";
-      console.error(err);
-    });
+    const text = await response.text();
+    parseTOC(text);
+    buildDropdowns();
+  } catch (err) {
+    console.log("Error loading TOC:", err);
+  }
 }
 
+// -----------------------------------------------
+// PARSE THE TOC FILE
+// Each line format: "1.0 Chapter 1 Real Numbers 1"
+// -----------------------------------------------
+function parseTOC(text) {
+  const lines = text.split("\n");
+
+  tocEntries = lines.map(line => {
+    line = line.trim();
+    if (!line) return null;
+
+    const parts = line.split(" ");
+    const code = parts[0];
+    const page = parseInt(parts[parts.length - 1]);
+    const title = parts.slice(1, parts.length - 1).join(" ");
+    
+    return { code, title, page };
+  }).filter(x => x);
+
+  chapters = tocEntries.filter(entry => entry.code.endsWith(".0"));
+  sections = tocEntries.filter(entry => !entry.code.endsWith(".0"));
+}
+
+// -----------------------------------------------
+// BUILD CHAPTER + SECTION DROPDOWNS
+// -----------------------------------------------
+function buildDropdowns() {
+  // Chapters
+  chapters.forEach(ch => {
+    const opt = document.createElement("option");
+    opt.value = ch.page;
+    opt.textContent = `${ch.code} ${ch.title}`;
+    chapterSelect.appendChild(opt);
+  });
+
+  // Sections
+  sections.forEach(sec => {
+    const opt = document.createElement("option");
+    opt.value = sec.page;
+    opt.textContent = `${sec.code} ${sec.title}`;
+    sectionSelect.appendChild(opt);
+  });
+
+  // Clicking a chapter → jump immediately
+  chapterSelect.addEventListener("change", () => {
+    const page = parseInt(chapterSelect.value);
+    if (page) goToPage(page);
+  });
+
+  // Clicking a section → jump immediately
+  sectionSelect.addEventListener("change", () => {
+    const page = parseInt(sectionSelect.value);
+    if (page) goToPage(page);
+  });
+}
+
+// -----------------------------------------------
+// BUILD THE IMAGE GRID
+// -----------------------------------------------
+async function loadImages() {
+  // Try to detect total image count
+  let i = 1;
+  totalPages = 0;
+
+  while (true) {
+    const padded = String(i).padStart(4, "0");
+    const url = `${book}/${padded}.webp`;
+
+    const res = await fetch(url);
+    if (!res.ok) break;
+
+    totalPages = i;
+    i++;
+
+    const img = document.createElement("img");
+    img.src = url;
+    img.id = `page-${i}`;
+    img.style.scrollMarginTop = "150px";
+    grid.appendChild(img);
+  }
+
+  console.log("Total pages:", totalPages);
+}
+
+// -----------------------------------------------
+// JUMP TO A PAGE (with safety fallback)
+// -----------------------------------------------
+function goToPage(page) {
+  if (!page || page < 1) return;
+
+  // Clamp page to available range
+  if (page > totalPages) page = totalPages;
+
+  const padded = String(page).padStart(4, "0");
+  const target = document.querySelector(`img[src="${book}/${padded}.webp"]`);
+
+  if (target) {
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+// -----------------------------------------------
+// INIT
+// -----------------------------------------------
+(async function init() {
+  await loadTOC();      // load chapters + sections
+  await loadImages();   // load all book pages
+})();
 </script>
-
-</body>
-</html>
-
-
