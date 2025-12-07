@@ -5,10 +5,15 @@
 <title>Gallery</title>
 
 <style>
-  body { font-family: Arial; padding: 20px; }
+  body { font-family: Arial, padding: 20px; }
   h1 { margin-bottom: 10px; }
 
-  .controls { margin-bottom: 20px; }
+  .controls { margin-bottom: 12px; }
+  .controls label { margin-right: 4px; }
+
+  .chapters {
+    margin-top: 6px;
+  }
 
   .img-grid {
     display: grid;
@@ -22,7 +27,6 @@
     cursor: pointer;
   }
 
-  /* Fullscreen viewer */
   #viewer {
     display: none;
     position: fixed;
@@ -52,17 +56,24 @@
 <h1 id="title">Gallery</h1>
 
 <div class="controls">
-  <label>Go to page: </label>
+  <label>Page:</label>
   <select id="pageDropdown"></select>
 
-  <input id="pageSearch" type="number" placeholder="Page #" 
+  <input id="pageSearch" type="number" placeholder="Page #"
          style="width:90px; margin-left:10px;" />
   <button onclick="searchPage()">Go</button>
+
+  <div id="chapterControls" class="chapters" style="display:none;">
+    <label>Chapter:</label>
+    <select id="mainChapterSelect"></select>
+
+    <label style="margin-left:10px;">Section:</label>
+    <select id="subChapterSelect"></select>
+  </div>
 </div>
 
 <div class="img-grid" id="grid"></div>
 
-<!-- Fullscreen viewer -->
 <div id="viewer">
   <img id="viewerImg" src="">
   <div>
@@ -76,25 +87,39 @@
 const params = new URLSearchParams(window.location.search);
 const book = params.get("book");
 
-const titleEl = document.getElementById("title");
-const grid = document.getElementById("grid");
-const viewer = document.getElementById("viewer");
-const viewerImg = document.getElementById("viewerImg");
-const dropdown = document.getElementById("pageDropdown");
+const titleEl      = document.getElementById("title");
+const grid         = document.getElementById("grid");
+const viewer       = document.getElementById("viewer");
+const viewerImg    = document.getElementById("viewerImg");
+const pageDD       = document.getElementById("pageDropdown");
+const pageSearchEl = document.getElementById("pageSearch");
 
-let pages = [];        // "001", "002", ...
+const chapterControls = document.getElementById("chapterControls");
+const mainChapDD      = document.getElementById("mainChapterSelect");
+const subChapDD       = document.getElementById("subChapterSelect");
+
+let pages = [];        // internal keys: "001","002",...
+let pageDisplay = [];  // what user sees: internal - 10
 let currentIndex = 0;
+
+// TOC structures (only used if TOC file exists)
+let tocLoaded = false;
+let tocEntries = [];   // {code, major, title, printedPage, internalKey}
+let chapters = {};     // { majorNumber: {label, entries:[idx,...]} }
 
 const THUMB_PATH = b => `images/${b}/thumbs/`;
 const FULL_PATH  = b => `images/${b}/`;
 
+// ---------- INITIALISE ----------
 if (!book) {
   titleEl.innerText = "Missing ?book= parameter";
 } else {
   titleEl.innerText = book.toUpperCase();
-  loadPages(book);
+  loadPages(book);     // always works, with or without TOC
+  loadTOC(book);       // optional
 }
 
+// ---------- PAGE LOADING ----------
 function loadPages(book) {
   const tryLimit = 10;
   let page = 1;
@@ -107,6 +132,7 @@ function loadPages(book) {
 
     img.onload = () => {
       pages.push(n);
+      pageDisplay.push(page - 10);   // display offset
       addThumbnail(n);
       page++;
       misses = 0;
@@ -116,8 +142,11 @@ function loadPages(book) {
     img.onerror = () => {
       misses++;
       page++;
-      if (misses < tryLimit) tryNext();
-      else buildDropdown();
+      if (misses < tryLimit) {
+        tryNext();
+      } else {
+        buildPageDropdown();
+      }
     };
   }
 
@@ -131,26 +160,29 @@ function addThumbnail(n) {
   grid.appendChild(img);
 }
 
-function buildDropdown() {
-  dropdown.innerHTML = "";
-
+function buildPageDropdown() {
+  pageDD.innerHTML = "";
   pages.forEach((p, idx) => {
     const opt = document.createElement("option");
     opt.value = idx;
-    opt.textContent = parseInt(p, 10);
-    dropdown.appendChild(opt);
+    opt.textContent = pageDisplay[idx];
+    pageDD.appendChild(opt);
   });
 
-  dropdown.onchange = () => {
-    openViewer(pages[dropdown.value]);
+  pageDD.onchange = () => {
+    const idx = parseInt(pageDD.value, 10);
+    if (!isNaN(idx)) openViewer(pages[idx]);
   };
 }
 
+// ---------- VIEWER ----------
 function openViewer(n) {
   currentIndex = pages.indexOf(n);
+  if (currentIndex < 0) return;
+
   viewerImg.src = FULL_PATH(book) + n + ".webp";
   viewer.style.display = "flex";
-  dropdown.value = currentIndex;
+  pageDD.value = currentIndex;
 }
 
 function closeViewer() {
@@ -171,19 +203,157 @@ function prevPage() {
   }
 }
 
+// ---------- PAGE SEARCH ----------
 function searchPage() {
-  const num = document.getElementById("pageSearch").value;
-  if (!num) return;
+  const val = parseInt(pageSearchEl.value, 10);
+  if (isNaN(val)) return;
 
-  const key = String(num).padStart(3, "0");
-  const idx = pages.indexOf(key);
-
+  const idx = pageDisplay.indexOf(val);
   if (idx >= 0) {
     openViewer(pages[idx]);
-    dropdown.value = idx;
   } else {
     alert("Page not found.");
   }
+}
+
+// ---------- TOC LOADING (optional) ----------
+function loadTOC(book) {
+  // Try TableOfContents.txt, then toc.txt
+  const candidates = [
+    `images/${book}/TableOfContents.txt`,
+    `images/${book}/toc.txt`
+  ];
+
+  function tryFetch(i) {
+    if (i >= candidates.length) return;  // none found
+
+    fetch(candidates[i])
+      .then(res => {
+        if (!res.ok) throw new Error("not found");
+        return res.text();
+      })
+      .then(text => {
+        parseTOC(text);
+        tocLoaded = true;
+        buildChapterControls();
+      })
+      .catch(() => {
+        tryFetch(i + 1);
+      });
+  }
+
+  tryFetch(0);
+}
+
+function parseTOC(text) {
+  const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
+
+  tocEntries = [];
+  chapters = {};
+
+  lines.forEach(line => {
+    const parts = line.trim().split(/\s+/);
+    if (parts.length < 3) return;
+
+    const printedPage = parseInt(parts[parts.length - 1], 10);
+    if (isNaN(printedPage)) return;
+
+    const code = parts[0];          // e.g. "1.0" or "1.1"
+    const titleParts = parts.slice(1, parts.length - 1);
+    const fullTitle = titleParts.join(" ");
+
+    const major = code.split(".")[0];  // "1" from "1.0"
+    const isMajor = code.endsWith(".0");
+
+    const internalPage = printedPage + 10;
+    const internalKey  = String(internalPage).padStart(3, "0");
+
+    const entryIndex = tocEntries.length;
+    tocEntries.push({
+      code,
+      major,
+      isMajor,
+      title: fullTitle,
+      printedPage,
+      internalKey
+    });
+
+    // Build chapters map
+    if (!chapters[major]) {
+      chapters[major] = { label: "", entries: [] };
+    }
+    chapters[major].entries.push(entryIndex);
+
+    // Set chapter label (for major line only)
+    if (isMajor && !chapters[major].label) {
+      // Try to strip "Chapter <n>" from the title
+      const prefix = `Chapter ${major} `;
+      let shortTitle = fullTitle;
+      if (fullTitle.startsWith(prefix)) {
+        shortTitle = fullTitle.slice(prefix.length);
+      }
+      chapters[major].label = `Chapter ${major} – ${shortTitle}`;
+    }
+  });
+}
+
+function buildChapterControls() {
+  if (!tocLoaded) return;
+
+  // If we have no chapter map, nothing to show
+  const majorKeys = Object.keys(chapters).sort((a,b) => parseInt(a)-parseInt(b));
+  if (majorKeys.length === 0) return;
+
+  // Show the chapter controls
+  chapterControls.style.display = "block";
+
+  // Build main chapter dropdown
+  mainChapDD.innerHTML = "";
+  majorKeys.forEach(major => {
+    const chap = chapters[major];
+    const opt = document.createElement("option");
+    opt.value = major;
+    opt.textContent = chap.label || `Chapter ${major}`;
+    mainChapDD.appendChild(opt);
+  });
+
+  mainChapDD.onchange = () => {
+    const major = mainChapDD.value;
+    populateSubchapters(major);
+  };
+
+  // initialise with first chapter
+  populateSubchapters(majorKeys[0]);
+}
+
+function populateSubchapters(major) {
+  subChapDD.innerHTML = "";
+
+  const chap = chapters[major];
+  if (!chap) return;
+
+  chap.entries.forEach(idx => {
+    const e = tocEntries[idx];
+
+    const opt = document.createElement("option");
+    opt.value = e.internalKey;
+
+    // For display: "1.1 Number Systems"
+    opt.textContent = `${e.code} ${e.title}`;
+    subChapDD.appendChild(opt);
+  });
+
+  subChapDD.onchange = () => {
+    const key = subChapDD.value;
+    if (!key) return;
+
+    const idx = pages.indexOf(key);
+    if (idx >= 0) {
+      openViewer(pages[idx]);
+    } else {
+      alert("Page for section not found in gallery.");
+    }
+  };
 }
 </script>
 

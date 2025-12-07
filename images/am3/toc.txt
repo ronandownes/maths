@@ -1,0 +1,188 @@
+1.0 Chapter 1 Real Numbers 1
+1.1 Number Systems 2
+1.2 Factors, Multiples and Prime Numbers 5
+1.3 Decimals 8
+1.4 Scientific Notation 11
+
+2.0 Chapter 2 Arithmetic 17
+2.1 Proportional Parts – Dividing Quantities in a Given Ratio 18
+2.2 Percentages 20
+2.3 Percentage Error and Accumulated Error 22
+2.4 Income Tax 24
+2.5 PRSI and USC 27
+2.6 Value Added Tax (VAT) 29
+2.7 Percentage Profit and Loss; Discounts 31
+2.8 Compound Interest and Loans 33
+2.9 Depreciation 35
+2.10 Arithmetic for Everyday Life 37
+2.11 Currency Exchange 40
+
+3.0 Chapter 3 Algebra I 44
+3.1 Expressions 45
+3.2 Evaluating Expressions 47
+3.3 Simplifying Expressions 50
+3.4 Expanding Expressions 51
+3.5 Factorising Expressions 53
+3.6 Expressions Involving Fractions 56
+3.7 Dividing Algebraic Expressions 58
+3.8 Long Division in Algebra 58
+3.9 Rearranging Formulae 59
+
+4.0 Chapter 4 Indices and Surds 65
+4.1 Numbers in Index Form 66
+4.2 Laws 1–4 of Indices 66
+4.3 Laws 5–9 of Indices 68
+4.4 Equations with x as an Index 71
+4.5 Surds 73
+
+5.0 Chapter 5 Algebra II 76
+5.1 Solving Linear Equations 77
+5.2 Solving Problems Involving Linear Equations 79
+5.3 Solving Linear Equations Involving Fractions 81
+5.4 Linear Inequalities 81
+5.5 Solving Simultaneous Linear Equations 84
+5.6 Solving Quadratic Equations 87
+5.7 Solving Quadratic Equations II 90
+5.8 Solving Problems Using Quadratic Equations 92
+5.9 Solving Non-Factorisable Quadratic Equations 95
+5.10 Solving Quadratic Equations Involving Fractions 96
+5.11 Forming Quadratic Equations 97
+5.12 Solving Simultaneous Equations: One Linear and One Non-Linear 99
+6.0 Chapter 6 Linear and Quadratic Functions 104
+6.1 Introduction 105
+6.2 Composite Functions 111
+6.3 Linear Functions 113
+6.4 Quadratic Functions 116
+6.5 Real-Life Problems Solved by Quadratic Graphs 120
+6.6 Transformations of Quadratic Functions 123
+
+7.0 Chapter 7 Complex Numbers 130
+7.1 Introduction 130
+7.2 Complex Numbers and the Argand Diagram 131
+7.3 Addition and Subtraction of Complex Numbers 133
+7.4 Modulus of a Complex Number 136
+7.5 Multiplying Complex Numbers 138
+7.6 Conjugate of a Complex Number 140
+7.7 Dividing Complex Numbers 142
+7.8 Equality of Complex Numbers 144
+7.9 Quadratic Equations with Complex Roots 145
+
+8.0 Chapter 8 Cubic and Exponential Functions 148
+8.1 Cubic Functions 149
+8.2 Exponential Functions 153
+
+9.0 Chapter 9 Number Patterns 162
+9.1 Patterns 163
+9.2 Arithmetic Sequences 165
+9.3 The General Term of an Arithmetic Sequence 169
+9.4 Solving for a and d 172
+9.5 Arithmetic Series 174
+9.6 Some Non-Linear Sequences 179
+
+10.0 Chapter 10 Calculus 187
+10.1 Calculus 187
+10.2 First Derivatives 188
+10.3 Second Derivatives 190
+10.4 Slopes and Tangent Lines 192
+10.5 Increasing and Decreasing Functions 195
+10.6 Maxima and Minima 199
+10.7 Maximum and Minimum Problems 202
+10.8 Rates of Change 206
+
+11.0 Chapter 11 Applied Measure 212
+11.1 Triangles and Quadrilaterals 213
+11.2 Circles 217
+11.3 Rectangular Solids 221
+11.4 Prisms 224
+11.5 Cylinders 227
+11.6 Right Circular Cones 229
+11.7 Spheres 231
+11.8 Finding a Missing Dimension 233
+11.9 The Trapezoidal Rule 238
+
+12.0 Chapter 12 Counting and Arrangements 246
+12.1 Listing Outcomes 246
+12.2 The Fundamental Principle of Counting 250
+12.3 Arrangements 252
+
+13.0 Chapter 13 Probability 258
+13.1 Introducing Probability 259
+13.2 Relative Frequency, Fairness, Expected Frequency 261
+13.3 Theoretical Probability 266
+13.4 Set Theory and Probability 269
+13.5 Sample Spaces for Successive Events 274
+13.6 AND/OR: Multiple Events 279
+13.7 Bernoulli Trials 283
+13.8 Expected Value 287
+
+14.0 Chapter 14 Statistics I 295
+14.1 Statistics in Today’s World 296
+14.2 Statistical Investigations 296
+14.3 Collecting Data 299
+14.4 Frequency Tables 300
+14.5 Graphing Data: Bar and Pie Charts 301
+14.6 Stem-and-Leaf Plots 307
+14.7 Histograms 311
+14.8 Distribution of Data 312
+14.9 Scatter Graphs and Correlation 316
+
+15.0 Chapter 15 Statistics II 330
+15.1 Measures of Central Tendency 331
+15.2 Deciding Which Average to Use 338
+15.3 Measures of Variation 340
+15.4 The Normal Distribution 346
+15.5 Sampling Variability 350
+15.6 Hypothesis Testing 350
+15.7 Misuses of Statistics 354
+
+16.0 Chapter 16 Geometry 360
+16.1 Revision of Concepts, Notation and Axioms 361
+16.2 Angles and Lines: Theorems 1, 3, 5 364
+16.3 Triangles, Angles and Sides: Theorems 2, 4, 6, 7, 8 367
+16.4 Parallelograms: Theorems 9 and 10 369
+16.5 Triangles, Parallel Lines and Ratios: Theorems 11, 12, 13 372
+16.6 Theorem of Pythagoras 377
+16.7 Area of a Triangle and Area of a Parallelogram 379
+16.8 Circle Theorems and Corollaries 383
+16.9 Congruent Triangles and Proof 388
+
+17.0 Chapter 17 Trigonometry 395
+17.1 Right-Angled Triangles and Pythagoras 396
+17.2 Right-Angled Triangles and the Trigonometric Ratios 398
+17.3 Length of a Side in a Right-Angled Triangle 401
+17.4 Using Trigonometry to Solve Practical Problems 403
+17.5 Area of a Triangle 408
+17.6 Special Angles 30°, 45°, 60° 410
+17.7 The Unit Circle 410
+17.8 Trig Ratios for Angles 0°–360° 411
+17.9 The Sine Rule 413
+17.10 The Cosine Rule 416
+17.11 Length of an Arc and Area of a Sector 419
+
+18.0 Chapter 18 Coordinate Geometry: The Line 425
+18.1 The xy-Plane 426
+18.2 Distance Between Two Points 427
+18.3 Midpoint of a Line Segment 429
+18.4 Slope of a Line 431
+18.5 The Equation of a Line 435
+18.6 The Equation y = mx + c 437
+18.7 Finding the Equation of a Line 439
+18.8 Intersecting Lines 441
+18.9 Further Equations 443
+18.10 Area of a Triangle 445
+
+19.0 Chapter 19 Constructions, Transformations and Enlargements 451
+19.1 Junior Cycle Constructions 452
+19.2 LC Ordinary Level Constructions 461
+19.3 LC Ordinary Level Constructions II 464
+19.4 Transformations 468
+19.5 Enlargements 473
+19.6 Properties of Enlargements 477
+
+20.0 Chapter 20 Coordinate Geometry: The Circle 484
+20.1 Circles with Centre (0,0) and Radius r 484
+20.2 Lines and Circles 488
+20.3 Circles with Centre (h,k) and Radius r 491
+20.4 Intercepts and Points Inside, Outside or On a Circle 495
+
+
