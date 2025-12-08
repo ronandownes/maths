@@ -1,53 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Books</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
-    }
-    .book {
-      margin: 10px 0;
-      font-size: 20px;
-    }
-    a {
-      text-decoration: none;
-      color: #0066cc;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Books – Mr Downes Mathematics</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  :root {
+    --maroon: #7a1c1c;
+    --bg: #f3f3f3;
+    --card-bg: #ffffff;
+  }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--bg);
+    color: #222;
+  }
+
+  /* NAVBAR */
+  .navbar {
+    background: var(--maroon);
+    padding: 12px 20px;
+    display: flex;
+    gap: 25px;
+    align-items: center;
+  }
+  .navbar a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .navbar a:hover {
+    text-decoration: underline;
+  }
+
+  /* TITLE */
+  h1 {
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    padding: 0 10px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #222;
+  }
+
+  /* 4×4 GRID */
+  #book-list {
+    width: 90%;
+    max-width: 1300px;
+    margin: 30px auto 50px auto;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* EXACT 4×4 GRID */
+    gap: 20px;
+  }
+
+  /* BOOK CARDS */
+  .book-card {
+    background: var(--card-bg);
+    border-left: 8px solid #b93e3e;
+    padding: 18px 14px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+    cursor: pointer;
+  }
+
+  .book-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.16);
+  }
+
+  .book-card a {
+    text-decoration: none;
+    color: #7a1c1c;
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: block;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--maroon);
+    color: #f0f0f0;
+    padding: 16px;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  footer a {
+    color: #ffeaea;
+    margin: 0 8px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  footer a:hover {
+    text-decoration: underline;
+  }
+</style>
+
 </head>
 <body>
 
-  <h1>Book Galleries</h1>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html">Home</a>
+  <a href="calculator.html">Calculator</a>
+  <a href="past_papers.html">Past Papers</a>
+  <a href="textbooks.html">Textbooks</a>
+  <a href="pdf.html">PDF Reference</a>
+  <a href="gallery.html">My Books</a>
+</nav>
 
-  <div id="book-list"></div>
+<h1>Third Party Textbooks</h1>
 
-  <script>
-    // List of all book folder names inside /images/
-    const books = [
-      "am1","am2","am3","am4","am42",
-      "cs","ft",
-      "lca1","lca2","lca3","lca4",
-      "tt2h","tt2o","tt3","tt4","tt5"
-    ];
+<div id="book-list"></div>
 
-    const container = document.getElementById("book-list");
+<script>
+  // EXACT order for 4×4 layout; FT moved to very bottom-right
+  const books = [
+    "am1","am2","am3","am4",
+    "am42","cs","lca1","lca2",
+    "lca3","lca4","tt2h","tt2o",
+    "tt3","tt4","tt5","ft"  // FT LAST, and no rel="noopener"
+  ];
 
-    books.forEach(b => {
-      const div = document.createElement("div");
-      div.className = "book";
+  const container = document.getElementById("book-list");
 
-      // IMPORTANT FIX: remove leading slash!
+  books.forEach(b => {
+    const div = document.createElement("div");
+    div.className = "book-card";
+
+    if (b === "ft") {
+      // FT WITHOUT security attribute
+      div.innerHTML = `<a href="gallery.html?book=${b}">${b.toUpperCase()}</a>`;
+    } else {
       div.innerHTML = `<a href="gallery.html?book=${b}" rel="noopener">${b.toUpperCase()}</a>`;
+    }
 
-      container.appendChild(div);
-    });
-  </script>
+    container.appendChild(div);
+  });
+</script>
+
+<footer>
+  <a href="index.html">Home</a> |
+  <a href="https://www.youtube.com/">YouTube</a> |
+  <a href="https://www.geogebra.org/">GeoGebra</a>
+</footer>
 
 </body>
 </html>

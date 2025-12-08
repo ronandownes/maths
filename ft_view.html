@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Formula & Tables – Page Viewer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body { margin:0; background:#f3f3f3; font-family:"Segoe UI",Arial,sans-serif; text-align:center; }
+
+  .navbar {
+    background:#7a1c1c; padding:12px 20px; display:flex; gap:25px;
+  }
+  .navbar a { color:white; text-decoration:none; font-weight:bold; }
+
+  img {
+    max-width:90%;
+    margin-top:30px;
+    border-radius:10px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.3);
+  }
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+  <a href="index.html">Home</a>
+  <a href="ft_gallery.html">Back to Gallery</a>
+</nav>
+
+<div id="viewer"></div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const page = params.get("page");
+
+document.getElementById("viewer").innerHTML = `
+  <img src="books/ft/${page}.webp">
+`;
+</script>
+
+</body>
+</html>
+
+

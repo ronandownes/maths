@@ -2,155 +2,143 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Past Papers – Mr Downes Mathematics</title>
+<title>Past Papers – Mr Downes Maths</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  body { margin:0; background:#f3f3f3; font-family:Arial,sans-serif; }
-
-  /* NAVBAR */
-  .navbar {
-    background:#7a1c1c;
-    padding:12px 20px;
-    display:flex;
-    gap:25px;
-    align-items:center;
-  }
-  .navbar a {
-    color:white;
-    text-decoration:none;
-    font-weight:bold;
-  }
-  .navbar a:hover { text-decoration:underline; }
-
-  header {
-    text-align:center;
-    padding:25px 10px 10px;
-  }
-  header h1 {
+  body {
     margin:0;
-    font-size:2rem;
+    font-family:"Segoe UI",Arial,sans-serif;
+    background:#f3f3f3;
     color:#222;
   }
-  header p {
-    color:#7a1c1c;
-    margin:5px 0 0;
-  }
 
+  /* HEADER */
+  header {
+    background:#7a1c1c;
+    color:#fff;
+    padding:0.8rem 1.2rem;
+    text-align:center;
+  }
+  header h1 { margin:0; font-size:1.6rem; }
+  header p  { margin:0.3rem 0 0; font-size:0.95rem; color:#f7dca5; }
+
+  /* LAYOUT */
   main {
     max-width:900px;
-    margin:20px auto;
-    padding:0 20px;
+    margin:2rem auto 2.5rem;
+    padding:0 1rem;
   }
-
   section {
+    margin-bottom:1.8rem;
     background:#ffffff;
-    padding:20px;
-    margin-bottom:25px;
-    border-radius:10px;
-    box-shadow:0 2px 5px rgba(0,0,0,0.08);
+    border-radius:8px;
+    padding:1rem 1.2rem;
+    box-shadow:0 2px 6px rgba(0,0,0,0.08);
   }
-
-  section h2 {
+  h2 {
     margin-top:0;
     color:#7a1c1c;
+    font-size:1.15rem;
   }
 
-  ul { margin-left:20px; }
-  li { margin-bottom:8px; }
+  ul {
+    margin:0.4rem 0 0;
+    padding-left:1.3rem;
+  }
 
-  a { color:#7a1c1c; text-decoration:none; font-weight:bold; }
+  a {
+    color:#7a1c1c;
+    text-decoration:none;
+  }
   a:hover { text-decoration:underline; }
 
   /* FOOTER */
   footer {
     background:#7a1c1c;
-    color:white;
-    padding:15px;
-    margin-top:40px;
+    color:#f0f0f0;
     text-align:center;
+    padding:1rem;
+    font-size:0.9rem;
   }
-  footer a {
-    color:#ffeaea;
-    margin:8px;
-    text-decoration:none;
-    font-weight:bold;
-  }
+  footer a { color:#f7dca5; text-decoration:none; margin:0 0.6rem; }
   footer a:hover { text-decoration:underline; }
 
 </style>
 </head>
+
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <a href="index.html">Home</a>
-  <a href="calculator.html">Calculator</a>
-  <a href="past_papers.html">Past Papers</a>
-  <a href="textbooks.html">Textbooks</a>
-  <a href="pdf.html">PDF Reference</a>
-  <a href="gallery.html">My Books</a>
-</nav>
-
 <header>
-  <h1>Past Paper Archive</h1>
-  <p>Junior Cycle, Leaving Certificate, Physics, Science, and LCA</p>
+  <h1>Past Papers</h1>
+  <p>Browse Junior Cycle, Leaving Certificate, LCA, Physics and Science papers.</p>
 </header>
 
 <main>
 
+  <!-- ==================== CS ==================== -->
+  <section>
+    <h2>CS</h2>
+    <ul>
+      <li><a href="papers/CS/hl/index.html">CS / Higher Level</a></li>
+      <li><a href="papers/CS/ol/index.html">CS / Ordinary Level</a></li>
+    </ul>
+  </section>
+
+  <!-- ==================== JUNIOR CYCLE ==================== -->
   <section>
     <h2>Junior Cycle Mathematics</h2>
     <ul>
-      <li><a href="papers/JC/arch_hl_p1/index.html">JC Higher Level — Paper 1 (Archive)</a></li>
-      <li><a href="papers/JC/arch_hl_p2/index.html">JC Higher Level — Paper 2 (Archive)</a></li>
-      <li><a href="papers/JC/arch_ol_p1/index.html">JC Ordinary Level — Paper 1 (Archive)</a></li>
-      <li><a href="papers/JC/arch_ol_p2/index.html">JC Ordinary Level — Paper 2 (Archive)</a></li>
-      <li><a href="papers/JC/current_hl/index.html">JC Single Terminal — Higher Level</a></li>
-      <li><a href="papers/JC/current_ol/index.html">JC Single Terminal — Ordinary Level</a></li>
+      <li><a href="papers/JC/arch_hl_p1/index.html">JC HL Paper 1 – Archive</a></li>
+      <li><a href="papers/JC/arch_hl_p2/index.html">JC HL Paper 2 – Archive</a></li>
+      <li><a href="papers/JC/arch_ol_p1/index.html">JC OL Paper 1 – Archive</a></li>
+      <li><a href="papers/JC/arch_ol_p2/index.html">JC OL Paper 2 – Archive</a></li>
+      <li><a href="papers/JC/current_hl/index.html">JC Single Terminal – Higher Level</a></li>
+      <li><a href="papers/JC/current_ol/index.html">JC Single Terminal – Ordinary Level</a></li>
     </ul>
   </section>
 
+  <!-- ==================== LC MATHEMATICS ==================== -->
   <section>
     <h2>Leaving Certificate Mathematics</h2>
     <ul>
-      <li><a href="papers/LC/hl_p1/index.html">LC Higher Level — Paper 1</a></li>
-      <li><a href="papers/LC/hl_p2/index.html">LC Higher Level — Paper 2</a></li>
-      <li><a href="papers/LC/ol_p1/index.html">LC Ordinary Level — Paper 1</a></li>
-      <li><a href="papers/LC/ol_p2/index.html">LC Ordinary Level — Paper 2</a></li>
       <li><a href="papers/LC/fl/index.html">LC Foundation Level</a></li>
+      <li><a href="papers/LC/hl_p1/index.html">LC Higher Level – Paper 1</a></li>
+      <li><a href="papers/LC/hl_p2/index.html">LC Higher Level – Paper 2</a></li>
+      <li><a href="papers/LC/ol_p1/index.html">LC Ordinary Level – Paper 1</a></li>
+      <li><a href="papers/LC/ol_p2/index.html">LC Ordinary Level – Paper 2</a></li>
     </ul>
   </section>
 
+  <!-- ==================== LCA MATHEMATICAL APPLICATIONS (NEW SECTION) ==================== -->
+  <section>
+    <h2>LCA Mathematical Applications</h2>
+    <ul>
+      <li><a href="papers/LCA/index.html">LCA – Mathematical Applications (All Papers)</a></li>
+    </ul>
+  </section>
+
+  <!-- ==================== PHYSICS ==================== -->
   <section>
     <h2>Physics</h2>
     <ul>
-      <li><a href="papers/Physics/hl/index.html">Physics Higher Level</a></li>
-      <li><a href="papers/Physics/ol/index.html">Physics Ordinary Level</a></li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Science</h2>
-    <ul>
-      <li><a href="papers/Science/index.html">JC Science</a></li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Leaving Certificate Applied</h2>
-    <ul>
-      <li><a href="papers/LCA/index.html">LCA Maths</a></li>
+      <li><a href="papers/Physics/hl/index.html">LC Physics – Higher Level</a></li>
+      <li><a href="papers/Physics/ol/index.html">LC Physics – Ordinary Level</a></li>
     </ul>
   </section>
 
 </main>
 
 <footer>
-  <a href="index.html">Home</a> |
-  <a href="https://www.youtube.com/">YouTube</a> |
-  <a href="https://www.geogebra.org/">GeoGebra</a>
+  <div>
+    © <span id="year"></span> Mr Downes |
+    <a href="index.html">Home</a>
+  </div>
 </footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 
 </body>
 </html>

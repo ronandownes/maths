@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Formula & Tables Viewer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body {
+    margin:0;
+    background:#f3f3f3;
+    font-family:"Segoe UI",Arial,sans-serif;
+    display:flex;
+    height:100vh;
+    overflow:hidden;
+  }
+
+  /* LEFT THUMBNAIL SIDEBAR */
+  #sidebar {
+    width:140px;
+    background:white;
+    overflow-y:auto;
+    border-right:2px solid #ddd;
+    padding:10px;
+  }
+
+  #sidebar img {
+    width:100%;
+    border-radius:6px;
+    margin-bottom:8px;
+    cursor:pointer;
+    opacity:0.6;
+    transition:0.2s;
+  }
+
+  #sidebar img.active {
+    opacity:1;
+    box-shadow:0 0 6px #7a1c1c;
+  }
+
+  /* MAIN VIEW AREA */
+  #mainArea {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    overflow:hidden;
+    position:relative;
+  }
+
+  .navbar {
+    width:100%;
+    background:#7a1c1c;
+    padding:12px 20px;
+    display:flex;
+    gap:25px;
+  }
+  .navbar a {
+    color:white;
+    font-weight:bold;
+    text-decoration:none;
+  }
+
+  /* DROPDOWNS */
+  #controls {
+    margin-top:8px;
+    display:flex;
+    gap:12px;
+    justify-content:center;
+  }
+
+  select {
+    padding:8px 12px;
+    border-radius:6px;
+    border:1px solid #aaa;
+    font-size:0.95rem;
+  }
+
+  /* MAIN IMAGE */
+  #mainImage {
+    max-width:72%;
+    max-height:80vh;
+    margin-top:15px;
+    border-radius:10px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.3);
+    transition:0.2s;
+  }
+
+  /* ARROWS */
+  .arrow {
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:3rem;
+    color:#7a1c1c;
+    cursor:pointer;
+    user-select:none;
+    background:rgba(255,255,255,0.7);
+    padding:8px 14px;
+    border-radius:10px;
+    z-index:20;
+  }
+  #leftArrow { left:10px; }
+  #rightArrow { right:10px; }
+
+</style>
+</head>
+
+<body>
+
+<!-- LEFT SIDEBAR THUMBNAILS -->
+<div id="sidebar"></div>
+
+<!-- MAIN VIEW AREA -->
+<div id="mainArea">
+
+  <nav class="navbar">
+    <a href="index.html">Home</a>
+    <a href="ft_gallery.html">Formula Tables</a>
+  </nav>
+
+  <!-- TOP DROPDOWNS -->
+  <div id="controls">
+    <select id="topicSelect">
+      <option value="">Jump to topic…</option>
+    </select>
+
+    <select id="pageSelect">
+      <option value="">Page number…</option>
+    </select>
+  </div>
+
+  <div id="leftArrow" class="arrow">&#10094;</div>
+  <div id="rightArrow" class="arrow">&#10095;</div>
+
+  <img id="mainImage">
+</div>
+
+<script>
+// ===============================
+// FT PAGES
+// ===============================
+const pages = [
+  "001","002","003","004","005","006","007","008","009","010",
+  "011","012","013","014","015","016","017","018","019","020",
+  "021","022","023","024","025","026","027","028","029","030",
+  "031","032","033","034","035","036","037","038","039","040",
+  "041","042","043","044","045","046","047","048","049","050",
+  "051","052","053","054","055","056","057","058","059","060",
+  "061","062","063","064","065","066","067","068","069","070",
+  "071","072","073","074","075","076","077","078","079","080",
+  "081","082","083","084","085","086","087","088","089","090",
+  "091","092","093","094"
+];
+
+// ===============================
+// TOPICS → pages
+// ===============================
+const topics = {
+  "Length and area": "008",
+  "Surface area and volume": "010",
+  "Area approximations": "012",
+  "Trigonometry": "013",
+  "Geometry": "017",
+  "Coordinate geometry": "018",
+  "Algebra": "020",
+  "Indices and logarithms": "021",
+  "Sequences and series": "022",
+  "Sets and logic": "023",
+  "Calculus": "025",
+  "Economics": "028",
+  "Financial mathematics": "030",
+  "Statistics and probability": "033",
+  "Units of measurement": "044",
+  "Fundamental physical constants": "046",
+  "Particle physics": "048",
+  "Mechanics": "050",
+  "Heat and temperature": "058",
+  "Light and sound": "059",
+  "Geometric optics": "060",
+  "Electricity": "061",
+  "Radioactivity": "063",
+  "Chemistry": "064",
+  "Symbols & units": "065",
+  "Electrical circuit symbols": "072",
+  "The elements": "079",
+  "Table of nuclides": "083",
+  "Elements (by symbol)": "091"
+};
+
+// ===============================
+// Populate topic dropdown
+// ===============================
+const topicSelect = document.getElementById("topicSelect");
+for (let t in topics) {
+  let opt = document.createElement("option");
+  opt.value = topics[t];
+  opt.textContent = t;
+  topicSelect.appendChild(opt);
+}
+
+// ===============================
+// Populate page dropdown
+// ===============================
+const pageSelect = document.getElementById("pageSelect");
+pages.forEach(pg => {
+  let opt = document.createElement("option");
+  opt.value = pg;
+  opt.textContent = "Page " + pg;
+  pageSelect.appendChild(opt);
+});
+
+// ===============================
+// Load main page + update highlights
+// ===============================
+const mainImage = document.getElementById("mainImage");
+let currentPage = new URLSearchParams(location.search).get("page") || "001";
+
+function loadPage(pg) {
+  currentPage = pg;
+  mainImage.src = "books/ft/" + pg + ".webp";
+  pageSelect.value = pg;
+
+  // highlight sidebar
+  document.querySelectorAll("#sidebar img").forEach(img => {
+    img.classList.toggle("active", img.dataset.page === pg);
+  });
+}
+
+// ===============================
+// Build sidebar thumbnails
+// ===============================
+const sidebar = document.getElementById("sidebar");
+
+pages.forEach(pg => {
+  const img = document.createElement("img");
+  img.src = "books/ft/thumbs/" + pg + ".webp";
+  img.dataset.page = pg;
+  img.onclick = () => loadPage(pg);
+  sidebar.appendChild(img);
+});
+
+// ===============================
+// Topic jump
+// ===============================
+topicSelect.onchange = function() {
+  if (!this.value) return;
+  loadPage(this.value);
+};
+
+// ===============================
+// Page dropdown jump
+// ===============================
+pageSelect.onchange = function() {
+  if (!this.value) return;
+  loadPage(this.value);
+};
+
+// ===============================
+// Arrows
+// ===============================
+document.getElementById("leftArrow").onclick = () => {
+  let i = pages.indexOf(currentPage);
+  if (i > 0) loadPage(pages[i - 1]);
+};
+
+document.getElementById("rightArrow").onclick = () => {
+  let i = pages.indexOf(currentPage);
+  if (i < pages.length - 1) loadPage(pages[i + 1]);
+};
+
+// ===============================
+// Swipe gestures
+// ===============================
+let startX = 0;
+
+document.addEventListener("touchstart", e => {
+  startX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener("touchend", e => {
+  let dx = e.changedTouches[0].screenX - startX;
+
+  if (dx > 60) {
+    // swipe right
+    let i = pages.indexOf(currentPage);
+    if (i > 0) loadPage(pages[i - 1]);
+  }
+
+  if (dx < -60) {
+    // swipe left
+    let i = pages.indexOf(currentPage);
+    if (i < pages.length - 1) loadPage(pages[i + 1]);
+  }
+});
+
+// ===============================
+// Initial load
+// ===============================
+loadPage(currentPage);
+
+</script>
+
+</body>
+</html>

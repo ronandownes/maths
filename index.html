@@ -3,97 +3,129 @@
 <head>
 <meta charset="UTF-8">
 <title>Mr Downes Mathematics</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  body { font-family: Arial, sans-serif; margin: 0; background: #f3f3f3; }
+  body {
+    margin:0;
+    background:#f3f3f3;
+    font-family:"Segoe UI",Arial,sans-serif;
+    color:#222;
+  }
 
   /* NAVBAR */
   .navbar {
-    background: #7a1c1c;
-    padding: 12px 20px;
-    display: flex;
-    gap: 25px;
-    align-items: center;
+    background:#7a1c1c;
+    padding:12px 20px;
+    display:flex;
+    gap:25px;
+    align-items:center;
   }
   .navbar a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
   }
-  .navbar a:hover { text-decoration: underline; }
+  .navbar a:hover {
+    text-decoration:underline;
+  }
 
   h1 {
-    text-align: center;
-    margin-top: 25px;
-    margin-bottom: 10px;
-    color: #222;
-    font-size: 2rem;
+    text-align:center;
+    margin-top:25px;
+    font-size:2rem;
+    font-weight:700;
   }
 
-  /* LARGE BOOK CARDS */
-  .big-card {
-    background: #f8eaea;
-    border-left: 6px solid #b93e3e;
-    padding: 25px;
-    margin: 25px auto;
-    width: 80%;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-  }
-  .big-card a {
-    font-size: 1.5rem;
-    color: #7a1c1c;
-    text-decoration: none;
-    font-weight: bold;
+  /* GRID FOR YEAR CARDS */
+  .year-grid {
+    width:90%;
+    max-width:1100px;
+    margin:30px auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:20px;
   }
 
-  /* GRID OF YEAR GROUPS */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 20px;
-    padding: 20px;
+  .year-card {
+    background:#ffffff;
+    border-radius:12px;
+    padding:18px 20px;
+    text-align:center;
+    font-size:1.15rem;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 3px 8px rgba(0,0,0,0.12);
+    transition:0.15s;
+    border-left:8px solid;
+  }
+  .year-card:hover {
+    transform:translateY(-5px);
+    box-shadow:0 6px 18px rgba(0,0,0,0.18);
   }
 
-  .card {
-    background: #ffffff;
-    border: 1px solid #ddd;
-    padding: 22px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
-    cursor: pointer;
+  .y2 { border-color:#1f5faa; }     /* 2nd Year HL – blue */
+  .ty { border-color:#0f7f6f; }     /* TY – teal */
+  .lc { border-color:#7a1c1c; }     /* LC HL – maroon */
+  .ol5 { border-color:#aa7a1f; }    /* 5th OL – gold */
+  .ol6 { border-color:#8a5f10; }    /* 6th OL – dark gold */
+  .lca { border-color:#2e7d32; }    /* LCA – green */
+
+  /* PROGRAMME CARDS */
+  .programmes {
+    width:90%;
+    max-width:1100px;
+    margin:40px auto 80px auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+    gap:20px;
   }
 
-  .card a {
-    text-decoration: none;
-    color: #7a1c1c;
-    font-size: 1.2rem;
-    font-weight: bold;
+  .prog-card {
+    background:#ffffff;
+    border-radius:12px;
+    padding:28px 25px;
+    text-align:center;
+    box-shadow:0 3px 10px rgba(0,0,0,0.12);
+    border-left:12px solid;
   }
 
-  .soft { opacity: 0.75; }
+  .jc-prog { border-color:#1f5faa; }
+  .ty-prog { border-color:#0f7f6f; }
+  .lc-prog { border-color:#7a1c1c; }
+  .lca-prog { border-color:#2e7d32; }
 
-  /* FOOTER */
+  .prog-card h2 {
+    margin-top:0;
+    font-size:1.4rem;
+    margin-bottom:8px;
+  }
+
+  .prog-card p {
+    margin:0;
+    font-size:0.95rem;
+    color:#444;
+    line-height:1.4;
+  }
+
   footer {
-    background: #7a1c1c;
-    color: white;
-    padding: 15px;
-    margin-top: 40px;
-    text-align: center;
+    margin-top:60px;
+    background:#7a1c1c;
+    color:#fff;
+    padding:16px;
+    text-align:center;
   }
   footer a {
-    color: #ffeaea;
-    margin: 8px;
-    display: inline-block;
-    text-decoration: none;
-    font-weight: bold;
+    color:#ffeaea;
+    text-decoration:none;
+    margin:0 8px;
   }
-  footer a:hover { text-decoration: underline; }
+  footer a:hover {
+    text-decoration:underline;
+  }
 </style>
-
 </head>
+
 <body>
 
 <!-- NAVBAR -->
@@ -103,39 +135,77 @@
   <a href="past_papers.html">Past Papers</a>
   <a href="textbooks.html">Textbooks</a>
   <a href="pdf.html">PDF Reference</a>
+  <a href="ft_gallery.html">Formula Tables</a>
   <a href="gallery.html">My Books</a>
 </nav>
 
-<h1>Welcome to Mr Downes Mathematics</h1>
+<h1>Motivated, Enjoyable and Results-Driven Maths</h1>
 
-<!-- PROGRAM BOOKS -->
-<div class="big-card"><a href="jc_book.html">Junior Cycle Maths — A Complete Program</a></div>
-<div class="big-card"><a href="lc_book.html">Leaving Certificate Maths — A Complete Program</a></div>
+<!-- YEAR GROUP CARDS -->
+<div class="year-grid">
 
-<!-- YEAR GROUPS -->
-<div class="grid">
+  <div class="year-card y2"
+       onclick="location.href='landing_pages/jc_second_year_hl.html'">
+    2nd Year Higher Level
+  </div>
 
-  <div class="card" onclick="location.href='2_hl.html'"><a>2nd Year Higher Level</a></div>
+  <div class="year-card ty"
+       onclick="location.href='landing_pages/transition_year.html'">
+    Transition Year Higher Level
+  </div>
 
-  <div class="card" onclick="location.href='ty_hl.html'"><a>Transition Year Higher Level</a></div>
+  <div class="year-card lc"
+       onclick="location.href='landing_pages/lc_higher_level.html'">
+    Leaving Certificate Higher Level
+  </div>
 
-  <div class="card soft" onclick="location.href='5_hl.html'"><a>5th Year Higher Level</a></div>
+  <div class="year-card ol5"
+       onclick="location.href='landing_pages/5th_year_ol.html'">
+    5th Year Ordinary Level
+  </div>
 
-  <div class="card" onclick="location.href='5_ol.html'"><a>5th Year Ordinary Level</a></div>
+  <div class="year-card ol6"
+       onclick="location.href='landing_pages/6th_year_ol.html'">
+    6th Year Ordinary Level
+  </div>
 
-  <div class="card" onclick="location.href='6_ol.html'"><a>6th Year Ordinary Level</a></div>
-
-  <div class="card" onclick="location.href='lca_5.html'"><a>LCA 5th Year Maths</a></div>
-
-  <div class="card" onclick="location.href='lca_6.html'"><a>LCA 6th Year Maths</a></div>
+  <div class="year-card lca"
+       onclick="location.href='landing_pages/lca_mathematical_applications.html'">
+    LCA Mathematics (5th & 6th Years)
+  </div>
 
 </div>
 
-<!-- FOOTER -->
+<!-- PROGRAMME CARDS -->
+<div class="programmes">
+
+  <div class="prog-card jc-prog">
+    <h2>Junior Cycle Mathematics</h2>
+    <p>A full three-year mathematics programme aligned to the new Junior Cycle learning outcomes.</p>
+  </div>
+
+  <div class="prog-card ty-prog">
+    <h2>Transition Year Mathematics</h2>
+    <p>Leadership tasks, investigations, strategic games, and higher-level exploration bridging JC to LC.</p>
+  </div>
+
+  <div class="prog-card lc-prog">
+    <h2>Leaving Certificate Mathematics</h2>
+    <p>A complete HL & OL programme covering algebra, functions, calculus, trigonometry, stats & more.</p>
+  </div>
+
+  <div class="prog-card lca-prog">
+    <h2>LCA Mathematical Applications</h2>
+    <p>Revised 2021 programme with budgeting, planning, statistics, real documents & full Key Assignments.</p>
+  </div>
+
+</div>
+
 <footer>
   <a href="index.html">Home</a> |
-  <a href="https://www.youtube.com/">YouTube</a> |
-  <a href="https://www.geogebra.org/">GeoGebra</a>
+  <a href="https://youtube.com">YouTube</a> |
+  <a href="https://geogebra.org">GeoGebra</a> |
+  <a href="ft_gallery.html">Formula Tables</a>
 </footer>
 
 </body>

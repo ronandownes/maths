@@ -1,60 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset='UTF-8'>
-  <title>PDF Library</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    h1 { margin-bottom: 20px; }
-    ul { line-height: 1.8; }
-  </style>
+    <meta charset="UTF-8">
+    <title>PDF Library – Mr Downes Mathematics</title>
+
+    <style>
+        body { font-family: Arial; margin: 0; background: #f4f4f4; }
+        header { background: #7a1c1c; color: white; padding: 14px 20px; font-size: 20px; }
+        nav { background: #b93e3e; padding: 10px 20px; }
+        nav a { color: white; margin-right: 18px; text-decoration: none; }
+        .content { max-width: 900px; margin: 25px auto; background: white; padding: 20px; }
+        ul { line-height: 1.8; }
+        footer { padding: 15px; background: #eee; text-align: center; margin-top: 40px; }
+    </style>
 </head>
 <body>
-  <h1>Downloadable PDFs</h1>
-  <ul>
-    <li><a href='pdf_low/Appendix A Action Verbs.pdf' download>Appendix A Action Verbs.pdf</a></li>
-    <li><a href='pdf_low/Appendix B.pdf' download>Appendix B.pdf</a></li>
-    <li><a href='pdf_low/JC Maths Learning Outcomes.pdf' download>JC Maths Learning Outcomes.pdf</a></li>
-    <li><a href='pdf_low/JC_maths_Learning_Outcomes_Article.pdf' download>JC_maths_Learning_Outcomes_Article.pdf</a></li>
-    <li><a href='pdf_low/LC Maths OL  SEC Paper 2.pdf' download>LC Maths OL  SEC Paper 2.pdf</a></li>
-    <li><a href='pdf_low/SCSEC25all.pdf' download>SCSEC25all.pdf</a></li>
-    <li><a href='pdf_low/am1-toc.pdf' download>am1-toc.pdf</a></li>
-    <li><a href='pdf_low/am2-toc.pdf' download>am2-toc.pdf</a></li>
-    <li><a href='pdf_low/am3-toc.pdf' download>am3-toc.pdf</a></li>
-    <li><a href='pdf_low/amlc.pdf' download>amlc.pdf</a></li>
-    <li><a href='pdf_low/cs-toc.pdf' download>cs-toc.pdf</a></li>
-    <li><a href='pdf_low/diagramsonlypdf.pdf' download>diagramsonlypdf.pdf</a></li>
-    <li><a href='pdf_low/ft-toc.pdf' download>ft-toc.pdf</a></li>
-    <li><a href='pdf_low/ft.pdf' download>ft.pdf</a></li>
-    <li><a href='pdf_low/jc_maths.pdf' download>jc_maths.pdf</a></li>
-    <li><a href='pdf_low/jchl.pdf' download>jchl.pdf</a></li>
-    <li><a href='pdf_low/jchl1.pdf' download>jchl1.pdf</a></li>
-    <li><a href='pdf_low/jchl2.pdf' download>jchl2.pdf</a></li>
-    <li><a href='pdf_low/jcms.pdf' download>jcms.pdf</a></li>
-    <li><a href='pdf_low/jcol.pdf' download>jcol.pdf</a></li>
-    <li><a href='pdf_low/jcol1.pdf' download>jcol1.pdf</a></li>
-    <li><a href='pdf_low/jcol2.pdf' download>jcol2.pdf</a></li>
-    <li><a href='pdf_low/jol1.pdf' download>jol1.pdf</a></li>
-    <li><a href='pdf_low/lc_ol_maths_spec_orig.pdf' download>lc_ol_maths_spec_orig.pdf</a></li>
-    <li><a href='pdf_low/lca.pdf' download>lca.pdf</a></li>
-    <li><a href='pdf_low/lca1-toc.pdf' download>lca1-toc.pdf</a></li>
-    <li><a href='pdf_low/lca1.pdf' download>lca1.pdf</a></li>
-    <li><a href='pdf_low/lca2-toc.pdf' download>lca2-toc.pdf</a></li>
-    <li><a href='pdf_low/lca2.pdf' download>lca2.pdf</a></li>
-    <li><a href='pdf_low/lca3-toc.pdf' download>lca3-toc.pdf</a></li>
-    <li><a href='pdf_low/lca3.pdf' download>lca3.pdf</a></li>
-    <li><a href='pdf_low/lca4-toc.pdf' download>lca4-toc.pdf</a></li>
-    <li><a href='pdf_low/lca4.pdf' download>lca4.pdf</a></li>
-    <li><a href='pdf_low/lcfl.pdf' download>lcfl.pdf</a></li>
-    <li><a href='pdf_low/lchl1.pdf' download>lchl1.pdf</a></li>
-    <li><a href='pdf_low/lchl2.pdf' download>lchl2.pdf</a></li>
-    <li><a href='pdf_low/lcol.pdf' download>lcol.pdf</a></li>
-    <li><a href='pdf_low/lcol1.pdf' download>lcol1.pdf</a></li>
-    <li><a href='pdf_low/tt2h-toc.pdf' download>tt2h-toc.pdf</a></li>
-    <li><a href='pdf_low/tt2o-toc.pdf' download>tt2o-toc.pdf</a></li>
-    <li><a href='pdf_low/tt3-toc.pdf' download>tt3-toc.pdf</a></li>
-    <li><a href='pdf_low/tt4-toc.pdf' download>tt4-toc.pdf</a></li>
-    <li><a href='pdf_low/tt5-toc.pdf' download>tt5-toc.pdf</a></li>
-  </ul>
+
+<header>Mr Downes Mathematics</header>
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="pdf.html">PDF Library</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="books.html">Books</a>
+</nav>
+
+<div class="content">
+    <h1>Downloadable PDFs</h1>
+
+    <ul>
+        <li><a href='pdf/Appendix A Action Verbs.pdf' download>Appendix A Action Verbs.pdf</a></li>
+<li><a href='pdf/Appendix B.pdf' download>Appendix B.pdf</a></li>
+<li><a href='pdf/Empowering-Mathematics-Literacy-Leaders.pdf' download>Empowering-Mathematics-Literacy-Leaders.pdf</a></li>
+<li><a href='pdf/JC Maths Learning Outcomes.pdf' download>JC Maths Learning Outcomes.pdf</a></li>
+<li><a href='pdf/JC_maths_Learning_Outcomes_Article.pdf' download>JC_maths_Learning_Outcomes_Article.pdf</a></li>
+<li><a href='pdf/LC Maths OL  SEC Paper 2.pdf' download>LC Maths OL  SEC Paper 2.pdf</a></li>
+<li><a href='pdf/LCA-Mathematical-Applications-(EN) (2).pdf' download>LCA-Mathematical-Applications-(EN) (2).pdf</a></li>
+<li><a href='pdf/SCSEC25all.pdf' download>SCSEC25all.pdf</a></li>
+<li><a href='pdf/am1-toc.pdf' download>am1-toc.pdf</a></li>
+<li><a href='pdf/am1_answers.pdf' download>am1_answers.pdf</a></li>
+<li><a href='pdf/am2-toc.pdf' download>am2-toc.pdf</a></li>
+<li><a href='pdf/am2_answers.pdf' download>am2_answers.pdf</a></li>
+<li><a href='pdf/am3-toc.pdf' download>am3-toc.pdf</a></li>
+<li><a href='pdf/am3_answers.pdf' download>am3_answers.pdf</a></li>
+<li><a href='pdf/amlc.pdf' download>amlc.pdf</a></li>
+<li><a href='pdf/cs-toc.pdf' download>cs-toc.pdf</a></li>
+<li><a href='pdf/diagramsonlypdf.pdf' download>diagramsonlypdf.pdf</a></li>
+<li><a href='pdf/ft-toc.pdf' download>ft-toc.pdf</a></li>
+<li><a href='pdf/ft.pdf' download>ft.pdf</a></li>
+<li><a href='pdf/ft_answers.pdf' download>ft_answers.pdf</a></li>
+<li><a href='pdf/jc_maths.pdf' download>jc_maths.pdf</a></li>
+<li><a href='pdf/jchl.pdf' download>jchl.pdf</a></li>
+<li><a href='pdf/jchl1.pdf' download>jchl1.pdf</a></li>
+<li><a href='pdf/jchl2.pdf' download>jchl2.pdf</a></li>
+<li><a href='pdf/jcms.pdf' download>jcms.pdf</a></li>
+<li><a href='pdf/jcol.pdf' download>jcol.pdf</a></li>
+<li><a href='pdf/jcol1.pdf' download>jcol1.pdf</a></li>
+<li><a href='pdf/jcol2.pdf' download>jcol2.pdf</a></li>
+<li><a href='pdf/jol1.pdf' download>jol1.pdf</a></li>
+<li><a href='pdf/lc_ol_maths_spec_orig.pdf' download>lc_ol_maths_spec_orig.pdf</a></li>
+<li><a href='pdf/lca.pdf' download>lca.pdf</a></li>
+<li><a href='pdf/lca1-toc.pdf' download>lca1-toc.pdf</a></li>
+<li><a href='pdf/lca1.pdf' download>lca1.pdf</a></li>
+<li><a href='pdf/lca2-toc.pdf' download>lca2-toc.pdf</a></li>
+<li><a href='pdf/lca2.pdf' download>lca2.pdf</a></li>
+<li><a href='pdf/lca3-toc.pdf' download>lca3-toc.pdf</a></li>
+<li><a href='pdf/lca3.pdf' download>lca3.pdf</a></li>
+<li><a href='pdf/lca4-toc.pdf' download>lca4-toc.pdf</a></li>
+<li><a href='pdf/lca4.pdf' download>lca4.pdf</a></li>
+<li><a href='pdf/lcfl.pdf' download>lcfl.pdf</a></li>
+<li><a href='pdf/lchl1.pdf' download>lchl1.pdf</a></li>
+<li><a href='pdf/lchl2.pdf' download>lchl2.pdf</a></li>
+<li><a href='pdf/lcol.pdf' download>lcol.pdf</a></li>
+<li><a href='pdf/lcol1.pdf' download>lcol1.pdf</a></li>
+<li><a href='pdf/tt2h-toc.pdf' download>tt2h-toc.pdf</a></li>
+<li><a href='pdf/tt2h_answers.pdf' download>tt2h_answers.pdf</a></li>
+<li><a href='pdf/tt2o-toc.pdf' download>tt2o-toc.pdf</a></li>
+<li><a href='pdf/tt2o_answers.pdf' download>tt2o_answers.pdf</a></li>
+<li><a href='pdf/tt3-toc.pdf' download>tt3-toc.pdf</a></li>
+<li><a href='pdf/tt3_answers.pdf' download>tt3_answers.pdf</a></li>
+<li><a href='pdf/tt4-toc.pdf' download>tt4-toc.pdf</a></li>
+<li><a href='pdf/tt4_answers.pdf' download>tt4_answers.pdf</a></li>
+<li><a href='pdf/tt5-toc.pdf' download>tt5-toc.pdf</a></li>
+<li><a href='pdf/tt5_answers.pdf' download>tt5_answers.pdf</a></li>
+    </ul>
+
+</div>
+
+<footer>
+    © 2025 Mr Downes – Mathematics Resources
+</footer>
+
 </body>
 </html>

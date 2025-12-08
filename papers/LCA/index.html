@@ -1,35 +1,71 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>LCA</title>
+
 <style>
-  body { font-family: Arial; padding: 20px; background:#f3f3f3; }
-  h1 { margin-bottom: 20px; color:#222; }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 20px;
+  body {
+    font-family: Arial;
+    background:#f3f3f3;
+    margin:0;
+    padding:20px;
   }
+
+  nav {
+    background:#7a1c1c;
+    padding:12px 20px;
+    margin:-20px -20px 20px -20px;
+  }
+  nav a {
+    color:white;
+    text-decoration:none;
+    margin-right:20px;
+    font-weight:bold;
+  }
+  nav a:hover { text-decoration:underline; }
+
+  h1 { margin-bottom:20px; }
+
+  .grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap:20px;
+  }
+
   .item {
-    background: #fff;
+    background:white;
     padding:10px;
     border-radius:10px;
-    border:1px solid #ccc;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
     text-align:center;
-    box-shadow:0 2px 5px rgba(0,0,0,0.08);
   }
+
   img {
     width:100%;
     height:auto;
     border-radius:6px;
-    cursor:pointer;
   }
-  a { text-decoration: none; color:#7a1c1c; font-weight:bold; }
+
+  .pdfname {
+    display:block;
+    margin-top:8px;
+    color:#7a1c1c;
+    font-weight:bold;
+    text-decoration:none;
+  }
+
 </style>
 </head>
+
 <body>
+
+<nav>
+  <a href="/maths/index.html">Home</a>
+  <a href="/maths/past_papers.html">Past Papers</a>
+  <a href="/maths/textbooks.html">Textbooks</a>
+</nav>
 
 <h1>LCA</h1>
 
@@ -38,57 +74,57 @@
 <div class="item">
   <a href="16.pdf">
     <img src="16.png">
-    <div>16.pdf</div>
   </a>
+  <a class="pdfname" href="16.pdf">16.pdf</a>
 </div>
 
 <div class="item">
   <a href="17.pdf">
     <img src="17.png">
-    <div>17.pdf</div>
   </a>
+  <a class="pdfname" href="17.pdf">17.pdf</a>
 </div>
 
 <div class="item">
   <a href="18.pdf">
     <img src="18.png">
-    <div>18.pdf</div>
   </a>
+  <a class="pdfname" href="18.pdf">18.pdf</a>
 </div>
 
 <div class="item">
   <a href="19.pdf">
     <img src="19.png">
-    <div>19.pdf</div>
   </a>
+  <a class="pdfname" href="19.pdf">19.pdf</a>
 </div>
 
 <div class="item">
   <a href="21.pdf">
     <img src="21.png">
-    <div>21.pdf</div>
   </a>
+  <a class="pdfname" href="21.pdf">21.pdf</a>
 </div>
 
 <div class="item">
   <a href="23.pdf">
     <img src="23.png">
-    <div>23.pdf</div>
   </a>
+  <a class="pdfname" href="23.pdf">23.pdf</a>
 </div>
 
 <div class="item">
   <a href="24.pdf">
     <img src="24.png">
-    <div>24.pdf</div>
   </a>
+  <a class="pdfname" href="24.pdf">24.pdf</a>
 </div>
 
 <div class="item">
   <a href="25.pdf">
     <img src="25.png">
-    <div>25.pdf</div>
   </a>
+  <a class="pdfname" href="25.pdf">25.pdf</a>
 </div>
 
 </div>

@@ -159,7 +159,10 @@
 
   function tryUnlock() {
     const ans = (lockInput.value || "").trim().toLowerCase();
-    if (ans === "maths") {
+
+    // NEW RULE:
+    // Any input beginning with "ma" unlocks the gallery.
+    if (ans.startsWith("ma")) {
       lockScreen.style.display = "none";
       app.style.display = "block";
       init();
@@ -264,9 +267,6 @@
     const printed = parseInt(raw, 10);
     if (isNaN(printed)) return;
 
-    // YOUR CORRECT OFFSET:
-    // printed 14 → 24 → 024.webp
-    // printed 6  → 16 → 016.webp
     let internal = printed + OFFSET;
 
     if (internal < 1) internal = 1;
