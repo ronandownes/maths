@@ -39,6 +39,57 @@
     max-height: 80vh;
     border: 1px solid #aaa;
     box-shadow: 0 0 4px rgba(0,0,0,0.3);
+    cursor: zoom-in;
+    transition: transform 0.3s ease;
+    user-select: none;
+  }
+
+  #mainImage.zoomed {
+    cursor: zoom-out;
+    max-width: none;
+    max-height: none;
+    transform-origin: center center;
+  }
+
+  #mainImage.dragging {
+    cursor: grab !important;
+  }
+
+  #mainImage.dragging:active {
+    cursor: grabbing !important;
+  }
+
+  #viewer.zoomed {
+    overflow: auto;
+    max-height: 80vh;
+  }
+
+  /* Navigation buttons */
+  .nav-button {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 32px;
+    width: 60px;
+    height: 80px;
+    cursor: pointer;
+    transition: background 0.2s;
+    z-index: 100;
+  }
+
+  .nav-button:hover {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  #prevButton {
+    left: 0;
+  }
+
+  #nextButton {
+    right: 0;
   }
 
   /* Horizontal thumbnail strip */
@@ -98,7 +149,9 @@
   </div>
 
   <div id="viewer">
+    <button id="prevButton" class="nav-button">‹</button>
     <img id="mainImage" />
+    <button id="nextButton" class="nav-button">›</button>
   </div>
 
   <div id="thumbStrip"></div>
@@ -118,11 +171,21 @@
   const pageGoButton = document.getElementById("pageGoButton");
   const mainImage    = document.getElementById("mainImage");
   const thumbStrip   = document.getElementById("thumbStrip");
+  const prevButton   = document.getElementById("prevButton");
+  const nextButton   = document.getElementById("nextButton");
 
   let currentBook  = null;
   let pages        = [];
   let currentIndex = 0;
   let thumbEls     = [];
+  let isZoomed     = false;
+  let zoomLevel    = 1;
+  let isDragging   = false;
+  let dragStartX   = 0;
+  let dragStartY   = 0;
+  let scrollStartX = 0;
+  let scrollStartY = 0;
+  let spacePressed = false;
 
   /* ------------------ GALLERY INIT ------------------ */
 
@@ -146,6 +209,21 @@
     document.addEventListener("keydown", e => {
       if (e.key === "ArrowLeft")  showPage(currentIndex - 1);
       if (e.key === "ArrowRight") showPage(currentIndex + 1);
+      if (e.key === " " && !spacePressed) {
+        spacePressed = true;
+        if (isZoomed) {
+          mainImage.classList.add('dragging');
+        }
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener("keyup", e => {
+      if (e.key === " ") {
+        spacePressed = false;
+        mainImage.classList.remove('dragging');
+        isDragging = false;
+      }
     });
   }
 
@@ -204,6 +282,9 @@
     );
 
     thumbEls[idx].scrollIntoView({ behavior: "smooth", inline: "center" });
+    
+    // Reset zoom when changing pages
+    resetZoom();
   }
 
   /* ------------------ JUMP TO PAGE ------------------ */
@@ -229,6 +310,84 @@
   pageSelect.onchange = () => showPage(parseInt(pageSelect.value));
   bookSelect.onchange = () => loadBook(bookSelect.value);
 
+  // Navigation buttons
+  prevButton.onclick = () => showPage(currentIndex - 1);
+  nextButton.onclick = () => showPage(currentIndex + 1);
+
+  // Zoom functions
+  function resetZoom() {
+    isZoomed = false;
+    zoomLevel = 1;
+    mainImage.classList.remove('zoomed');
+    mainImage.style.transform = 'scale(1)';
+    document.getElementById('viewer').classList.remove('zoomed');
+  }
+
+  function toggleZoom(e) {
+    if (!isZoomed) {
+      isZoomed = true;
+      zoomLevel = 2;
+      mainImage.classList.add('zoomed');
+      mainImage.style.transform = 'scale(2)';
+      document.getElementById('viewer').classList.add('zoomed');
+    } else {
+      resetZoom();
+    }
+    e.stopPropagation();
+  }
+
+  // Double-click to zoom
+  mainImage.addEventListener('dblclick', toggleZoom);
+
+  // Mouse wheel to zoom
+  mainImage.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    
+    if (e.deltaY < 0) {
+      // Zoom in
+      zoomLevel = Math.min(zoomLevel + 0.2, 4);
+    } else {
+      // Zoom out
+      zoomLevel = Math.max(zoomLevel - 0.2, 1);
+    }
+    
+    if (zoomLevel > 1) {
+      isZoomed = true;
+      mainImage.classList.add('zoomed');
+      mainImage.style.transform = `scale(${zoomLevel})`;
+      document.getElementById('viewer').classList.add('zoomed');
+    } else {
+      resetZoom();
+    }
+    
+    e.stopPropagation();
+  });
+
+  // Drag to pan when spacebar is held
+  mainImage.addEventListener('mousedown', (e) => {
+    if (spacePressed && isZoomed) {
+      isDragging = true;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      scrollStartX = document.getElementById('viewer').scrollLeft;
+      scrollStartY = document.getElementById('viewer').scrollTop;
+      e.preventDefault();
+    }
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging && spacePressed && isZoomed) {
+      const deltaX = dragStartX - e.clientX;
+      const deltaY = dragStartY - e.clientY;
+      document.getElementById('viewer').scrollLeft = scrollStartX + deltaX;
+      document.getElementById('viewer').scrollTop = scrollStartY + deltaY;
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
   // Initialize immediately
   init();
 
@@ -237,8 +396,39 @@
     document.body.classList.add('fullscreen');
   }, 1000);
 
-  // Click anywhere to toggle fullscreen mode
-  document.addEventListener('click', () => {
+  // Click anywhere to toggle fullscreen mode (except on controls)
+  document.addEventListener('click', (e) => {
+    // Don't toggle if clicking on controls
+    if (e.target.closest('.controls') || e.target.closest('#thumbStrip')) {
+      return;
+    }
+    
+    // Don't toggle if clicking nav buttons
+    if (e.target.closest('.nav-button')) {
+      return;
+    }
+    
+    // Don't toggle if image is zoomed
+    if (isZoomed) {
+      return;
+    }
+    
+    // Check if clicking in left or right navigation zones
+    const clickX = e.clientX;
+    const windowWidth = window.innerWidth;
+    const navZoneWidth = windowWidth * 0.25; // 25% from each side
+    
+    if (clickX < navZoneWidth) {
+      // Left zone - previous page
+      showPage(currentIndex - 1);
+      return;
+    } else if (clickX > windowWidth - navZoneWidth) {
+      // Right zone - next page
+      showPage(currentIndex + 1);
+      return;
+    }
+    
+    // Middle zone - toggle fullscreen
     document.body.classList.toggle('fullscreen');
   });
 
