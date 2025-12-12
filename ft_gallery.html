@@ -22,6 +22,7 @@
     overflow-y:auto;
     border-right:2px solid #ddd;
     padding:10px;
+    transition: opacity 0.3s;
   }
 
   #sidebar img {
@@ -54,6 +55,7 @@
     padding:12px 20px;
     display:flex;
     gap:25px;
+    transition: opacity 0.3s;
   }
   .navbar a {
     color:white;
@@ -67,6 +69,7 @@
     display:flex;
     gap:12px;
     justify-content:center;
+    transition: opacity 0.3s;
   }
 
   select {
@@ -84,6 +87,55 @@
     border-radius:10px;
     box-shadow:0 4px 18px rgba(0,0,0,0.3);
     transition:0.2s;
+    cursor: zoom-in;
+    user-select: none;
+  }
+
+  #mainImage.zoomed {
+    cursor: zoom-out;
+    max-width: none;
+    max-height: none;
+    transform-origin: center center;
+  }
+
+  #mainImage.dragging {
+    cursor: grab !important;
+  }
+
+  #mainImage.dragging:active {
+    cursor: grabbing !important;
+  }
+
+  #imageContainer {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  #imageContainer.zoomed {
+    overflow: auto;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  #imageContainer.zoomed img {
+    min-width: 100%;
+    min-height: 100%;
+  }
+
+  #imageContainer.draggable {
+    cursor: grab !important;
+  }
+
+  #imageContainer.dragging {
+    cursor: grabbing !important;
+  }
+
+  body.fullscreen #mainImage {
+    max-height: 100vh;
   }
 
   /* ARROWS */
@@ -102,6 +154,14 @@
   }
   #leftArrow { left:10px; }
   #rightArrow { right:10px; }
+
+  /* FULLSCREEN MODE */
+  body.fullscreen #sidebar,
+  body.fullscreen .navbar,
+  body.fullscreen #controls {
+    opacity: 0;
+    pointer-events: none;
+  }
 
 </style>
 </head>
@@ -133,7 +193,9 @@
   <div id="leftArrow" class="arrow">&#10094;</div>
   <div id="rightArrow" class="arrow">&#10095;</div>
 
-  <img id="mainImage">
+  <div id="imageContainer">
+    <img id="mainImage">
+  </div>
 </div>
 
 <script>
@@ -189,6 +251,21 @@ const topics = {
 };
 
 // ===============================
+// STATE VARIABLES
+// ===============================
+const mainImage = document.getElementById("mainImage");
+const imageContainer = document.getElementById("imageContainer");
+let currentPage = new URLSearchParams(location.search).get("page") || "001";
+let isZoomed = false;
+let zoomLevel = 1;
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let scrollStartX = 0;
+let scrollStartY = 0;
+let spacePressed = false;
+
+// ===============================
 // Populate topic dropdown
 // ===============================
 const topicSelect = document.getElementById("topicSelect");
@@ -213,9 +290,6 @@ pages.forEach(pg => {
 // ===============================
 // Load main page + update highlights
 // ===============================
-const mainImage = document.getElementById("mainImage");
-let currentPage = new URLSearchParams(location.search).get("page") || "001";
-
 function loadPage(pg) {
   currentPage = pg;
   mainImage.src = "books/ft/" + pg + ".webp";
@@ -225,6 +299,9 @@ function loadPage(pg) {
   document.querySelectorAll("#sidebar img").forEach(img => {
     img.classList.toggle("active", img.dataset.page === pg);
   });
+
+  // Reset zoom when changing pages
+  resetZoom();
 }
 
 // ===============================
@@ -270,7 +347,186 @@ document.getElementById("rightArrow").onclick = () => {
 };
 
 // ===============================
-// Swipe gestures
+// ZOOM FUNCTIONS
+// ===============================
+function resetZoom() {
+  isZoomed = false;
+  zoomLevel = 1;
+  mainImage.classList.remove('zoomed');
+  mainImage.style.transform = 'scale(1)';
+  imageContainer.classList.remove('zoomed');
+}
+
+function toggleZoom(e) {
+  if (!isZoomed) {
+    isZoomed = true;
+    zoomLevel = 2;
+    mainImage.classList.add('zoomed');
+    mainImage.style.transform = 'scale(2)';
+    imageContainer.classList.add('zoomed');
+    
+    // Center the scroll position
+    requestAnimationFrame(() => {
+      const maxScrollX = imageContainer.scrollWidth - imageContainer.clientWidth;
+      const maxScrollY = imageContainer.scrollHeight - imageContainer.clientHeight;
+      imageContainer.scrollLeft = maxScrollX / 2;
+      imageContainer.scrollTop = maxScrollY / 2;
+    });
+  } else {
+    resetZoom();
+  }
+  e.stopPropagation();
+}
+
+// Double-click to zoom
+mainImage.addEventListener('dblclick', toggleZoom);
+
+// Mouse wheel to zoom
+mainImage.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  if (e.deltaY < 0) {
+    // Zoom in
+    zoomLevel = Math.min(zoomLevel + 0.2, 4);
+  } else {
+    // Zoom out
+    zoomLevel = Math.max(zoomLevel - 0.2, 1);
+  }
+  
+  if (zoomLevel > 1) {
+    const wasZoomed = isZoomed;
+    isZoomed = true;
+    mainImage.classList.add('zoomed');
+    mainImage.style.transform = `scale(${zoomLevel})`;
+    imageContainer.classList.add('zoomed');
+    
+    // Only center on first zoom
+    if (!wasZoomed) {
+      requestAnimationFrame(() => {
+        const maxScrollX = imageContainer.scrollWidth - imageContainer.clientWidth;
+        const maxScrollY = imageContainer.scrollHeight - imageContainer.clientHeight;
+        imageContainer.scrollLeft = maxScrollX / 2;
+        imageContainer.scrollTop = maxScrollY / 2;
+      });
+    }
+  } else {
+    resetZoom();
+  }
+}, { passive: false });
+
+// ===============================
+// DRAG TO PAN (with spacebar)
+// ===============================
+imageContainer.addEventListener('mousedown', (e) => {
+  if (spacePressed && isZoomed) {
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    scrollStartX = imageContainer.scrollLeft;
+    scrollStartY = imageContainer.scrollTop;
+    imageContainer.classList.add('dragging');
+    imageContainer.classList.remove('draggable');
+    e.preventDefault();
+    e.stopPropagation();
+  }
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (isDragging && spacePressed && isZoomed) {
+    e.preventDefault();
+    e.stopPropagation();
+    const deltaX = dragStartX - e.clientX;
+    const deltaY = dragStartY - e.clientY;
+    imageContainer.scrollLeft = scrollStartX + deltaX;
+    imageContainer.scrollTop = scrollStartY + deltaY;
+  }
+});
+
+document.addEventListener('mouseup', (e) => {
+  if (isDragging) {
+    isDragging = false;
+    imageContainer.classList.remove('dragging');
+    if (spacePressed && isZoomed) {
+      imageContainer.classList.add('draggable');
+    }
+    e.preventDefault();
+    e.stopPropagation();
+  }
+});
+
+// ===============================
+// KEYBOARD CONTROLS
+// ===============================
+document.addEventListener("keydown", e => {
+  let i = pages.indexOf(currentPage);
+  
+  if (e.key === "ArrowLeft" && i > 0) {
+    loadPage(pages[i - 1]);
+  }
+  if (e.key === "ArrowRight" && i < pages.length - 1) {
+    loadPage(pages[i + 1]);
+  }
+  if (e.key === " " && !spacePressed) {
+    spacePressed = true;
+    if (isZoomed) {
+      imageContainer.classList.add('draggable');
+    }
+    e.preventDefault();
+  }
+});
+
+document.addEventListener("keyup", e => {
+  if (e.key === " ") {
+    spacePressed = false;
+    isDragging = false;
+    imageContainer.classList.remove('draggable');
+    imageContainer.classList.remove('dragging');
+  }
+});
+
+// ===============================
+// CLICK NAVIGATION & FULLSCREEN
+// ===============================
+document.addEventListener('click', (e) => {
+  // Don't toggle if clicking on controls or sidebar
+  if (e.target.closest('#controls') || e.target.closest('#sidebar') || e.target.closest('.navbar')) {
+    return;
+  }
+  
+  // Don't toggle if clicking arrows
+  if (e.target.closest('.arrow')) {
+    return;
+  }
+  
+  // Don't toggle if image is zoomed
+  if (isZoomed) {
+    return;
+  }
+  
+  // Check if clicking in left or right navigation zones
+  const clickX = e.clientX;
+  const windowWidth = window.innerWidth;
+  const navZoneWidth = windowWidth * 0.25;
+  
+  if (clickX < navZoneWidth) {
+    // Left zone - previous page
+    let i = pages.indexOf(currentPage);
+    if (i > 0) loadPage(pages[i - 1]);
+    return;
+  } else if (clickX > windowWidth - navZoneWidth) {
+    // Right zone - next page
+    let i = pages.indexOf(currentPage);
+    if (i < pages.length - 1) loadPage(pages[i + 1]);
+    return;
+  }
+  
+  // Middle zone - toggle fullscreen
+  document.body.classList.toggle('fullscreen');
+});
+
+// ===============================
+// Swipe gestures (mobile)
 // ===============================
 let startX = 0;
 
@@ -280,24 +536,25 @@ document.addEventListener("touchstart", e => {
 
 document.addEventListener("touchend", e => {
   let dx = e.changedTouches[0].screenX - startX;
+  let i = pages.indexOf(currentPage);
 
-  if (dx > 60) {
-    // swipe right
-    let i = pages.indexOf(currentPage);
-    if (i > 0) loadPage(pages[i - 1]);
+  if (dx > 60 && i > 0) {
+    loadPage(pages[i - 1]);
   }
 
-  if (dx < -60) {
-    // swipe left
-    let i = pages.indexOf(currentPage);
-    if (i < pages.length - 1) loadPage(pages[i + 1]);
+  if (dx < -60 && i < pages.length - 1) {
+    loadPage(pages[i + 1]);
   }
 });
 
 // ===============================
-// Initial load
+// Initial load & fullscreen timer
 // ===============================
 loadPage(currentPage);
+
+setTimeout(() => {
+  document.body.classList.add('fullscreen');
+}, 1000);
 
 </script>
 
