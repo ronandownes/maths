@@ -50,6 +50,18 @@
     padding: 4px 0;
     border-top: 1px solid #ccc;
     margin-top: 4px;
+    transition: opacity 0.3s;
+  }
+
+  body.fullscreen .controls,
+  body.fullscreen h1,
+  body.fullscreen #thumbStrip {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  body.fullscreen #mainImage {
+    max-height: 100vh;
   }
 
   .thumb {
@@ -62,47 +74,9 @@
   .thumb.selected {
     border: 3px solid #0074d9;
   }
-
-  /* Password gate */
-  #lockScreen {
-    position: fixed;
-    inset: 0;
-    background: #f5f5f5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-  }
-
-  #lockInner {
-    background: white;
-    border: 1px solid #ccc;
-    padding: 20px 24px;
-    width: 320px;
-    box-shadow: 0 0 8px rgba(0,0,0,0.25);
-  }
-
-  #lockError {
-    color: #b00020;
-    min-height: 16px;
-    margin-bottom: 6px;
-  }
-
-  #app { display: none; }
 </style>
 </head>
 <body>
-
-<!-- Password -->
-<div id="lockScreen">
-  <div id="lockInner">
-    <h2>Access</h2>
-    <p>What’s your favourite subject?</p>
-    <div id="lockError"></div>
-    <input id="lockInput" type="text" placeholder="Answer here" />
-    <button id="lockButton">Enter</button>
-  </div>
-</div>
 
 <!-- Main App -->
 <div id="app">
@@ -145,36 +119,10 @@
   const mainImage    = document.getElementById("mainImage");
   const thumbStrip   = document.getElementById("thumbStrip");
 
-  const lockScreen   = document.getElementById("lockScreen");
-  const lockInput    = document.getElementById("lockInput");
-  const lockButton   = document.getElementById("lockButton");
-  const lockError    = document.getElementById("lockError");
-
   let currentBook  = null;
   let pages        = [];
   let currentIndex = 0;
   let thumbEls     = [];
-
-  /* ------------------ PASSWORD ------------------ */
-
-  function tryUnlock() {
-    const ans = (lockInput.value || "").trim().toLowerCase();
-
-    // NEW RULE:
-    // Any input beginning with "ma" unlocks the gallery.
-    if (ans.startsWith("ma")) {
-      lockScreen.style.display = "none";
-      app.style.display = "block";
-      init();
-    } else {
-      lockError.textContent = "Incorrect. Try again.";
-      lockInput.value = "";
-      lockInput.focus();
-    }
-  }
-
-  lockButton.onclick = tryUnlock;
-  lockInput.onkeydown = e => { if (e.key === "Enter") tryUnlock(); };
 
   /* ------------------ GALLERY INIT ------------------ */
 
@@ -280,6 +228,19 @@
   pageGoButton.onclick = goToPageFromInput;
   pageSelect.onchange = () => showPage(parseInt(pageSelect.value));
   bookSelect.onchange = () => loadBook(bookSelect.value);
+
+  // Initialize immediately
+  init();
+
+  // Enter fullscreen mode after 1 second
+  setTimeout(() => {
+    document.body.classList.add('fullscreen');
+  }, 1000);
+
+  // Click anywhere to toggle fullscreen mode
+  document.addEventListener('click', () => {
+    document.body.classList.toggle('fullscreen');
+  });
 
 </script>
 
