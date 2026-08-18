@@ -27,27 +27,47 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install pinned PreTeXt CLI
-        run: python -m pip install -r requirements.txt
-
-      - name: Show PreTeXt version
-        run: pretext --version
-
-      - name: Build web book
-        id: build
+      - name: Install and build PreTeXt web book
+        id: pretext
         shell: bash
         run: |
           set +e
-          pretext build web > /tmp/pretext-web.log 2>&1
-          status=$?
-          cat /tmp/pretext-web.log
-          echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          : > /tmp/pretext-web.log
+
+          echo '=== Python ===' | tee -a /tmp/pretext-web.log
+          python --version 2>&1 | tee -a /tmp/pretext-web.log
+
+          echo '=== Install ===' | tee -a /tmp/pretext-web.log
+          python -m pip install -r requirements.txt 2>&1 | tee -a /tmp/pretext-web.log
+          install_status=${PIPESTATUS[0]}
+
+          if [ "$install_status" -eq 0 ]; then
+            echo '=== PreTeXt version ===' | tee -a /tmp/pretext-web.log
+            pretext --version 2>&1 | tee -a /tmp/pretext-web.log
+            version_status=${PIPESTATUS[0]}
+          else
+            version_status=99
+          fi
+
+          if [ "$install_status" -eq 0 ] && [ "$version_status" -eq 0 ]; then
+            echo '=== Build web ===' | tee -a /tmp/pretext-web.log
+            pretext build web 2>&1 | tee -a /tmp/pretext-web.log
+            build_status=${PIPESTATUS[0]}
+          else
+            build_status=99
+          fi
+
+          echo "install_status=$install_status" >> "$GITHUB_OUTPUT"
+          echo "version_status=$version_status" >> "$GITHUB_OUTPUT"
+          echo "build_status=$build_status" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Report PreTeXt build log
+      - name: Report PreTeXt diagnostic log
         env:
           GH_TOKEN: ${{ github.token }}
-          BUILD_EXIT: ${{ steps.build.outputs.exit_code }}
+          INSTALL_EXIT: ${{ steps.pretext.outputs.install_status }}
+          VERSION_EXIT: ${{ steps.pretext.outputs.version_status }}
+          BUILD_EXIT: ${{ steps.pretext.outputs.build_status }}
           REPO: ${{ github.repository }}
           SHA: ${{ github.sha }}
         run: |
@@ -56,25 +76,24 @@ jobs:
           log = open('/tmp/pretext-web.log', encoding='utf-8', errors='replace').read()
           if len(log) > 55000:
               log = log[-55000:]
-          body = f"### PreTeXt web build\nCommit: `{os.environ['SHA']}`\nExit code: `{os.environ['BUILD_EXIT']}`\n\n```text\n{log}\n```"
-          url = f"https://api.github.com/repos/{os.environ['REPO']}/issues/1/comments"
-          req = urllib.request.Request(
-              url,
-              data=json.dumps({'body': body}).encode(),
-              headers={
-                  'Authorization': f"Bearer {os.environ['GH_TOKEN']}",
-                  'Accept': 'application/vnd.github+json',
-                  'X-GitHub-Api-Version': '2022-11-28',
-                  'Content-Type': 'application/json',
-              },
-              method='POST',
+          body = (
+              f"### PreTeXt diagnostic run\nCommit: `{os.environ['SHA']}`\n"
+              f"Install: `{os.environ['INSTALL_EXIT']}` · Version: `{os.environ['VERSION_EXIT']}` · Build: `{os.environ['BUILD_EXIT']}`\n\n"
+              f"```text\n{log}\n```"
           )
+          url = f"https://api.github.com/repos/{os.environ['REPO']}/issues/1/comments"
+          req = urllib.request.Request(url, data=json.dumps({'body': body}).encode(), headers={
+              'Authorization': f"Bearer {os.environ['GH_TOKEN']}",
+              'Accept': 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Content-Type': 'application/json',
+          }, method='POST')
           with urllib.request.urlopen(req) as response:
               print(response.status)
           PY
 
       - name: Stop if PreTeXt build failed
-        if: steps.build.outputs.exit_code != '0'
+        if: steps.pretext.outputs.build_status != '0'
         run: exit 1
 
       - name: Configure GitHub Pages
@@ -93,7 +112,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
       - name: Report deployment result
-        if: always() && steps.build.outputs.exit_code == '0'
+        if: always() && steps.pretext.outputs.build_status == '0'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -111,17 +130,12 @@ jobs:
               f"Page URL: {os.environ.get('PAGE_URL') or '(none)'}"
           )
           url = f"https://api.github.com/repos/{os.environ['REPO']}/issues/1/comments"
-          req = urllib.request.Request(
-              url,
-              data=json.dumps({'body': body}).encode(),
-              headers={
-                  'Authorization': f"Bearer {os.environ['GH_TOKEN']}",
-                  'Accept': 'application/vnd.github+json',
-                  'X-GitHub-Api-Version': '2022-11-28',
-                  'Content-Type': 'application/json',
-              },
-              method='POST',
-          )
+          req = urllib.request.Request(url, data=json.dumps({'body': body}).encode(), headers={
+              'Authorization': f"Bearer {os.environ['GH_TOKEN']}",
+              'Accept': 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Content-Type': 'application/json',
+          }, method='POST')
           with urllib.request.urlopen(req) as response:
               print(response.status)
           PY
