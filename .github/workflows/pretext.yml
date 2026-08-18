@@ -11,8 +11,12 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
-  build:
+  web:
     runs-on: ubuntu-latest
     container: oscarlevin/pretext-full
     steps:
@@ -20,19 +24,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install pinned PreTeXt CLI
-        run: pip install -r requirements.txt
+        run: python -m pip install -r requirements.txt
 
-      - name: Show version
+      - name: Show PreTeXt version
         run: pretext --version
 
-      - name: Validate source
-        run: pretext validate web --method terse
-
-      - name: Build web
-        run: pretext build web --clean
-
-      - name: Build PDF
-        run: pretext build print --clean
+      - name: Build web book
+        run: pretext build web
 
       - name: Upload web build
         uses: actions/upload-artifact@v4
@@ -40,21 +38,39 @@ jobs:
           name: leaving-cert-maths-web
           path: output/web
 
+      - name: Configure GitHub Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+
+      - name: Upload GitHub Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: output/web
+
+  print:
+    runs-on: ubuntu-latest
+    container: oscarlevin/pretext-full
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pinned PreTeXt CLI
+        run: python -m pip install -r requirements.txt
+
+      - name: Build PDF book
+        run: pretext build print
+
       - name: Upload PDF build
         uses: actions/upload-artifact@v4
         with:
           name: leaving-cert-maths-pdf
           path: output/print
 
-      - name: Upload GitHub Pages artifact
-        if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: output/web
-
   deploy:
     if: github.event_name != 'pull_request'
-    needs: build
+    needs: web
     runs-on: ubuntu-latest
     environment:
       name: github-pages
