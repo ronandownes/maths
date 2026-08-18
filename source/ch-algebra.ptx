@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="ch-algebra">
+  <title>Algebra</title>
+
+  <introduction>
+    <p>Algebra is about relationships and structure. The chapter follows the Leaving Certificate Algebra strand: expressions, equations and inequalities, with Higher Level extensions where the syllabus goes further.</p>
+    <p>The central habit is simple: before calculating, ask what has stayed the same and what has changed.</p>
+  </introduction>
+
+  <section xml:id="sec-algebra-expressions">
+    <title>Algebra I: Expressions</title>
+
+    <subsection xml:id="sub-expression-structure">
+      <title>Read the structure before you calculate</title>
+      <example xml:id="ex-evaluate-one">
+        <title>Model</title>
+        <statement><p>Evaluate <m>2x^2-3x+4</m> when <m>x=-2</m>.</p></statement>
+        <solution><p>Protect the substituted value with brackets: <m>2(-2)^2-3(-2)+4=8+6+4=18</m>.</p></solution>
+      </example>
+
+      <exercises xml:id="exs-evaluate-variation">
+        <title>Change one thing</title>
+        <introduction><p>Do the first question. Then, before calculating each next one, say what changed.</p></introduction>
+        <exercise><statement><p>Evaluate <m>2x^2-3x+4</m> when <m>x=2</m>.</p></statement><answer><p><m>6</m></p></answer></exercise>
+        <exercise><statement><p>Evaluate <m>2x^2+3x+4</m> when <m>x=-2</m>.</p></statement><answer><p><m>6</m></p></answer></exercise>
+        <exercise><statement><p>Evaluate <m>-2x^2-3x+4</m> when <m>x=-2</m>.</p></statement><answer><p><m>2</m></p></answer></exercise>
+        <exercise><statement><p>Without doing the full calculation, decide which is larger at <m>x=-2</m>: <m>2x^2-3x+4</m> or <m>2x^2+3x+4</m>. Explain.</p></statement><answer><p>The first. The linear terms become <m>+6</m> and <m>-6</m>.</p></answer></exercise>
+      </exercises>
+    </subsection>
+
+    <subsection xml:id="sub-expand-regroup">
+      <title>Expand and re-group</title>
+      <example>
+        <title>Model</title>
+        <statement><p>Expand <m>3(2x-5)</m>.</p></statement>
+        <solution><p>The <m>3</m> multiplies both terms: <m>3(2x-5)=6x-15</m>.</p></solution>
+      </example>
+
+      <exercises xml:id="exs-expand-variation">
+        <title>Controlled variation</title>
+        <exercise><statement><p>Expand <m>3(2x+5)</m>.</p></statement><answer><p><m>6x+15</m></p></answer></exercise>
+        <exercise><statement><p>Expand <m>-3(2x+5)</m>.</p></statement><answer><p><m>-6x-15</m></p></answer></exercise>
+        <exercise><statement><p>Expand <m>-3(2x-5)</m>.</p></statement><answer><p><m>-6x+15</m></p></answer></exercise>
+        <exercise><statement><p>Expand and simplify <m>4(2x-3)-3(x+2)</m>.</p></statement><answer><p><m>5x-18</m></p></answer></exercise>
+        <exercise><statement><p>Insert one pair of brackets into <m>-6x+15</m> so that the expression is written as a product with first factor <m>-3</m>.</p></statement><answer><p><m>-3(2x-5)</m></p></answer></exercise>
+      </exercises>
+    </subsection>
+
+    <subsection xml:id="sub-factorisation-frame">
+      <title>Visual factorisation</title>
+      <p>Factorisation is multiplication in reverse. The frame below makes the hidden multiplication visible. The two crossed products are not decoration: together they create the middle term.</p>
+
+      <figure xml:id="fig-factor-frame">
+        <caption>The factor frame for <m>(x+2)(x+3)</m>.</caption>
+        <image width="86%">
+          <latex-image label="factor-frame">
+\begin{tikzpicture}[font=\large, >=Latex]
+  \node[draw, rounded corners, minimum width=1.15cm, minimum height=.8cm] (lx) at (0,2) {$x$};
+  \node[draw, rounded corners, minimum width=1.15cm, minimum height=.8cm] (lp) at (0,0) {$+2$};
+  \node[draw, rounded corners, minimum width=1.15cm, minimum height=.8cm] (rx) at (6,2) {$x$};
+  \node[draw, rounded corners, minimum width=1.15cm, minimum height=.8cm] (rq) at (6,0) {$+3$};
+  \draw[-{Latex[length=2.2mm]}, thick] (lx) -- node[above] {$x^2$} (rx);
+  \draw[-{Latex[length=2.2mm]}, thick] (lp) -- node[below] {$6$} (rq);
+  \draw[-{Latex[length=2.2mm]}, thick, decorate, decoration={snake, amplitude=1.1mm, segment length=6mm}] (lx) -- node[above, sloped, fill=white, inner sep=2pt] {$3x$} (rq);
+  \draw[-{Latex[length=2.2mm]}, thick, decorate, decoration={snake, amplitude=1.1mm, segment length=6mm}] (lp) -- node[below, sloped, fill=white, inner sep=2pt] {$2x$} (rx);
+  \node[align=center] at (3,-1.15) {$x^2+3x+2x+6$\\$=x^2+5x+6$};
+\end{tikzpicture}
+          </latex-image>
+        </image>
+      </figure>
+
+      <example xml:id="ex-factor-reverse">
+        <title>Reverse the frame</title>
+        <statement><p>Factorise <m>x^2+5x+6</m>.</p></statement>
+        <solution><p>We need two numbers that multiply to <m>6</m> and whose crossed <m>x</m>-terms add to <m>5x</m>. The pair is <m>2</m> and <m>3</m>, so <m>x^2+5x+6=(x+2)(x+3)</m>.</p></solution>
+      </example>
+
+      <exercises xml:id="exs-factor-monic-variation">
+        <title>Same constant, different middle term</title>
+        <introduction><p>The constant stays at <m>12</m>. Watch what the middle coefficient tells you about the factor pair and signs.</p></introduction>
+        <exercise><statement><p>Factorise <m>x^2+7x+12</m>.</p></statement><answer><p><m>(x+3)(x+4)</m></p></answer></exercise>
+        <exercise><statement><p>Factorise <m>x^2+8x+12</m>.</p></statement><answer><p><m>(x+2)(x+6)</m></p></answer></exercise>
+        <exercise><statement><p>Factorise <m>x^2-7x+12</m>.</p></statement><answer><p><m>(x-3)(x-4)</m></p></answer></exercise>
+        <exercise><statement><p>Factorise <m>x^2+x-12</m>.</p></statement><answer><p><m>(x+4)(x-3)</m></p></answer></exercise>
+        <exercise><statement><p>Why can <m>x^2+5x+12</m> not be factorised using integer constants?</p></statement><answer><p>The integer factor pairs of <m>12</m> have sums <m>13,8,7</m> up to sign; none gives <m>5</m>.</p></answer></exercise>
+      </exercises>
+
+      <remark xml:id="rem-primes-semiprimes">
+        <title>Use the arithmetic to shrink the search</title>
+        <p>A prime constant has only one positive integer factor pair. A semiprime has very few. That means the constant term often tells you almost immediately which possibilities are worth testing. The middle term then decides the signs and ordering.</p>
+      </remark>
+
+      <example xml:id="ex-factor-nonmonic">
+        <title>When the leading coefficient is not 1</title>
+        <statement><p>Factorise <m>2x^2+7x+3</m>.</p></statement>
+        <solution><p>Try <m>(2x+1)(x+3)</m>. The crossed products are <m>6x</m> and <m>x</m>; together they make <m>7x</m>. Hence <m>2x^2+7x+3=(2x+1)(x+3)</m>.</p></solution>
+      </example>
+
+      <exercises xml:id="exs-factor-nonmonic-variation">
+        <title>Move one connection</title>
+        <exercise><statement><p>Factorise <m>2x^2+5x+2</m>.</p></statement><answer><p><m>(2x+1)(x+2)</m></p></answer></exercise>
+        <exercise><statement><p>Factorise <m>2x^2-5x+2</m>.</p></statement><answer><p><m>(2x-1)(x-2)</m></p></answer></exercise>
+        <exercise><statement><p>Factorise <m>3x^2+10x+3</m>.</p></statement><answer><p><m>(3x+1)(x+3)</m></p></answer></exercise>
+        <exercise><statement><p>Factorise <m>3x^2+x-2</m>.</p></statement><answer><p><m>(3x-2)(x+1)</m></p></answer></exercise>
+        <exercise><statement><p>Expand your answer to the previous question and identify the two crossed terms that create the middle term.</p></statement><answer><p><m>3x</m> and <m>-2x</m>, giving <m>x</m>.</p></answer></exercise>
+      </exercises>
+
+      <exercises xml:id="exs-factor-mixed">
+        <title>Now remove the labels</title>
+        <exercise><statement><p>Factorise fully <m>6x^2+15x</m>.</p></statement><answer><p><m>3x(2x+5)</m></p></answer></exercise>
+        <exercise><statement><p>Factorise <m>4x^2-25</m>.</p></statement><answer><p><m>(2x-5)(2x+5)</m></p></answer></exercise>
+        <exercise><statement><p>Factorise <m>6x^2+x-2</m>.</p></statement><answer><p><m>(3x+2)(2x-1)</m></p></answer></exercise>
+        <exercise><statement><p>A student writes <m>x^2+6x+8=(x+1)(x+8)</m>. Without simply saying it is wrong, identify exactly what part of the frame fails.</p></statement><answer><p>The constants multiply correctly to <m>8</m>, but the crossed terms are <m>8x</m> and <m>x</m>, giving <m>9x</m>, not <m>6x</m>.</p></answer></exercise>
+      </exercises>
+    </subsection>
+
+    <subsection xml:id="sub-rational-polynomial-hl">
+      <title>Higher Level: rational expressions and polynomials</title>
+      <p>At Higher Level the same structural thinking extends to arithmetic with polynomials and rational algebraic expressions. Factor before cancelling; a factor may cancel, a term may not.</p>
+      <example><title>Cancel factors, not terms</title><statement><p>Simplify <m>\frac{x^2-9}{x^2+x-6}</m>.</p></statement><solution><p>Factor first: <m>\frac{(x-3)(x+3)}{(x+3)(x-2)}=\frac{x-3}{x-2}</m>, with the original restrictions <m>x\ne -3,2</m>.</p></solution></example>
+      <exercises xml:id="exs-rational-hl"><title>Higher Level variation</title>
+        <exercise><statement><p>Simplify <m>\frac{x^2-4}{x^2+5x+6}</m>.</p></statement><answer><p><m>\frac{x-2}{x+3}</m>, with <m>x\ne -3,-2</m>.</p></answer></exercise>
+        <exercise><statement><p>Explain why <m>\frac{x+3}{x+5}</m> cannot be simplified by cancelling the <m>x</m>.</p></statement><answer><p>The numerator and denominator are sums; <m>x</m> is not a common factor of the whole numerator and denominator.</p></answer></exercise>
+      </exercises>
+    </subsection>
+  </section>
+
+  <section xml:id="sec-algebra-equations">
+    <title>Algebra II: Equations</title>
+    <p>An equation is a statement that two expressions have the same value. Solving means finding the value or values that make that statement true.</p>
+
+    <subsection xml:id="sub-linear-equations">
+      <title>Linear equations</title>
+      <example><title>Model</title><statement><p>Solve <m>5(2x-1)=3x+16</m>.</p></statement><solution><p><m>10x-5=3x+16</m>, so <m>7x=21</m> and <m>x=3</m>.</p></solution></example>
+      <exercises xml:id="exs-linear-equations-variation"><title>Keep the skeleton, change the obstacle</title>
+        <exercise><statement><p>Solve <m>5(2x+1)=3x+19</m>.</p></statement><answer><p><m>x=2</m></p></answer></exercise>
+        <exercise><statement><p>Solve <m>-5(2x+1)=3x+21</m>.</p></statement><answer><p><m>x=-2</m></p></answer></exercise>
+        <exercise><statement><p>Solve <m>5(2x-1)=3(x+5)</m>.</p></statement><answer><p><m>x=\frac{20}{7}</m></p></answer></exercise>
+        <exercise><statement><p>Create an equation of the same form whose solution is <m>x=4</m>.</p></statement><answer><p>Many answers are possible.</p></answer></exercise>
+      </exercises>
+    </subsection>
+
+    <subsection xml:id="sub-quadratic-equations">
+      <title>Quadratic equations</title>
+      <example><title>Factors expose roots</title><statement><p>Solve <m>x^2+5x+6=0</m>.</p></statement><solution><p><m>(x+2)(x+3)=0</m>. A product is zero when at least one factor is zero, so <m>x=-2</m> or <m>x=-3</m>.</p></solution></example>
+
+      <exercises xml:id="exs-quadratic-method-choice"><title>Choose the method</title>
+        <exercise><statement><p>Solve <m>x^2-7x+12=0</m>.</p></statement><answer><p><m>x=3,4</m></p></answer></exercise>
+        <exercise><statement><p>Solve <m>2x^2+5x+2=0</m>.</p></statement><answer><p><m>x=-2,-\frac12</m></p></answer></exercise>
+        <exercise><statement><p>Solve <m>x^2+4x+7=0</m> over the real numbers.</p></statement><answer><p>No real solutions.</p></answer><solution><p>The discriminant is <m>4^2-4(1)(7)=-12</m>.</p></solution></exercise>
+        <exercise><statement><p>Solve <m>2x^2+x-4=0</m>.</p></statement><answer><p><m>x=\frac{-1\pm\sqrt{33}}4</m></p></answer></exercise>
+        <exercise><statement><p>Which of the previous equations made factorisation the natural first method, and which forced a different method? Explain the evidence you used.</p></statement><answer><p>The first two factorise neatly; the others do not over the integers, so the discriminant/quadratic formula is appropriate.</p></answer></exercise>
+      </exercises>
+    </subsection>
+
+    <subsection xml:id="sub-simultaneous-equations">
+      <title>Simultaneous equations</title>
+      <example><title>Two conditions at once</title><statement><p>Solve <m>2x+y=11</m> and <m>x-y=1</m>.</p></statement><solution><p>Add the equations: <m>3x=12</m>, so <m>x=4</m>. Then <m>y=3</m>.</p></solution></example>
+      <exercises xml:id="exs-simultaneous-variation"><title>Vary the representation</title>
+        <exercise><statement><p>Solve <m>3x+y=14</m> and <m>x-y=2</m>.</p></statement><answer><p><m>x=4,y=2</m></p></answer></exercise>
+        <exercise><statement><p>The lines <m>y=10-2x</m> and <m>y=x+1</m> intersect. Find the intersection algebraically.</p></statement><answer><p><m>(3,4)</m></p></answer></exercise>
+        <exercise><statement><p>Explain why two parallel non-identical lines give no solution to a simultaneous linear system.</p></statement><answer><p>There is no point satisfying both equations because the lines do not intersect.</p></answer></exercise>
+      </exercises>
+    </subsection>
+
+    <subsection xml:id="sub-factor-theorem-hl">
+      <title>Higher Level: Factor Theorem and cubic equations</title>
+      <example><title>One root unlocks a cubic</title><statement><p>Given <m>f(x)=x^3-4x^2-x+4</m>, show that <m>x=1</m> is a root and solve <m>f(x)=0</m>.</p></statement><solution><p><m>f(1)=0</m>, so <m>x-1</m> is a factor. Grouping gives <m>x^2(x-4)-1(x-4)=(x^2-1)(x-4)=(x-1)(x+1)(x-4)</m>. Thus <m>x=1,-1,4</m>.</p></solution></example>
+      <exercises xml:id="exs-factor-theorem-hl"><title>Higher Level progression</title>
+        <exercise><statement><p>Show that <m>x=2</m> is a root of <m>x^3-3x^2-4x+12=0</m>, then solve the equation.</p></statement><answer><p><m>x=-2,2,3</m></p></answer></exercise>
+        <exercise><statement><p>If <m>x-a</m> is a factor of <m>f(x)</m>, what must be true about <m>f(a)</m>?</p></statement><answer><p><m>f(a)=0</m>.</p></answer></exercise>
+      </exercises>
+    </subsection>
+  </section>
+
+  <section xml:id="sec-algebra-inequalities">
+    <title>Algebra III: Inequalities</title>
+    <p>An inequality describes a set of values. The solution is usually an interval, not one number.</p>
+
+    <subsection xml:id="sub-linear-inequalities">
+      <title>Linear inequalities</title>
+      <example><title>The sign reversal is structural</title><statement><p>Solve <m>-3x+5\geq14</m>.</p></statement><solution><p><m>-3x\geq9</m>. Dividing by <m>-3</m> reverses the inequality, giving <m>x\leq-3</m>.</p></solution></example>
+      <exercises xml:id="exs-inequality-variation"><title>One change at a time</title>
+        <exercise><statement><p>Solve <m>3x+5\geq14</m>.</p></statement><answer><p><m>x\geq3</m></p></answer></exercise>
+        <exercise><statement><p>Solve <m>-3x+5\geq14</m>.</p></statement><answer><p><m>x\leq-3</m></p></answer></exercise>
+        <exercise><statement><p>Solve <m>-3x-5\geq14</m>.</p></statement><answer><p><m>x\leq-\frac{19}{3}</m></p></answer></exercise>
+        <exercise><statement><p>A student divides <m>-2x&lt;8</m> by <m>-2</m> and writes <m>x&lt;-4</m>. Diagnose the error.</p></statement><answer><p>The sign must reverse: <m>x&gt;-4</m>.</p></answer></exercise>
+      </exercises>
+    </subsection>
+
+    <subsection xml:id="sub-hl-inequalities">
+      <title>Higher Level: quadratic, rational and absolute-value inequalities</title>
+      <p>Here factorisation becomes a sign-analysis tool. Roots and undefined points split the number line into intervals; then determine the sign on each interval.</p>
+      <example><title>Quadratic sign analysis</title><statement><p>Solve <m>x^2-x-6&gt;0</m>.</p></statement><solution><p><m>(x-3)(x+2)&gt;0</m>. The critical values are <m>-2</m> and <m>3</m>. The product is positive outside the roots, so <m>x&lt;-2</m> or <m>x&gt;3</m>.</p></solution></example>
+      <exercises xml:id="exs-hl-inequalities"><title>Higher Level variation</title>
+        <exercise><statement><p>Solve <m>x^2-x-6&lt;0</m>.</p></statement><answer><p><m>-2&lt;x&lt;3</m></p></answer></exercise>
+        <exercise><statement><p>Solve <m>\frac{x-2}{x+1}\geq0</m>.</p></statement><answer><p><m>x&lt;-1</m> or <m>x\geq2</m>.</p></answer></exercise>
+        <exercise><statement><p>Solve <m>|x-3|&lt;5</m>.</p></statement><answer><p><m>-2&lt;x&lt;8</m></p></answer></exercise>
+      </exercises>
+    </subsection>
+  </section>
+
+  <section xml:id="sec-algebra-mixed">
+    <title>Mixed retrieval and transfer</title>
+    <p>The headings are gone now. Decide what mathematics is needed before doing it.</p>
+    <exercises xml:id="exs-mixed-transfer">
+      <title>Mixed set</title>
+      <exercise><statement><p>Factorise fully <m>4x^2-12x</m>, then solve <m>4x^2-12x=0</m>.</p></statement><answer><p><m>4x(x-3)</m>; <m>x=0,3</m>.</p></answer></exercise>
+      <exercise><statement><p>The rectangle has side lengths <m>x+3</m> and <m>x+5</m>. Its area is <m>48</m>. Form and solve an equation for <m>x</m>, rejecting any value that is impossible for the geometry.</p></statement><answer><p><m>(x+3)(x+5)=48</m>, so <m>x^2+8x-33=0=(x+11)(x-3)</m>. Hence <m>x=3</m>; <m>x=-11</m> is rejected.</p></answer></exercise>
+      <exercise><statement><p>A quadratic has roots <m>2</m> and <m>-5</m>. Write a monic quadratic equation with these roots.</p></statement><answer><p><m>(x-2)(x+5)=0</m>, so <m>x^2+3x-10=0</m>.</p></answer></exercise>
+      <exercise><statement><p>Find the error: <m>\frac{x^2-4}{x-2}=x-2</m>.</p></statement><answer><p><m>x^2-4=(x-2)(x+2)</m>, so the simplified expression is <m>x+2</m>, with <m>x\ne2</m>.</p></answer></exercise>
+      <exercise><statement><p>Write a quadratic expression that factorises into two integer linear factors but whose middle coefficient is zero.</p></statement><answer><p>For example <m>(x-3)(x+3)=x^2-9</m>.</p></answer></exercise>
+    </exercises>
+  </section>
+
+</chapter>

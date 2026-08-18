@@ -1,0 +1,33 @@
+name: Build PreTeXt book
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: oscarlevin/pretext-full
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install pinned PreTeXt CLI
+        run: pip install -r requirements.txt
+      - name: Show version
+        run: pretext --version
+      - name: Build web
+        run: pretext build web --clean
+      - name: Build PDF
+        run: pretext build print --clean
+      - name: Upload web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: leaving-cert-maths-web
+          path: output/web
+      - name: Upload PDF build
+        uses: actions/upload-artifact@v4
+        with:
+          name: leaving-cert-maths-pdf
+          path: output/print

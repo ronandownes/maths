@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pretext xml:lang="en-US" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <xi:include href="./docinfo.ptx" />
+  <book xml:id="leaving-cert-maths">
+    <title>Leaving Cert Maths</title>
+    <subtitle>Ordinary and Higher Level</subtitle>
+    <xi:include href="./frontmatter.ptx" />
+    <xi:include href="./ch-algebra.ptx" />
+    <xi:include href="./backmatter.ptx" />
+  </book>
+</pretext>

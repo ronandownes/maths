@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frontmatter xmlns:xi="http://www.w3.org/2001/XInclude" xml:id="frontmatter">
+  <bibinfo>
+    <author><personname>Ronan Downes</personname></author>
+    <date><today /></date>
+  </bibinfo>
+  <titlepage><titlepage-items /></titlepage>
+  <preface xml:id="preface">
+    <title>How this book teaches</title>
+    <p>This is a Leaving Certificate Mathematics book built around doing mathematics. Explanations are short. Carefully sequenced examples and exercises do most of the teaching.</p>
+    <p>New ideas are unpacked. Early questions change one feature at a time so that students can see what matters. Later questions remove the scaffolding, mix earlier ideas and ask students to transfer the mathematics to unfamiliar and examination-style situations.</p>
+    <p>Ordinary Level is the core path. Higher Level extends that path rather than creating a second unrelated book.</p>
+  </preface>
+</frontmatter>
