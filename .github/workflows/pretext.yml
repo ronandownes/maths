@@ -25,6 +25,9 @@ jobs:
       - name: Show version
         run: pretext --version
 
+      - name: Validate source
+        run: pretext validate web --method terse
+
       - name: Build web
         run: pretext build web --clean
 
@@ -45,7 +48,7 @@ jobs:
 
       - name: Upload GitHub Pages artifact
         if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: output/web
 
