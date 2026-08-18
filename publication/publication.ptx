@@ -7,6 +7,6 @@
     <exercise-divisional statement="yes" hint="yes" answer="no" solution="no" />
   </common>
   <source>
-    <directories generated="../generated-assets" />
+    <directories external="../assets" generated="../generated-assets" />
   </source>
 </publication>
