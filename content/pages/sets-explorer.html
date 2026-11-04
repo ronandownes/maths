@@ -1,0 +1,73 @@
+<div class="level-cues"><span>Explore</span><span>Visual reasoning</span><span>Touchscreen friendly</span></div>
+<p class="lead">Move A and B to investigate the union, intersection, complements, disjoint sets and subsets. The website navigation stays available in normal view.</p>
+<section class="set-explorer" aria-label="Interactive two-set exploration">
+<div class="explorer-head"><div><h2>Move the sets</h2><p class="hint">Drag either circle. Move them apart, overlap them or place one inside the other.</p></div><button id="full-screen" type="button">Full screen ⛶</button></div>
+<div class="controls">
+<div class="control-label">Show</div>
+<div class="actions" id="operations" aria-label="Set operation">
+<button type="button" data-operation="regions" class="active">All regions</button>
+<button type="button" data-operation="union">A ∪ B</button>
+<button type="button" data-operation="intersection">A ∩ B</button>
+<button type="button" data-operation="a-b">A \ B</button>
+<button type="button" data-operation="b-a">B \ A</button>
+<button type="button" data-operation="complement">Aᶜ</button>
+<button type="button" data-operation="neither">(A ∪ B)ᶜ</button>
+</div>
+<div class="control-label">Arrange the sets</div>
+<div class="actions" id="presets">
+<button type="button" data-preset="overlap" class="active">Overlap</button>
+<button type="button" data-preset="apart">Disjoint</button>
+<button type="button" data-preset="ainb">A inside B</button>
+<button type="button" data-preset="bina">B inside A</button>
+<button type="button" data-preset="equal">Equal</button>
+<button type="button" data-preset="reset">Reset</button>
+</div>
+<div class="slider-row">
+<label>Size of A <input id="size-a" aria-label="Radius of set A" type="range" min="70" max="195" step="5" value="150"></label>
+<label>Size of B <input id="size-b" aria-label="Radius of set B" type="range" min="70" max="195" step="5" value="150"></label>
+<label class="option"><input id="show-elements" type="checkbox"> Show draggable elements</label>
+</div>
+</div>
+<div class="stage">
+<svg id="diagram" viewBox="0 0 840 500" role="img" aria-label="Interactive Venn diagram. Two draggable circles inside the universal set U." xmlns="http://www.w3.org/2000/svg">
+<defs>
+<clipPath id="clip-b"><circle id="clip-b-circle" cx="515" cy="250" r="150"/></clipPath>
+<mask id="outside-a" maskUnits="userSpaceOnUse" x="0" y="0" width="840" height="500"><rect x="0" y="0" width="840" height="500" fill="white"/><circle id="mask-a" cx="315" cy="250" r="150" fill="black"/></mask>
+<mask id="outside-b" maskUnits="userSpaceOnUse" x="0" y="0" width="840" height="500"><rect x="0" y="0" width="840" height="500" fill="white"/><circle id="mask-b" cx="515" cy="250" r="150" fill="black"/></mask>
+<mask id="outside-both" maskUnits="userSpaceOnUse" x="0" y="0" width="840" height="500"><rect x="0" y="0" width="840" height="500" fill="white"/><circle id="mask-union-a" cx="315" cy="250" r="150" fill="black"/><circle id="mask-union-b" cx="515" cy="250" r="150" fill="black"/></mask>
+</defs>
+<rect x="22" y="20" width="796" height="458" rx="9" fill="#fff" stroke="#6c7e91" stroke-width="2"/>
+<text x="42" y="55" class="diagram-title">U</text>
+<rect id="outside-shade" x="23" y="21" width="794" height="456" mask="url(#outside-both)" fill="#95a3b1" opacity="0"/>
+<rect id="complement-shade" x="23" y="21" width="794" height="456" mask="url(#outside-a)" fill="#e8a935" opacity="0"/>
+<circle id="a-only" cx="315" cy="250" r="150" fill="#e64a40" mask="url(#outside-b)" opacity=".22"/>
+<circle id="b-only" cx="515" cy="250" r="150" fill="#3986cf" mask="url(#outside-a)" opacity=".22"/>
+<circle id="both" cx="315" cy="250" r="150" fill="#8050b1" clip-path="url(#clip-b)" opacity=".33"/>
+<circle id="border-a" cx="315" cy="250" r="150" fill="none" stroke="#ba3430" stroke-width="4"/>
+<circle id="border-b" cx="515" cy="250" r="150" fill="none" stroke="#236ba9" stroke-width="4"/>
+<text id="label-a" class="set-label" x="315" y="130" fill="#a52b2b" text-anchor="middle">A</text>
+<text id="label-b" class="set-label" x="515" y="130" fill="#205b92" text-anchor="middle">B</text>
+<g id="numbers" hidden></g>
+</svg>
+</div>
+<p class="footnote">Touchscreen and mouse: drag the circle interiors; drag number cards when they are visible. Circle size is illustrative, not cardinality.</p>
+<div class="row" aria-live="polite">
+<div class="card"><strong>Selected operation</strong><div class="value" id="operation-name">Regions of A and B</div><div class="small" id="operation-description">Each region is coloured separately.</div></div>
+<div class="card"><strong>Relationship as drawn</strong><div class="value" id="relationship">Overlap</div><div class="small" id="relationship-detail">Some points belong to both regions.</div></div>
+</div>
+<div id="explanation" aria-live="polite">Move the circles to see how their relationship changes.</div>
+<div id="elements-output" class="card" style="display:none;margin-top:10px" aria-live="polite">
+<strong>Numbered elements (not area)</strong>
+<div class="value" id="elements-sets"></div>
+<div class="small" id="elements-counts"></div>
+</div>
+<div id="challenge">
+<strong>Quick classroom challenge</strong>
+<p class="hint" id="question">Predict the shape of A ∩ B when the sets are moved apart.</p>
+<button type="button" id="new-question">New question</button>
+<button type="button" id="reveal-question">Reveal answer</button>
+<span id="challenge-status" role="status"></span>
+</div>
+<p class="small">An original browser-native learning tool. Inspired by the linked <a href="https://www.geogebra.org/m/tme89bz3" target="_blank" rel="noopener">GeoGebra 2-Set Move Sets Exploration</a>; no GeoGebra code is used. Runs without external libraries.</p>
+</section>
+<p class="small-note">Use <strong>Full screen</strong> to focus on the activity. Press <strong>Esc</strong> to return to the Maths website and navigate to another topic.</p>
