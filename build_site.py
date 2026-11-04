@@ -31,17 +31,24 @@ def frame(title, category, heading, intro, body, depth=0, section=None, current=
     if category:
         data=DATA[category]
         ready=''.join(f'<a href="{prefix}{SLUGS[category]}/{t["slug"]}/index.html" class="{"active" if t["slug"]==current else ""}">{e(t["title"])}</a>' for t in data['topics'] if t['ready'])
+        if category == 'Number':
+            ready += f'<a href="{prefix}number/sets/explorer.html" class="{"active" if current == "sets-explorer" else ""} submenu-link">↳ Explore two sets</a>'
         future=''.join(f'<span class="pending">{e(t["title"])}</span>' for t in data['topics'] if not t['ready'])
         aside=f'<h2>{e(category)} topics</h2><a href="{prefix}{SLUGS[category]}/index.html" class="{"active" if current is None else ""}">Overview</a>{ready}<span class="aside-caption">Later topics</span>{future}'
     else:
         aside='<h2>Ready lessons</h2>'+''.join(f'<a href="{prefix}{SLUGS[n]}/{t["slug"]}/index.html">{e(t["title"])}</a>' for n,d in DATA.items() for t in d['topics'] if t['ready'])
     crumb='<span class="breadcrumb"><a href="'+prefix+'index.html">Maths</a>'+((' / <a href="'+prefix+SLUGS[category]+'/index.html">'+e(category)+'</a>') if category else '')+'</span>'
+    extra_css = f'<link rel="stylesheet" href="{prefix}assets/sets-explorer.css">' if current == 'sets-explorer' else ''
+    extra_js = f'<script src="{prefix}assets/sets-explorer.js"></script>' if current == 'sets-explorer' else ''
+    body_class = ' class="explorer-page"' if current == 'sets-explorer' else ''
+    if current == 'sets-explorer':
+        crumb = crumb.replace('</span>', f' / <a href="{prefix}number/sets/index.html">Sets and subsets</a></span>')
     return f'''<!doctype html>
 <html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="{e(intro)}"><meta name="theme-color" content="#ffffff">
 <title>{e(title)} | Maths</title><link rel="icon" type="image/svg+xml" href="{prefix}assets/favicon.svg">
-<link rel="stylesheet" href="{prefix}assets/styles.css"></head>
-<body><a href="#main" class="skip">Skip to content</a>
+<link rel="stylesheet" href="{prefix}assets/styles.css">{extra_css}</head>
+<body{body_class}><a href="#main" class="skip">Skip to content</a>
 <header class="topbar"><a class="brand" href="{prefix}index.html" aria-label="Maths home"><img src="{prefix}assets/maths-logo.svg" alt="Maths, four coloured dots"></a>
 <button class="menu-toggle" id="menu-toggle" aria-controls="main-menu" aria-expanded="false">☰ Topics</button>
 <nav id="main-menu" class="menu" aria-label="Main mathematics menu">{nav}</nav></header>
@@ -49,7 +56,7 @@ def frame(title, category, heading, intro, body, depth=0, section=None, current=
 <div><main class="paper" id="main"><p class="kicker">{e(category or 'The complete mathematics collection')}</p><h1>{e(heading)}</h1>
 <p class="intro">{e(intro)}</p><div class="toolbar">{crumb}<button type="button" data-print>Print / save PDF</button></div>
 <div class="lesson">{body}</div></main><footer class="site-footer">Maths · Ronan Downes · One collection, organised by topic</footer></div></div>
-<script src="{prefix}assets/site.js"></script></body></html>'''
+<script src="{prefix}assets/site.js"></script>{extra_js}</body></html>'''
 
 
 def home():
@@ -64,6 +71,8 @@ def build():
     for category,data in DATA.items():
         slug=SLUGS[category]
         tiles=''.join(f'<a class="tile" href="{t["slug"]}/index.html"><strong>{e(t["title"])}</strong><small>Open the complete teaching page</small></a>' for t in data['topics'] if t['ready'])
+        if category == 'Number':
+            tiles += '<a class="tile" href="sets/explorer.html"><strong>Explore two sets</strong><small>Interactive Venn diagram: move, overlap and compare sets.</small></a>'
         planned=''.join(f'<li>{e(t["title"])}</li>' for t in data['topics'] if not t['ready'])
         overview=f'<p class="lead">{e(data["introduction"])}</p><h2>Ready lessons</h2><div class="tile-grid">{tiles}</div><h2>Other topics in this section</h2><p>These have a place in the structure but have not yet been written:</p><ul>{planned}</ul>'
         output(ROOT/slug/'index.html',frame(category,category,category,data['introduction'],overview,depth=1))
@@ -73,6 +82,11 @@ def build():
             if not source.exists():raise FileNotFoundError(source)
             lesson=source.read_text(encoding='utf-8')
             output(ROOT/slug/t['slug']/'index.html',frame(t['title'],category,t['title'],data['introduction'],lesson,depth=2,current=t['slug']))
-    print('Built 16 static HTML pages (home, 7 sections, 8 lessons).')
+            if category == 'Number' and t['slug'] == 'sets':
+                explorer = (ROOT/'content'/'pages'/'sets-explorer.html').read_text(encoding='utf-8')
+                output(ROOT/'number'/'sets'/'explorer.html',frame('Explore two sets','Number','Explore two sets',
+                    'An interactive Venn diagram for union, intersection, subsets and complements.',
+                    explorer,depth=2,current='sets-explorer'))
+    print('Built 17 static HTML pages (home, 7 sections, 8 lessons and the sets explorer).')
 
 if __name__=='__main__':build()
