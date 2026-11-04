@@ -1,20 +1,111 @@
-<div class="level-cues"><span>Notation</span><span>Visual reasoning</span><span>Retrieval practice</span></div>
-<p class="lead">A <strong>set</strong> is a well-defined collection of distinct objects. We write the elements between curly brackets, for example <span class="math">A = {1, 2, 3}</span>.</p>
-<h2>1. Membership</h2>
-<div class="formula">2 ∈ A &nbsp;&nbsp;and&nbsp;&nbsp; 5 ∉ A</div>
-<p>The symbol <span class="math">∈</span> means “is an element of”. The symbol <span class="math">∉</span> means “is not an element of”. The order of the elements does not matter; repeating an element does not create a new element.</p>
-<h2>2. Subsets</h2>
-<div class="worked"><h3>Recognise a subset</h3><p>Let <span class="math">A = {1, 2}</span> and <span class="math">B = {1, 2, 3, 4, 5, 6}</span>.</p><div class="formula">A ⊆ B</div><p>Every element of A is also an element of B. In fact, A is a <strong>proper subset</strong> of B, because B contains elements not in A: <span class="math">A ⊊ B</span>.</p></div>
-<div class="note"><strong>Important distinction:</strong> <span class="math">2 ∈ B</span> is a membership statement about an element. <span class="math">{2} ⊆ B</span> is a subset statement about a set.</div>
-<h2>3. Empty set and equality</h2><p>The empty set <span class="math">∅</span> contains no elements. It is a subset of every set. Two sets are equal if they contain exactly the same elements, regardless of order.</p>
-<h2>4. Worked examples</h2>
-<div class="examples-grid"><div><strong>Example A</strong><p>Is <span class="math">{3, 5} ⊆ {1, 3, 5, 7}</span>?</p><p><strong>Yes:</strong> both 3 and 5 occur in the larger set.</p></div><div><strong>Example B</strong><p>Is <span class="math">{2, 4} ⊆ {2, 3, 5}</span>?</p><p><strong>No:</strong> 4 is missing.</p></div></div>
-<h2>Interactive two-set explorer</h2>
-<div class="worked">
-  <h3>Investigate unions, intersections and subsets</h3>
-  <p>Move circles A and B, change their sizes, compare set operations, and drag numbered elements. The explorer is part of this Maths website, with the same Number menu and navigation.</p>
-  <p><a class="button-link primary" href="explorer.html">Open interactive sets explorer</a></p>
-  <p class="small-note">You can use it normally with the Maths navigation visible, or switch to a full-screen classroom view and return using Esc.</p>
+<div id="sets-learning">
+  <div class="level-cues"><span>Junior Cycle N.5</span><span>Concepts first</span><span>Reasoning and proof</span><span>Instant feedback</span></div>
+  <p class="lead">Sets are about <strong>belonging, comparing and combining collections</strong>. Here you will make predictions, test them, explain your thinking and learn how to use mathematical notation precisely.</p>
+  <nav class="sets-jump" aria-label="Jump to a Sets learning activity">
+    <a href="#sets-start">Start here</a><a href="#sets-subsets">Subsets</a><a href="#sets-venn">Explore</a><a href="#sets-check">Check understanding</a><a href="#sets-reason">Prove or disprove</a><a href="#sets-exit">Exit ticket</a>
+  </nav>
+  <section id="sets-start">
+    <h2>1. What is a set?</h2>
+    <p>A set is a <strong>well-defined collection of distinct elements</strong>. For example, <span class="math">A = {1, 2, 3}</span> and <span class="math">B = {3, 2, 1}</span> describe the <em>same set</em>: order is unimportant, and repeating an element does not change the set.</p>
+    <div class="sets-think">
+      <div class="sets-question-label">Think first</div>
+      <p>Which is a well-defined set: <em>the three nicest numbers</em>, or <em>the even numbers between 1 and 9</em>?</p>
+      <details><summary>Reveal and explain</summary><p>The second description is well-defined: its elements are {2, 4, 6, 8}. People can disagree about which numbers are “nicest”.</p></details>
+    </div>
+    <h3>The notation has meaning</h3>
+    <div class="sets-table-wrap"><table class="sets-symbol-table">
+      <thead><tr><th>Symbol</th><th>Read it as</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td class="math">∈</td><td>is an element of</td><td class="math">2 ∈ {1, 2, 3}</td></tr>
+        <tr><td class="math">∉</td><td>is not an element of</td><td class="math">5 ∉ {1, 2, 3}</td></tr>
+        <tr><td class="math">⊆</td><td>is a subset of (possibly equal)</td><td class="math">{1, 2} ⊆ {1, 2, 3}</td></tr>
+        <tr><td class="math">∅</td><td>empty set</td><td>No elements</td></tr>
+        <tr><td class="math">#A</td><td>number of elements in A</td><td class="math">#{1, 2, 3} = 3</td></tr>
+        <tr><td class="math">U, Aᶜ</td><td>universal set; complement of A</td><td>Everything in U outside A</td></tr>
+      </tbody>
+    </table></div>
+    <p class="small-note">We use ⊆ when equality is allowed and ⊊ for a <strong>proper</strong> subset. Some textbooks use ⊂ differently, so the meaning must be stated clearly.</p>
+    <div class="sets-think">
+      <div class="sets-question-label">Spot the distinction</div>
+      <p>Let <span class="math">A = {1, 2, 3}</span>. Explain why <span class="math">2 ∈ A</span> and <span class="math">{2} ⊆ A</span> are both true, but say different things.</p>
+      <details><summary>Reveal reasoning</summary><p>The number 2 is an <strong>element</strong> of A. The collection {2} is a <strong>set</strong>, and every one of its elements lies in A. An element is not the same object as the singleton set containing it.</p></details>
+    </div>
+  </section>
+  <section id="sets-subsets">
+    <h2>2. Subsets and equality</h2>
+    <p>We write <span class="math">A ⊆ B</span> exactly when <strong>every element of A is also an element of B</strong>.</p>
+    <div class="sets-feature">
+      <span class="sets-feature-title">Key idea: inclusion in both directions</span>
+      <div class="sets-feature-math">A ⊆ B <span>and</span> B ⊆ A <span>⇒</span> A = B</div>
+      <p><strong>Why?</strong> The first statement says A contains nothing outside B; the second says B contains nothing outside A. Thus they have exactly the same elements.</p>
+    </div>
+    <div class="sets-two">
+      <div class="sets-think">
+        <div class="sets-question-label">Predict</div>
+        <p>Can two sets be equal even if their elements are listed in a different order?</p>
+        <details><summary>Check the idea</summary><p>Yes. {4, 7, 9} = {9, 4, 7}. Equality is about elements, not their order.</p></details>
+      </div>
+      <div class="sets-think">
+        <div class="sets-question-label">Challenge</div>
+        <p>Is the empty set a subset of every set, including itself?</p>
+        <details><summary>Reveal why</summary><p>Yes. There is no element of ∅ that fails to belong to any set A. Therefore ∅ ⊆ A for every A, including A = ∅.</p></details>
+      </div>
+    </div>
+  </section>
+  <section id="sets-venn">
+    <h2>3. Explore with Venn diagrams</h2>
+    <p>Two circles inside a rectangle can model two sets in a universal set <span class="math">U</span>. Before moving a circle, <strong>predict</strong> what will happen to the highlighted region.</p>
+    <div class="sets-action">
+      <div><strong>Interactive two-set explorer</strong><p>Drag A and B, make them disjoint or nested, show numbered elements and test union, intersection, difference and complement.</p></div>
+      <a class="button-link primary" href="explorer.html">Open the Venn explorer</a>
+    </div>
+    <div class="sets-two">
+      <div class="sets-idea"><strong>A ∩ B</strong><p>Elements in <em>both</em> A and B.</p></div>
+      <div class="sets-idea"><strong>A ∪ B</strong><p>Elements in A, or B, <em>or both</em>.</p></div>
+      <div class="sets-idea"><strong>A \ B</strong><p>Elements in A but <em>not</em> B.</p></div>
+      <div class="sets-idea"><strong>Aᶜ</strong><p>Elements of U that are <em>outside</em> A.</p></div>
+    </div>
+    <div class="sets-think">
+      <div class="sets-question-label">Make a conjecture</div>
+      <p>Move A completely inside B. What do you expect <span class="math">A ∩ B</span> and <span class="math">A ∪ B</span> to be? Try it in the explorer, then justify your answers.</p>
+      <details><summary>Show mathematical explanation</summary><p>If A ⊆ B, every element of A lies in both sets, so A ∩ B = A. Combining A with B adds nothing to B, so A ∪ B = B.</p></details>
+    </div>
+  </section>
+  <section id="sets-check">
+    <h2>4. Check your understanding</h2>
+    <p>Work through the questions one at a time. Choose an answer to get <strong>specific feedback</strong>, then explain your reasoning before moving on. You can retry a question without penalty.</p>
+    <div class="sets-assessment" data-sets-quiz>
+      <div class="sets-assessment-top"><span id="sets-quiz-stage">Concept check</span><span id="sets-progress">Question 1 of 12</span></div>
+      <div class="sets-progress-track" aria-hidden="true"><div id="sets-progress-fill"></div></div>
+      <div id="sets-quiz-question" class="sets-quiz-question" role="heading" aria-level="3">Loading question…</div>
+      <div id="sets-quiz-options" class="sets-quiz-options" role="group" aria-label="Choose an answer"></div>
+      <div id="sets-quiz-feedback" class="sets-feedback" role="status" aria-live="polite"></div>
+      <details id="sets-quiz-reason" class="sets-answer"><summary>Why does the answer work?</summary><p id="sets-quiz-explanation"></p></details>
+      <div class="sets-quiz-nav"><button type="button" id="sets-quiz-back">← Previous</button><button type="button" id="sets-quiz-next">Next question →</button><button type="button" id="sets-quiz-reset">Start again</button></div>
+      <p class="small-note">Your answers stay on this page. No account, tracking or personal details are required.</p>
+    </div>
+  </section>
+  <section id="sets-reason">
+    <h2>5. Prove it, disprove it or find a counterexample</h2>
+    <p>Strong mathematical thinking means making an argument that works <em>in every case</em>, or finding one counterexample that proves a claim is false.</p>
+    <div class="sets-reason-grid">
+      <article class="sets-think"><div class="sets-question-label">Reasoning 1</div><p>If A ⊆ B and B ⊆ A, must A = B?</p><details><summary>Reveal a proof</summary><p>Yes. Choose any element x of A; because A ⊆ B, x ∈ B. Conversely, choose any y ∈ B; because B ⊆ A, y ∈ A. Thus both sets have precisely the same elements.</p></details></article>
+      <article class="sets-think"><div class="sets-question-label">Reasoning 2</div><p>If #A = #B, must A = B?</p><details><summary>Reveal a counterexample</summary><p>No. A = {1, 2} and B = {3, 4} each have two elements but A ≠ B.</p></details></article>
+      <article class="sets-think"><div class="sets-question-label">Reasoning 3</div><p>Is A \ B always equal to B \ A?</p><details><summary>Reveal a counterexample</summary><p>No. With A = {1} and B = {2}, A \ B = {1}, whereas B \ A = {2}. Set difference is not generally commutative.</p></details></article>
+      <article class="sets-think"><div class="sets-question-label">Reasoning 4</div><p>Can A ⊆ B and A ∩ B = ∅ both be true?</p><details><summary>Reveal the subtle case</summary><p>Yes, but only if A = ∅. Since A ⊆ B, the intersection is A. For it to be empty, A itself must be empty.</p></details></article>
+    </div>
+  </section>
+  <section id="sets-exit">
+    <h2>6. Exit ticket</h2>
+    <p>Try these without consulting the explanations. Each answer should contain a mathematical reason, not just a symbol.</p>
+    <ol class="sets-exit-items">
+      <li>Explain the difference between <span class="math">3 ∈ A</span> and <span class="math">{3} ⊆ A</span>.</li>
+      <li>Given <span class="math">A = {1, 3, 5}</span> and <span class="math">B = {3, 5, 7}</span>, find <span class="math">A ∪ B</span> and <span class="math">A ∩ B</span>.</li>
+      <li>A student claims: “Whenever two sets have the same number of elements, they are equal.” Decide whether this is true and justify your decision.</li>
+    </ol>
+    <details class="sets-exit-answers"><summary>Teacher/student self-check: reveal solutions</summary>
+      <ol><li>3 is an element; {3} is a singleton set whose only element is in A.</li><li>A ∪ B = {1, 3, 5, 7}; A ∩ B = {3, 5}.</li><li>False: {1, 2} and {3, 4} have equal cardinalities but different elements.</li></ol>
+    </details>
+    <p class="sets-outcome">Learning-outcome connection: <strong>Junior Cycle Mathematics N.5</strong> (sets, notation, representations and operations), supported by the Unifying strand's emphasis on explanation and mathematical reasoning. <a href="https://www.curriculumonline.ie/junior-cycle/junior-cycle-subjects/mathematics/expectations-for-students/" target="_blank" rel="noopener">Read the official specification</a>.</p>
+  </section>
 </div>
-<h2>5. Classroom practice</h2><div class="practice"><p>Let <span class="math">U = {1, 2, 3, 4, 5, 6}</span>, <span class="math">P = {2, 4, 6}</span> and <span class="math">Q = {1, 2}</span>.</p><ol><li>Write a membership statement for the number 4 and the set P.</li><li>Is Q a subset of P? Justify your answer.</li><li>Give a proper subset of P containing exactly two elements.</li><li>Is the empty set a subset of Q?</li></ol><details class="answer-toggle"><summary>Reveal solutions</summary><div class="answer"><ol><li>4 ∈ P.</li><li>No. Although 2 is in P, 1 is not.</li><li>For example, {2, 4}, {2, 6}, or {4, 6}.</li><li>Yes, ∅ ⊆ Q.</li></ol></div></details></div>
-<p class="small-note"><strong>Teaching sequence:</strong> Start with membership, introduce subsets using concrete examples, then distinguish an element from a singleton set before introducing Venn diagrams.</p>
