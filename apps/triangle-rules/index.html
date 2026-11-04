@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Maths Apps — Triangle Rules (v4)</title>
+<style>
+#tri3{--ink:#193552;--blue:#2868dc;--red:#cd313b;--teal:#077d72;--line:#dce5f1;--muted:#647990;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#f3f7fc;border-radius:15px;padding:13px;max-width:1500px;margin:auto}
+#tri3 *{box-sizing:border-box}#tri3 button,#tri3 select{font:inherit}#tri3 button{cursor:pointer}#tri3 button:focus-visible,#tri3 select:focus-visible{outline:3px solid #83b7ff;outline-offset:2px}
+#tri3 .bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:9px;margin-bottom:10px}#tri3 .eyebrow{font-size:11px;letter-spacing:.12em;font-weight:900;color:var(--teal)}#tri3 h2{font-size:clamp(22px,2.6vw,29px);letter-spacing:-.03em;margin:0}#tri3 h3{font-size:17px;margin:0}#tri3 .actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+#tri3 .btn{border:1px solid #d2deed;background:white;color:#254867;border-radius:9px;font-weight:750;padding:8px 11px;font-size:13px}#tri3 .btn.primary{background:#245bd4;border-color:#245bd4;color:white}#tri3 .btn.next{background:#15375c;border-color:#15375c;color:white}#tri3 .btn:disabled{opacity:.4;cursor:default}
+#tri3 .tabs{display:flex;flex-wrap:wrap;gap:5px;background:white;border:1px solid var(--line);padding:5px;border-radius:12px;margin-bottom:10px}#tri3 .tab{border:0;background:transparent;border-radius:8px;padding:9px 12px;font-size:13px;font-weight:800;color:#5d748e}#tri3 .tab.active{background:#15365f;color:white}
+#tri3 .columns{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(295px,.88fr);gap:10px;align-items:stretch}#tri3 .panel{border:1px solid var(--line);background:#fff;border-radius:13px;padding:13px;min-width:0}#tri3 .panelhead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}#tri3 .tag{padding:5px 9px;border-radius:18px;background:#e7f5f0;color:#097768;font-size:11px;font-weight:900}
+#tri3 .settingrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}#tri3 .units{display:flex;align-items:center;gap:6px;font-weight:700;color:#506881;font-size:12px}#tri3 select{border:1px solid #cfddee;border-radius:7px;padding:5px 8px;background:white;color:#29496e;max-width:160px}#tri3 .hint{font-size:12px;color:#607991;min-height:24px;margin:3px 0 9px}
+#tri3 svg{display:block;width:100%;height:auto;max-height:430px;touch-action:none;user-select:none}#tri3 svg [data-handle]{cursor:grab;touch-action:none}#tri3 .readout{border-radius:8px;background:#f0f6fc;color:#215784;font-size:12px;font-weight:750;padding:8px 10px;min-height:36px}#tri3 .fields{margin-top:10px;border-top:1px solid #ebf0f7;padding-top:9px;display:flex;flex-wrap:wrap;gap:7px}#tri3 .field{display:flex;align-items:center;gap:5px;border:1px solid #dce5f0;background:#f8faff;padding:5px 7px;border-radius:9px}#tri3 .fieldname{font-size:12px;color:#506d8d;font-weight:800}#tri3 .field output{min-width:34px;text-align:center;font-weight:900;font-size:18px;font-variant-numeric:tabular-nums;color:#14529c}#tri3 .field button{height:28px;width:28px;border:0;border-radius:6px;background:#e4edfd;color:#1c579e;font-size:20px;line-height:1}
+#tri3 .solution{display:flex;flex-direction:column;min-height:515px}#tri3 .solhead{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:7px}#tri3 .status{color:#6f8299;font-size:12px;margin:9px 0}#tri3 .stage{display:flex;flex-direction:column;justify-content:center;gap:10px;border:1px solid #d6e3f8;border-radius:12px;background:#f0f5ff;padding:18px;min-height:190px}#tri3 .stage.recognise{background:#fff0f0;border-color:#f2bbbf}#tri3 .stage.final{background:#eaf8f0;border-color:#b4e2cb}#tri3 .kicker{font-size:11px;color:#6581a2;letter-spacing:.08em;text-transform:uppercase;font-weight:900}#tri3 .stage.recognise .kicker,#tri3 .stage.recognise .big{color:#a82737}#tri3 .stage.final .big{color:#056d51}#tri3 .big{font-family:Cambria,"Cambria Math",Georgia,serif;font-size:clamp(23px,2.4vw,34px);font-weight:550;line-height:1.38;color:#1a478b;overflow-wrap:anywhere}#tri3 .stage.recognise .big{font:850 clamp(19px,2vw,27px)/1.35 system-ui,-apple-system,"Segoe UI",sans-serif}#tri3 .explain{font-size:13px;color:#546b86}#tri3 .prior{display:flex;align-items:baseline;gap:8px;border-bottom:1px solid #edf1f7;padding:7px 0}#tri3 .prior strong{font-size:11px;color:#7c8da4;min-width:85px}#tri3 .prior span{font:17px/1.3 Cambria,Georgia,serif;color:#456183;overflow-wrap:anywhere}#tri3 .footnote{margin-top:auto;padding-top:14px;font-size:12px;color:#70849c}
+#tri3 .warn{color:#9e3e31;border:1px solid #fac9bc;background:#fff3ef;border-radius:9px;padding:9px;font-size:12px;margin-top:9px}#tri3 .warn[hidden],#tri3 .branches[hidden]{display:none}#tri3 .branches{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:9px;font-size:12px}#tri3 .branches button{border:1px solid #d0deed;border-radius:6px;background:white;color:#315473;padding:4px 8px}#tri3 .branches button.active{background:#15558b;color:white}
+#tri3.projector .fields{display:none}#tri3.projector svg{max-height:510px}#tri3.projector .panel{padding:18px}#tri3.projector .big{font-size:clamp(27px,3.2vw,42px)}
+@media(max-width:740px){#tri3{padding:8px}#tri3 .columns{grid-template-columns:1fr}#tri3 .solution{min-height:315px}#tri3 .tabs .tab{flex:1 1 120px}#tri3 .panel{padding:10px}#tri3 .stage{min-height:150px}#tri3 .solhead .actions{width:100%}}
+
+/* Classroom projector layout: large persistent working and maximum diagram area */
+#tri3{max-width:1920px; font-size:18px; padding:10px}
+#tri3 h2{font-size:clamp(27px,3vw,37px)}
+#tri3 h3{font-size:22px}
+#tri3 .eyebrow{font-size:15px}
+#tri3 .btn{font-size:17px;padding:10px 14px}
+#tri3 .tab{font-size:17px;padding:11px 15px}
+#tri3 .tag{font-size:15px}
+#tri3 .units,#tri3 .hint,#tri3 .readout{font-size:16px}
+#tri3 .fieldname{font-size:16px}
+#tri3 .field output{font-size:21px}
+#tri3 .columns{grid-template-columns:minmax(0,1.2fr) minmax(380px,.8fr)}
+#tri3 .panel{padding:12px}
+#tri3 .solution{min-height:600px;display:block}
+#tri3 svg{max-height:none;}
+#tri3 .status{font-size:16px;margin:10px 0}
+#tri3 .work-list{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+#tri3 .workitem{border:1px solid #dce6f3;border-left:5px solid #2868dc;border-radius:10px;padding:12px 16px;background:#f8fbff}
+#tri3 .workitem.recognise{background:#fff1f0;border-color:#f2bdc0;border-left-color:#c72c3e}
+#tri3 .workitem.final{background:#eaf8f0;border-color:#b7e4c9;border-left-color:#087e66}
+#tri3 .worktitle{font-size:18px;font-weight:850;color:#38546e;margin-bottom:4px}
+#tri3 .workitem.recognise .worktitle,#tri3 .workitem.recognise .workmath{color:#a92536}
+#tri3 .workitem.final .workmath{color:#087056;font-weight:750}
+#tri3 .workmath{font-family:Cambria,'Cambria Math',Georgia,serif;font-size:clamp(23px,2.25vw,32px);line-height:1.5;color:#143e7b;overflow-wrap:anywhere}
+#tri3 .worknote{font-size:18px;color:#546c87;margin-top:4px;line-height:1.35}
+#tri3 .workempty{min-height:190px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:24px;background:#f0f5ff;border-radius:11px;font-size:clamp(22px,2.4vw,30px);font-weight:750;color:#244975}
+#tri3 .workempty small{font-size:18px;font-weight:500;color:#647c97;margin-top:12px}
+#tri3 .brand{display:flex;align-items:center;gap:12px}
+#tri3 .dotlogo{display:grid;grid-template-columns:repeat(2,9px);gap:5px;padding:5px}
+#tri3 .dotlogo i{width:9px;height:9px;background:#275fbb;border-radius:50%}
+#tri3 .dotlogo i:nth-child(2),#tri3 .dotlogo i:nth-child(3){background:#0d857c}
+#tri3 .footnote{font-size:15px}
+@media(max-width:920px){#tri3 .columns{grid-template-columns:1fr}#tri3 .solution{min-height:unset}#tri3 .workmath{font-size:25px}}
+@media(max-width:740px){#tri3 .tab{font-size:14px}#tri3 .btn{font-size:14px}#tri3 .worktitle{font-size:16px}#tri3 .worknote{font-size:16px}#tri3 .workmath{font-size:24px}}
+</style></head><body>
+<div id="tri3">
+<div class="bar"><div class="brand"><span class="dotlogo" aria-label="Four-dot branding motif"><i></i><i></i><i></i><i></i></span><div><div class="eyebrow">MATHS · INTERACTIVE APPS</div><h2>Triangle Rules</h2></div></div><div class="actions"><button class="btn" id="tri3-fit">Fit diagram</button><button class="btn" id="tri3-labels">A+ Larger labels</button><button class="btn" id="tri3-projector">◫ Projector</button><button class="btn primary" id="tri3-random">↻ New question</button></div></div>
+<div class="tabs" id="tri3-tabs"><button class="tab active" data-mode="cosSide">Cosine · Side</button><button class="tab" data-mode="cosAngle">Cosine · Angle</button><button class="tab" data-mode="sinSide">Sine · Side</button><button class="tab" data-mode="sinAngle">Sine · Angle</button><button class="tab" data-mode="hidden">Sine · Hidden angle</button></div>
+<div class="columns">
+<section class="panel"><div class="panelhead"><h3 id="tri3-question">Find the opposite side</h3><span class="tag" id="tri3-tag">COSINE RULE</span></div>
+<div class="settingrow"><label class="units" for="tri3-units">Length units <select id="tri3-units"><option value="">No units</option><option value="mm">millimetres (mm)</option><option value="cm">centimetres (cm)</option><option value="m">metres (m)</option><option value="km">kilometres (km)</option><option value="in">inches (in)</option><option value="ft">feet (ft)</option></select></label><span class="tag" style="background:#ecf3ff;color:#355c91">Whole numbers · 1–20</span></div>
+<div id="tri3-branches" class="branches" hidden><span>Two possible triangles:</span><button data-branch="0" class="active">1</button><button data-branch="1">2</button></div><div class="warn" id="tri3-warn" hidden></div>
+<svg id="tri3-svg" viewBox="0 0 760 470" role="img" aria-label="Large triangle with three draggable vertices; A repositions the entire triangle"></svg><div class="hint" id="tri3-hint">Drag A to reposition the triangle. Drag B or C to adjust measurements.</div><div class="readout" id="tri3-dragstatus" aria-live="polite">Drag A to move the diagram. Drag C along the side for length or across it for angle.</div><div class="fields" id="tri3-fields"></div></section>
+<section class="panel solution"><div class="solhead"><h3>Worked solution</h3><div class="actions"><button class="btn" id="tri3-hide">Hide</button><button class="btn next" id="tri3-next">Reveal rule →</button></div></div><div class="status" id="tri3-status">Which rule would you choose?</div>
+<div class="work-list" id="tri3-work"><div class="workempty">Which rule would you use, and why?<small>Reveal one line at a time. Every revealed line stays visible.</small></div></div><div class="footnote">The first reveal identifies the rule and highlights relevant measurements in red.</div></section>
+</div></div>
+<script>
+(()=>{'use strict';
+const root=document.getElementById('tri3');if(root.dataset.ready)return;root.dataset.ready='1';
+const $=name=>root.querySelector('#tri3-'+name),svg=$('svg');
+const sin=d=>Math.sin(d*Math.PI/180),cos=d=>Math.cos(d*Math.PI/180),degrees=r=>r*180/Math.PI;
+const clamp=(n,min,max)=>Math.max(min,Math.min(max,n)),randomInt=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
+const fmt=n=>Number(n.toFixed(2)).toString();const unit=()=> $('units').value,showLength=n=>fmt(n)+(unit()?' '+unit():'');
+const modes={
+cosSide:{title:'Find the length of the opposite side',rule:'COSINE RULE',fields:[['b','AC',20],['c','AB',20],['A','Angle A',179]],hint:'C: pull along AC to change its length; sideways to change angle A. B: pull horizontally to change AB.'},
+cosAngle:{title:'Find the included angle',rule:'COSINE RULE',fields:[['a','BC',20],['b','AC',20],['c','AB',20]],hint:'C: pull along AC to change AC; sideways to change BC. B: pull horizontally to change AB.'},
+sinSide:{title:'Find the unknown side',rule:'SINE RULE',fields:[['a','BC',20],['A','Angle A',179],['B','Angle B',179]],hint:'C: pull along AC to change BC; sideways to change angle A. B: change angle B.'},
+sinAngle:{title:'Find the unknown angle',rule:'SINE RULE',fields:[['a','BC',20],['b','AC',20],['A','Angle A',179]],hint:'C: pull along AC to change AC; sideways to change angle A. B: change BC.'},
+hidden:{title:'Find a third angle, then a side',rule:'SINE RULE',fields:[['a','BC',20],['A','Angle A',179],['C','Angle C',179]],hint:'C: pull along AC to change BC; sideways to change angle A. B: change angle C.'}};
+const state={mode:'cosSide',step:0,branch:0,projector:false,bigLabels:false,pan:{x:0,y:0},values:{cosSide:{b:8,c:11,A:60},cosAngle:{a:10,b:8,c:7},sinSide:{a:10,A:43,B:68},sinAngle:{a:10,b:14,A:30},hidden:{a:12,A:48,C:67}}};
+let drag=null,geometry=null,scale=14.5;
+function solve(){const v=state.values[state.mode];let {a,b,c,A,B,C}=v,err='',options=[];
+if(state.mode==='cosSide'){a=Math.sqrt(b*b+c*c-2*b*c*cos(A));B=degrees(Math.acos(clamp((a*a+c*c-b*b)/(2*a*c),-1,1)));C=180-A-B;}
+if(state.mode==='cosAngle'){if(a+b<=c||a+c<=b||b+c<=a)err='The three sides do not form a triangle.';else{A=degrees(Math.acos(clamp((b*b+c*c-a*a)/(2*b*c),-1,1)));B=degrees(Math.acos(clamp((a*a+c*c-b*b)/(2*a*c),-1,1)));C=180-A-B;}}
+if(state.mode==='sinSide'||state.mode==='hidden'){if(state.mode==='hidden')B=180-A-C;if(A+B>=180||A<=0||B<=0)err='The given angles do not form a valid triangle.';else{C=180-A-B;b=a*sin(B)/sin(A);c=a*sin(C)/sin(A);}}
+if(state.mode==='sinAngle'){const ratio=b*sin(A)/a;if(ratio>1+1e-10)err='No triangle is possible: sin B would exceed 1.';else{const t=degrees(Math.asin(clamp(ratio,0,1)));for(const x of [t,180-t])if(A+x<180-1e-8&&!options.some(o=>Math.abs(o-x)<1e-7))options.push(x);if(!options.length)err='These measurements cannot form a triangle.';else{state.branch=Math.min(state.branch,options.length-1);B=options[state.branch];C=180-A-B;c=a*sin(C)/sin(A);}}}
+return{v,a,b,c,A,B,C,err,options};}
+function steps(z){const v=z.v;switch(state.mode){
+case 'cosSide':return[
+['Recognise the rule','Find the length of the side opposite the included angle → Cosine Rule.','Two sides and the angle between them are known. Use the direct square-root form.'],
+['Formula','a = √(b² + c² − 2bc cos A)','The unknown side is opposite angle A.'],
+['Substitute',`a = √(${v.b}² + ${v.c}² − 2 × ${v.b} × ${v.c} × cos ${v.A}°)`,'Calculator in degree mode.'],
+['Answer',`a ≈ ${showLength(z.a)}`,'Round to two decimal places.']];
+case 'cosAngle':return[
+['Recognise the rule','Three known sides → Cosine Rule (find an angle).','The angle opposite side a is required.'],
+['Formula','A = cos⁻¹((b² + c² − a²) / (2bc))','Use inverse cosine.'],
+['Substitute',`A = cos⁻¹((${v.b}² + ${v.c}² − ${v.a}²) / (2 × ${v.b} × ${v.c}))`,'Calculator in degree mode.'],
+['Answer',`A ≈ ${fmt(z.A)}°`,'Round to two decimal places.']];
+case 'sinSide':return[
+['Recognise the rule','Known side–opposite angle pair → Sine Rule.','A side and its opposite angle are both known.'],
+['Formula','b = a sin B / sin A','Match each side with its opposite angle.'],
+['Substitute',`b = ${v.a} sin ${v.B}° / sin ${v.A}°`,'Calculator in degree mode.'],
+['Answer',`b ≈ ${showLength(z.b)}`,'Round to two decimal places.']];
+case 'sinAngle':return[
+['Recognise the rule','Known side–opposite angle pair → Sine Rule.','An angle is required; there may be two valid answers.'],
+['Formula','sin B = b sin A / a','Rearrange the Sine Rule.'],
+['Substitute',`sin B = ${v.b} sin ${v.A}° / ${v.a}`,'Calculator in degree mode.'],
+['Check',z.options.length===2?`B = ${fmt(z.options[0])}° or ${fmt(z.options[1])}°`:`B = ${fmt(z.B)}°`,'Check the supplementary-angle possibility.'],
+['Answer',`B ≈ ${fmt(z.B)}°`,'This is the selected valid triangle.']];
+default:return[
+['Recognise the hidden step','Two angles known → find the third angle first.','Then recognise the opposite side–angle pair for the Sine Rule.'],
+['Angle sum',`B = 180° − ${v.A}° − ${v.C}° = ${fmt(z.B)}°`,'All three angles add to 180°.'],
+['Recognise Sine Rule','b = a sin B / sin A','Use the known opposite pair.'],
+['Substitute',`b = ${v.a} sin ${fmt(z.B)}° / sin ${v.A}°`,'Calculator in degree mode.'],
+['Answer',`b ≈ ${showLength(z.b)}`,'Round to two decimal places.']];}}
+function fields(){const mode=modes[state.mode];$('question').textContent=mode.title;$('tag').textContent=mode.rule;$('hint').textContent=mode.hint;
+$('fields').innerHTML=mode.fields.map(([key,label,max])=>`<div class="field"><span class="fieldname">${label}</span><button data-field="${key}" data-delta="-1" aria-label="Decrease ${label}">−</button><output id="tri3-out-${key}">${state.values[state.mode][key]}${max===179?'°':''}</output><button data-field="${key}" data-delta="1" aria-label="Increase ${label}">+</button></div>`).join('');}
+const ns='http://www.w3.org/2000/svg';function svgEl(tag,props={},value){const e=document.createElementNS(ns,tag);for(const[k,v]of Object.entries(props))e.setAttribute(k,String(v));if(value!==undefined)e.textContent=value;svg.appendChild(e);return e;}
+function caption(x,y,label,color='#16457a',fontSize=30){svgEl('text',{x,y,fill:color,'font-size':fontSize,'font-family':'system-ui,-apple-system,Segoe UI,sans-serif','font-weight':850,'text-anchor':'middle','dominant-baseline':'central','paint-order':'stroke',stroke:'#ffffff','stroke-width':8,'stroke-linejoin':'round'},label);}
+function bounds(z){const xs=[0,z.c,z.b*cos(z.A)], h=Math.max(0,z.b*sin(z.A));return{xmin:Math.min(...xs),xmax:Math.max(...xs),h};}
+function fit(z){if(z.err)return 22;const b=bounds(z);return Math.min(615/Math.max(0.001,b.xmax-b.xmin),315/Math.max(0.001,b.h));}
+function fittedBase(z,k){const b=bounds(z);return{x:380-(b.xmin+b.xmax)*k/2,y:394};}
+function draw(z){svg.replaceChildren();geometry=null;
+for(let x=34;x<758;x+=44)svgEl('line',{x1:x,y1:30,x2:x,y2:445,stroke:'#eff4fa'});
+for(let y=30;y<465;y+=44)svgEl('line',{x1:22,y1:y,x2:740,y2:y,stroke:'#eff4fa'});
+if(z.err){caption(378,232,'Adjust the values to form a triangle','#7c8fa7',21);return;}
+// The origin A never moves. The scale is frozen throughout a drag.
+const k=drag?drag.scale:scale,initialBase=drag&&drag.kind!=='A'?drag.fixedBase:fittedBase(z,k),base=drag&&drag.kind!=='A'?initialBase:{x:initialBase.x+state.pan.x,y:initialBase.y+state.pan.y};
+const p={A:base,B:{x:base.x+z.c*k,y:base.y},C:{x:base.x+z.b*cos(z.A)*k,y:base.y-z.b*sin(z.A)*k}};geometry={p,k,z};
+const centre={x:(p.A.x+p.B.x+p.C.x)/3,y:(p.A.y+p.B.y+p.C.y)/3};
+svgEl('polygon',{points:`${p.A.x},${p.A.y} ${p.B.x},${p.B.y} ${p.C.x},${p.C.y}`,fill:'#d9e9ff','fill-opacity':.65});
+const active=state.step>0;
+const reds=state.mode==='cosSide'?['b','c']:state.mode==='cosAngle'?['a','b','c']:state.mode==='sinSide'||state.mode==='sinAngle'?['a','b']:state.step>=3?['a','b']:[];
+const sides={};if(state.mode==='cosSide')Object.assign(sides,{a:'?',b:showLength(z.v.b),c:showLength(z.v.c)});
+if(state.mode==='cosAngle')Object.assign(sides,{a:showLength(z.v.a),b:showLength(z.v.b),c:showLength(z.v.c)});
+if(state.mode==='sinSide')Object.assign(sides,{a:showLength(z.v.a),b:'?'});
+if(state.mode==='sinAngle')Object.assign(sides,{a:showLength(z.v.a),b:showLength(z.v.b)});
+if(state.mode==='hidden')Object.assign(sides,{a:showLength(z.v.a),b:'?'});
+for(const[key,u,v]of[['a','B','C'],['b','A','C'],['c','A','B']]){
+const from=p[u],to=p[v],red=active&&reds.includes(key);svgEl('line',{x1:from.x,y1:from.y,x2:to.x,y2:to.y,stroke:red?'#cd313b':'#2868dc','stroke-width':red?6.5:5,'stroke-linecap':'round'});
+if(!(key in sides))continue;let dx=to.x-from.x,dy=to.y-from.y,len=Math.hypot(dx,dy)||1,mx=(to.x+from.x)/2,my=(to.y+from.y)/2,nx=-dy/len,ny=dx/len;
+if((mx-centre.x)*nx+(my-centre.y)*ny<0){nx=-nx;ny=-ny;}
+const pad=state.bigLabels?51:43;caption(mx+nx*pad,my+ny*pad,sides[key],red?'#bc283a':sides[key]==='?'?'#b45b2a':'#1b528f',state.bigLabels?44:35);
+}
+const angles=state.mode==='cosSide'?{A:z.v.A}:state.mode==='cosAngle'?{A:'?'}:state.mode==='sinSide'?{A:z.v.A,B:z.v.B}:state.mode==='sinAngle'?{A:z.v.A,B:'?'}:{A:z.v.A,B:'?',C:z.v.C};
+for(const[name,value]of Object.entries(angles)){
+const at=p[name],others=['A','B','C'].filter(t=>t!==name),l=p[others[0]],r=p[others[1]],dl=Math.hypot(l.x-at.x,l.y-at.y),dr=Math.hypot(r.x-at.x,r.y-at.y);if(dl<2||dr<2)continue;
+const lx=(l.x-at.x)/dl,ly=(l.y-at.y)/dl,rx=(r.x-at.x)/dr,ry=(r.y-at.y)/dr;let start=Math.atan2(ly,lx),end=Math.atan2(ry,rx),diff=end-start;while(diff>Math.PI)diff-=2*Math.PI;while(diff< -Math.PI)diff+=2*Math.PI;
+let rr=Math.max(17,Math.min(38,dl*.23,dr*.23)),pts=[];for(let t=0;t<=32;t++){const a=start+diff*t/32;pts.push(`${at.x+rr*Math.cos(a)},${at.y+rr*Math.sin(a)}`);}
+const red=active&&(state.mode==='cosSide'&&name==='A'||state.mode==='sinSide'&&['A','B'].includes(name)||state.mode==='sinAngle'&&name==='A'||state.mode==='cosAngle'&&name==='A'||state.mode==='hidden'&&name!=='B');
+svgEl('polyline',{points:pts.join(' '),fill:'none',stroke:red?'#cd313b':'#078b7b','stroke-width':red?5:3});
+let sx=lx+rx,sy=ly+ry,sl=Math.hypot(sx,sy)||1,offset=Math.max(63,Math.min(78,dl*.36,dr*.36));caption(at.x+sx/sl*offset,at.y+sy/sl*offset,value==='?'?'?':value+'°',red?'#b92638':'#087e75',state.bigLabels?39:33);
+}
+for(const name of ['A','B','C']){const pt=p[name],dx=pt.x-centre.x,dy=pt.y-centre.y,len=Math.hypot(dx,dy)||1;
+svgEl('circle',{cx:pt.x,cy:pt.y,r:29,'data-handle':name,fill:'#ffffff','fill-opacity':0});svgEl('circle',{cx:pt.x,cy:pt.y,r:12,fill:'#fff',stroke:name==='A'?'#5a4ab5':'#008775','stroke-width':4,'pointer-events':'none'});
+caption(pt.x+dx/len*25,pt.y+dy/len*25,name,'#18536c',state.bigLabels?28:25);
+}}
+function updateDisplay(){const z=solve(),items=z.err?[]:steps(z),n=Math.min(state.step,items.length);
+$('warn').hidden=!z.err;$('warn').textContent=z.err;
+$('branches').hidden=!(state.mode==='sinAngle'&&z.options.length===2&&!z.err);
+$('branches').querySelectorAll('[data-branch]').forEach(b=>b.classList.toggle('active',Number(b.dataset.branch)===state.branch));
+draw(z);for(const[key,,max]of modes[state.mode].fields){const o=$('out-'+key);if(o)o.textContent=state.values[state.mode][key]+(max===179?'°':'');}
+$('next').disabled=!!z.err||n>=items.length;$('hide').disabled=n===0;$('next').textContent=n===0?'Reveal rule →':n===items.length?'Complete ✓':'Next step →';
+$('status').textContent=z.err?'Correct the given measurements.':n===0?'Which rule would you choose?':`Step ${n} of ${items.length}`;
+const work=$('work');work.replaceChildren();
+if(n===0){const p=document.createElement('div');p.className='workempty';p.textContent='Which rule would you use, and why?';const small=document.createElement('small');small.textContent='Reveal one line at a time. Every line stays visible.';p.appendChild(small);work.appendChild(p);return;}
+items.slice(0,n).forEach((part,i)=>{
+const card=document.createElement('div'),title=document.createElement('div'),math=document.createElement('div'),note=document.createElement('div');
+card.className='workitem'+(i===0?' recognise':'')+(i===items.length-1?' final':'');title.className='worktitle';title.textContent=(i+1)+'. '+part[0];math.className='workmath';math.textContent=part[1];note.className='worknote';note.textContent=part[2];card.append(title,math,note);work.appendChild(card);
+});}
+function setParam(key,raw,valid=true){const field=modes[state.mode].fields.find(t=>t[0]===key);if(!field)return false;const v=state.values[state.mode],old=v[key],n=clamp(Math.round(raw),1,field[2]);if(old===n)return true;v[key]=n;if(valid&&solve().err){v[key]=old;return false;}state.step=0;if(!drag)scale=fit(solve());updateDisplay();return true;}
+function switchMode(m){state.mode=m;state.step=0;state.branch=0;drag=null;state.pan={x:0,y:0};scale=fit(solve());$('tabs').querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));fields();$('dragstatus').textContent='Drag A to move the diagram; drag B or C to adjust one measurement.';updateDisplay();}
+function randomise(){let v={};const m=state.mode;if(m==='cosSide')v={b:randomInt(2,20),c:randomInt(2,20),A:randomInt(20,155)};
+if(m==='cosAngle'){for(let i=0;i<300;i++){const a=randomInt(3,20),b=randomInt(3,20),c=randomInt(3,20);if(a+b>c&&a+c>b&&b+c>a){v={a,b,c};break;}}if(!v.a)v={a:10,b:8,c:7};}
+if(m==='sinSide'){let A=randomInt(25,95);v={a:randomInt(3,20),A,B:randomInt(20,Math.min(140,160-A))};}
+if(m==='sinAngle'){for(let i=0;i<300;i++){let A=randomInt(25,105),a=randomInt(3,20),b=randomInt(3,20),t=b*sin(A)/a;if(t<=1&&A+degrees(Math.asin(t))<175){v={A,a,b};break;}}if(!v.a)v={a:10,b:14,A:30};}
+if(m==='hidden'){let A=randomInt(25,100);v={a:randomInt(3,20),A,C:randomInt(25,Math.min(135,160-A))};}
+state.values[m]=v;state.step=0;state.branch=0;state.pan={x:0,y:0};scale=fit(solve());fields();updateDisplay();}
+function point(e){const r=svg.getBoundingClientRect();return{x:(e.clientX-r.left)*760/r.width,y:(e.clientY-r.top)*470/r.height};}
+function startDrag(e){const handle=e.target.closest('[data-handle]');if(!handle||!geometry)return;e.preventDefault();const p=point(e),z=geometry.z;
+const ux=cos(z.A),uy=-sin(z.A);drag={id:e.pointerId,kind:handle.dataset.handle,start:p,axis:null,initial:{...state.values[state.mode]},scale:geometry.k,initialZ:z,origin:{...geometry.p.A},radial:{x:ux,y:uy},tangent:{x:-sin(z.A),y:-cos(z.A)},initialCursorAngle:Math.atan2(geometry.p.A.y-p.y,p.x-geometry.p.A.x),fixedBase:{...geometry.p.A},startPan:{...state.pan}};
+svg.setPointerCapture(e.pointerId);$('dragstatus').textContent=drag.kind==='A'?'MOVE A · reposition the triangle without changing any measurements.':drag.kind==='B'?'B: drag horizontally; only one given measurement changes.':'C: along the side changes length; sideways changes angle. Direction locks.';}
+function angleDifference(now,start){let d=now-start;while(d>Math.PI)d-=2*Math.PI;while(d< -Math.PI)d+=2*Math.PI;return d;}
+function moveDrag(e){if(!drag||drag.id!==e.pointerId)return;e.preventDefault();const d=drag,p=point(e),dx=p.x-d.start.x,dy=p.y-d.start.y,v=d.initial,m=state.mode;
+if(d.kind==='A'){state.pan={x:clamp(d.startPan.x+dx,-380,380),y:clamp(d.startPan.y+dy,-230,230)};updateDisplay();$('dragstatus').textContent='MOVING A · triangle position only. Measurements stay unchanged.';return;}
+if(d.kind==='B'){
+if(m==='cosSide'||m==='cosAngle'){setParam('c',v.c+dx/d.scale);$('dragstatus').textContent='SIDE LENGTH AB ONLY · angle and AC stay fixed.';}
+if(m==='sinAngle'){const z=d.initialZ,targetC=z.c+dx/d.scale,b=v.b,A=v.A;const a=Math.sqrt((targetC-b*cos(A))**2+(b*sin(A))**2);setParam('a',a);$('dragstatus').textContent='SIDE LENGTH BC ONLY';}
+if(m==='sinSide'||m==='hidden'){
+const key=m==='sinSide'?'B':'C',rate=0.23;setParam(key,v[key]+dx*rate);$('dragstatus').textContent=`ANGLE ${key} ONLY · side BC and angle A stay fixed.`;}
+return;}
+// Freeze the gesture's geometry and pick ONE axis on initial motion. Never switch axes mid-drag.
+const outward=dx*d.radial.x+dy*d.radial.y,across=dx*d.tangent.x+dy*d.tangent.y;
+if(!d.axis){if(Math.hypot(dx,dy)<10)return;d.axis=Math.abs(outward)>=Math.abs(across)?'length':'angle';}
+if(d.axis==='length'){
+const key=m==='cosSide'||m==='cosAngle'||m==='sinAngle'?'b':'a',initialLength=m==='cosSide'||m==='cosAngle'||m==='sinAngle'?v.b:d.initialZ.b;
+// For Sine Rule, b is derived from a; change a proportionally to the visible AC length.
+const proposed=key==='a'?v.a*(initialLength+outward/d.scale)/Math.max(1e-8,initialLength):v.b+outward/d.scale;
+setParam(key,proposed);$('dragstatus').textContent=`LENGTH ONLY · ${key==='b'?'AC':'BC'} changes. Angle stays exactly fixed. Release to switch.`;
+}else{
+const nowAngle=Math.atan2(d.origin.y-p.y,p.x-d.origin.x),delta=degrees(angleDifference(nowAngle,d.initialCursorAngle));
+if(m==='cosAngle'){
+const targetA=clamp(d.initialZ.A+delta,1,179);const newA=Math.sqrt(v.b*v.b+v.c*v.c-2*v.b*v.c*cos(targetA));setParam('a',newA);$('dragstatus').textContent='ANGLE DIRECTION · AC length stays fixed; BC changes in whole-number steps.';
+}else{setParam('A',v.A+delta);$('dragstatus').textContent='ANGLE A ONLY · AC length stays exactly fixed. Release to switch.';}
+}}
+function endDrag(e){if(!drag||drag.id!==e.pointerId)return;drag=null;scale=fit(solve());updateDisplay();$('dragstatus').textContent='Ready: drag A to move the diagram; drag B or C to change a measurement.';}
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('[data-mode]');if(b)switchMode(b.dataset.mode);});
+$('fields').addEventListener('click',e=>{const b=e.target.closest('[data-field]');if(b)setParam(b.dataset.field,state.values[state.mode][b.dataset.field]+Number(b.dataset.delta),false);});
+$('next').addEventListener('click',()=>{state.step++;updateDisplay();});$('hide').addEventListener('click',()=>{state.step=0;updateDisplay();});
+$('random').addEventListener('click',randomise);
+$('fit').addEventListener('click',()=>{state.pan={x:0,y:0};scale=fit(solve());updateDisplay();$('dragstatus').textContent='Zoomed to fill the available diagram area.';});$('units').addEventListener('change',updateDisplay);
+$('projector').addEventListener('click',()=>{state.projector=!state.projector;root.classList.toggle('projector',state.projector);$('projector').textContent=state.projector?'▣ Standard view':'◫ Projector';});
+$('labels').addEventListener('click',()=>{state.bigLabels=!state.bigLabels;$('labels').textContent=state.bigLabels?'A− Standard labels':'A+ Larger labels';updateDisplay();});
+$('branches').addEventListener('click',e=>{const b=e.target.closest('[data-branch]');if(b){state.branch=Number(b.dataset.branch);updateDisplay();}});
+svg.addEventListener('pointerdown',startDrag);svg.addEventListener('pointermove',moveDrag);svg.addEventListener('pointerup',endDrag);svg.addEventListener('pointercancel',endDrag);
+scale=fit(solve());fields();updateDisplay();
+})();
+</script></body></html>
