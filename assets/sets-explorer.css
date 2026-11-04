@@ -1,0 +1,56 @@
+/* Number > Sets: this style is scoped to the interactive explorer. */
+.explorer-page .paper{width:min(1120px,100%);padding:34px clamp(19px,3vw,40px) 55px}
+.explorer-page .stage{max-width:1510px;width:min(1510px,100%)}
+.sidebar .submenu-link{padding-left:32px;font-size:.85rem;color:#506784}
+.set-explorer{color:#1d2734;background:#fff;--line:#d8e1eb;--set-blue:#2467b3;--set-red:#cf3833;line-height:1.45;border:1px solid #dae2ed;border-radius:12px;padding:15px;margin:15px 0;box-shadow:0 1px 3px rgba(38,60,82,.08)}
+.set-explorer,.set-explorer *{box-sizing:border-box}
+.set-explorer button,.set-explorer input{font:inherit}
+.set-explorer button{border:1px solid #c7d3df;background:#fff;color:#263c53;border-radius:9px;padding:9px 12px;cursor:pointer;min-height:42px;font-weight:700}
+.set-explorer button:hover{background:#edf4fb}
+.set-explorer button:focus-visible,.set-explorer input:focus-visible{outline:3px solid #80b4ff;outline-offset:2px}
+.set-explorer button.active{background:#194e89;color:#fff;border-color:#194e89}
+.set-explorer .explorer-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.explorer-page .lesson .set-explorer h2{font-size:clamp(1.3rem,2.5vw,1.8rem);margin:0}
+.explorer-page .lesson .set-explorer p{margin:5px 0 12px;line-height:1.45}
+.set-explorer .hint{color:#55677a;font-size:.93rem}
+.set-explorer .control-label{font-size:.8rem;text-transform:uppercase;letter-spacing:.07em;font-weight:800;color:#53677e;margin:12px 0 6px}
+.set-explorer .actions{display:flex;gap:7px;flex-wrap:wrap}
+.set-explorer .actions button{flex:1 1 auto}
+.set-explorer .stage{display:block;width:100%;max-width:none;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fafbfd;margin:12px 0 0;padding:0}
+.set-explorer svg{display:block;width:100%;height:auto;max-height:600px;touch-action:none;user-select:none}
+.set-explorer .diagram-title{font-size:20px;font-weight:700;fill:#465b73}
+.set-explorer .set-label{font-size:32px;font-family:Cambria,Georgia,serif;font-weight:800;pointer-events:none}
+.set-explorer #border-a,.set-explorer #border-b{pointer-events:none}
+.set-explorer #numbers .chip{cursor:grab}
+.set-explorer #numbers .chip:active{cursor:grabbing}
+.set-explorer .footnote{font-size:.85rem;color:#53677e;margin:8px 0}
+.set-explorer .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.set-explorer .card{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 13px;min-width:0}
+.set-explorer .card strong{display:block;font-size:.86rem;color:#415873;margin-bottom:3px}
+.set-explorer .card .value{font-size:clamp(1.14rem,2.3vw,1.35rem);font-family:Cambria,Georgia,serif;min-height:30px;font-weight:700;overflow-wrap:anywhere}
+.set-explorer .small{font-size:.82rem;color:#5e6e7c}
+.set-explorer .slider-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin:10px 0 0}
+.set-explorer .slider-row label{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:8px;flex:1 1 180px}
+.set-explorer .slider-row input{flex:1;min-width:55px;accent-color:#2467b3}
+.set-explorer .option{display:flex;gap:8px;align-items:center}
+.set-explorer .option input{width:18px;height:18px;accent-color:#2467b3}
+.set-explorer #explanation{background:#f4f7fb;border-left:4px solid #597eaa;padding:9px 12px;border-radius:5px;margin-top:12px;font-size:1rem}
+.set-explorer #challenge{border:1px solid #cedae7;border-radius:9px;padding:12px;margin-top:12px}
+.set-explorer #challenge[hidden],.set-explorer #numbers[hidden]{display:none}
+.set-explorer #challenge button{margin:5px 6px 0 0}
+.set-explorer #challenge-status{font-weight:700}
+.set-explorer:fullscreen{overflow:auto;padding:clamp(12px,2vw,28px);border-radius:0}
+.set-explorer:fullscreen svg{max-height:65vh}
+@media(max-width:700px){
+ .explorer-page .paper{padding:25px 14px}
+ .set-explorer{padding:9px}
+ .set-explorer .row{grid-template-columns:1fr}
+ .set-explorer .actions button{font-size:.87rem;padding:8px}
+ .set-explorer .slider-row{gap:6px}
+ .set-explorer svg{min-height:250px}
+ .set-explorer .set-label{font-size:38px}
+}
+@media print{
+ .set-explorer button,.set-explorer .controls,.set-explorer .footnote,.set-explorer #challenge{display:none!important}
+ .set-explorer .stage{break-inside:avoid}
+}
