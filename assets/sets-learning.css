@@ -1,0 +1,61 @@
+/* First teaching module: Number > Sets. Scoped so other Maths pages are unchanged. */
+#sets-learning{--s-border:#dbe4ed;--s-paper:#f8fafc;--s-ink:#223347;line-height:1.6}
+#sets-learning section{scroll-margin-top:110px}
+#sets-learning .sets-jump{display:flex;gap:7px;flex-wrap:wrap;margin:19px 0 28px;padding:13px 0;border-top:1px solid var(--s-border);border-bottom:1px solid var(--s-border)}
+#sets-learning .sets-jump a{padding:6px 10px;font-size:.86rem;text-decoration:none;border:1px solid #cddce9;border-radius:20px;background:#fff;font-weight:700}
+#sets-learning .sets-jump a:hover{background:#f0f6fe}
+#sets-learning .sets-think{border:1px solid var(--s-border);background:#fff;border-radius:10px;padding:16px 18px;margin:16px 0}
+#sets-learning .sets-question-label{font-size:.77rem;font-weight:800;text-transform:uppercase;letter-spacing:.075em;color:#4f6f92}
+#sets-learning .sets-think p{margin:8px 0 11px}
+#sets-learning details{border-top:1px solid #e1e8ef;padding:9px 0 0;margin-top:12px}
+#sets-learning details summary{cursor:pointer;font-weight:700;color:#17508b}
+#sets-learning details p{margin-bottom:3px}
+#sets-learning .sets-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+#sets-learning .sets-two>.sets-think{margin:4px 0}
+#sets-learning .sets-table-wrap{overflow-x:auto}
+#sets-learning .sets-symbol-table{min-width:470px}
+#sets-learning .sets-symbol-table td:first-child{font-size:1.4rem;font-weight:700;color:#174e8c;white-space:nowrap}
+#sets-learning .sets-symbol-table td:nth-child(2){text-align:left}
+#sets-learning .sets-feature{background:#f4f8fe;border:1px solid #cdddef;border-radius:12px;text-align:center;padding:24px 19px;margin:17px 0}
+#sets-learning .sets-feature-title{display:block;font-size:.82rem;font-weight:800;color:#506a87;text-transform:uppercase}
+#sets-learning .sets-feature-math{font:700 clamp(1.35rem,2.5vw,2rem)/1.5 Cambria,"Cambria Math",Georgia,serif;margin:11px auto;color:#163e74}
+#sets-learning .sets-feature-math span{color:#57697f;font:600 .72em Arial,sans-serif}
+#sets-learning .sets-feature p{margin:8px 0 0}
+#sets-learning .sets-action{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;background:#f7faff;border:1px solid #ccddf2;border-radius:11px;padding:20px;margin:16px 0}
+#sets-learning .sets-action strong{font-size:1.14rem}
+#sets-learning .sets-action p{margin:7px 0 0}
+#sets-learning .sets-idea{padding:14px;background:#f8fbfe;border:1px solid #e1e8ef;border-radius:10px;margin:4px 0}
+#sets-learning .sets-idea strong{font:700 1.4rem Cambria,"Cambria Math",Georgia,serif;color:#144a82}
+#sets-learning .sets-idea p{margin:4px 0}
+#sets-learning .sets-assessment{border:1px solid #bfcee0;border-radius:12px;padding:clamp(15px,3vw,22px);margin:16px 0;background:#fff}
+#sets-learning .sets-assessment-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-weight:800;font-size:.84rem;color:#526783}
+#sets-learning .sets-progress-track{height:7px;background:#e4edf6;border-radius:12px;overflow:hidden;margin:11px 0 20px}
+#sets-learning #sets-progress-fill{height:100%;width:0;background:#2f75b7;transition:width .2s}
+#sets-learning .sets-quiz-question{font:700 clamp(1.18rem,2.6vw,1.52rem)/1.48 Cambria,"Cambria Math",Georgia,serif;margin:0 0 18px;color:#253347}
+#sets-learning .sets-quiz-options{display:grid;gap:10px}
+#sets-learning .sets-quiz-options button{font:600 1rem/1.5 Arial,Helvetica,sans-serif;text-align:left;padding:13px 15px;background:#fff;color:#21364b;border:1px solid #cbd7e4;border-radius:9px;cursor:pointer;min-height:54px}
+#sets-learning .sets-quiz-options button:hover:not(:disabled){background:#f2f7ff;border-color:#568ac5}
+#sets-learning .sets-quiz-options button:focus-visible,#sets-learning .sets-quiz-nav button:focus-visible{outline:3px solid #81b1ec;outline-offset:2px}
+#sets-learning .sets-quiz-options button:disabled{cursor:default}
+#sets-learning .sets-quiz-options button.correct{background:#e9f7ed;border-color:#3c8e59}
+#sets-learning .sets-quiz-options button.wrong{background:#fff0ec;border-color:#cc7369}
+#sets-learning .sets-feedback{min-height:1px;margin:15px 0;font-weight:600}
+#sets-learning .sets-feedback[data-kind=right]{color:#17622f}
+#sets-learning .sets-feedback[data-kind=wrong]{color:#9c2c24}
+#sets-learning .sets-answer{background:#f8fbff;padding:9px 13px;border:1px solid #dae6f4;border-radius:9px}
+#sets-learning .sets-answer[hidden]{display:none}
+#sets-learning .sets-quiz-nav{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+#sets-learning .sets-quiz-nav button{padding:10px 13px;border:1px solid #b9cddd;border-radius:7px;background:#fff;color:#194f87;cursor:pointer;font-weight:700}
+#sets-learning .sets-quiz-nav button:disabled{opacity:.4;cursor:default}
+#sets-learning #sets-quiz-next{background:#1e60a2;color:#fff;border-color:#1e60a2}
+#sets-learning .sets-reason-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+#sets-learning .sets-reason-grid .sets-think{margin:0}
+#sets-learning .sets-exit-items{padding-left:25px}
+#sets-learning .sets-exit-items li{margin:10px 0}
+#sets-learning .sets-outcome{border-top:1px solid #dce5ee;padding-top:15px;font-size:.92rem;color:#526476}
+@media(max-width:720px){#sets-learning .sets-two,#sets-learning .sets-reason-grid{grid-template-columns:1fr}}
+@media print{
+ #sets-learning .sets-jump,#sets-learning .sets-assessment,#sets-learning .sets-exit-answers,#sets-learning .sets-action a{display:none!important}
+ #sets-learning .sets-think,#sets-learning .sets-feature{break-inside:avoid}
+ #sets-learning details:not([open])>p{display:none!important}
+}
