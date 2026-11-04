@@ -38,8 +38,8 @@ def frame(title, category, heading, intro, body, depth=0, section=None, current=
     else:
         aside='<h2>Ready lessons</h2>'+''.join(f'<a href="{prefix}{SLUGS[n]}/{t["slug"]}/index.html">{e(t["title"])}</a>' for n,d in DATA.items() for t in d['topics'] if t['ready'])
     crumb='<span class="breadcrumb"><a href="'+prefix+'index.html">Maths</a>'+((' / <a href="'+prefix+SLUGS[category]+'/index.html">'+e(category)+'</a>') if category else '')+'</span>'
-    extra_css = f'<link rel="stylesheet" href="{prefix}assets/sets-explorer.css">' if current == 'sets-explorer' else ''
-    extra_js = f'<script src="{prefix}assets/sets-explorer.js"></script>' if current == 'sets-explorer' else ''
+    extra_css = f'<link rel="stylesheet" href="{prefix}assets/sets-explorer.css">' if current == 'sets-explorer' else (f'<link rel="stylesheet" href="{prefix}assets/sets-learning.css">' if current == 'sets' else '')
+    extra_js = f'<script src="{prefix}assets/sets-explorer.js"></script>' if current == 'sets-explorer' else (f'<script src="{prefix}assets/sets-learning.js"></script>' if current == 'sets' else '')
     body_class = ' class="explorer-page"' if current == 'sets-explorer' else ''
     if current == 'sets-explorer':
         crumb = crumb.replace('</span>', f' / <a href="{prefix}number/sets/index.html">Sets and subsets</a></span>')
