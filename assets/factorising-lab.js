@@ -36,7 +36,11 @@ function showNumbers(){try{let m=Number($('lab-number1').value),n=Number($('lab-
  `<b>Original denominator ÷ reduced denominator</b>: ${n} ÷ ${b} = ${colour(g,'red')}.`,
  `<b>Show the common factor</b>: ${m} = ${colour(g,'red')} × ${a}, &nbsp; ${n} = ${colour(g,'red')} × ${b}.`,
  `<b>Why is it highest?</b> The reduced numbers ${a} and ${b} are coprime: HCF(${a}, ${b}) = 1.`,
- `<b>Therefore</b>: HCF(${m}, ${n}) = ${colour(g,'green')}. <span class="math-black">Prime factors: ${m} = ${esc(primeDisplay(m))} and ${n} = ${esc(primeDisplay(n))}.</span>`
+ `<b>Highest common factor</b>: HCF(${m}, ${n}) = ${colour(g,'red')}.`,
+ `<b>Cross-multiply</b>: ${m} × ${colour(b,'blue')} = ${colour(m*b,'green')}; ${n} × ${colour(a,'blue')} = ${colour(n*a,'green')}. Both equal the LCM.`,
+ `<b>Why is it the lowest?</b> Since ${a} and ${b} have no common factor, every common multiple must contain the shared ${g} and both remaining factors: ${g} × ${a} × ${b} = ${colour(g*a*b,'green')}.`,
+ `<b>Therefore</b>: HCF(${m}, ${n}) = ${colour(g,'red')}; LCM(${m}, ${n}) = ${colour(m*b,'green')}. Check: HCF × LCM = ${g} × ${m*b} = ${m*n} = ${m} × ${n}.`,
+ `<b>Prime factor check</b>: ${m} = ${esc(primeDisplay(m))} and ${n} = ${esc(primeDisplay(n))}.`
  ]);
  }catch(e){error(e);}}
 function showTwo(){try{const{terms,factor,quotient}=calcHcf($('lab-terms-two').value,2,2),[a,b]=terms,[u,v]=quotient,g=fmt(factor);
