@@ -21,6 +21,18 @@
 .counter-lab .count-block{padding:12px;background:white;border-radius:9px;border:1px solid #d9e1ed}
 @media print{.counter-lab button{display:none}}
 </style>
+<h2>Outcomes, sample spaces and events</h2>
+<p>Before calculating a probability, <strong>define the random experiment and the event of interest</strong>. An <strong>outcome</strong> is one possible result of an experiment. The <strong>sample space</strong> is the set of all possible outcomes. An <strong>event</strong> is a subset of the sample space; the event occurs when the observed outcome belongs to that subset.</p>
+<div class="worked"><h3>One counter: recording its colour</h3>
+<p>Sample space: <strong>Ω = {R, B}</strong>. Define <strong>A = {R}</strong>, the event that red is selected, and <strong>B = {B}</strong>, the event that blue is selected. Write <strong>P(A) = P(red)</strong>.</p>
+<p>There are <strong>four mathematically possible events</strong> (subsets of the sample space): {R}, {B}, ∅ (impossible), and {R, B} (certain). Two of these are single-outcome events.</p>
+<p>Having four blue and six red counters does <em>not</em> produce four blue events: it changes the probability of selecting blue. If instead we record <em>which individual counter</em> was selected, our sample space is different.</p>
+<p><strong>General fact:</strong> A finite sample space with n outcomes has 2<sup>n</sup> subsets, and hence 2<sup>n</sup> possible events.</p></div>
+<p>Set theory is the language of probability: events are subsets, “A or B” corresponds to union, “A and B” to intersection, and “not A” to complement. <a href="../../number/sets/index.html">Revise sets and set notation</a>.</p>
+<h2>Other random experiments: digits and letters</h2>
+<div class="worked"><h3>A random digit</h3><p>Choose a digit uniformly from <strong>0, 1, 2, …, 9</strong>. Define E = {0, 2, 4, 6, 8}, the event “the digit is even”. Then P(E) = 5/10. If we make another independent selection from the same ten digits, the same digit is allowed again: this is <strong>sampling with replacement</strong>.</p>
+<h3>Letters from a word or name</h3><p>Suppose we type <strong>ANNA</strong> and select one of its four <em>positions</em> uniformly. The position-level sample space is {1, 2, 3, 4}; positions 1 and 4 contain A, so P(selecting A) = 2/4. The repeated A occupies two distinct positions. Repeated letters do not, by themselves, establish whether sampling is with replacement.</p>
+<p>If we independently select a position from ANNA on every trial, repeats are allowed. If we remove the selected letter after each trial, it is without replacement and the probabilities change. <strong>Always specify how the selection works.</strong></p></div>
 <h2>1. Theoretical probability — visible counters</h2>
 <p>A shallow tray contains <strong>6 red</strong> and <strong>4 blue</strong> counters. They are scattered, rather than arranged in rows. A counter is selected at random and removed. What is the probability the <em>first</em> counter selected is red?</p>
 <div class="counter-lab">
