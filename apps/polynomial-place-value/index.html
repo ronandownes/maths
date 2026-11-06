@@ -9,8 +9,7 @@ main{max-width:1150px;margin:22px auto;background:white;padding:24px 28px 40px;m
 button,select,input{font:inherit;border:1px solid #a5adb8;border-radius:7px;background:white;padding:10px;color:#202124}button{cursor:pointer}button[aria-pressed=true]{background:#e8f0fe;border-color:#1a73e8}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #4285f4;outline-offset:2px}
 .controls,.stages,.fieldgroups,.nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}.controls label{font-weight:600}
 .fieldgroups{gap:25px;align-items:end}.field{display:flex;flex-direction:column;gap:5px;color:#596474;font-size:.85rem}
-.field input{width:100px;min-width:100px;font-size:1.25rem;padding:10px 12px;appearance:textfield;-moz-appearance:textfield}
-.field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.field input{width:112px;min-width:112px;font-size:1.22rem;padding:10px 9px;appearance:auto;line-height:1.35;font-variant-numeric:tabular-nums}
 .stages{margin-top:20px}.stages button{font-size:.97rem}.canvas{overflow-x:auto;border:1px solid #d7dde4;border-radius:10px;padding:22px 16px;min-height:335px}
 table{margin:auto;border-collapse:collapse;table-layout:fixed;width:min(100%,800px);font-variant-numeric:tabular-nums}td,th{text-align:center;padding:10px 5px;font-size:clamp(1.35rem,2.4vw,2rem);white-space:nowrap}th{font-size:1.12rem;color:#657080;font-weight:500}td.tag{font: .85rem Arial,sans-serif;color:#657080;text-align:right;width:100px}
 tr.line td{border-bottom:2px solid #9ca3af}tr.total td{font-weight:700;border-top:2px solid #9ca3af}
@@ -18,42 +17,122 @@ tr.line td{border-bottom:2px solid #9ca3af}tr.total td{font-weight:700;border-to
 .nav{justify-content:space-between;margin-top:17px}.nav button{min-width:100px}#prev:disabled,#next:disabled{opacity:.4;cursor:default}
 @media(max-width:700px){main{padding:15px 9px}.identity img{width:90px}.field input{min-width:83px;width:83px}td,th{font-size:1.25rem;padding:8px 4px}td.tag{width:58px;font-size:.7rem}.canvas{padding:12px 4px}.stages button{font-size:.82rem}}
 @media print{header,.controls,.fieldgroups,.stages,.nav{display:none!important}body,main{background:white;margin:0;max-width:none;padding:0;min-height:0}.canvas{border:none;min-height:0;padding:16mm 0}td,th{font-size:20pt}.result{font-size:24pt}#stageTitle{font-size:18pt}}
+
+.controls{row-gap:12px}.practice-note{color:#606b75;font-size:.95rem;margin:7px 0 14px}.fieldgroups{gap:16px}.fieldgroups>div{display:flex;flex-wrap:wrap;gap:10px;align-items:end}.field{font-size:.88rem}.math-factor{font:1.55rem/1.4 Cambria,"Cambria Math",Georgia,serif;text-align:center;margin:10px 0 18px}.math-factor sup,.result sup{vertical-align:super;font-size:.65em}
+td,th{font-family:Cambria,"Cambria Math",Georgia,serif}.result{margin-top:12px}
+.stage-heading{font-weight:600}
+@media(max-width:700px){.field input{width:94px;min-width:94px}.controls button{font-size:.88rem}}
+@media print{.practice-note{display:none}.math-factor{font-size:20pt} @page{size:A4;margin:15mm}}
 </style></head><body>
 <header><div class="identity"><a href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"></a><div><a href="../../algebra/index.html">Algebra</a><h1>Polynomial multiplication</h1></div></div><button id="print">Print current stage</button></header>
-<main><div class="controls"><label for="preset">Question</label><select id="preset">
-<option value="0">1 · Quadratic by linear</option><option value="1">2 · Quadratic by linear, mixed signs</option>
-<option value="2">3 · Quadratic by quadratic</option><option value="3">4 · Larger signed coefficients</option>
-<option value="4">5 · Quadratic by quadratic, mixed signs</option><option value="5">6 · Linear by linear</option>
-</select><button id="restore">Restore coefficients</button></div>
+<main><div class="controls"><label for="mode">Practice</label><select id="mode"><option value="bank">Fixed question bank</option><option value="random">Random questions</option></select>
+<label for="preset">Question</label><select id="preset"></select>
+<button id="previousQuestion" type="button">← Previous question</button><button id="nextQuestion" type="button">Next question →</button>
+<button id="restore" type="button">Restore coefficients</button></div>
+<p class="practice-note">Complete two questions from each group. Work through each example, then check your answer.</p>
 <div class="fieldgroups" id="fields" aria-label="Polynomial coefficients"></div>
 <div class="stages" id="stages" role="group" aria-label="Multiplication stages"></div>
 <h2 id="stageTitle"></h2><div class="canvas" id="canvas" aria-live="polite"></div>
 <div class="nav"><button id="prev">Previous</button><button id="next">Next step</button></div></main>
 <script>
 (()=>{'use strict';
-const cases=[[[2,3,4],[5,6]],[[3,-4,5],[7,-2]],[[2,3,4],[5,1,-3]],[[-12,7,-18],[13,17]],[[2,-4,6],[-3,2,-5]],[[3,2],[11,-4]]];
+const bank=[
+{group:'Quadratic × linear',a:[2,3,4],b:[5,6]},
+{group:'Quadratic × linear',a:[3,-4,5],b:[7,-2]},
+{group:'Quadratic × quadratic',a:[2,3,4],b:[5,6,-3]},
+{group:'Quadratic × quadratic',a:[2,-4,6],b:[-3,2,-5]},
+{group:'Mixed signs',a:[4,1,-3],b:[2,-5]},
+{group:'Mixed signs',a:[3,-7,2],b:[4,3]},
+{group:'Larger coefficients',a:[-12,7,-18],b:[13,17]},
+{group:'Larger coefficients',a:[8,-11,9],b:[-4,12]},
+{group:'Quadratic × quadratic',a:[3,2,-1],b:[2,-3,4]},
+{group:'Quadratic × quadratic',a:[-2,4,5],b:[3,1,-2]},
+{group:'Linear × linear',a:[3,2],b:[11,-4]},
+{group:'Linear × linear',a:[7,-3],b:[2,5]}
+];
 const stages=['1. Stacked factors','2. Strip the powers','3. Partial products','4. Add the columns','5. Restore the powers'];
-let caseIndex=0,A=cases[0][0].slice(),B=cases[0][1].slice(),stage=0;
-const get=id=>document.getElementById(id), pow=n=>n===0?'':n===1?'x':'x<sup>'+n+'</sup>';
-function poly(a){let out='';let degree=a.length-1;for(let i=0;i<a.length;i++){let n=a[i],k=degree-i;if(!n)continue;const magnitude=Math.abs(n),term=(k&&magnitude===1?'':magnitude)+pow(k);out+=(out?(n<0?' − ':' + '):(n<0?'−':''))+term}return out||'0'}
-function multiply(a,b){let c=Array(a.length+b.length-1).fill(0);a.forEach((n,i)=>b.forEach((m,j)=>c[i+j]+=n*m));return c}
-function addRow(table,name,arr,degree,showPowers=false,kind=''){let tr=document.createElement('tr');tr.className=kind;let tag=document.createElement('td');tag.className='tag';tag.textContent=name;tr.append(tag);for(let i=0;i<arr.length;i++){let td=document.createElement('td'),v=arr[i];td.innerHTML=v===null?'':String(v)+(showPowers&&v&&degree-i?pow(degree-i):'');tr.append(td)}table.append(tr)}
-function fields(){get('fields').replaceChildren();[['A',A],['B',B]].forEach(([name,arr])=>{let grp=document.createElement('div');grp.className='fieldgroups';arr.forEach((v,i)=>{let lab=document.createElement('label');lab.className='field';let power=arr.length-i-1;lab.textContent=power===0?'#':power===1?'x':'x'+power;let input=document.createElement('input');input.type='number';input.step='1';input.value=v;input.setAttribute('aria-label',name+' coefficient of '+lab.textContent);input.addEventListener('input',()=>{if(input.value===''||!Number.isInteger(+input.value)||Math.abs(+input.value)>999)return;arr[i]=+input.value;render()});lab.append(input);grp.append(lab)});get('fields').append(grp)})}
-function render(){get('stageTitle').textContent=stages[stage];get('stages').replaceChildren();stages.forEach((title,i)=>{let b=document.createElement('button');b.textContent=title;b.setAttribute('aria-pressed',String(stage===i));b.onclick=()=>{stage=i;render()};get('stages').append(b)});
-const answer=multiply(A,B),degree=answer.length-1,n=degree+1;
-const pad=a=>Array(n-a.length).fill(null).concat(a);
-const table=document.createElement('table');let header=document.createElement('tr');header.append(document.createElement('th'));
-for(let k=degree;k>=0;k--){let th=document.createElement('th');th.innerHTML=k===0?'#':pow(k);header.append(th)}table.append(header);
-addRow(table,'',pad(A),degree,stage===0);addRow(table,'',pad(B),degree,stage===0,'line');
-if(stage>=2){for(let j=B.length-1;j>=0;j--){let shift=B.length-1-j;let row=Array(n).fill(null);for(let i=0;i<A.length;i++)row[n-A.length+i-shift]=A[i]*B[j];addRow(table,'',row,degree)}}
-if(stage>=3)addRow(table,'+',answer,degree,false,'total');
-if(stage>=4)addRow(table,'',answer,degree,true,'total');
-get('canvas').replaceChildren(table);
-if(stage===0||stage===4){let line=document.createElement('div');line.className='result';line.innerHTML=stage===0?'('+poly(A)+')('+poly(B)+')':poly(answer);get('canvas').append(line)}
-get('prev').disabled=stage===0;get('next').disabled=stage===4}
-get('preset').onchange=()=>{caseIndex=+get('preset').value;A=cases[caseIndex][0].slice();B=cases[caseIndex][1].slice();stage=0;fields();render()};
-get('restore').onclick=()=>{A=cases[caseIndex][0].slice();B=cases[caseIndex][1].slice();fields();render()};
-get('prev').onclick=()=>{stage=Math.max(0,stage-1);render()};get('next').onclick=()=>{stage=Math.min(4,stage+1);render()};get('print').onclick=()=>window.print();
-fields();render();
+const $=id=>document.getElementById(id), clone=x=>({a:x.a.slice(),b:x.b.slice(),group:x.group});
+let mode='bank',index=0,randomHistory=[],stage=0,current=clone(bank[0]);
+const pow=n=>n===0?'':n===1?'x':'x<sup>'+n+'</sup>';
+const labelPow=n=>n===0?'#':n===1?'x':'x'+n;
+function formatPoly(a){
+ let s='';const d=a.length-1;
+ for(let i=0;i<a.length;i++){const v=a[i],k=d-i;if(!v)continue;
+ const part=(k&&Math.abs(v)===1?'':Math.abs(v))+pow(k);
+ s+=(s?(v<0?' − ':' + '):(v<0?'−':''))+part;
+ }return s||'0';
+}
+function mul(a,b){const out=Array(a.length+b.length-1).fill(0);a.forEach((v,i)=>b.forEach((w,j)=>{out[i+j]+=v*w}));return out}
+function rnd(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function nz(min,max){let n;do{n=rnd(min,max)}while(!n);return n}
+function randomItem(){let d=rnd(0,3),al=d===3?2:3,bl=d===2?3:2;let kind=rnd(0,3);
+ const maker=len=>Array.from({length:len},(_,i)=>{const mag=kind===3?rnd(3,18):rnd(1,9);return (kind===0?1:kind===1?-1:Math.random()<.5?-1:1)*mag});
+ let a=maker(al),b=maker(bl);a[0]=nz(1,9);b[0]=nz(1,9);return{a,b,group:'Random practice'}
+}
+function setQuestion(idx,retainStage=true){index=Math.max(0,idx);if(mode==='bank')index=Math.min(index,bank.length-1);
+ else {while(index>=randomHistory.length)randomHistory.push(randomItem())}
+ current=clone(mode==='bank'?bank[index]:randomHistory[index]);
+ if(!retainStage)stage=0;
+ buildFields();refreshPicker();render();
+}
+function refreshPicker(){const sel=$('preset');sel.replaceChildren();
+ const items=mode==='bank'?bank:randomHistory;
+ items.forEach((q,i)=>{const op=document.createElement('option');op.value=i;op.textContent=(i+1)+' · '+q.group;sel.append(op)});
+ sel.value=String(index);
+ $('previousQuestion').disabled=index===0;
+ $('nextQuestion').disabled=mode==='bank'&&index===bank.length-1;
+}
+function buildFields(){
+ $('fields').replaceChildren();
+ [['First factor','a'],['Second factor','b']].forEach(([title,key])=>{
+ const group=document.createElement('div');group.className='factor-inputs';group.setAttribute('aria-label',title);
+ current[key].forEach((v,i)=>{
+ const power=current[key].length-i-1;
+ const lab=document.createElement('label');lab.className='field';lab.textContent=labelPow(power);
+ const inp=document.createElement('input');inp.type='number';inp.step='1';inp.min='-999';inp.max='999';inp.value=v;inp.setAttribute('aria-label',title+' coefficient of '+labelPow(power));
+ inp.addEventListener('input',()=>{
+   if(inp.value.trim()===''||!Number.isInteger(Number(inp.value))||Math.abs(Number(inp.value))>999){inp.setAttribute('aria-invalid','true');return}
+   inp.removeAttribute('aria-invalid');current[key][i]=Number(inp.value);render()
+ });
+ lab.append(inp);group.append(lab);
+ });$('fields').append(group);
+ });
+}
+function row(table,name,values,kind='',powers=false){const tr=document.createElement('tr');tr.className=kind;const first=document.createElement('td');first.className='tag';first.textContent=name;tr.append(first);
+ values.forEach((val,i)=>{const td=document.createElement('td');let k=values.length-i-1;td.innerHTML=(val===null?'':String(val)+(powers&&val&&k?pow(k):''));tr.append(td)});table.append(tr)}
+function render(){
+ const {a,b}=current,ans=mul(a,b),n=ans.length,deg=n-1;
+ $('stageTitle').textContent=stages[stage];$('stages').replaceChildren();
+ stages.forEach((s,i)=>{const btn=document.createElement('button');btn.textContent=s;btn.setAttribute('aria-pressed',String(i===stage));btn.onclick=()=>{stage=i;render()};$('stages').append(btn)});
+ const canvas=$('canvas');canvas.replaceChildren();
+ const formula=document.createElement('div');formula.className='math-factor';
+ formula.innerHTML='('+formatPoly(a)+')('+formatPoly(b)+')';canvas.append(formula);
+ const table=document.createElement('table');const hdr=document.createElement('tr');hdr.append(document.createElement('th'));
+ for(let p=deg;p>=0;p--){const th=document.createElement('th');th.innerHTML=p===0?'#':pow(p);hdr.append(th)}table.append(hdr);
+ const pad=x=>Array(n-x.length).fill(0).concat(x);
+ row(table,'',pad(a),'',stage===0);
+ row(table,'',pad(b),'line',stage===0);
+ if(stage>=2){
+  for(let j=b.length-1;j>=0;j--){
+    const shift=b.length-1-j;let vals=Array(n).fill(0);
+    for(let i=0;i<a.length;i++)vals[n-a.length+i-shift]=a[i]*b[j];
+    row(table,'',vals);
+  }
+ }
+ if(stage>=3)row(table,'+',ans,'total');
+ if(stage>=4)row(table,'',ans,'total',true);
+ canvas.append(table);
+ if(stage===4){const final=document.createElement('div');final.className='result';final.innerHTML=formatPoly(ans);canvas.append(final)}
+ $('prev').disabled=stage===0;$('next').disabled=stage===4;
+}
+$('mode').onchange=()=>{mode=$('mode').value;index=0;if(mode==='random'){randomHistory=[randomItem()]}setQuestion(0,false)};
+$('preset').onchange=()=>setQuestion(+$('preset').value);
+$('previousQuestion').onclick=()=>setQuestion(index-1);
+$('nextQuestion').onclick=()=>setQuestion(index+1);
+$('restore').onclick=()=>setQuestion(index);
+$('prev').onclick=()=>{stage=Math.max(0,stage-1);render()};
+$('next').onclick=()=>{stage=Math.min(4,stage+1);render()};
+$('print').onclick=()=>window.print();
+buildFields();refreshPicker();render();
 })();
 </script></body></html>
