@@ -1,57 +1,247 @@
 {
-  "Number": {"introduction": "Numbers, sets, operations, proportional reasoning and numerical structure.", "topics": [
-    {"slug": "sets", "title": "Sets and subsets", "ready": true},
-    {"slug": "number-systems", "title": "Number systems", "ready": false},
-    {"slug": "fractions", "title": "Fractions and decimals", "ready": false},
-    {"slug": "percentages", "title": "Percentages", "ready": false},
-    {"slug": "ratio", "title": "Ratio and proportion", "ready": false},
-    {"slug": "indices", "title": "Indices and surds", "ready": false},
-    {"slug": "financial-maths", "title": "Financial mathematics", "ready": false}
-  ]},
-  "Algebra": {"introduction": "Expressions, equations, patterns, generalisation and algebraic reasoning.", "topics": [
-    {"slug": "sequences", "title": "Sequences", "ready": true},
-    {"slug": "factorising", "title": "Factorising", "ready": true},
-    {"slug": "expressions", "title": "Expressions and notation", "ready": false},
-    {"slug": "linear-equations", "title": "Linear equations", "ready": false},
-    {"slug": "simultaneous-equations", "title": "Simultaneous equations", "ready": false},
-    {"slug": "inequalities", "title": "Inequalities", "ready": false}
-  ]},
-  "Geometry": {"introduction": "Shapes, measurement, constructions, proof and trigonometric relationships.", "topics": [
-    {"slug": "triangle-rules", "title": "Triangle Rules", "ready": true},
-    {"slug": "angles", "title": "Angles and lines", "ready": false},
-    {"slug": "triangles", "title": "Triangles and similarity", "ready": false},
-    {"slug": "circles", "title": "Circles", "ready": false},
-    {"slug": "coordinate-geometry", "title": "Coordinate geometry", "ready": false},
-    {"slug": "transformations", "title": "Transformations", "ready": false},
-    {"slug": "area-volume", "title": "Area and volume", "ready": false}
-  ]},
-  "Probability": {"introduction": "Chance, outcomes, events, conditional reasoning and random processes.", "topics": [
-    {"slug": "tree-diagrams", "title": "Tree diagrams", "ready": true},
-    {"slug": "sample-spaces", "title": "Sample spaces", "ready": false},
-    {"slug": "probability-rules", "title": "Probability rules", "ready": false},
-    {"slug": "conditional-probability", "title": "Conditional probability", "ready": false},
-    {"slug": "distributions", "title": "Distributions", "ready": false}
-  ]},
-  "Statistics": {"introduction": "Collecting, describing, representing and interpreting data.", "topics": [
-    {"slug": "describing-data", "title": "Describing data", "ready": true},
-    {"slug": "charts", "title": "Charts and displays", "ready": false},
-    {"slug": "sampling", "title": "Sampling and bias", "ready": false},
-    {"slug": "spread", "title": "Measures of spread", "ready": false},
-    {"slug": "correlation", "title": "Correlation and regression", "ready": false}
-  ]},
-  "Functions": {"introduction": "Relationships, graphs, transformations and mathematical models.", "topics": [
-    {"slug": "quadratic-functions", "title": "Quadratic functions", "ready": true},
-    {"slug": "function-notation", "title": "Function notation", "ready": false},
-    {"slug": "linear-functions", "title": "Linear functions", "ready": false},
-    {"slug": "exponential", "title": "Exponential functions", "ready": false},
-    {"slug": "trigonometric", "title": "Trigonometric functions", "ready": false},
-    {"slug": "calculus", "title": "Calculus", "ready": false}
-  ]},
-  "Combinatorics": {"introduction": "Counting systematically, arrangements, selections and patterns.", "topics": [
-    {"slug": "counting", "title": "Counting principles", "ready": true},
-    {"slug": "factorials", "title": "Factorials", "ready": false},
-    {"slug": "permutations", "title": "Permutations", "ready": false},
-    {"slug": "combinations", "title": "Combinations", "ready": false},
-    {"slug": "pascals-triangle", "title": "Pascal's triangle", "ready": false}
-  ]}
+  "Number": {
+    "introduction": "Numbers, sets, operations, proportional reasoning and numerical structure.",
+    "topics": [
+      {
+        "slug": "sets",
+        "title": "Sets and subsets",
+        "ready": true
+      },
+      {
+        "slug": "number-systems",
+        "title": "Number systems",
+        "ready": false
+      },
+      {
+        "slug": "fractions",
+        "title": "Fractions and decimals",
+        "ready": false
+      },
+      {
+        "slug": "percentages",
+        "title": "Percentages",
+        "ready": false
+      },
+      {
+        "slug": "ratio",
+        "title": "Ratio and proportion",
+        "ready": false
+      },
+      {
+        "slug": "indices",
+        "title": "Indices and surds",
+        "ready": false
+      },
+      {
+        "slug": "financial-maths",
+        "title": "Financial mathematics",
+        "ready": false
+      }
+    ]
+  },
+  "Algebra": {
+    "introduction": "Expressions, equations, patterns, generalisation and algebraic reasoning.",
+    "topics": [
+      {
+        "slug": "sequences",
+        "title": "Sequences",
+        "ready": true
+      },
+      {
+        "slug": "factorising",
+        "title": "Factorising",
+        "ready": true
+      },
+      {
+        "slug": "expressions",
+        "title": "Expressions and notation",
+        "ready": false
+      },
+      {
+        "slug": "linear-equations",
+        "title": "Linear equations",
+        "ready": false
+      },
+      {
+        "slug": "simultaneous-equations",
+        "title": "Simultaneous equations",
+        "ready": false
+      },
+      {
+        "slug": "inequalities",
+        "title": "Inequalities",
+        "ready": false
+      }
+    ]
+  },
+  "Geometry": {
+    "introduction": "Shapes, measurement, constructions, proof and trigonometric relationships.",
+    "topics": [
+      {
+        "slug": "triangle-rules",
+        "title": "Triangle Rules",
+        "ready": true
+      },
+      {
+        "slug": "angles",
+        "title": "Angles and lines",
+        "ready": false
+      },
+      {
+        "slug": "triangles",
+        "title": "Triangles and similarity",
+        "ready": false
+      },
+      {
+        "slug": "circles",
+        "title": "Circles",
+        "ready": false
+      },
+      {
+        "slug": "coordinate-geometry",
+        "title": "Coordinate geometry",
+        "ready": false
+      },
+      {
+        "slug": "transformations",
+        "title": "Transformations",
+        "ready": false
+      },
+      {
+        "slug": "area-volume",
+        "title": "Area and volume",
+        "ready": false
+      }
+    ]
+  },
+  "Probability": {
+    "introduction": "Chance, outcomes, events, conditional reasoning and random processes.",
+    "topics": [
+      {
+        "slug": "theoretical-experimental",
+        "title": "Theoretical and experimental probability",
+        "ready": true
+      },
+      {
+        "slug": "tree-diagrams",
+        "title": "Tree diagrams",
+        "ready": true
+      },
+      {
+        "slug": "sample-spaces",
+        "title": "Sample spaces",
+        "ready": false
+      },
+      {
+        "slug": "probability-rules",
+        "title": "Probability rules",
+        "ready": false
+      },
+      {
+        "slug": "conditional-probability",
+        "title": "Conditional probability",
+        "ready": false
+      },
+      {
+        "slug": "distributions",
+        "title": "Distributions",
+        "ready": false
+      }
+    ]
+  },
+  "Statistics": {
+    "introduction": "Collecting, describing, representing and interpreting data.",
+    "topics": [
+      {
+        "slug": "describing-data",
+        "title": "Describing data",
+        "ready": true
+      },
+      {
+        "slug": "charts",
+        "title": "Charts and displays",
+        "ready": false
+      },
+      {
+        "slug": "sampling",
+        "title": "Sampling and bias",
+        "ready": false
+      },
+      {
+        "slug": "spread",
+        "title": "Measures of spread",
+        "ready": false
+      },
+      {
+        "slug": "correlation",
+        "title": "Correlation and regression",
+        "ready": false
+      }
+    ]
+  },
+  "Functions": {
+    "introduction": "Relationships, graphs, transformations and mathematical models.",
+    "topics": [
+      {
+        "slug": "quadratic-functions",
+        "title": "Quadratic functions",
+        "ready": true
+      },
+      {
+        "slug": "function-notation",
+        "title": "Function notation",
+        "ready": false
+      },
+      {
+        "slug": "linear-functions",
+        "title": "Linear functions",
+        "ready": false
+      },
+      {
+        "slug": "exponential",
+        "title": "Exponential functions",
+        "ready": false
+      },
+      {
+        "slug": "trigonometric",
+        "title": "Trigonometric functions",
+        "ready": false
+      },
+      {
+        "slug": "calculus",
+        "title": "Calculus",
+        "ready": false
+      }
+    ]
+  },
+  "Combinatorics": {
+    "introduction": "Counting systematically, arrangements, selections and patterns.",
+    "topics": [
+      {
+        "slug": "counting",
+        "title": "Counting principles",
+        "ready": true
+      },
+      {
+        "slug": "factorials",
+        "title": "Factorials",
+        "ready": false
+      },
+      {
+        "slug": "permutations",
+        "title": "Permutations",
+        "ready": false
+      },
+      {
+        "slug": "combinations",
+        "title": "Combinations",
+        "ready": false
+      },
+      {
+        "slug": "pascals-triangle",
+        "title": "Pascal's triangle",
+        "ready": false
+      }
+    ]
+  }
 }
