@@ -44,7 +44,7 @@ const bank=[
 ];
 const stages=['1. Stacked factors','2. Strip the powers','3. Partial products','4. Add the columns','5. Restore the powers'];
 const $=id=>document.getElementById(id), clone=x=>({a:x.a.slice(),b:x.b.slice(),group:x.group});
-let mode='bank',index=0,randomHistory=[],stage=0,current=clone(bank[0]);
+let mode='bank',index=0,randomHistory=[],stage=0,answerOnly=false,current=clone(bank[0]);
 const pow=n=>n===0?'':n===1?'x':'x<sup>'+n+'</sup>';
 const labelPow=n=>n===0?'#':n===1?'x':'x'+n;
 function formatPoly(a){
@@ -64,7 +64,7 @@ function randomItem(){let d=rnd(0,3),al=d===3?2:3,bl=d===2?3:2;let kind=rnd(0,3)
 function setQuestion(idx,retainStage=true){index=Math.max(0,idx);if(mode==='bank')index=Math.min(index,bank.length-1);
  else {while(index>=randomHistory.length)randomHistory.push(randomItem())}
  current=clone(mode==='bank'?bank[index]:randomHistory[index]);
- if(!retainStage)stage=0;
+ if(!retainStage){stage=0;answerOnly=false;}
  buildFields();refreshPicker();render();
 }
 function refreshPicker(){const sel=$('preset');sel.replaceChildren();
@@ -95,10 +95,11 @@ function row(table,name,values,kind='',powers=false){const tr=document.createEle
 function render(){
  const {a,b}=current,ans=mul(a,b),n=ans.length,deg=n-1;
  $('stageTitle').textContent=stages[stage];$('stages').replaceChildren();
- stages.forEach((s,i)=>{const btn=document.createElement('button');btn.textContent=s;btn.setAttribute('aria-pressed',String(i===stage));btn.onclick=()=>{stage=i;render()};$('stages').append(btn)});
+ stages.forEach((s,i)=>{const btn=document.createElement('button');btn.textContent=s;btn.setAttribute('aria-pressed',String(i===stage));btn.onclick=()=>{stage=i;answerOnly=false;render()};$('stages').append(btn)});
  const canvas=$('canvas');canvas.replaceChildren();
  const formula=document.createElement('div');formula.className='math-factor';
  formula.innerHTML='('+formatPoly(a)+')('+formatPoly(b)+')';canvas.append(formula);
+ if(answerOnly){const final=document.createElement('div');final.className='result';final.innerHTML=formatPoly(ans);canvas.append(final);$('prev').disabled=true;$('next').disabled=true;return}
  const table=document.createElement('table');const hdr=document.createElement('tr');hdr.append(document.createElement('th'));
  for(let p=deg;p>=0;p--){const th=document.createElement('th');th.innerHTML=p===0?'#':pow(p);hdr.append(th)}table.append(hdr);
  const pad=x=>Array(n-x.length).fill(0).concat(x);
@@ -122,11 +123,11 @@ $('preset').onchange=()=>setQuestion(+$('preset').value);
 $('previousQuestion').onclick=()=>setQuestion(index-1);
 $('nextQuestion').onclick=()=>setQuestion(index+1);
 $('restore').onclick=()=>setQuestion(index);
-$('prev').onclick=()=>{stage=Math.max(0,stage-1);render()};
-$('next').onclick=()=>{stage=Math.min(4,stage+1);render()};
+$('prev').onclick=()=>{answerOnly=false;stage=Math.max(0,stage-1);render()};
+$('next').onclick=()=>{answerOnly=false;stage=Math.min(4,stage+1);render()};
 $('print').onclick=()=>window.print();
-buildFields();refreshPicker();$('showAnswer').onclick=()=>{stage=4;render()};
-$('hideWorking').onclick=()=>{stage=0;render()};
+buildFields();refreshPicker();$('showAnswer').onclick=()=>{answerOnly=true;render()};
+$('hideWorking').onclick=()=>{answerOnly=false;stage=0;render()};
 render();
 })();
 </script></body></html>
