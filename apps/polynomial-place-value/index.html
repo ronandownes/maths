@@ -103,7 +103,7 @@ const copy=x=>({a:[...x.a],b:[...x.b],type:x.type,sign:x.sign,level:x.level});
 const state={type:'ll',sign:'positive',level:1,mode:'question',step:0,selected:0,randomNumber:0,question:copy(bank[0]),randomHistory:[],randomIndex:-1};
 const power=n=>n===0?'':n===1?'x':'x<sup>'+n+'</sup>';
 function formatPoly(a){let s='',d=a.length-1;for(let i=0;i<a.length;i++){let v=a[i],k=d-i;if(v===0)continue;let term=(k&&Math.abs(v)===1?'':Math.abs(v))+power(k);s+=(s?(v<0?' − ':' + '):(v<0?'−':''))+term;}return s||'0'}
-function multiply(a,b){let result=Array(a.length+b.length-1).fill(0);a.forEach((v,i)=>b.forEach((w,j)=>{result[i+j]+=v*w});return result}
+function multiply(a,b){let result=Array(a.length+b.length-1).fill(0);a.forEach((v,i)=>b.forEach((w,j)=>{result[i+j]+=v*w}));return result}
 const rand=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 function generate(){let type=state.type,al=type==='ll'?2:3,bl=type==='qq'?3:2,level=state.level,sign=state.sign;
  function coefficients(n){let high=level===3?18:level===2?8:5;
