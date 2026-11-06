@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Polynomial multiplication | Maths</title><link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#202124;background:#f1f3f4}*{box-sizing:border-box}body{margin:0}
+header{display:flex;justify-content:space-between;gap:18px;align-items:center;background:white;border-bottom:1px solid #dadce0;padding:10px max(18px,calc((100vw - 1150px)/2));flex-wrap:wrap}
+.identity{display:flex;align-items:center;gap:16px}.identity img{width:145px;max-width:24vw;display:block}.identity a{color:#174ea6}.identity h1{font-size:1.4rem;margin:2px 0}
+main{max-width:1150px;margin:22px auto;background:white;padding:24px 28px 40px;min-height:85vh}
+button,select,input{font:inherit;border:1px solid #a5adb8;border-radius:7px;background:white;padding:10px;color:#202124}button{cursor:pointer}button[aria-pressed=true]{background:#e8f0fe;border-color:#1a73e8}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #4285f4;outline-offset:2px}
+.controls,.stages,.fieldgroups,.nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}.controls label{font-weight:600}
+.fieldgroups{gap:25px;align-items:end}.field{display:flex;flex-direction:column;gap:5px;color:#596474;font-size:.85rem}
+.field input{width:100px;min-width:100px;font-size:1.25rem;padding:10px 12px;appearance:textfield;-moz-appearance:textfield}
+.field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.stages{margin-top:20px}.stages button{font-size:.97rem}.canvas{overflow-x:auto;border:1px solid #d7dde4;border-radius:10px;padding:22px 16px;min-height:335px}
+table{margin:auto;border-collapse:collapse;table-layout:fixed;width:min(100%,800px);font-variant-numeric:tabular-nums}td,th{text-align:center;padding:10px 5px;font-size:clamp(1.35rem,2.4vw,2rem);white-space:nowrap}th{font-size:1.12rem;color:#657080;font-weight:500}td.tag{font: .85rem Arial,sans-serif;color:#657080;text-align:right;width:100px}
+tr.line td{border-bottom:2px solid #9ca3af}tr.total td{font-weight:700;border-top:2px solid #9ca3af}
+.result{font:2rem/1.5 'Cambria Math',Cambria,Georgia,serif;text-align:center;margin-top:19px}.result sup{font-size:.63em}
+.nav{justify-content:space-between;margin-top:17px}.nav button{min-width:100px}#prev:disabled,#next:disabled{opacity:.4;cursor:default}
+@media(max-width:700px){main{padding:15px 9px}.identity img{width:90px}.field input{min-width:83px;width:83px}td,th{font-size:1.25rem;padding:8px 4px}td.tag{width:58px;font-size:.7rem}.canvas{padding:12px 4px}.stages button{font-size:.82rem}}
+@media print{header,.controls,.fieldgroups,.stages,.nav{display:none!important}body,main{background:white;margin:0;max-width:none;padding:0;min-height:0}.canvas{border:none;min-height:0;padding:16mm 0}td,th{font-size:20pt}.result{font-size:24pt}#stageTitle{font-size:18pt}}
+</style></head><body>
+<header><div class="identity"><a href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"></a><div><a href="../../algebra/index.html">Algebra</a><h1>Polynomial multiplication</h1></div></div><button id="print">Print current stage</button></header>
+<main><div class="controls"><label for="preset">Question</label><select id="preset">
+<option value="0">1 · Quadratic by linear</option><option value="1">2 · Quadratic by linear, mixed signs</option>
+<option value="2">3 · Quadratic by quadratic</option><option value="3">4 · Larger signed coefficients</option>
+<option value="4">5 · Quadratic by quadratic, mixed signs</option><option value="5">6 · Linear by linear</option>
+</select><button id="restore">Restore coefficients</button></div>
+<div class="fieldgroups" id="fields" aria-label="Polynomial coefficients"></div>
+<div class="stages" id="stages" role="group" aria-label="Multiplication stages"></div>
+<h2 id="stageTitle"></h2><div class="canvas" id="canvas" aria-live="polite"></div>
+<div class="nav"><button id="prev">Previous</button><button id="next">Next step</button></div></main>
+<script>
+(()=>{'use strict';
+const cases=[[[2,3,4],[5,6]],[[3,-4,5],[7,-2]],[[2,3,4],[5,1,-3]],[[-12,7,-18],[13,17]],[[2,-4,6],[-3,2,-5]],[[3,2],[11,-4]]];
+const stages=['1. Stacked factors','2. Strip the powers','3. Partial products','4. Add the columns','5. Restore the powers'];
+let caseIndex=0,A=cases[0][0].slice(),B=cases[0][1].slice(),stage=0;
+const get=id=>document.getElementById(id), pow=n=>n===0?'':n===1?'x':'x<sup>'+n+'</sup>';
+function poly(a){let out='';let degree=a.length-1;for(let i=0;i<a.length;i++){let n=a[i],k=degree-i;if(!n)continue;const magnitude=Math.abs(n),term=(k&&magnitude===1?'':magnitude)+pow(k);out+=(out?(n<0?' − ':' + '):(n<0?'−':''))+term}return out||'0'}
+function multiply(a,b){let c=Array(a.length+b.length-1).fill(0);a.forEach((n,i)=>b.forEach((m,j)=>c[i+j]+=n*m));return c}
+function addRow(table,name,arr,degree,showPowers=false,kind=''){let tr=document.createElement('tr');tr.className=kind;let tag=document.createElement('td');tag.className='tag';tag.textContent=name;tr.append(tag);for(let i=0;i<arr.length;i++){let td=document.createElement('td'),v=arr[i];td.innerHTML=v===null?'':String(v)+(showPowers&&v&&degree-i?pow(degree-i):'');tr.append(td)}table.append(tr)}
+function fields(){get('fields').replaceChildren();[['A',A],['B',B]].forEach(([name,arr])=>{let grp=document.createElement('div');grp.className='fieldgroups';arr.forEach((v,i)=>{let lab=document.createElement('label');lab.className='field';let power=arr.length-i-1;lab.textContent=power===0?'#':power===1?'x':'x'+power;let input=document.createElement('input');input.type='number';input.step='1';input.value=v;input.setAttribute('aria-label',name+' coefficient of '+lab.textContent);input.addEventListener('input',()=>{if(input.value===''||!Number.isInteger(+input.value)||Math.abs(+input.value)>999)return;arr[i]=+input.value;render()});lab.append(input);grp.append(lab)});get('fields').append(grp)})}
+function render(){get('stageTitle').textContent=stages[stage];get('stages').replaceChildren();stages.forEach((title,i)=>{let b=document.createElement('button');b.textContent=title;b.setAttribute('aria-pressed',String(stage===i));b.onclick=()=>{stage=i;render()};get('stages').append(b)});
+const answer=multiply(A,B),degree=answer.length-1,n=degree+1;
+const pad=a=>Array(n-a.length).fill(null).concat(a);
+const table=document.createElement('table');let header=document.createElement('tr');header.append(document.createElement('th'));
+for(let k=degree;k>=0;k--){let th=document.createElement('th');th.innerHTML=k===0?'#':pow(k);header.append(th)}table.append(header);
+addRow(table,'',pad(A),degree,stage===0);addRow(table,'',pad(B),degree,stage===0,'line');
+if(stage>=2){for(let j=B.length-1;j>=0;j--){let shift=B.length-1-j;let row=Array(n).fill(null);for(let i=0;i<A.length;i++)row[n-A.length+i-shift]=A[i]*B[j];addRow(table,'',row,degree)}}
+if(stage>=3)addRow(table,'+',answer,degree,false,'total');
+if(stage>=4)addRow(table,'',answer,degree,true,'total');
+get('canvas').replaceChildren(table);
+if(stage===0||stage===4){let line=document.createElement('div');line.className='result';line.innerHTML=stage===0?'('+poly(A)+')('+poly(B)+')':poly(answer);get('canvas').append(line)}
+get('prev').disabled=stage===0;get('next').disabled=stage===4}
+get('preset').onchange=()=>{caseIndex=+get('preset').value;A=cases[caseIndex][0].slice();B=cases[caseIndex][1].slice();stage=0;fields();render()};
+get('restore').onclick=()=>{A=cases[caseIndex][0].slice();B=cases[caseIndex][1].slice();fields();render()};
+get('prev').onclick=()=>{stage=Math.max(0,stage-1);render()};get('next').onclick=()=>{stage=Math.min(4,stage+1);render()};get('print').onclick=()=>window.print();
+fields();render();
+})();
+</script></body></html>
