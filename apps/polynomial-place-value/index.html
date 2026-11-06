@@ -26,6 +26,8 @@ td,th{font-family:Cambria,"Cambria Math",Georgia,serif}.result{margin-top:12px}
 </style></head><body>
 <header><div class="identity"><a href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"></a><div><a href="../../algebra/index.html">Algebra</a><h1>Polynomial multiplication</h1></div></div><button id="print">Print current stage</button></header>
 <main><div class="controls"><label for="mode">Practice</label><select id="mode"><option value="bank">Fixed question bank</option><option value="random">Random questions</option></select>
+<label for="signs">Signs</label><select id="signs"><option value="mixed">Mixed</option><option value="positive">Both +</option><option value="negative">Both −</option><option value="plusminus">First +, second −</option><option value="minusplus">First −, second +</option></select>
+<label for="monic">Monic</label><select id="monic"><option value="any">Any</option><option value="first">First factor</option><option value="second">Second factor</option><option value="both">Both factors</option><option value="neither">Neither</option></select>
 <label for="preset">Question</label><select id="preset"></select>
 <button id="previousQuestion" type="button">← Previous question</button><button id="nextQuestion" type="button">Next question →</button>
 <button id="restore" type="button">Restore coefficients</button></div>
@@ -57,10 +59,23 @@ function formatPoly(a){
 function mul(a,b){const out=Array(a.length+b.length-1).fill(0);a.forEach((v,i)=>b.forEach((w,j)=>{out[i+j]+=v*w}));return out}
 function rnd(min,max){return Math.floor(Math.random()*(max-min+1))+min}
 function nz(min,max){let n;do{n=rnd(min,max)}while(!n);return n}
-function randomItem(){let d=rnd(0,3),al=d===3?2:3,bl=d===2?3:2;let kind=rnd(0,3);
- const maker=len=>Array.from({length:len},(_,i)=>{const mag=kind===3?rnd(3,18):rnd(1,9);return (kind===0?1:kind===1?-1:Math.random()<.5?-1:1)*mag});
- let a=maker(al),b=maker(bl);a[0]=nz(1,9);b[0]=nz(1,9);return{a,b,group:'Random practice'}
+function randomItem(){
+ const choice=rnd(0,4),al=choice===4?2:3,bl=choice>=2&&choice<=3?3:2;
+ const signs=$('signs').value, monic=$('monic').value;
+ const mag=()=>rnd(1,9);
+ const withSign=sign=>sign*mag();
+ const both=(signs==='positive'||signs==='negative');
+ const signA=signs==='positive'||signs==='plusminus'?1:signs==='negative'||signs==='minusplus'?-1:rnd(0,1)?1:-1;
+ const signB=signs==='positive'||signs==='minusplus'?1:signs==='negative'||signs==='plusminus'?-1:rnd(0,1)?1:-1;
+ // Leading coefficients stay positive; signs refer to the non-leading terms.
+ const make=(length,sign)=>Array.from({length},(_,i)=>i===0?mag():withSign(both?sign:sign));
+ const a=make(al,signA),b=make(bl,signB);
+ const target=monic==='any'?rnd(0,3):monic==='both'?3:monic==='first'?1:monic==='second'?2:0;
+ if(target&1)a[0]=1;else a[0]=rnd(2,9);
+ if(target&2)b[0]=1;else b[0]=rnd(2,9);
+ return{a,b,group:'Random · '+(signs==='positive'?'positive':signs==='negative'?'negative':signs==='mixed'?'mixed signs':signs==='plusminus'?'+ then −':'− then +')+(monic==='any'?'':' · '+monic+' monic')};
 }
+
 function setQuestion(idx,retainStage=true){index=Math.max(0,idx);if(mode==='bank')index=Math.min(index,bank.length-1);
  else {while(index>=randomHistory.length)randomHistory.push(randomItem())}
  current=clone(mode==='bank'?bank[index]:randomHistory[index]);
@@ -118,6 +133,9 @@ function render(){
  if(stage===4){const final=document.createElement('div');final.className='result';final.innerHTML=formatPoly(ans);canvas.append(final)}
  $('prev').disabled=stage===0;$('next').disabled=stage===4;
 }
+function resetRandomFilters(){if(mode==='random'){randomHistory=[randomItem()];setQuestion(0,false)}}
+$('signs').onchange=resetRandomFilters;
+$('monic').onchange=resetRandomFilters;
 $('mode').onchange=()=>{mode=$('mode').value;index=0;if(mode==='random'){randomHistory=[randomItem()]}setQuestion(0,false)};
 $('preset').onchange=()=>setQuestion(+$('preset').value);
 $('previousQuestion').onclick=()=>setQuestion(index-1);
