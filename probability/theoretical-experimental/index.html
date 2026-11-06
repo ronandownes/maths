@@ -12,55 +12,94 @@
 <div><main class="paper" id="main"><p class="kicker">Probability</p><h1>Theoretical and experimental probability</h1>
 <p class="intro">Chance, outcomes, events, conditional reasoning and random processes.</p><div class="toolbar"><span class="breadcrumb"><a href="../../index.html">Maths</a> / <a href="../../probability/index.html">Probability</a></span><button type="button" data-print>Print / save PDF</button></div>
 <div class="lesson"><div class="level-cues"><span>Random experiments</span><span>Theoretical probability</span><span>Relative frequency</span></div>
-<p class="lead">If we know the numbers of red and blue counters, we can calculate a probability. If the counters are hidden, we can instead draw samples and estimate it.</p>
+<p class="lead">When the number of each colour is known, we can calculate theoretical probability. When the counters are hidden, we can collect data and estimate probability by relative frequency.</p>
 <style>
 .counter-lab{border:1px solid #d8dee7;border-radius:14px;padding:20px;margin:20px 0;background:#fafbfe}
-.counter-lab .discs{display:flex;flex-wrap:wrap;gap:7px;min-height:66px;align-items:center;margin:16px 0}
-.counter-lab .disc{display:inline-block;width:29px;height:29px;border-radius:50%;box-shadow:inset 0 -3px 0 #0002;border:1px solid #0002}
+.counter-lab .disc{display:inline-block;width:29px;height:29px;border-radius:50%;box-shadow:inset 0 -3px 0 #0002;border:1px solid #0002;flex:none}
 .counter-lab .red{background:#d74747}.counter-lab .blue{background:#3276dc}
 .counter-lab button{padding:10px 15px;border:1px solid #9baec4;border-radius:9px;background:white;color:#17334c;cursor:pointer;margin:4px 8px 4px 0;font-size:1rem}
-.counter-lab button:focus-visible{outline:3px solid #266ed3}
+.counter-lab button:disabled{opacity:.5;cursor:not-allowed}.counter-lab button:focus-visible{outline:3px solid #266ed3}
 .counter-lab .lab-output{font-size:1.15rem;font-weight:650;margin-top:10px}
 .counter-lab .bag{width:125px;height:130px;border-radius:18px 18px 50px 50px;background:linear-gradient(120deg,#b59b70,#d3bd8e);border:3px solid #8f7854;display:flex;align-items:center;justify-content:center;font-size:2.6rem;margin:12px auto}
 .counter-lab .muted{color:#536275;font-size:.95rem}.counter-lab .meter{height:16px;border-radius:8px;background:#dde5f1;overflow:hidden;margin:12px 0}
 .counter-lab .meter>span{display:block;background:#d74747;height:100%;width:0;transition:width .2s}
+.counter-lab .counter-tray{position:relative;width:100%;max-width:400px;height:200px;border:2px solid #cbd5e1;border-radius:48% / 30%;background:#fff;margin:12px auto;overflow:hidden}
+.counter-lab .counter-tray .disc{position:absolute;transform:translate(-50%,-50%);transition:opacity .18s,transform .18s}
+.counter-lab .sample-disc-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;min-height:55px;padding:10px;background:white;border:1px solid #d9e1ed;border-radius:10px}
+.counter-lab .sample-groups{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.counter-lab .sample-groups>div{padding:12px;border:1px solid #d9e1ed;background:white;border-radius:10px;min-height:90px}
+.counter-lab .sample-groups .sample-disc-row{border:0;padding:7px 0}
+.counter-lab .step-label{font-weight:700;letter-spacing:.02em}
+.counter-lab .count-block{padding:12px;background:white;border-radius:9px;border:1px solid #d9e1ed}
 @media print{.counter-lab button{display:none}}
 </style>
-<h2>1. Theoretical probability: when the counters are visible</h2>
-<p>There are <strong>6 red</strong> and <strong>4 blue</strong> counters. A counter is chosen at random. What is the probability that it is red?</p>
-<div class="counter-lab" id="known-lab">
-<div class="discs" aria-label="Six red counters and four blue counters"><span class="disc red"></span><span class="disc blue"></span><span class="disc red"></span><span class="disc red"></span><span class="disc blue"></span><span class="disc red"></span><span class="disc blue"></span><span class="disc red"></span><span class="disc blue"></span><span class="disc red"></span></div>
-<p class="lab-output">P(red) = 6/10 = 0.6 = 60%</p>
-<button type="button" id="known-pick">Pick one at random</button><span id="known-result" role="status">Predict the result first.</span>
-<p class="muted">Every counter has an equal chance of being selected.</p></div>
-<h2>2. Experimental probability: when the counters are hidden</h2>
-<p>A well-mixed bag contains <strong>1,000 counters</strong>, some red and some blue. We do not know the proportions. Draw a sample of ten counters <strong>without replacement</strong>, record the results, and repeat. Use the observed relative frequency to estimate P(red).</p>
-<div class="counter-lab" id="hidden-lab">
-<div class="bag" aria-label="Opaque bag of one thousand hidden coloured counters">?</div>
-<button type="button" id="draw-ten">Draw 10 counters</button><button type="button" id="reset-bag">Start again</button><button type="button" id="reveal-bag">Reveal bag contents</button>
-<div class="discs" id="drawn-discs" aria-live="polite" aria-label="Ten most recently drawn counters"></div>
-<div class="lab-output" id="sample-summary">0 sampled · 0 red · 0 blue</div>
-<div class="meter" aria-hidden="true"><span id="red-meter"></span></div>
-<div id="sample-estimate">Estimated P(red): not yet available</div>
-<div class="muted" id="bag-left">1,000 counters remain.</div>
-<div class="muted" id="bag-secret"></div>
+<h2>1. Theoretical probability — visible counters</h2>
+<p>A shallow tray contains <strong>6 red</strong> and <strong>4 blue</strong> counters. They are scattered, rather than arranged in rows. A counter is selected at random and removed. What is the probability the <em>first</em> counter selected is red?</p>
+<div class="counter-lab">
+<div class="counter-tray" id="known-tray" aria-label="A tray of scattered red and blue counters"></div>
+<p class="lab-output">Before the first draw: P(red) = 6/10 = 0.6</p>
+<button type="button" id="known-pick">Select and remove a counter</button><button type="button" id="reset-known">Restore all 10</button>
+<p id="known-result" role="status">Predict the colour before selecting.</p><p class="muted" id="known-remaining"></p>
+<p class="muted">With each counter removed, the composition changes. The displayed 6/10 refers to the first draw only.</p>
 </div>
-<div class="note"><strong>Important:</strong> Drawing without replacement changes the bag after each draw. This experiment models an unknown fixed mixture; the estimate becomes more informative as more of the bag is sampled. It does not assume that draws are independent.</div>
-<h2>3. Think about it</h2>
-<ol><li>Can the theoretical probability be calculated in the first experiment? Why?</li><li>In the second experiment, can you calculate the exact probability before seeing the bag's composition?</li><li>Would drawing 100 counters usually give a more stable estimate than drawing 10?</li><li>Does drawing without replacement make the successive draws independent?</li></ol>
-<p><strong>Big idea:</strong> Theoretical probability is calculated from a known model. Experimental probability is estimated from observations.</p>
+<h2>2. Experimental probability — hidden counters</h2>
+<p>An opaque bag contains <strong>1,000 counters</strong>, some red and some blue. The proportions are unknown to the student. Draw ten <strong>without replacement</strong>. Observe the unsorted counters first; then arrange by colour; finally count and record them.</p>
+<div class="counter-lab" id="hidden-lab">
+<div class="bag" aria-label="Opaque bag containing one thousand red and blue counters">?</div>
+<div><button type="button" id="draw-ten">1. Draw 10</button><button type="button" id="arrange-ten" disabled>2. Arrange</button><button type="button" id="count-ten" disabled>3. Count</button><button type="button" id="reset-bag">Reset</button></div>
+<p class="step-label" id="drawn-label">Draw a group of ten to begin.</p>
+<div id="sample-raw"><div class="sample-disc-row" id="drawn-discs" aria-live="polite" aria-label="Counters shown in their original draw order"></div></div>
+<div class="sample-groups" id="sample-arranged" hidden>
+<div><strong>Red</strong><div class="sample-disc-row" id="group-red"></div><strong>Count: <span id="group-red-count">?</span></strong></div>
+<div><strong>Blue</strong><div class="sample-disc-row" id="group-blue"></div><strong>Count: <span id="group-blue-count">?</span></strong></div>
+</div>
+<p id="count-result" aria-live="polite"></p>
+<div class="count-block"><p class="lab-output" id="sample-summary">0 sampled</p><div class="meter" aria-hidden="true"><span id="red-meter"></span></div><p id="sample-estimate"></p><p class="muted" id="bag-left"></p></div>
+<button type="button" id="reveal-bag">Reveal original bag composition</button><p class="muted" id="bag-secret" aria-live="polite"></p>
+</div>
+<div class="note"><strong>Important:</strong> Without replacement, probabilities change after each selection. The large bag makes the change small at first, but the draws are not independent. When all 1,000 counters have been drawn and counted, the sample proportion equals the original proportion exactly.</div>
+<h2>3. Think about it</h2><ol><li>How does the chance of red change after removing a red counter from the visible tray?</li><li>What is the difference between the order in which counters are drawn and the arranged data?</li><li>Which is more informative: a sample of 10 or a sample of 100? Why?</li><li>Why is counting a sample different from knowing the exact composition of the bag?</li></ol>
+<p><strong>Big idea:</strong> We calculate theoretical probability from known information. We estimate probability from experiments using relative frequency.</p>
 <script>
 (function(){
 "use strict";
 const $=id=>document.getElementById(id);
-const rnd=n=>Math.floor(Math.random()*n);
-$("known-pick").addEventListener("click",()=>{$("known-result").textContent=rnd(10)<6?"Red counter selected":"Blue counter selected";});
-let remaining=[],reds=0,blues=0,shown=false;
-function reset(){remaining=Array.from({length:1000},(_,i)=>i<600?"red":"blue");reds=0;blues=0;shown=false;$("bag-secret").textContent="";$("drawn-discs").replaceChildren();display();}
-function display(){const n=reds+blues;$("sample-summary").textContent=n+" sampled · "+reds+" red · "+blues+" blue";$("sample-estimate").textContent=n?"Estimated P(red) = "+reds+"/"+n+" = "+(reds/n).toFixed(3):"Estimated P(red): not yet available";$("red-meter").style.width=(n?reds/n*100:0)+"%";$("bag-left").textContent=remaining.length+" counters remain.";$("draw-ten").disabled=remaining.length===0;}
-$("draw-ten").addEventListener("click",()=>{let newest=[];for(let i=0;i<10&&remaining.length;i++){let j=rnd(remaining.length);let colour=remaining[j];remaining[j]=remaining[remaining.length-1];remaining.pop();newest.push(colour);if(colour==="red")reds++;else blues++;}const frag=document.createDocumentFragment();newest.forEach(c=>{let s=document.createElement("span");s.className="disc "+c;s.setAttribute("aria-label",c);frag.appendChild(s);});$("drawn-discs").replaceChildren(frag);display();});
+const random=n=>Math.floor(Math.random()*n);
+function disc(colour){const node=document.createElement("span");node.className="disc "+colour;node.setAttribute("aria-label",colour);return node;}
+const original=["red","blue","red","red","blue","red","blue","red","blue","red"];
+const places=[[18,28],[69,25],[45,17],[83,61],[25,75],[59,79],[35,47],[76,41],[51,58],[13,54]];
+let visible=[];
+function renderTray(){const tray=$("known-tray");tray.replaceChildren();visible.forEach(item=>{const el=disc(item.colour);el.style.left=item.x+"%";el.style.top=item.y+"%";tray.appendChild(el);});$("known-remaining").textContent=visible.length+" counters remain in the tray.";$("known-pick").disabled=!visible.length;}
+function resetKnown(){visible=original.map((colour,i)=>({colour,x:places[i][0],y:places[i][1]}));$("known-result").textContent="Predict the colour before selecting.";renderTray();}
+$("known-pick").addEventListener("click",()=>{if(!visible.length)return;const chosen=visible.splice(random(visible.length),1)[0];renderTray();$("known-result").textContent="Selected: "+chosen.colour+". One counter has disappeared from the tray.";});
+$("reset-known").addEventListener("click",resetKnown);resetKnown();
+let remaining=[],totalRed=0,totalBlue=0,last=[],stage="empty";
+function reset(){remaining=Array.from({length:1000},(_,i)=>i<600?"red":"blue");totalRed=0;totalBlue=0;last=[];stage="empty";$("bag-secret").textContent="";renderSample();}
+function row(element,colours){element.replaceChildren();const frag=document.createDocumentFragment();colours.forEach(c=>frag.appendChild(disc(c)));element.appendChild(frag);}
+function renderSample(){
+const count=totalRed+totalBlue;
+$("sample-summary").textContent=count+" sampled so far · "+totalRed+" red · "+totalBlue+" blue";
+$("sample-estimate").textContent=count?"Cumulative relative frequency of red = "+totalRed+"/"+count+" = "+(totalRed/count).toFixed(3):"Cumulative relative frequency: not yet available";
+$("red-meter").style.width=(count?totalRed/count*100:0)+"%";
+$("bag-left").textContent=remaining.length+" counters remain in the bag.";
+$("draw-ten").disabled=remaining.length===0 || stage==="raw";
+$("arrange-ten").disabled=stage!=="raw";
+$("count-ten").disabled=stage!=="arranged";
+$("drawn-label").textContent=stage==="raw"?"1. Draw — ten counters in the order drawn":stage==="arranged"?"2. Arrange — group the colours":stage==="counted"?"3. Count — add this group to the cumulative totals":"Draw a group of ten to begin.";
+$("sample-raw").hidden=stage==="arranged" || stage==="counted";
+$("sample-arranged").hidden=stage!=="arranged" && stage!=="counted";
+$("count-result").textContent=stage==="counted"?"This draw: "+last.filter(c=>c==="red").length+" red, "+last.filter(c=>c==="blue").length+" blue.":"";
+row($("drawn-discs"),last);
+row($("group-red"),last.filter(c=>c==="red"));
+row($("group-blue"),last.filter(c=>c==="blue"));
+$("group-red-count").textContent=stage==="counted"?last.filter(c=>c==="red").length:"?";
+$("group-blue-count").textContent=stage==="counted"?last.filter(c=>c==="blue").length:"?";
+}
+$("draw-ten").addEventListener("click",()=>{last=[];for(let i=0;i<10&&remaining.length;i++){const j=random(remaining.length);last.push(remaining[j]);remaining[j]=remaining[remaining.length-1];remaining.pop();}stage="raw";renderSample();});
+$("arrange-ten").addEventListener("click",()=>{if(stage!=="raw")return;stage="arranged";renderSample();});
+$("count-ten").addEventListener("click",()=>{if(stage!=="arranged")return;totalRed+=last.filter(c=>c==="red").length;totalBlue+=last.filter(c=>c==="blue").length;stage="counted";renderSample();});
 $("reset-bag").addEventListener("click",reset);
-$("reveal-bag").addEventListener("click",()=>{shown=true;$("bag-secret").textContent="Original bag: 600 red, 400 blue. Theoretical P(red) = 600/1000 = 0.6.";});
+$("reveal-bag").addEventListener("click",()=>{$("bag-secret").textContent="Original bag: 600 red and 400 blue. Theoretical P(red) = 600/1000 = 0.6.";});
 reset();
 })();
 </script></div></main><footer class="site-footer">Maths · Ronan Downes · One collection, organised by topic</footer></div></div>
