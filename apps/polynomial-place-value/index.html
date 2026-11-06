@@ -20,7 +20,7 @@ tr.line td{border-bottom:2px solid #9ca3af}tr.total td{font-weight:700;border-to
 
 .controls{row-gap:12px}.practice-note{color:#606b75;font-size:.95rem;margin:7px 0 14px}.fieldgroups{gap:16px}.fieldgroups>div{display:flex;flex-wrap:wrap;gap:10px;align-items:end}.field{font-size:.88rem}.math-factor{font:1.55rem/1.4 Cambria,"Cambria Math",Georgia,serif;text-align:center;margin:10px 0 18px}.math-factor sup,.result sup{vertical-align:super;font-size:.65em}
 td,th{font-family:Cambria,"Cambria Math",Georgia,serif}.result{margin-top:12px}
-.stage-heading{font-weight:600}
+.stage-heading{font-weight:600}.answer-controls{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 16px}.answer-controls button{font-weight:600}.answer-controls button:first-child{border-color:#657080}@media print{.answer-controls{display:none}}
 @media(max-width:700px){.field input{width:94px;min-width:94px}.controls button{font-size:.88rem}}
 @media print{.practice-note{display:none}.math-factor{font-size:20pt} @page{size:A4;margin:15mm}}
 </style></head><body>
@@ -29,26 +29,18 @@ td,th{font-family:Cambria,"Cambria Math",Georgia,serif}.result{margin-top:12px}
 <label for="preset">Question</label><select id="preset"></select>
 <button id="previousQuestion" type="button">← Previous question</button><button id="nextQuestion" type="button">Next question →</button>
 <button id="restore" type="button">Restore coefficients</button></div>
-<p class="practice-note">Complete two questions from each group. Work through each example, then check your answer.</p>
+<p class="practice-note">Complete Q1–Q4 without help where possible. Use Show answer to check; reveal steps only if needed. Then try random practice.</p>
 <div class="fieldgroups" id="fields" aria-label="Polynomial coefficients"></div>
-<div class="stages" id="stages" role="group" aria-label="Multiplication stages"></div>
+<div class="stages" id="stages" role="group" aria-label="Multiplication stages"></div><div class="answer-controls"><button id="showAnswer" type="button">Show answer directly</button><button id="hideWorking" type="button">Question only</button></div>
 <h2 id="stageTitle"></h2><div class="canvas" id="canvas" aria-live="polite"></div>
 <div class="nav"><button id="prev">Previous</button><button id="next">Next step</button></div></main>
 <script>
 (()=>{'use strict';
 const bank=[
 {group:'Quadratic × linear',a:[2,3,4],b:[5,6]},
-{group:'Quadratic × linear',a:[3,-4,5],b:[7,-2]},
+{group:'Quadratic × linear, signs',a:[3,-4,5],b:[7,-2]},
 {group:'Quadratic × quadratic',a:[2,3,4],b:[5,6,-3]},
-{group:'Quadratic × quadratic',a:[2,-4,6],b:[-3,2,-5]},
-{group:'Mixed signs',a:[4,1,-3],b:[2,-5]},
-{group:'Mixed signs',a:[3,-7,2],b:[4,3]},
-{group:'Larger coefficients',a:[-12,7,-18],b:[13,17]},
-{group:'Larger coefficients',a:[8,-11,9],b:[-4,12]},
-{group:'Quadratic × quadratic',a:[3,2,-1],b:[2,-3,4]},
-{group:'Quadratic × quadratic',a:[-2,4,5],b:[3,1,-2]},
-{group:'Linear × linear',a:[3,2],b:[11,-4]},
-{group:'Linear × linear',a:[7,-3],b:[2,5]}
+{group:'Quadratic × quadratic, signs',a:[2,-4,6],b:[-3,2,-5]}
 ];
 const stages=['1. Stacked factors','2. Strip the powers','3. Partial products','4. Add the columns','5. Restore the powers'];
 const $=id=>document.getElementById(id), clone=x=>({a:x.a.slice(),b:x.b.slice(),group:x.group});
@@ -133,6 +125,8 @@ $('restore').onclick=()=>setQuestion(index);
 $('prev').onclick=()=>{stage=Math.max(0,stage-1);render()};
 $('next').onclick=()=>{stage=Math.min(4,stage+1);render()};
 $('print').onclick=()=>window.print();
-buildFields();refreshPicker();render();
+buildFields();refreshPicker();$('showAnswer').onclick=()=>{stage=4;render()};
+$('hideWorking').onclick=()=>{stage=0;render()};
+render();
 })();
 </script></body></html>
