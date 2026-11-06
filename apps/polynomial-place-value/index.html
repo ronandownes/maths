@@ -1,111 +1,192 @@
 <!doctype html>
-<html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Polynomial multiplication | Maths</title><link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Place-Value Expansion in One Variable | Maths</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <style>
-:root{font-family:Arial,Helvetica,sans-serif;color:#202124;background:#f1f3f4}*{box-sizing:border-box}body{margin:0}
-header{display:flex;justify-content:space-between;gap:18px;align-items:center;background:white;border-bottom:1px solid #dadce0;padding:10px max(18px,calc((100vw - 1150px)/2));flex-wrap:wrap}
-.identity{display:flex;align-items:center;gap:16px}.identity img{width:145px;max-width:24vw;display:block}.identity a{color:#174ea6}.identity h1{font-size:1.4rem;margin:2px 0}
-main{max-width:1150px;margin:22px auto;background:white;padding:24px 28px 40px;min-height:85vh}
-button,select,input{font:inherit;border:1px solid #a5adb8;border-radius:7px;background:white;padding:10px;color:#202124}button{cursor:pointer}button[aria-pressed=true]{background:#e8f0fe;border-color:#1a73e8}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #4285f4;outline-offset:2px}
-.controls,.stages,.fieldgroups,.nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}.controls label{font-weight:600}
-.fieldgroups{gap:25px;align-items:end}.field{display:flex;flex-direction:column;gap:5px;color:#596474;font-size:.85rem}
-.field input{width:112px;min-width:112px;font-size:1.22rem;padding:10px 9px;appearance:auto;line-height:1.35;font-variant-numeric:tabular-nums}
-.stages{margin-top:20px}.stages button{font-size:.97rem}.canvas{overflow-x:auto;border:1px solid #d7dde4;border-radius:10px;padding:22px 16px;min-height:335px}
-table{margin:auto;border-collapse:collapse;table-layout:fixed;width:min(100%,800px);font-variant-numeric:tabular-nums}td,th{text-align:center;padding:10px 5px;font-size:clamp(1.35rem,2.4vw,2rem);white-space:nowrap}th{font-size:1.12rem;color:#657080;font-weight:500}td.tag{font: .85rem Arial,sans-serif;color:#657080;text-align:right;width:100px}
-tr.line td{border-bottom:2px solid #9ca3af}tr.total td{font-weight:700;border-top:2px solid #9ca3af}
-.result{font:2rem/1.5 'Cambria Math',Cambria,Georgia,serif;text-align:center;margin-top:19px}.result sup{font-size:.63em}
-.nav{justify-content:space-between;margin-top:17px}.nav button{min-width:100px}#prev:disabled,#next:disabled{opacity:.4;cursor:default}
-@media(max-width:700px){main{padding:15px 9px}.identity img{width:90px}.field input{min-width:83px;width:83px}td,th{font-size:1.25rem;padding:8px 4px}td.tag{width:58px;font-size:.7rem}.canvas{padding:12px 4px}.stages button{font-size:.82rem}}
-@media print{header,.controls,.fieldgroups,.stages,.nav{display:none!important}body,main{background:white;margin:0;max-width:none;padding:0;min-height:0}.canvas{border:none;min-height:0;padding:16mm 0}td,th{font-size:20pt}.result{font-size:24pt}#stageTitle{font-size:18pt}}
-
-.controls{row-gap:12px}.practice-note{color:#606b75;font-size:.95rem;margin:7px 0 14px}.fieldgroups{gap:16px}.fieldgroups>div{display:flex;flex-wrap:wrap;gap:10px;align-items:end}.field{font-size:.88rem}.math-factor{font:1.55rem/1.4 Cambria,"Cambria Math",Georgia,serif;text-align:center;margin:10px 0 18px}.math-factor sup,.result sup{vertical-align:super;font-size:.65em}
-td,th{font-family:Cambria,"Cambria Math",Georgia,serif}.result{margin-top:12px}
-.stage-heading{font-weight:600}.answer-controls{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 16px}.answer-controls button{font-weight:600}.answer-controls button:first-child{border-color:#657080}@media print{.answer-controls{display:none}}
-@media(max-width:700px){.field input{width:94px;min-width:94px}.controls button{font-size:.88rem}}
-@media print{.practice-note{display:none}.math-factor{font-size:20pt} @page{size:A4;margin:15mm}}
-
-.primary{background:#e8f0fe;color:#174ea6;border-color:#1a73e8;font-weight:700}.controls select{max-width:100%;min-height:43px}.controls{row-gap:12px}
-.factor-inputs{display:flex;flex-wrap:wrap;gap:11px;align-items:end}.factor-inputs::before{content:attr(data-title);display:block;width:100%;font-size:.86rem;font-weight:700;color:#526071}
-.field input{width:112px!important;min-width:112px!important;font-size:1.23rem!important;appearance:auto!important}.field input::-webkit-inner-spin-button{-webkit-appearance:auto!important;opacity:1}
-.math-factor{font:2rem/1.4 "Cambria Math",Cambria,Georgia,serif;text-align:center;margin:8px 0 18px}.math-factor sup,.result sup{font-size:.64em;vertical-align:super}
-td,th{font-family:"Cambria Math",Cambria,Georgia,serif}.practice-note{color:#5f6368;font-size:.93rem}.method-note{font-size:.88rem;color:#586575;margin:8px 0}.method-note:empty{display:none}
-.cross{margin:auto;max-width:600px;text-align:center;font:1.65rem/1.5 "Cambria Math",Cambria,Georgia,serif}.cross-factors{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;border-bottom:2px solid #9ca3af;padding:8px}.cross-products{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;margin-top:8px}.cross-products>div{padding:8px}.cross-products strong{font-size:.9rem;color:#647082;display:block;font-family:Arial,sans-serif;font-weight:500}
-@media print{.controls,.practice-note,.answer-controls,.stages,.fieldgroups,.nav{display:none!important}}
-
-.qbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}.qbar button{min-width:54px;font-weight:600}.qbar button[aria-pressed=true]{background:#e8f0fe;border-color:#1a73e8}
-.factor-inputs{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}.factor-inputs::before{content:attr(data-title);display:block;width:100%;font-size:.83rem;font-weight:700;color:#536276}
-#next{font-weight:600}.controls{margin-bottom:12px}
-@media print{.qbar{display:none}}
-</style></head><body>
-<header><div class="identity"><a href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"></a><div><a href="../../algebra/index.html">Algebra</a><h1>Polynomial multiplication</h1></div></div><button id="print">Print current stage</button></header>
+:root{font-family:Arial,Helvetica,sans-serif;color:#202124;background:#f1f3f4}
+*{box-sizing:border-box}
+body{margin:0}
+header{background:#fff;border-bottom:1px solid #dadce0;padding:8px max(16px,calc((100vw - 1150px)/2));display:flex;align-items:center;gap:20px}
+header img{width:145px;display:block}header a{color:#174ea6;text-decoration:none;font-size:.88rem}
+header h1{font-weight:650;font-size:1.3rem;margin:1px 0}
+main{max-width:1100px;margin:16px auto;background:white;padding:20px 26px 38px;min-height:82vh;border:1px solid #e2e4e7}
+button,input{font:inherit;border-radius:6px;border:1px solid #b8c0c9;background:#fff;color:inherit}
+button{padding:9px 13px;cursor:pointer;white-space:nowrap}
+button:hover{background:#f1f5fb}button:focus-visible,input:focus-visible{outline:3px solid #78aaff;outline-offset:2px}
+button[aria-pressed=true]{background:#e8f0fe;border-color:#1a73e8;color:#174ea6;font-weight:750}
+button:disabled{opacity:.38;cursor:default}
+.top-questions,.modes,.stepper,.control-line,.button-group{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.top-questions{margin-bottom:12px}
+.top-questions button{flex:1 1 62px;padding:11px 8px;font-weight:700}
+.top-questions #random{flex:1.5 1 110px}
+.settings{display:flex;flex-wrap:wrap;gap:10px 24px;padding:10px 0 12px;border-top:1px solid #e2e6ea;border-bottom:1px solid #e2e6ea}
+.setting{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.setting .caption{font-size:.85rem;font-weight:700;color:#59636f;min-width:46px}
+.button-group button{font-size:.87rem;padding:8px 11px}
+.modes{margin:14px 0 11px}
+.modes button{font-size:.94rem}
+.modes button[aria-pressed=true]{border-color:#174ea6}
+.coefficients{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin:13px 0 16px}
+.factor-fields{display:flex;flex-wrap:wrap;gap:9px}
+.factor-fields .group-label{width:100%;color:#586575;font-size:.84rem;font-weight:650}
+.coefficient{display:flex;flex-direction:column;gap:3px;font-size:.83rem;color:#536170}
+.coefficient input{width:96px;min-width:96px;padding:8px 5px 8px 10px;font-size:1.2rem;font-variant-numeric:tabular-nums;line-height:1.3}
+.coefficient input::-webkit-inner-spin-button{opacity:1}
+.canvas{border:1px solid #d9dfe6;border-radius:9px;padding:20px 14px;min-height:295px;overflow-x:auto}
+#heading{font-size:1.12rem;margin:0 0 9px;font-weight:650}
+.math-table{margin:0 auto;border-collapse:collapse;table-layout:fixed;width:min(100%,760px)}
+.math-table td,.math-table th{font:clamp(1.25rem,2.5vw,2rem)/1.35 "Cambria Math",Cambria,Georgia,serif;text-align:center;padding:8px 5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.math-table th{font:1.03rem Arial,sans-serif;font-weight:500;color:#69747f}
+.math-table .row-label{width:68px;text-align:right;font:1rem Arial,sans-serif;color:#5f6973;padding-right:10px}
+.math-table .underline td{border-bottom:2px solid #8d99a5}
+.math-table .sum td{border-top:2px solid #8d99a5;font-weight:700}
+.math-table sup{font-size:.62em;vertical-align:super}
+.equation{font:clamp(1.4rem,3vw,2.2rem)/1.4 "Cambria Math",Cambria,Georgia,serif;text-align:center;margin:18px 0 3px;overflow-wrap:anywhere}
+.equation sup{font-size:.62em;vertical-align:super}
+.stepper{justify-content:space-between;gap:12px;margin-top:12px}
+.stepper button:last-child{margin-left:auto;font-weight:650}
+#stepProgress{font-size:.86rem;color:#647080}
+#help{font-size:.88rem;color:#5f6973;margin:3px 0 12px}
+#help:empty{display:none}
+@media(max-width:680px){
+ header img{width:95px}header h1{font-size:1.05rem}
+ main{margin:0;padding:13px 9px}
+ .settings{gap:10px}.setting{width:100%}.setting .caption{min-width:48px}
+ .button-group button{padding:7px 9px}
+ .coefficients{gap:10px}.coefficient input{width:84px;min-width:84px}
+ .math-table td,.math-table th{font-size:1.17rem;padding:7px 2px}
+ .math-table .row-label{width:38px;font-size:.76rem}
+ .canvas{padding:12px 3px}
+}
+</style>
+</head>
+<body>
+<header>
+<a href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"></a>
+<div><a href="../../algebra/index.html">Algebra</a><h1>Place-Value Expansion in One Variable</h1></div>
+</header>
 <main>
-<div class="qbar" id="qbar"><button data-q="0">Q1</button><button data-q="1">Q2</button><button data-q="2">Q3</button><button data-q="3">Q4</button><button data-q="4">Q5</button><button data-q="5">Q6</button><button data-q="6">Q7</button><button data-q="7">Q8</button><button id="random" type="button">Random</button></div>
-<div class="controls filters"><label for="type">Factors</label><select id="type"><option value="bb">Binomial × binomial</option><option value="qb" selected>Trinomial × binomial</option><option value="qq">Trinomial × trinomial</option></select>
-<label for="sign">Signs</label><select id="sign"><option value="positive">Positive</option><option value="negative">Negative</option><option value="mixed" selected>Mixed</option></select></div>
-<div class="fieldgroups" id="fields"></div><p class="method-note" id="methodNote"></p>
-<div class="answer-controls"><button id="questionOnly">Question only</button><button id="stepwise">Step by step</button><button id="showAnswer">Answer</button><button id="fullyWorked">Fully worked</button></div><div class="stages" id="stages"></div>
-<h2 id="stageTitle"></h2><div class="canvas" id="canvas" aria-live="polite"></div>
-<div class="nav"><button id="prev">← Previous step</button><button id="next">Next: Strip the powers of x →</button></div>
+<nav class="top-questions" id="questions" aria-label="Questions"></nav>
+<div class="settings">
+<div class="setting"><span class="caption">Factors</span><div class="button-group" id="types" aria-label="Polynomial degrees"></div></div>
+<div class="setting"><span class="caption">Signs</span><div class="button-group" id="signs" aria-label="Coefficient signs"></div></div>
+<div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
+</div>
+<div class="modes" id="modes" aria-label="How to view the solution"></div>
+<div class="coefficients" id="coefficients" aria-label="Edit factor coefficients"></div>
+<h2 id="heading"></h2>
+<p id="help"></p>
+<section class="canvas" id="canvas" aria-live="polite"></section>
+<div class="stepper"><button id="back">← Previous</button><span id="stepProgress"></span><button id="forward">Next →</button></div>
 </main>
 <script>
 (()=>{'use strict';
+const $=id=>document.getElementById(id);
 const bank=[
- {a:[1,2],b:[1,7],type:'bb'}, {a:[1,3],b:[1,-5],type:'bb'},
- {a:[2,3],b:[4,-7],type:'bb'}, {a:[2,3,4],b:[5,6],type:'qb'},
- {a:[3,-4,5],b:[7,-2],type:'qb'}, {a:[2,3,4],b:[5,6,-3],type:'qq'},
- {a:[2,-4,6],b:[3,2,-5],type:'qq'}, {a:[12,-15,17],b:[11,13,-8],type:'qq'}
+ {a:[1,2],b:[1,7],type:'ll',sign:'positive',level:1},
+ {a:[1,4],b:[1,-3],type:'ll',sign:'mixed',level:1},
+ {a:[3,5],b:[4,-2],type:'ll',sign:'mixed',level:2},
+ {a:[2,3,4],b:[5,6],type:'ql',sign:'positive',level:2},
+ {a:[3,-4,5],b:[7,-2],type:'ql',sign:'mixed',level:2},
+ {a:[2,3,4],b:[5,6,-3],type:'qq',sign:'mixed',level:2},
+ {a:[2,-4,6],b:[3,2,-5],type:'qq',sign:'mixed',level:2},
+ {a:[12,-15,17],b:[11,13,-8],type:'qq',sign:'mixed',level:3}
 ];
-const titles=['Stack the factors vertically','Strip the powers of x','Calculate partial products','Group like terms','Bring back the powers of x'];
-const $=id=>document.getElementById(id),copy=q=>({a:q.a.slice(),b:q.b.slice(),type:q.type});
-let history=bank.map(copy),index=0,step=0,answerOnly=false,lessonMode='step',current=copy(bank[0]);
+const actions=['Stack the factors','Strip the powers of x','Calculate the partial products','Group like terms','Bring back the powers of x'];
+const questionTypes=[['ll','Linear × linear'],['ql','Quadratic × linear'],['qq','Quadratic × quadratic']];
+const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed']];
+const levels=[[1,'1'],[2,'2'],[3,'3']];
+const views=[['question','Question only'],['step','Step by step'],['answer','Answer'],['worked','Fully worked']];
+const copy=x=>({a:[...x.a],b:[...x.b],type:x.type,sign:x.sign,level:x.level});
+const state={type:'ll',sign:'positive',level:1,mode:'question',step:0,selected:0,randomNumber:0,question:copy(bank[0]),randomHistory:[],randomIndex:-1};
 const power=n=>n===0?'':n===1?'x':'x<sup>'+n+'</sup>';
-function fmt(a){let s='',d=a.length-1;for(let i=0;i<a.length;i++){let v=a[i],k=d-i;if(!v)continue;let t=(k&&Math.abs(v)===1?'':Math.abs(v))+power(k);s+=(s?(v<0?' − ':' + '):(v<0?'−':''))+t}return s||'0'}
-function mul(a,b){let out=Array(a.length+b.length-1).fill(0);a.forEach((v,i)=>b.forEach((w,j)=>out[i+j]+=v*w));return out}
+function formatPoly(a){let s='',d=a.length-1;for(let i=0;i<a.length;i++){let v=a[i],k=d-i;if(v===0)continue;let term=(k&&Math.abs(v)===1?'':Math.abs(v))+power(k);s+=(s?(v<0?' − ':' + '):(v<0?'−':''))+term;}return s||'0'}
+function multiply(a,b){let result=Array(a.length+b.length-1).fill(0);a.forEach((v,i)=>b.forEach((w,j)=>{result[i+j]+=v*w});return result}
 const rand=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
-function options(){let t=$('type').value,p=$('pattern'),old=p.value;let choices=t==='bb'?[['bothUnit','Both x coefficients = 1'],['firstUnit','First x coefficient = 1'],['secondUnit','Second x coefficient = 1'],['general','General coefficients']]:t==='qb'?[['monic','Quadratic leading coefficient = 1'],['general','General coefficients']]:[['bothMonic','Both leading coefficients = 1'],['firstMonic','First leading coefficient = 1'],['secondMonic','Second leading coefficient = 1'],['general','General coefficients']];
-p.replaceChildren();choices.forEach(([value,name])=>{let op=document.createElement('option');op.value=value;op.textContent=name;p.append(op)});p.value=choices.some(q=>q[0]===old)?old:(t==='bb'?'bothUnit':'general')}
-function generate(){let type=$('type').value,pattern='general',sign=$('sign').value,al=type==='bb'?2:3,bl=type==='qq'?3:2;
-function coefficients(size){let arr=[rand(2,9)];for(let i=1;i<size;i++){let v=rand(1,9);if(sign==='negative'||(sign==='mixed'&&rand(0,1)))v=-v;arr.push(v)}return arr}
-let a=coefficients(al),b=coefficients(bl);
-if(pattern==='bothUnit'||pattern==='firstUnit'||pattern==='monic'||pattern==='bothMonic'||pattern==='firstMonic')a[0]=1;
-if(pattern==='bothUnit'||pattern==='secondUnit'||pattern==='bothMonic'||pattern==='secondMonic')b[0]=1;
-if(sign==='mixed'){let non=[...a.slice(1),...b.slice(1)];if(non.every(v=>v>0))b[b.length-1]*=-1;else if(non.every(v=>v<0))a[a.length-1]*=-1}
-return {a,b,type}
+function generate(){let type=state.type,al=type==='ll'?2:3,bl=type==='qq'?3:2,level=state.level,sign=state.sign;
+ function coefficients(n){let high=level===3?18:level===2?8:5;
+   let arr=Array.from({length:n},(_,i)=>i===0?(level===1?1:rand(level===2?2:4,high)):rand(1,high));
+   for(let i=1;i<arr.length;i++)if(sign==='negative'||(sign==='mixed'&&rand(0,1)===1))arr[i]*=-1;
+   return arr;
+ }
+ let a=coefficients(al),b=coefficients(bl);
+ if(sign==='mixed'){let all=a.slice(1).concat(b.slice(1));
+   if(all.every(x=>x>0))b[b.length-1]*=-1;
+   if(all.every(x=>x<0))a[a.length-1]*=-1;
+ }
+ return {a,b,type,sign,level};
 }
-function load(n){index=Math.max(0,Math.min(n,history.length-1));current=copy(history[index]);fieldInputs();render();navigation()}
-function navigation(){$('qbar').querySelectorAll('[data-q]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.q)===index)));}
-
-function fieldInputs(){$('fields').replaceChildren();[['First factor','a'],['Second factor','b']].forEach(([name,key])=>{let div=document.createElement('div');div.className='factor-inputs';div.dataset.title=name;current[key].forEach((v,i)=>{let d=current[key].length-i-1,label=document.createElement('label');label.className='field';label.textContent=d===0?'#':d===1?'x':'x'+d;let input=document.createElement('input');input.type='number';input.step='1';input.min='-999';input.max='999';input.value=v;input.setAttribute('aria-label',name+' coefficient of '+label.textContent);input.oninput=()=>{if(input.value.trim()===''||!Number.isInteger(+input.value)||Math.abs(+input.value)>999)return;current[key][i]=+input.value;render()};label.append(input);div.append(label)});$('fields').append(div)})}
-function addRow(table,values,label='',className='',withPowers=false){const tr=document.createElement('tr');tr.className=className;const t=document.createElement('td');t.className='tag';t.textContent=label;tr.append(t);values.forEach((v,i)=>{let c=document.createElement('td'),degree=values.length-i-1;c.innerHTML=String(v)+(withPowers&&v&&degree?power(degree):'');tr.append(c)});table.append(tr)}
-function render(){let {a,b,type}=current,answer=mul(a,b),n=answer.length,degree=n-1,bb=type==='bb';
- $('methodNote').textContent=bb?'For two binomials, vertical cross-product multiplication is usually simpler than stripping powers. Collect the middle products in the like-terms column.':'';
- $('stageTitle').textContent=answerOnly?'Answer':titles[step];
- $('stages').replaceChildren();titles.forEach((label,i)=>{let button=document.createElement('button');button.textContent=label;button.setAttribute('aria-pressed',String(step===i&&!answerOnly));button.onclick=()=>{step=i;answerOnly=false;render()};$('stages').append(button)});
- const root=$('canvas');root.replaceChildren();const formula=document.createElement('div');formula.className='math-factor';formula.innerHTML='('+fmt(a)+')('+fmt(b)+')';if(answerOnly)root.append(formula);
- if(answerOnly){let res=document.createElement('div');res.className='result';res.innerHTML=fmt(answer);root.append(res);$('prev').disabled=true;$('next').disabled=true;$('next').textContent='Answer shown';return}
- if(bb){const cross=document.createElement('div');cross.className='cross';let top=document.createElement('div');top.className='cross-factors';top.innerHTML='<span>('+fmt(a)+')</span><span>('+fmt(b)+')</span>';cross.append(top);
- if(step>=2){let parts=document.createElement('div');parts.className='cross-products';let other=document.createElement('div'),middle=document.createElement('div');let first=a[0]*b[0],last=a[1]*b[1],left=a[0]*b[1],right=a[1]*b[0];other.innerHTML='<strong>Outer products</strong>'+first+'x<sup>2</sup><div>'+last+'</div>';middle.innerHTML='<strong>Like-terms column</strong>'+left+'x<br>'+right+'x';parts.append(other,middle);cross.append(parts)}
- if(step>=3){let line=document.createElement('div');line.textContent='Middle coefficient: '+(a[0]*b[1])+' + '+(a[1]*b[0])+' = '+answer[1];cross.append(line)}
- root.append(cross);
- }else{const table=document.createElement('table');let hdr=document.createElement('tr');hdr.append(document.createElement('th'));for(let d=degree;d>=0;d--){let th=document.createElement('th');th.innerHTML=d?power(d):'#';hdr.append(th)}table.append(hdr);
- const pad=x=>Array(n-x.length).fill(0).concat(x);
- addRow(table,pad(a),'','',step===0);addRow(table,pad(b),'','line',step===0);
- if(step>=2)for(let j=b.length-1;j>=0;j--){let shift=b.length-j-1,values=Array(n).fill(0);for(let i=0;i<a.length;i++)values[n-a.length+i-shift]=a[i]*b[j];addRow(table,values)}
- if(step>=3)addRow(table,answer,'+','total');
- if(step>=4)addRow(table,answer,'','total',true);
- root.append(table)}
- if(step===4){let res=document.createElement('div');res.className='result';res.innerHTML=fmt(answer);root.append(res)}
- $('prev').disabled=step===0;$('next').disabled=step===4;$('next').textContent=step===4?'Completed':'Next: '+titles[step+1]+' →'}
-$('type').onchange=()=>{};
-$('qbar').querySelectorAll('[data-q]').forEach(btn=>btn.onclick=()=>load(Number(btn.dataset.q)));
-$('random').onclick=()=>{history.push(generate());index=history.length-1;load(index)};
-$('questionOnly').onclick=()=>{answerOnly=false;step=0;render()};
-$('stepwise').onclick=()=>{answerOnly=false;step=0;render()};
-$('showAnswer').onclick=()=>{answerOnly=true;render()};
-$('fullyWorked').onclick=()=>{answerOnly=false;step=4;render()};
-$('prev').onclick=()=>{answerOnly=false;step=Math.max(0,step-1);render()};
-$('next').onclick=()=>{answerOnly=false;step=Math.min(4,step+1);render()};
-$('print').onclick=()=>window.print();
-load(0);
+function choices(node,options,value,onClick){const host=$(node);host.replaceChildren();options.forEach(([id,label])=>{let b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(id===value));b.onclick=()=>onClick(id);host.append(b)})}
+function questionButtons(){$('questions').replaceChildren();bank.forEach((q,i)=>{const b=document.createElement('button');b.textContent='Q'+(i+1);b.type='button';b.setAttribute('aria-pressed',String(state.selected===i));b.onclick=()=>openFixed(i);$('questions').append(b)});
+ const b=document.createElement('button');b.id='random';b.type='button';b.textContent='Random';b.setAttribute('aria-pressed',String(state.selected==='random'));b.onclick=()=>nextRandom();$('questions').append(b)}
+function openFixed(i){state.selected=i;state.question=copy(bank[i]);state.type=state.question.type;state.sign=state.question.sign;state.level=state.question.level;render()}
+function nextRandom(){const q=generate();state.randomHistory.push(copy(q));state.randomIndex=state.randomHistory.length-1;state.selected='random';state.question=copy(q);state.randomNumber++;render()}
+function renderFilters(){
+ choices('types',questionTypes,state.type,id=>{state.type=id;renderFilters()});
+ choices('signs',signTypes,state.sign,id=>{state.sign=id;renderFilters()});
+ choices('levels',levels,state.level,id=>{state.level=id;renderFilters()});
+ choices('modes',views,state.mode,id=>{state.mode=id;if(id==='step')state.step=0;render()});
+}
+function coefficientInputs(){$('coefficients').replaceChildren();
+ [['First factor','a'],['Second factor','b']].forEach(([name,key])=>{
+  const div=document.createElement('div');div.className='factor-fields';
+  let title=document.createElement('div');title.className='group-label';title.textContent=name;div.append(title);
+  state.question[key].forEach((v,i)=>{let d=state.question[key].length-i-1;
+   let lab=document.createElement('label');lab.className='coefficient';lab.innerHTML=d===0?'#':d===1?'x':'x<sup>'+d+'</sup>';
+   const input=document.createElement('input');input.type='number';input.step='1';input.min='-999';input.max='999';input.value=v;
+   input.setAttribute('aria-label',name+', coefficient of '+(d===0?'constant':d===1?'x':'x to the power '+d));
+   input.addEventListener('input',()=>{let val=Number(input.value);if(input.value.trim()===''||!Number.isInteger(val)||Math.abs(val)>999)return;state.question[key][i]=val;draw();});
+   lab.append(input);div.append(lab);
+  });$('coefficients').append(div);
+ });
+}
+function addRow(table,values,kind,label,degree,withPowers,asFactors){
+ let tr=document.createElement('tr');tr.className=kind||'';
+ const labelCell=document.createElement('td');labelCell.className='row-label';labelCell.textContent=label||'';tr.append(labelCell);
+ let encountered=false;
+ values.forEach((v,i)=>{let td=document.createElement('td'),p=degree-i;
+  if(asFactors){if(v===null||v===0){td.textContent='';}else{let prefix=encountered?(v>0?'+':'−'):(v<0?'−':'');let magnitude=Math.abs(v);td.innerHTML=prefix+(p&&magnitude===1?'':magnitude)+(p?power(p):'');encountered=true;}}
+  else td.innerHTML=(v===null?'':String(v)+(withPowers&&v&&p?power(p):''));
+  tr.append(td);
+ });table.append(tr);
+}
+function draw(){
+ let {a,b}=state.question,answer=multiply(a,b),n=answer.length,degree=n-1;
+ let root=$('canvas');root.replaceChildren();
+ let mode=state.mode,step=mode==='worked'?4:mode==='question'||mode==='answer'?0:state.step;
+ $('heading').textContent=mode==='step'?actions[step]:mode==='worked'?'Fully worked':mode==='answer'?'Answer':'';
+ $('help').textContent='';
+ const pad=x=>Array(n-x.length).fill(null).concat(x);
+ function makeTable(){let table=document.createElement('table');table.className='math-table';
+  if(step>0){let hdr=document.createElement('tr');let corner=document.createElement('th');hdr.append(corner);for(let d=degree;d>=0;d--){let th=document.createElement('th');th.innerHTML=d===0?'#':power(d);hdr.append(th)}table.append(hdr)}
+  addRow(table,pad(a),'','',degree,false,step===0);
+  addRow(table,pad(b),'underline','',degree,false,step===0);
+  if(step>=1){ // Replace blank structural cells with zeros, not empty spaces.
+    for(let row of Array.from(table.rows).slice(-2)){for(let cell of Array.from(row.cells).slice(1)){if(cell.textContent==='')cell.textContent='0'}}
+  }
+  if(step>=2){for(let j=b.length-1;j>=0;j--){let shift=b.length-1-j,vals=Array(n).fill(0);
+   for(let i=0;i<a.length;i++)vals[n-a.length+i-shift]=a[i]*b[j];
+   addRow(table,vals,'','',degree,false,false);
+  }}
+  if(step>=3)addRow(table,answer,'sum','+',degree,false,false);
+  if(step>=4)addRow(table,answer,'','',degree,true,false);
+  return table;
+ }
+ if(mode==='answer'){
+   let eq=document.createElement('div');eq.className='equation';eq.innerHTML='('+formatPoly(a)+')('+formatPoly(b)+') = '+formatPoly(answer);root.append(eq);
+ }else{root.append(makeTable());if(step===4){let eq=document.createElement('div');eq.className='equation';eq.innerHTML=formatPoly(answer);root.append(eq)}}
+ $('stepProgress').textContent=mode==='step'?(step+1)+' / 5':'';
+ $('back').hidden=mode!=='step';$('forward').hidden=mode!=='step';
+ $('back').disabled=step===0;$('forward').disabled=step===4;
+ $('forward').textContent=step===4?'Complete':'Next: '+actions[step+1]+' →';
+}
+function render(){questionButtons();renderFilters();coefficientInputs();draw()}
+$('back').onclick=()=>{state.step=Math.max(0,state.step-1);draw()};
+$('forward').onclick=()=>{state.step=Math.min(4,state.step+1);draw()};
+render();
 })();
-</script></body></html>
+</script>
+</body>
+</html>
