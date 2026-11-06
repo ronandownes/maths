@@ -64,7 +64,7 @@ function mul(a,b){let out=Array(a.length+b.length-1).fill(0);a.forEach((v,i)=>b.
 const rand=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 function options(){let t=$('type').value,p=$('pattern'),old=p.value;let choices=t==='bb'?[['bothUnit','Both x coefficients = 1'],['firstUnit','First x coefficient = 1'],['secondUnit','Second x coefficient = 1'],['general','General coefficients']]:t==='qb'?[['monic','Quadratic leading coefficient = 1'],['general','General coefficients']]:[['bothMonic','Both leading coefficients = 1'],['firstMonic','First leading coefficient = 1'],['secondMonic','Second leading coefficient = 1'],['general','General coefficients']];
 p.replaceChildren();choices.forEach(([value,name])=>{let op=document.createElement('option');op.value=value;op.textContent=name;p.append(op)});p.value=choices.some(q=>q[0]===old)?old:(t==='bb'?'bothUnit':'general')}
-function generate(){let type=$('type').value,pattern=$('pattern').value,sign=$('sign').value,al=type==='bb'?2:3,bl=type==='qq'?3:2;
+function generate(){let type=$('type').value,pattern='general',sign=$('sign').value,al=type==='bb'?2:3,bl=type==='qq'?3:2;
 function coefficients(size){let arr=[rand(2,9)];for(let i=1;i<size;i++){let v=rand(1,9);if(sign==='negative'||(sign==='mixed'&&rand(0,1)))v=-v;arr.push(v)}return arr}
 let a=coefficients(al),b=coefficients(bl);
 if(pattern==='bothUnit'||pattern==='firstUnit'||pattern==='monic'||pattern==='bothMonic'||pattern==='firstMonic')a[0]=1;
