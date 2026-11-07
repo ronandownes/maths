@@ -14,6 +14,9 @@ const num=(s)=>Number(String(s).replace(/−/g,'-').trim());
 const tidy=s=>String(s).toLowerCase().replace(/[−–]/g,'-').replace(/\s+/g,'').replace(/^\s*(t_?n|t\(n\))=/i,'').replace(/^\+/,'');
 const formula=(d,c)=> (d===1?'n':d===-1?'−n':text(d)+'n')+(c===0?'':sign(c));
 const format=n=>Number.isInteger(n)?text(n):Number(n.toFixed(5)).toString().replace(/-/g,'−');
+const dfrac=(top,bottom)=>'<span class="dfrac" role="math" aria-label="'+esc(top)+' over '+esc(bottom)+'"><span class="dfrac-top">'+esc(top)+'</span><span class="dfrac-bottom">'+esc(bottom)+'</span></span>';
+const prettyWorking=s=>esc(s).replace(/\bn\/2\b/g,dfrac('n','2')).replace(/\b10\/2\b/g,dfrac('10','2')).replace(/\b8\/2\b/g,dfrac('8','2'));
+
 const config=()=>{
  if(isGeo){let r=state.example===0?2:1/3,a=state.example===0?3:81;return {a,r,values:[0,1,2,3].map(i=>a*Math.pow(r,i)),c:a/r}}
  if(isQuad){let a=1,b=6,c=4;return {a,b,c,values:[1,2,3,4].map(n=>a*n*n+b*n+c),dif:[9,11,13]}}
@@ -85,10 +88,22 @@ function sequenceSVG(){
  out+='</svg>';return out;
 }
 function seriesView(){
- const cfg=config(),a=cfg.a,d=cfg.d,ts=[a,a+d,a+2*d,a+3*d],s=state.step;
- let h='<div class="formula">S₄ = '+ts.map(format).join(' + ')+'</div>';
- if(s>=9)h+='<div class="formula">S₄ = '+[...ts].reverse().map(format).join(' + ')+'</div><div class="speech">Each column makes '+format(ts[0]+ts[3])+'. Four columns give twice the original sum.</div>';
- if(s>=10)h+='<div class="formula"><span class="box">Sₙ = n/2 (T₁ + Tₙ)</span></div><div class="formula">Sₙ = n/2 [2a + (n − 1)d]</div>';
+ const c=config(), terms=[c.a,c.a+c.d,c.a+2*c.d,c.a+3*c.d],s=state.step;
+ const paired=terms.map((x,i)=>({top:x,bottom:terms[3-i]}));
+ let h='';
+ if(s===8){
+   h='<div class="display-equation">S₄ = ('+format(terms[0])+' + '+format(terms[3])+') + ('+format(terms[1])+' + '+format(terms[2])+') = '+format(terms.reduce((a,b)=>a+b,0))+'</div>';
+ }else{
+   h='<div class="pairing-proof" aria-label="The series written forwards and backwards, with four equal pair sums">'+paired.map(x=>'<div class="pairing-column"><span>'+format(x.top)+'</span><span>+ '+format(x.bottom)+'</span><span class="sumline">'+format(x.top+x.bottom)+'</span></div>').join('')+'</div>';
+   h+='<div class="display-equation">2S₄ = 4 × '+format(terms[0]+terms[3])+' ⇒ S₄ = '+format(terms.reduce((a,b)=>a+b,0))+'</div>';
+ }
+ if(s>=10){
+   h+='<div class="display-equation">Sₙ = '+dfrac('n','2')+' (T₁ + Tₙ)</div>';
+   h+='<div class="display-equation">Sₙ = '+dfrac('n','2')+' [2a + (n − 1)d]</div>';
+ }
+ if(s>10){
+   h='<div class="display-equation">Sₙ = '+dfrac('n','2')+' [2a + (n − 1)d]</div>';
+ }
  return h;
 }
 function working(){
@@ -129,10 +144,10 @@ function working(){
   '9, x, 19 ⇒ 2x = 9 + 19 ⇒ <span class="box">x = 14</span>',
   'S₄ = '+format(v.reduce((u,w)=>u+w,0))+'; first + last = second + second-last',
   '2S₄ = 4('+format(v[0])+' + '+format(v[3])+')',
-  '<span class="box">Sₙ = n/2 [2a + (n − 1)d]</span> · Formulae and Tables, p. 22',
-  '210 = n/2[6 + 4(n−1)] ⇒ (n−10)(2n+21)=0 ⇒ <span class="box">n = 10</span>',
-  '190 = 10/2[2a + 9(2)] ⇒ 38 = 2a + 18 ⇒ <span class="box">a = 10</span>',
-  '148 = 8/2[2(8) + 7d] ⇒ 37 = 16 + 7d ⇒ <span class="box">d = 3</span>',
+  '<span class="small">Find this formula on page 22 of the Formulae and Tables booklet. Here a means T₁, not T₀.</span>',
+  '210 = '+dfrac('n','2')+'[6 + 4(n−1)] ⇒ (n−10)(2n+21)=0 ⇒ <span class="box">n = 10</span>',
+  '190 = '+dfrac('10','2')+'[2a + 9(2)] ⇒ 38 = 2a + 18 ⇒ <span class="box">a = 10</span>',
+  '148 = '+dfrac('8','2')+'[2(8) + 7d] ⇒ 37 = 16 + 7d ⇒ <span class="box">d = 3</span>',
   '2026 OL P1 Q5: 12, 17, 22 gives Tₙ=5n+7; 6, x, −4 gives x=1; 43, 39, 35 has <span class="box">S₂₃ &lt; 0</span> for the first time.'
  ][s];
 }
@@ -166,7 +181,7 @@ function makeProblem(type){
  if(level==='challenge'){d=pick([-9,-7,-5,4,6,8]);c=rand(-15,18);n=rand(20,60)}
  a=c+d;
  const list=[a,a+d,a+2*d,a+3*d].map(format).join(', ');
- const out=(prompt,numbers,expected,explanation,mode='numeric')=>({prompt,numbers,expected,explanation,mode});
+ const out=(prompt,numbers,expected,explanation,mode='numeric')=>({prompt,numbers,expected,explanation,mode,type,base:{a,d,c}});
  switch(type){
  case 'nextlinear':return out('Find the next term.',list,a+4*d,'Apply the signed common difference one more time.');
  case 'sumnegative':{let A=pick([23,35,43,56]),D=-pick([2,3,4,5]),limit=1+2*A/(-D),N=Math.floor(limit)+1;return out('Find the smallest positive integer n for which the sum Sₙ is negative.',[A,A+D,A+2*D].map(format).join(', '),N,'Sₙ = n/2[2a+(n−1)d]. For n>0, solve 2a+(n−1)d < 0, then choose the smallest whole-number n.')}
