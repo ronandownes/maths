@@ -285,6 +285,19 @@ main{margin:5px auto;padding:10px 19px 18px}
  .practice-quick-controls{justify-content:flex-start}
 }
 @media(max-width:520px){.activity-switch>button{flex:1 1 auto}.coefficient-control{width:76px}}
+
+/* Homework on the left; activity navigation to the right. */
+.activity-switch{display:flex;flex-wrap:wrap;align-items:center;gap:7px 12px}
+.activity-switch>.homework-controls{flex:0 0 auto}
+.activity-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:auto}
+.activity-actions button{padding:7px 11px;font-size:.9rem;font-weight:700}
+.activity-switch>.practice-quick-controls{flex:0 1 auto;justify-content:flex-end}
+.activity-switch>.practice-quick-controls .modes{margin:0;gap:5px}
+.activity-switch>.practice-quick-controls .modes button{padding:7px 9px;font-size:.85rem}
+@media(max-width:720px){
+ .activity-actions{margin-left:0}
+ .activity-switch>.practice-quick-controls{flex-basis:100%;justify-content:flex-start}
+}
 </style>
 </head>
 <body>
@@ -299,15 +312,15 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="setting"><button type="button" id="monicBtn" aria-pressed="false" title="Optional practice: both polynomials have leading coefficient 1. Numbered homework remains unchanged.">Monic (Click me)</button></div>
 <div class="setting"><span class="caption caption-wrapped">Sign<span>pattern</span></span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
 </div>
-<div class="activity-switch" aria-label="Choose learning activity">
- <button id="practiceMode" type="button" aria-pressed="true">Practice</button>
- <button id="quizMode" type="button" aria-pressed="false">Quiz</button>
- <button id="testMode" type="button" aria-pressed="false">Test</button>
- <button id="worksheetMode" type="button" aria-pressed="false">Worksheet</button>
- <div class="practice-quick-controls" id="practiceQuickControls">
-  <div class="homework-controls"><span class="homework-label">Homework</span><nav class="top-questions" id="questions" aria-label="Four fixed homework questions or a new random question"></nav></div>
-  <div class="modes" id="modes" aria-label="How to view the solution"></div>
+<div class="activity-switch" aria-label="Homework and learning activities">
+ <div class="homework-controls"><span class="homework-label">Homework</span><nav class="top-questions" id="questions" aria-label="Four fixed numbered homework questions"></nav></div>
+ <div class="activity-actions" aria-label="Choose learning activity">
+  <button id="practiceMode" type="button" aria-pressed="false" title="Generate another random expansion question">More practice</button>
+  <button id="quizMode" type="button" aria-pressed="false">Quiz</button>
+  <button id="testMode" type="button" aria-pressed="false">Test</button>
+  <button id="worksheetMode" type="button" aria-pressed="false">Worksheet</button>
  </div>
+ <div class="practice-quick-controls" id="practiceQuickControls"><div class="modes" id="modes" aria-label="How to view the solution"></div></div>
 </div>
 <section id="worksheetPanel" class="worksheet-panel" hidden aria-label="Worksheet settings"></section>
 <div id="practiceArea">
@@ -442,8 +455,8 @@ function individualProducts(a,b){
  return products;
 }
 function renderSelectors(){
- const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);q.push(['fresh','Random']);
- chooseButtons('questions',q,state.slot,v=>v==='fresh'?freshQuestion():selectQuestion(v));
+ const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);
+ chooseButtons('questions',q,state.slot,v=>{switchMode('practice');selectQuestion(v)});
  const homeworkDescription=['Positive coefficients','Negative non-leading coefficients','Mixed positive and negative coefficients','Mixed signs · extra practice'];
  for(let i=0;i<4;i++)$('questions').children[i].title='Homework '+(i+1)+': '+homeworkDescription[i];
  function filter(key,value){state[key]=value;freshQuestion();if(assessment.mode!=='practice')initialiseTest(assessment.source)}
@@ -472,6 +485,7 @@ function renderSelectors(){
  monicButton.onclick=()=>{state.monic=!state.monic;freshQuestion();if(assessment.mode!=='practice')initialiseTest(assessment.source)};
  const randomFactor=$('types').children[factorTypes.length];randomFactor.className='level-random';randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
  const randomSign=$('signs').children[3];randomSign.className='level-random';randomSign.title='Randomly choose a sign pattern';randomSign.setAttribute('aria-label','Random signs');
+ const practiceButton=$('practiceMode');practiceButton.setAttribute('aria-pressed',String(assessment.mode==='practice'&&state.slot==='fresh'));
  const host=$('modes');host.replaceChildren();
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
  toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
@@ -782,7 +796,7 @@ function draw(){
 
 }
 
-const assessment={mode:'practice',questions:[],responses:[],submitted:false,checked:[],choices:[],selected:[],firstAttempts:[],run:0,source:'bank',sound:true,quizType:'working',workChoices:[],attempts:[],tried:[]};
+const assessment={mode:'practice',questions:[],responses:[],submitted:false,checked:[],choices:[],selected:[],firstAttempts:[],run:0,source:'bank',sound:true,quizType:'answer',workChoices:[],attempts:[],tried:[]};
 function el(tag,textValue,className){
  const e=document.createElement(tag);if(textValue!==undefined)e.textContent=textValue;
  if(className)e.className=className;return e;
@@ -913,20 +927,20 @@ function drawTest(){
  const summary=el('div');
  const opt=el('div',undefined,'test-options');
  const quiz=assessment.mode==='quiz';
- summary.append(el('h2',quiz?'Expansion quiz':'Expansion test'),el('p',quiz?'Four questions · multiple choice or fill in · immediate feedback':'Four questions · 1 mark per complete correct expansion · results after submission'));
+ summary.append(el('h2',quiz?'Expansion quiz':'Expansion test'),el('p',quiz?'Four questions · immediate feedback. For multiple choice, only ONE option is correct: select it. Check the leading and constant coefficients first to eliminate unlikely answers.':'Four questions · 1 mark per complete correct expansion · results only after submission'));
  if(quiz){
   const marks=assessment.firstAttempts.filter(value=>value===true).length;
   const score=el('div','Marks: '+marks+' / 4','quiz-running-score');
   score.setAttribute('role','status');score.setAttribute('aria-live','polite');
   summary.append(score);
   const kind=el('div',undefined,'quiz-toggle');
-  [['working','Working · choices'],['answer','Answer · choices'],['fill','Fill in']].forEach(([value,label])=>{
+  [['answer','Select correct answer'],['working','Select correct workings'],['fill','Fill in your answer']].forEach(([value,label])=>{
    const btn=el('button',label);btn.type='button';
    btn.setAttribute('aria-pressed',String(assessment.quizType===value));
    btn.onclick=()=>{if(assessment.quizType!==value){assessment.quizType=value;initialiseTest('random')}};
    kind.append(btn);
   });
-  kind.setAttribute('role','group');kind.setAttribute('aria-label','Quiz type: multiple-choice working or answer, or fill in');
+  kind.setAttribute('role','group');kind.setAttribute('aria-label','Quiz type: select one correct answer, select one correct working, or fill in your own answer');
   opt.append(kind);
   const sound=el('div',undefined,'quiz-toggle');
   [['on','Sound on'],['off','Sound off']].forEach(([value,label])=>{
@@ -1345,7 +1359,7 @@ function switchMode(mode){
  $('worksheetPanel').hidden=mode!=='worksheet';
  $('practiceQuickControls').hidden=mode!=='practice';
  for(const [key,value] of [['practiceMode','practice'],['quizMode','quiz'],['testMode','test'],['worksheetMode','worksheet']]){
-  $(key).setAttribute('aria-pressed',String(mode===value));
+  $(key).setAttribute('aria-pressed',String(key==='practiceMode'?mode==='practice'&&state.slot==='fresh':mode===value));
  }
  if(mode==='worksheet'){
   worksheetOptions();
@@ -1353,7 +1367,7 @@ function switchMode(mode){
   initialiseTest('random');
  }
 }
-$('practiceMode').onclick=()=>switchMode('practice');
+$('practiceMode').onclick=()=>{switchMode('practice');freshQuestion()};
 $('quizMode').onclick=()=>switchMode('quiz');
 $('testMode').onclick=()=>switchMode('test');
 function connectTableOperands(){
