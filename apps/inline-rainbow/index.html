@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Inline Rainbow: expand and factorise two binomials using upper and lower arcs, partial products, grouping and sign reasoning.">
+<title>Inline Rainbow · Expansions and Grouping | Maths Apps</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="stylesheet" href="../shared/assessment.css">
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#233449;background:#f1f3f5;--blue:#1c64a7;--line:#dbe4ee}
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+button,select,input{font:inherit;color:inherit}
+button,select{background:white;border:1px solid #b9c8d7;border-radius:7px;padding:8px 11px}
+button{cursor:pointer}
+button:hover{background:#f1f6fd}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #8fbee7;outline-offset:2px}
+button[aria-pressed=true]{background:#e4effc;border-color:#377dc2;color:#155a9b;font-weight:750}
+button.primary{background:#175fa9;border-color:#175fa9;color:white;font-weight:750}
+button.primary:hover{background:#104e88}
+button:disabled{opacity:.48;cursor:default}
+.topbar{background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:13px;padding:7px max(14px,calc((100vw - 1170px)/2))}
+.brand{display:flex;align-items:end;flex-direction:column;color:#1b3249;text-decoration:none;font-weight:700;line-height:1}
+.brand img{width:108px}
+.brand span{font-size:.86rem;margin-top:-3px}
+.crumb{font-size:.83rem;color:#195d9a;text-decoration:none}
+.topbar h1{font-size:1.3rem;margin:3px 0 1px}
+.subtitle{font-size:.83rem;color:#687c91;margin:0}
+main{width:min(1170px,calc(100% - 20px));min-height:65vh;margin:8px auto 28px;background:white;border:1px solid #dfe6ee;padding:13px clamp(11px,2vw,23px) 26px}
+.controls{display:flex;flex-wrap:wrap;gap:8px 12px;padding:2px 0 12px;border-bottom:1px solid var(--line)}
+.control{display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:5px 7px;border:1px solid #e0e8f0;border-radius:8px;background:#fafcff}
+.control strong{font-size:.82rem;color:#4b627e;margin-right:4px}
+.control select{min-width:85px}
+.control input[type=range]{width:115px;accent-color:var(--blue)}
+.control output{min-width:14px;text-align:center;font-weight:bold}
+.activity-row{display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px;border-bottom:1px solid var(--line);padding:11px 0 12px}
+.control-set h2{font-size:.79rem;text-align:center;color:#526982;margin:0 0 6px}
+.button-row{display:flex;gap:5px;flex-wrap:wrap}
+.button-row button{padding:8px 10px}
+.control-set--activity{flex:1}
+.advanced{margin:8px 0 0;border:1px solid #e3eaf2;border-radius:7px;background:#fafcff}
+.advanced summary{cursor:pointer;font-weight:700;color:#506b87;padding:8px 12px;font-size:.86rem}
+.manual-grid{display:flex;gap:9px;flex-wrap:wrap;padding:10px}
+.manual-grid label{font-size:.83rem;color:#4f6580;display:flex;align-items:center;gap:5px}
+.manual-grid input{width:89px;border:1px solid #b5c7d9;border-radius:6px;padding:8px;font-family:Cambria,Georgia,serif;font-size:1.13rem}
+.practice-layout{display:grid;grid-template-columns:minmax(0,1fr) 237px;gap:14px;padding-top:12px}
+.practice-main{min-width:0}
+.question-label{font-weight:800;font-size:1.13rem;text-align:center;margin:5px 0;color:#29435d}
+.focus-caption{text-align:center;color:#55708c;font-size:.88rem;font-weight:650;margin:2px 0 12px}
+.arc-stage{margin:5px auto 0;max-width:900px}
+.arc-stage svg{width:100%;height:auto;display:block;max-height:clamp(260px,54vh,530px)}
+.arc-stage .math{font:clamp(40px,4vw,53px) Cambria,Georgia,serif;fill:#203e63;text-anchor:middle}
+.arc-stage .path{fill:none;stroke:#2572b9;stroke-width:6;stroke-linecap:round}
+.arc-stage .path.active{stroke:#15569b;stroke-width:9}
+.arc-stage .route-number{fill:#e8f3ff;stroke:#2a77bd;stroke-width:2}
+.arc-stage .route-index{font:700 19px Arial,sans-serif;fill:#195b97;text-anchor:middle}
+.arc-stage .divider{stroke:#c6d7e6;stroke-width:2}
+.arc-stage .svg-guide{font:700 16px Arial,sans-serif;fill:#5b7289;text-anchor:middle}
+.partial-heading{font-size:.88rem;font-weight:750;color:#4d6780;text-align:center;margin:4px auto}
+.partial-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px auto;max-width:940px}
+.partial-cell{border:1px solid #d7e2ef;background:#f9fbff;border-radius:8px;min-height:72px;display:grid;align-items:center;justify-items:center;padding:10px 5px;min-width:0}
+.partial-cell em{font:normal clamp(1.28rem,2.8vw,2.1rem) Cambria,Georgia,serif;color:#243a53;text-align:center;overflow-wrap:anywhere}
+.partial-cell.pending{background:#fff;color:#8699ac;border-style:dashed}
+.partial-cell.active{border-color:#327bc0;background:#eaf4ff}
+.status{font-weight:700;color:#205f97;text-align:center;min-height:23px;margin:10px auto}
+.solution{border-top:1px solid #e1eaf3;padding:15px 8px 5px;font:clamp(1.3rem,2.75vw,2.13rem)/1.45 Cambria,Georgia,serif;text-align:center;overflow-wrap:anywhere}
+.solution .line{display:block;margin:7px auto}
+.solution .note{display:block;font:1rem/1.45 Arial,sans-serif;color:#4f6e8a;margin:7px auto}
+.transport{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin:15px auto 6px}
+.step-panel{border:1px solid #d8e3ef;border-radius:10px;background:#f9fbff;padding:11px;position:sticky;top:12px;align-self:start}
+.step-panel h2{font-size:1.04rem;margin:0 0 9px}
+.step-entry{padding:11px 7px;border-bottom:1px solid #e2e9f2;width:100%;background:none;border-top:0;border-left:0;border-right:0;text-align:left;display:flex;align-items:center;gap:8px;white-space:normal;color:#64778c;font-weight:650;font-size:.85rem}
+.step-entry:last-child{border-bottom:0}
+.step-entry .number{border:1px solid #c5d6e5;background:white;border-radius:50%;height:29px;width:29px;display:grid;place-items:center;flex:none}
+.step-entry.current{color:#145d9e;background:#edf5ff}
+.step-entry.complete{color:#386d51}
+.step-entry.complete .number{background:#eaf6ef;border-color:#9eccb1}
+.group-controls{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:12px auto}
+.group-controls strong{font-size:.82rem;color:#5f7285;align-self:center}
+.lesson-top,.display-bar,.assessment-top{display:flex;align-items:center;gap:9px;justify-content:space-between;flex-wrap:wrap;margin:10px 0}
+.lesson-card{min-height:375px;margin:12px auto;border:1px solid #d9e5f0;border-radius:11px;padding:clamp(18px,3.5vw,40px);max-width:980px;display:grid;align-content:center;gap:13px}
+.lesson-card h3{font-size:clamp(1.7rem,3vw,2.7rem);margin:0}
+.lesson-card p{font-size:clamp(1.1rem,1.8vw,1.5rem);line-height:1.5;margin:3px 0}
+.lesson-card .example{font:clamp(1.5rem,3vw,2.55rem)/1.45 Cambria,Georgia,serif;text-align:center;overflow-wrap:anywhere}
+.lesson-card .reveal{border-top:1px solid #d7e4ef;padding-top:13px;background:#f9fcff}
+.lesson-nav{display:flex;gap:7px;justify-content:flex-end;flex-wrap:wrap}
+#lessonPanel:fullscreen{background:white;overflow:auto;padding:15px 3vw}
+#lessonPanel:fullscreen .lesson-card{max-width:96vw;min-height:76vh}
+.assessment-card{margin:12px auto;background:#fafcff;border:1px solid #dae5f0;border-radius:10px;padding:clamp(13px,2vw,22px);max-width:950px}
+.assessment-question{font:clamp(1.4rem,2.7vw,2rem)/1.5 Cambria,Georgia,serif;margin:13px auto}
+.assessment-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.assessment-choices button{min-height:64px;white-space:normal;text-align:left;font:clamp(1.08rem,1.8vw,1.42rem)/1.4 Cambria,Georgia,serif;overflow-wrap:anywhere}
+.assessment-choices button.correct{background:#e8f7ec;border-color:#6bae85}
+.assessment-choices button.incorrect{background:#fff0ef;border-color:#cc6b69}
+.assessment-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin:11px auto}
+.answer-label{display:block;font-weight:700;font-size:.88rem;color:#5b7189;margin:12px 0 5px}
+#displayPanel{position:fixed;inset:1vh 1vw;background:white;z-index:1000;border:1px solid #cbd9e6;border-radius:8px;padding:11px;display:flex;flex-direction:column}
+#displayPanel:fullscreen{inset:0;width:100vw;height:100vh;border-radius:0}
+.display-grid{display:grid;gap:8px;flex:1;min-height:0}
+.display-cell{border:1px solid #e0e7ef;border-radius:8px;display:grid;align-content:center;justify-items:center;gap:15px;overflow:hidden;padding:18px}
+.display-expr,.display-answer{font:clamp(1.1rem,2.3vw,2.6rem)/1.35 Cambria,Georgia,serif;text-align:center;max-width:100%;overflow-wrap:anywhere}
+.display-answer{color:#145b9b}
+.display-cell small{color:#9eacb8;justify-self:start}
+.sheet-controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:15px 0}
+.sheet-controls label{display:flex;align-items:center;gap:6px}
+.sheet-controls select{padding:6px}
+.sheet-preview{font:clamp(1.1rem,2vw,1.65rem) Cambria,Georgia,serif;line-height:1.6}
+@media(max-width:770px){.practice-layout{grid-template-columns:1fr}.step-panel{position:static}.controls{gap:5px}.control-set h2{text-align:left}.arc-stage svg{max-height:330px}.partial-row{gap:4px}.partial-cell{min-height:58px;padding:6px 2px}.assessment-choices{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="topbar">
+<a class="brand" href="../../index.html"><img src="../../assets/logo.svg" alt="Maths"><span>Apps</span></a>
+<div><a class="crumb" href="../../algebra/index.html">Algebra</a> · <a class="crumb" href="../../algebra/expansions/index.html">Expansions</a>
+<h1>Inline Rainbow</h1><p class="subtitle">Two inline binomials · upper and lower arcs · reverse grouping</p></div>
+</header>
+<main>
+<div class="controls" aria-label="Question settings">
+<div class="control"><strong>Method</strong><button id="expand" aria-pressed="true">Expand</button><button id="factor">Factorise</button></div>
+<div class="control"><strong>Arcs</strong><button id="overunder" aria-pressed="true">Upper / lower</button><button id="innerouter">Inner / outer</button></div>
+<div class="control"><strong>Letters</strong><select id="letters"><option value="ABC">ABC</option><option value="XYZ">XYZ</option><option value="PQR">PQR</option><option value="GHI">GHI</option></select></div>
+<div class="control"><strong>Numbers</strong><input id="numbers" type="range" min="0" max="4" value="0" step="1" aria-label="Coefficient complexity"><output id="numbersValue">0</output></div>
+<div class="control"><strong>Powers</strong><input id="powers" type="range" min="0" max="4" value="0" step="1" aria-label="Power complexity"><output id="powersValue">0</output></div>
+</div>
+<div class="activity-row">
+<div class="control-set"><h2>Classwork · 7 teaching banks</h2><div class="button-row" id="banks"></div></div>
+<div class="control-set control-set--activity"><h2>Activities</h2><div class="button-row">
+<button id="instruction">Instruction</button><button id="practice">Practice</button><button id="display">Display</button><button id="quiz">Quiz</button><button id="test">Test</button><button id="sheets">Sheets</button></div></div>
+<div class="control-set"><h2>Procedural fluency</h2><div class="button-row"><button id="steps" aria-pressed="true">Step by step</button><button id="worked">Worked</button><button id="reset">Reset steps</button></div></div>
+</div>
+<details class="advanced"><summary>Edit the four original terms</summary><div class="manual-grid"><label>First <input id="termA" aria-label="First term" autocomplete="off"></label><label>Second <input id="termB" aria-label="Second term" autocomplete="off"></label><label>Third <input id="termC" aria-label="Third term" autocomplete="off"></label><label>Fourth <input id="termD" aria-label="Fourth term" autocomplete="off"></label><button id="applyTerms">Apply</button><button id="restoreTerms">Restore bank example</button></div></details>
+<section id="practicePanel">
+<div class="practice-layout"><div class="practice-main">
+<h2 class="question-label" id="questionHeading"></h2><p class="focus-caption" id="focus"></p>
+<div class="group-controls" id="groupControls" hidden><strong>Group the partial products:</strong><button id="naturalGroups">As presented</button><button id="swapMiddles">Swap middle terms</button></div>
+<div class="arc-stage" id="arcStage"></div>
+<div id="productArea" hidden><h3 class="partial-heading">Partial products</h3><div class="partial-row" id="partialRow"></div></div>
+<p class="status" id="status" aria-live="polite"></p>
+<div class="solution" id="working" hidden></div>
+<div class="transport"><button id="previous">← Previous</button><button id="next" class="primary">Next →</button><button id="showAll">Show all</button><button id="newQuestion">Next in bank</button></div>
+</div><aside class="step-panel" id="stepPanel" aria-label="Procedural steps"></aside></div>
+</section>
+<section id="lessonPanel" hidden></section>
+<section id="displayPanel" hidden></section>
+<section id="assessmentPanel" hidden></section>
+<section id="sheetsPanel" hidden>
+<h2>Printable sheets</h2>
+<div class="sheet-controls"><label>Questions <select id="sheetCount"><option>6</option><option>8</option><option>12</option></select></label><label>Columns <select id="sheetCols"><option>2</option><option>3</option></select></label><label><input id="sheetAnswers" type="checkbox" checked> Answer key</label><button id="printSheets" class="primary">Open printable sheet</button></div><p>Questions use the current teaching bank. Working space is reserved for pupils to draw their own arcs and record partial products.</p><div id="sheetPreview" class="sheet-preview"></div>
+</section>
+</main>
+<script src="../shared/assessment.js"></script>
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const routeNames=['Firsts','Outers','Inners','Lasts'];
+const groups=['Natural grouping','One negative sign','Two negative signs','Swap the middle terms','Extract a negative factor','Composite terms and coefficients','Collect like terms'];
+const featured=[
+ ['a','b','c','d'],
+ ['a','b','c','-d'],
+ ['a','-b','c','-d'],
+ ['x','y','p','q'],
+ ['x','-y','p','-q'],
+ ['2x^2','-3y','4p','-q'],
+ ['3x','2','5x','4']
+];
+const state={bank:0,question:0,mode:'practice',direction:'expand',arcMode:'overunder',letters:'ABC',numbers:0,powers:0,step:0,worked:false,grouping:'presented',q:null,manual:false};
+const quizState={index:0,qs:[],choices:[],tries:[],selected:[],attempts:[],first:[],sound:true};
+const testState={qs:[],answers:[],submitted:false};
+const displayState={cols:1,rows:1,answers:false,offset:0};
+const supers='⁰¹²³⁴⁵⁶⁷⁸⁹';
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function parseTerm(str){
+ const input=String(str).trim().replace(/\s+/g,'').replace(/[−–]/g,'-')
+ .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g,p=>'^'+[...p].map(x=>supers.indexOf(x)).join(''));
+ if(!input||!/^[-+]?(?:[0-9]{1,3})?(?:[A-Za-z](?:\^[1-9][0-9]?)?)*$/.test(input)||input==='+'||input==='-')return null;
+ const m=/^([+-]?)([0-9]*)(.*)$/.exec(input),n=(m[1]==='-'?-1:1)*Number(m[2]||1),vars={},rest=m[3];
+ if(!rest&&!m[2])return null;
+ let degree=0;
+ for(const v of rest.matchAll(/([A-Za-z])(?:\^([1-9][0-9]?))?/g)){
+  const p=Number(v[2]||1);if(p>12)return null;
+  vars[v[1]]=(vars[v[1]]||0)+p;degree+=p;
+ }
+ if(degree>24||n===0||!Number.isSafeInteger(n))return null;
+ return {n,vars};
+}
+function copyTerm(t){return {n:t.n,vars:{...t.vars}}}
+function mult(a,b){const v={...a.vars};for(const [k,n] of Object.entries(b.vars))v[k]=(v[k]||0)+n;return {n:a.n*b.n,vars:v}}
+function key(t){return Object.keys(t.vars).sort().map(k=>k+':'+t.vars[k]).join('|')}
+function monomial(t,html=true){
+ const varPart=Object.keys(t.vars).sort().map(k=>k+(t.vars[k]===1?'':html?'<sup>'+t.vars[k]+'</sup>':[...String(t.vars[k])].map(n=>supers[Number(n)]).join(''))).join('');
+ return (varPart&&Math.abs(t.n)===1?'':String(Math.abs(t.n)))+varPart;
+}
+function format(t,first=false,html=true){return(t.n<0?(first?'−':' − '):(first?'':' + '))+monomial(t,html)}
+function brackets(q){return '('+format(q[0],true)+format(q[1])+')('+format(q[2],true)+format(q[3])+')'}
+function partial(q){return [mult(q[0],q[2]),mult(q[0],q[3]),mult(q[1],q[2]),mult(q[1],q[3])]}
+function distinctTerms(arr){const m=new Map();for(const t of arr){const k=key(t);if(m.has(k))m.get(k).n+=t.n;else m.set(k,copyTerm(t))}return [...m.values()].filter(t=>t.n)}
+function expanded(q,collect=true,order='foil'){
+ const p=partial(q),orderIndices=order==='grouped'?[0,2,1,3]:[0,1,2,3],terms=collect?distinctTerms(orderIndices.map(i=>p[i])):orderIndices.map(i=>p[i]);
+ return terms.length?terms.map((t,i)=>format(t,i===0)).join(''):'0';
+}
+function teacherExample(bank,which){
+ if(which===0)return featured[bank].map(parseTerm);
+ const alphabets={ABC:['a','b','c','d'],XYZ:['x','y','z','p'],PQR:['p','q','r','s'],GHI:['g','h','i','j']};
+ let letters=alphabets[state.letters]||alphabets.ABC;
+ const alt=which%2?letters:[letters[1],letters[0],letters[3],letters[2]];
+ const size=state.numbers===0?1:state.numbers===1?3:state.numbers===2?6:state.numbers===3?9:11;
+ const n=(seed)=>1+((bank*13+which*7+seed*11)%size);
+ let v=alt.map((name,i)=>String(n(i+1))+(state.powers===0?'':state.powers===1&&i%2?'^2':state.powers===2?'^2':state.powers===3&&i===0?'^3':state.powers===4?'^3':'')+name);
+ if(bank===1)v[3]='-'+v[3];
+ if(bank===2||bank===4){v[1]='-'+v[1];v[3]='-'+v[3]}
+ if(bank===5){v=['2'+alt[0]+'^2','-3'+alt[1],'4'+alt[2],'-'+alt[3]]}
+ if(bank===6){v=['3'+alt[0],'2','5'+alt[0],'4']}
+ return v.map(parseTerm);
+}
+function currentQ(){return state.manual?state.q:teacherExample(state.bank,state.question)}
+function groupText(q,method){
+ const a=q[0],b=q[1],c=q[2],d=q[3];
+ const common=method==='swapped'?[a,b]:[c,d];
+ const coefficients=method==='swapped'?[c,d]:[a,b];
+ const left='('+format(common[0],true)+format(common[1])+')';
+ return format(coefficients[0],true)+left+format(coefficients[1])+left;
+}
+function groupingSteps(q,method){
+ const p=partial(q),indices=method==='swapped'?[0,2,1,3]:[0,1,2,3],ordered=indices.map(i=>p[i]);
+ const first='('+format(ordered[0],true)+format(ordered[1])+') + ('+format(ordered[2],true)+format(ordered[3])+')';
+ const a=method==='swapped'?[q[2],q[3]]:[q[0],q[1]];
+ const common=method==='swapped'?[q[0],q[1]]:[q[2],q[3]];
+ const bracket='('+format(common[0],true)+format(common[1])+')';
+ return {ordered:expanded(q,false,method==='swapped'?'grouped':'foil'),first,
+ extracted:format(a[0],true)+bracket+format(a[1])+bracket,
+ final:brackets(q)};
+}
+function setMode(mode){
+ state.mode=mode;
+ for(const id of ['practice','instruction','display','quiz','test','sheets'])$(id).setAttribute('aria-pressed',String(mode===id));
+ $('practicePanel').hidden=mode!=='practice';
+ $('lessonPanel').hidden=mode!=='instruction';
+ $('displayPanel').hidden=mode!=='display';
+ $('assessmentPanel').hidden=mode!=='quiz'&&mode!=='test';
+ $('sheetsPanel').hidden=mode!=='sheets';
+ if(mode==='practice')renderPractice();
+ if(mode==='instruction')renderInstruction();
+ if(mode==='display')renderDisplay();
+ if(mode==='quiz')renderQuiz();
+ if(mode==='test')renderTest();
+ if(mode==='sheets')renderSheets();
+}
+function renderBanks(){
+ const host=$('banks');host.replaceChildren();
+ groups.forEach((label,i)=>{
+  const btn=document.createElement('button');btn.textContent=String(i+1);btn.title='Bank '+(i+1)+': '+label;
+  btn.setAttribute('aria-pressed',String(state.bank===i));btn.onclick=()=>{
+   state.bank=i;state.question=0;state.manual=false;state.step=0;state.worked=false;
+   state.grouping=i===3?'swapped':'presented';state.q=teacherExample(i,0);renderBanks();
+   if(state.mode==='quiz'||state.mode==='test')setMode('practice');else setMode(state.mode);
+  };host.append(btn);
+ });
+ const next=document.createElement('button');next.textContent='Random';next.title='Move to a new question within this bank';
+ next.onclick=nextQuestion;host.append(next);
+}
+function reset(){state.step=0;state.worked=false;setMode('practice')}
+function nextQuestion(){state.question=(state.question+1)%6;state.manual=false;state.q=teacherExample(state.bank,state.question);reset()}
+function svgFor(q,revealed,mode){
+ const x=[190,365,630,805],y=258;
+ const text=(v,at)=>'<text class="math" x="'+at+'" y="'+y+'">'+esc(format(v,true,false))+'</text>';
+ const bracket=(t,at)=>'<text class="math" x="'+at+'" y="'+y+'">'+t+'</text>';
+ const ops=(t,at)=>'<text class="math" x="'+at+'" y="'+y+'">'+(t.n<0?'−':'+')+'</text>';
+ const marker='<defs><marker id="arrowRainbow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="none" stroke="#216aab" stroke-width="1.7"/></marker></defs>';
+ // Upper/lower uses both upper arches for First and Inner, both lower arches for Outer and Last.
+ // Inner/outer uses a different high/low assignment to highlight inside versus outside.
+ const paths=mode==='innerouter'?
+ ['M190 214 Q410 15 630 214','M190 299 Q500 575 805 299','M365 214 Q495 95 630 214','M365 299 Q585 500 805 299']:
+ ['M190 214 Q410 26 630 214','M190 299 Q500 560 805 299','M365 214 Q495 105 630 214','M365 299 Q585 475 805 299'];
+ const coords=[[420,100],[485,446],[495,158],[595,425]];
+ const arrows=paths.slice(0,revealed).map((p,i)=>
+  '<path class="path'+(i===revealed-1&&revealed<4?' active':'')+'" d="'+p+'" marker-end="url(#arrowRainbow)"/>'+
+  '<circle class="route-number" cx="'+coords[i][0]+'" cy="'+coords[i][1]+'" r="19"/><text class="route-index" x="'+coords[i][0]+'" y="'+(coords[i][1]+7)+'">'+(i+1)+'</text>').join('');
+ return '<svg viewBox="0 0 1000 585" role="img" aria-label="Inline binomials with '+revealed+' of four rainbow multiplication arcs">'+marker+
+  arrows+bracket('(',112)+text(q[0],x[0])+ops(q[1],282)+
+  '<text class="math" x="'+x[1]+'" y="'+y+'">'+esc(monomial(q[1],false))+'</text>'+bracket(')',442)+
+  bracket('(',565)+text(q[2],x[2])+ops(q[3],722)+
+  '<text class="math" x="'+x[3]+'" y="'+y+'">'+esc(monomial(q[3],false))+'</text>'+bracket(')',878)+
+  '<text class="svg-guide" x="500" y="581">EVERY TERM IN THE FIRST BRACKET MEETS BOTH TERMS IN THE SECOND</text></svg>';
+}
+function renderPractice(){
+ const q=currentQ();state.q=q;
+ const factor=state.direction==='factor',limit=factor?4:5,step=state.worked?limit:state.step;
+ $('questionHeading').textContent='Classwork '+(state.bank+1)+' · Question '+(state.question+1)+' of 6';
+ $('focus').textContent=groups[state.bank];
+ $('expand').setAttribute('aria-pressed',String(!factor));$('factor').setAttribute('aria-pressed',String(factor));
+ $('overunder').setAttribute('aria-pressed',String(state.arcMode==='overunder'));
+ $('innerouter').setAttribute('aria-pressed',String(state.arcMode==='innerouter'));
+ $('stepPanel').hidden=state.worked;
+ $('groupControls').hidden=!factor;
+ $('naturalGroups').setAttribute('aria-pressed',String(state.grouping==='presented'));
+ $('swapMiddles').setAttribute('aria-pressed',String(state.grouping==='swapped'));
+ const count=factor?4:Math.min(4,step);
+ $('arcStage').innerHTML=factor?'<div class="assessment-question" style="text-align:center">'+expanded(q,false,state.grouping==='swapped'?'grouped':'foil')+'</div>':svgFor(q,count,state.arcMode);
+ $('productArea').hidden=factor||count===0;
+ if(!factor){
+  const p=partial(q);$('partialRow').innerHTML=p.map((term,i)=>{
+   const visible=i<count;
+   return '<div class="partial-cell'+(!visible?' pending':i===count-1?' active':'')+'"><em>'+(visible?format(term,i===0):'· · ·')+'</em></div>';
+  }).join('');
+ }
+ const status=$('status'),work=$('working');work.hidden=step===0;work.replaceChildren();
+ if(!factor){
+  status.textContent=step===0?'Look at both brackets. Which terms will connect?':step<5?'Follow the '+routeNames[step-1].toLowerCase()+' arc. Record that partial product.':
+  distinctTerms(partial(q)).length===4?'Four unlike partial products; present your answer.':'Collect identical variable parts and present your answer.';
+  if(step===5)work.innerHTML='<span class="line">'+brackets(q)+' = '+expanded(q,true)+'</span>';
+ }else{
+  const g=groupingSteps(q,state.grouping);
+  status.textContent=step===0?'Look for two pairs that reveal the same bracket.':step===1?'Check the neighbouring pairs.':'Factor carefully, particularly when a common factor is negative.';
+  if(step>=1)work.innerHTML+='<span class="line">'+g.ordered+'</span>';
+  if(step>=2)work.innerHTML+='<span class="line">'+g.first+'</span>';
+  if(step>=3)work.innerHTML+='<span class="line">'+g.extracted+'</span>';
+  if(step>=4)work.innerHTML+='<span class="line">'+g.final+'</span><span class="note">Check by expanding the two brackets again.</span>';
+ }
+ $('previous').disabled=state.worked||step===0;
+ $('next').disabled=state.worked||step>=limit;
+ $('next').textContent=step>=limit?'Complete':'Next →';
+ renderStepPanel(q,step,factor);
+}
+function renderStepPanel(q,step,factor){
+ const host=$('stepPanel');host.replaceChildren();if(state.worked)return;
+ const titles=factor?['Inspect the four terms','Choose two groups','Extract common factors','Match repeated bracket','Restore the two factors']:
+ ['Inspect two brackets','Firsts · upper arc','Outers · lower arc','Inners · upper arc','Lasts · lower arc','Present / collect partial products'];
+ const h=document.createElement('h2');h.textContent='Steps';host.append(h);
+ titles.forEach((label,i)=>{
+  const b=document.createElement('button');b.className='step-entry'+(i===step?' current':i<step?' complete':'');
+  b.innerHTML='<span class="number">'+(i+1)+'</span><span>'+label+'</span>';
+  b.onclick=()=>{state.step=Math.min(factor?4:5,i);state.worked=false;renderPractice()};host.append(b);
+ });
+}
+const slides=[
+ {title:'Two groups, four pairings',body:'<p>If a choice has two parts in each group, every part in the first group must meet every part in the second.</p><div class="example">(a + b)(c + d)</div><p>Four pairings, four partial products.</p>',reveal:'<div class="example">ac + ad + bc + bd</div>'},
+ {title:'The rainbow belongs to inline brackets',body:'<p>Keep both brackets next to one another. Arcs go over and under the expression, connecting one term in the left bracket to one in the right.</p><p>The arches may look like E.T. waving — but each one represents a real multiplication.</p>',reveal:'<p>Follow the four routes: firsts, outers, inners, lasts. Do not multiply two terms inside the same bracket.</p>'},
+ {title:'Record four partial products',body:'<div class="example">(a+b)(c+d)</div><p>As you follow each arc, put its partial product beside the preceding one. They all belong on the same line.</p>',reveal:'<div class="example">ac + ad + bc + bd</div><p>They are partial products, not vector cross products.</p>'},
+ {title:'Group the FOIL products without swapping',body:'<div class="example">ac + ad + bc + bd</div><p>The first pair has a common factor a; the last pair has a common factor b.</p>',reveal:'<div class="example">a(c+d)+b(c+d)</div><div class="example">(a+b)(c+d)</div>'},
+ {title:'Swapping the middle terms',body:'<div class="example">ac + bd + bc + ad</div><p>The first two terms do not generally expose a useful common factor. Reorder the terms to make productive groups.</p>',reveal:'<div class="example">ac + bc + ad + bd</div><div class="example">c(a+b)+d(a+b)</div>'},
+ {title:'The minus sign belongs to the term',body:'<div class="example">(x-y)(p-q)</div><p>Writing the partial products correctly is essential before grouping.</p>',reveal:'<div class="example">xp − xq − yp + yq</div><div class="example">x(p-q) − y(p-q)</div>'},
+ {title:'Sometimes take out a negative',body:'<div class="example">xp − yp − xq + yq</div><p>The first pair is p(x−y). What factor will give the same bracket from the second pair?</p>',reveal:'<div class="example">p(x−y) − q(x−y)</div><p>Taking out −q reverses both signs in that group.</p>'},
+ {title:'Explain it back',body:'<p>Why four partial products? What do the upper and lower arcs tell us? When is reordering useful? Why might we extract a negative factor?</p>',reveal:'<p>Every left term meets every right term. Regroup to reveal a repeated bracket. Extract a negative when it makes the two brackets match.</p>'}
+];
+let slideIndex=0,showReveal=false;
+function renderInstruction(){
+ const host=$('lessonPanel');host.replaceChildren();
+ const top=document.createElement('div');top.className='lesson-top';
+ const h=document.createElement('h2');h.textContent='Instruction · Inline Rainbow';
+ const pos=document.createElement('strong');pos.textContent=(slideIndex+1)+' / '+slides.length;
+ top.append(h,pos);host.append(top);
+ const card=document.createElement('article');card.className='lesson-card';
+ card.innerHTML='<h3>'+slides[slideIndex].title+'</h3>'+slides[slideIndex].body+(showReveal?'<div class="reveal">'+slides[slideIndex].reveal+'</div>':'');
+ host.append(card);
+ const nav=document.createElement('div');nav.className='lesson-nav';
+ for(const [text,fn] of [['← Previous',()=>{slideIndex--;showReveal=false;renderInstruction()}],['Reveal / hide',()=>{showReveal=!showReveal;renderInstruction()}],['Next →',()=>{slideIndex++;showReveal=false;renderInstruction()}],['Present ⛶',()=>{if(document.fullscreenElement===host)document.exitFullscreen();else host.requestFullscreen?.()}],['Practice',()=>setMode('practice')]]){
+  const b=document.createElement('button');b.textContent=text;b.onclick=fn;
+  b.disabled=(text==='← Previous'&&slideIndex===0)||(text==='Next →'&&slideIndex===slides.length-1);nav.append(b);
+ }
+ host.append(nav);
+}
+function renderDisplay(){
+ const panel=$('displayPanel');panel.replaceChildren();
+ const bar=document.createElement('div');bar.className='display-bar';
+ const heading=document.createElement('strong');heading.textContent='Inline Rainbow · Classroom display';
+ bar.append(heading);
+ for(const [text,action] of [['1 × 1',()=>{displayState.cols=1;displayState.rows=1}],['2 × 2',()=>{displayState.cols=2;displayState.rows=2}],['3 × 2',()=>{displayState.cols=3;displayState.rows=2}],['Answers',()=>{displayState.answers=!displayState.answers}],['New questions',()=>{displayState.offset++}],['Present ⛶',()=>{panel.requestFullscreen?.()}],['Close',()=>setMode('practice')]]){
+  const b=document.createElement('button');b.textContent=text;b.onclick=()=>{action();if(text!=='Close'&&text!=='Present ⛶')renderDisplay()};bar.append(b);
+ }
+ panel.append(bar);const grid=document.createElement('div');grid.className='display-grid';
+ grid.style.gridTemplateColumns='repeat('+displayState.cols+',minmax(0,1fr))';
+ grid.style.gridTemplateRows='repeat('+displayState.rows+',minmax(0,1fr))';
+ for(let i=0;i<displayState.cols*displayState.rows;i++){
+  const q=i===0&&displayState.offset===0?currentQ():teacherExample((state.bank+i)%7,(displayState.offset+i)%6);
+  const card=document.createElement('div');card.className='display-cell';
+  card.innerHTML='<small>'+(i+1)+'</small><div class="display-expr">'+(state.direction==='expand'?brackets(q):expanded(q,true))+'</div>'+(displayState.answers?'<div class="display-answer">'+(state.direction==='expand'?expanded(q,true):brackets(q))+'</div>':'');
+  grid.append(card);
+ }panel.append(grid);
+}
+function startQuiz(){
+ quizState.index=0;quizState.qs=Array.from({length:4},(_,i)=>teacherExample((state.bank+i)%7,i%6));
+ quizState.tries=[[],[],[],[]];quizState.selected=[-1,-1,-1,-1];quizState.attempts=[0,0,0,0];quizState.first=[null,null,null,null];quizState.sound=true;
+ quizState.choices=quizState.qs.map((q,i)=>{
+  const correct=state.direction==='expand'?expanded(q,true):brackets(q);
+  const out=[{text:correct,correct:true}];
+  for(let j=0;out.length<4&&j<20;j++){
+   const altered=q.map(copyTerm);altered[(j%4)].n+=((j%2)?-1:1)*(1+Math.floor(j/4));
+   if(altered.some(t=>t.n===0))continue;
+   const choice=state.direction==='expand'?expanded(altered,true):brackets(altered);
+   if(out.every(x=>x.text!==choice))out.push({text:choice,correct:false});
+  }
+  return out.sort((a,b)=>a.text.localeCompare(b.text));
+ });
+ setMode('quiz');
+}
+function renderQuiz(){
+ const host=$('assessmentPanel');host.replaceChildren();
+ const i=quizState.index;
+ const h=document.createElement('div');h.className='assessment-top';
+ const title=document.createElement('h2');title.textContent='Quiz · Inline Rainbow';
+ const sound=document.createElement('button');sound.textContent='Sound '+(quizState.sound?'on':'off');
+ sound.setAttribute('aria-pressed',String(quizState.sound));sound.onclick=()=>{quizState.sound=!quizState.sound;renderQuiz()};
+ h.append(title,sound);host.append(h);
+ if(i===4){const result=document.createElement('p');result.className='maths-assessment-score';
+ result.textContent='Quiz complete · '+quizState.first.filter(x=>x===true).length+' / 4 correct first time';host.append(result);
+ const btn=document.createElement('button');btn.textContent='New quiz';btn.onclick=startQuiz;host.append(btn);return}
+ const q=quizState.qs[i],choices=quizState.choices[i],done=choices[quizState.selected[i]]?.correct||quizState.attempts[i]>=MathsAssessment.maxAttempts;
+ const card=document.createElement('section');card.className='assessment-card';
+ card.innerHTML='<strong>Question '+(i+1)+' of 4</strong><div class="assessment-question">'+(state.direction==='expand'?'Expand: '+brackets(q):'Factorise: '+expanded(q,true))+'</div>';
+ const options=document.createElement('div');options.className='assessment-choices';
+ choices.forEach((answer,j)=>{
+  const b=document.createElement('button');b.innerHTML=String.fromCharCode(65+j)+'. '+answer.text;
+  const tried=quizState.tries[i].includes(j),completed=done;
+  b.disabled=tried||completed;
+  if(tried&&!answer.correct)b.classList.add('incorrect');
+  if(completed&&answer.correct)b.classList.add('correct');
+  b.onclick=()=>{
+   if(done)return;
+   if(quizState.first[i]===null)quizState.first[i]=answer.correct;
+   quizState.selected[i]=j;quizState.tries[i].push(j);quizState.attempts[i]++;
+   const final=answer.correct||quizState.attempts[i]===2;
+   MathsAssessment.playSound(answer.correct?true:final?'final-wrong':false,quizState.sound);
+   renderQuiz();
+  };options.append(b);
+ });card.append(options);
+ if(quizState.attempts[i]){
+  const selected=choices[quizState.selected[i]],feedback=document.createElement('p');
+  feedback.className='maths-assessment-feedback'+(selected.correct?' correct':'');
+  feedback.textContent=MathsAssessment.outcome(selected.correct,quizState.attempts[i]).feedback+
+   (!selected.correct&&done?' The correct answer is highlighted.':'');
+  card.append(feedback);
+ }
+ host.append(card);
+ host.append(MathsAssessment.pager(document,{index:i,total:4,enabled:done,onNext:()=>{if(!done)return;quizState.index++;renderQuiz()}}));
+ const actions=document.createElement('div');actions.className='assessment-actions';
+ for(const [t,fn] of [['New quiz',startQuiz],['Close',()=>setMode('practice')]]){const b=document.createElement('button');b.textContent=t;b.onclick=fn;actions.append(b)}host.append(actions);
+}
+function startTest(){
+ testState.qs=Array.from({length:4},(_,i)=>teacherExample((state.bank+i)%7,i%6));
+ testState.answers=['','','',''];testState.submitted=false;setMode('test');
+}
+function renderTest(){
+ const host=$('assessmentPanel');host.replaceChildren();
+ const title=document.createElement('h2');title.textContent='Written test · four questions';host.append(title);
+ const note=document.createElement('p');note.textContent='No multiple choice and no feedback until submission. Enter your expression using ^ for powers.';
+ host.append(note);
+ testState.qs.forEach((q,i)=>{
+  const card=document.createElement('section');card.className='assessment-card';
+  card.innerHTML='<strong>Question '+(i+1)+'</strong><div class="assessment-question">'+(state.direction==='expand'?'Expand: '+brackets(q):'Factorise: '+expanded(q,true))+'</div>';
+  const label=document.createElement('label');label.className='answer-label';label.textContent='Your answer';
+  const answer=document.createElement('input');answer.className='maths-assessment-answer';answer.type='text';
+  answer.value=testState.answers[i];answer.disabled=testState.submitted;
+  answer.setAttribute('aria-label','Answer for question '+(i+1));answer.oninput=()=>{testState.answers[i]=answer.value};
+  card.append(label,answer);
+  if(testState.submitted){
+   const correct=state.direction==='expand'?MathsAssessment.equivalentPolynomial(answer.value,expanded(q,true)):MathsAssessment.equivalentFactorisation(answer.value,expanded(q,true));
+   const res=document.createElement('div');res.className='maths-assessment-feedback'+(correct?' correct':'');
+   res.textContent=correct?'Correct.':'Not correct. Expected: ';
+   if(!correct){const span=document.createElement('span');span.innerHTML=state.direction==='expand'?expanded(q,true):brackets(q);res.append(span)}
+   card.append(res);
+  }
+  host.append(card);
+ });
+ const actions=document.createElement('div');actions.className='assessment-actions';
+ if(!testState.submitted){const b=document.createElement('button');b.className='primary';b.textContent='Submit test';b.onclick=()=>{testState.submitted=true;renderTest()};actions.append(b)}
+ else{
+  const score=testState.qs.reduce((n,q,i)=>n+Number(state.direction==='expand'?
+  MathsAssessment.equivalentPolynomial(testState.answers[i],expanded(q,true)):
+  MathsAssessment.equivalentFactorisation(testState.answers[i],expanded(q,true))),0);
+  const p=document.createElement('strong');p.className='maths-assessment-score';p.textContent='Result: '+score+' / 4';actions.append(p);
+ }
+ for(const [label,fn] of [['New test',startTest],['Close',()=>setMode('practice')]]){const b=document.createElement('button');b.textContent=label;b.onclick=fn;actions.append(b)}
+ host.append(actions);
+}
+function renderSheets(){
+ const host=$('sheetPreview');
+ host.innerHTML='<strong>Bank '+(state.bank+1)+': '+groups[state.bank]+'</strong> · '+brackets(currentQ())+
+ '<p>Printable questions preserve the selected bank and include independent working space.</p>';
+}
+function openSheet(){
+ const count=Number($('sheetCount').value),cols=Number($('sheetCols').value),answers=$('sheetAnswers').checked;
+ const qs=Array.from({length:count},(_,i)=>teacherExample(state.bank,i%6));
+ const heading=qs.map((q,i)=>'<div class="problem"><strong>'+(i+1)+'.</strong> <span>'+(state.direction==='expand'?brackets(q):expanded(q,true))+'</span><div class="space"></div></div>').join('');
+ const solution=qs.map((q,i)=>'<p>'+(i+1)+'. '+(state.direction==='expand'?expanded(q,true):brackets(q))+'</p>').join('');
+ const sheet='<!doctype html><html lang="en-IE"><head><meta charset="utf-8"><title>Inline Rainbow · Sheets</title><style>'+
+ '@page{size:A4 landscape;margin:12mm}body{font-family:Arial;margin:0;color:#202020}header{display:flex;justify-content:space-between;padding:7mm 0 4mm;border-bottom:1px solid #333}main{display:grid;grid-template-columns:repeat('+cols+',minmax(0,1fr));gap:6mm}.problem{min-height:'+(count<=6?'58mm':'42mm')+';break-inside:avoid;padding:3mm;border-bottom:1px solid #ddd}.problem span{font:23px Cambria,Georgia,serif}.problem strong{font-size:14px}.solutions{break-before:page}.solutions p{font:18px Cambria,Georgia,serif}.buttons{padding:6px;background:#eef3f8}@media print{.buttons{display:none}}'+
+ '</style></head><body><div class="buttons"><button onclick="window.print()">Print / save as PDF</button></div><header><strong>Inline Rainbow · Bank '+(state.bank+1)+'</strong><span>Name: _____________________</span></header><main>'+heading+'</main>'+
+ (answers?'<section class="solutions"><h2>Answers</h2>'+solution+'</section>':'')+'</body></html>';
+ const popup=window.open('','_blank');if(!popup){alert('Allow pop-ups to open your printable sheet.');return}
+ popup.document.open();popup.document.write(sheet);popup.document.close();
+}
+function updateSettings(){
+ $('letters').value=state.letters;$('numbers').value=state.numbers;$('powers').value=state.powers;
+ $('numbersValue').textContent=state.numbers;$('powersValue').textContent=state.powers;
+ $('expand').setAttribute('aria-pressed',String(state.direction==='expand'));
+ $('factor').setAttribute('aria-pressed',String(state.direction==='factor'));
+ $('overunder').setAttribute('aria-pressed',String(state.arcMode==='overunder'));
+ $('innerouter').setAttribute('aria-pressed',String(state.arcMode==='innerouter'));
+}
+$('expand').onclick=()=>{state.direction='expand';reset()};
+$('factor').onclick=()=>{state.direction='factor';reset()};
+$('overunder').onclick=()=>{state.arcMode='overunder';updateSettings();if(state.mode==='practice')renderPractice()};
+$('innerouter').onclick=()=>{state.arcMode='innerouter';updateSettings();if(state.mode==='practice')renderPractice()};
+$('letters').onchange=()=>{state.letters=$('letters').value;nextQuestion();updateSettings()};
+for(const id of ['numbers','powers'])$(id).onchange=()=>{state[id]=Number($(id).value);nextQuestion();updateSettings()};
+$('applyTerms').onclick=()=>{
+ const values=['termA','termB','termC','termD'].map(id=>parseTerm($(id).value));
+ if(values.some(x=>!x)){alert('Enter four algebraic terms such as a, -b, 2x or x^2y.');return}
+ state.q=values;state.manual=true;state.step=0;state.worked=false;setMode('practice');
+};
+$('restoreTerms').onclick=()=>{state.manual=false;state.q=teacherExample(state.bank,state.question);reset()};
+$('instruction').onclick=()=>{slideIndex=0;showReveal=false;setMode('instruction')};
+$('practice').onclick=()=>setMode('practice');
+$('display').onclick=()=>setMode('display');
+$('quiz').onclick=startQuiz;
+$('test').onclick=startTest;
+$('sheets').onclick=()=>setMode('sheets');
+$('steps').onclick=()=>{state.worked=false;setMode('practice')};
+$('worked').onclick=()=>{state.worked=true;setMode('practice')};
+$('reset').onclick=reset;
+$('previous').onclick=()=>{state.worked=false;state.step=Math.max(0,state.step-1);renderPractice()};
+$('next').onclick=()=>{state.worked=false;state.step=Math.min(state.direction==='factor'?4:5,state.step+1);renderPractice()};
+$('showAll').onclick=()=>{state.worked=true;renderPractice()};
+$('newQuestion').onclick=nextQuestion;
+$('naturalGroups').onclick=()=>{state.grouping='presented';state.step=0;renderPractice()};
+$('swapMiddles').onclick=()=>{state.grouping='swapped';state.step=0;renderPractice()};
+$('printSheets').onclick=openSheet;
+state.q=teacherExample(0,0);renderBanks();updateSettings();setMode('practice');
+})();
+</script>
+</body>
+</html>
