@@ -1039,13 +1039,13 @@ function draw(){
       const plural=n=>n===1?'column':'columns';
       const firstLabel=degreeA===degreeB?'First factor':'Higher-degree factor';
       const secondLabel=degreeA===degreeB?'Second factor':'Other factor';
-      const countingStep=(heading,factor,degree,from,to,verb)=>
+      const countingStep=(heading,factor,degree,from,to,movement)=>
        '<div class="degree-counting-step"><div class="degree-counting-label">'+heading+' · degree '+degree+' ('+degreeName(degree)+')</div>'+
-       '<p class="degree-counting-copy">In ('+poly(factor)+'), use the highest power '+powerLabel(degree)+'. '+verb+' '+countWord(degree)+' '+plural(degree)+' left.</p>'+
+       '<p class="degree-counting-copy">In ('+poly(factor)+'), use the highest power '+powerLabel(degree)+'. '+movement+'</p>'+
        '<div class="degree-counting-route" role="img" aria-label="'+spokenRoute(from,to)+'">'+route(from,to)+'</div></div>';
       tip.innerHTML='<div class="degree-counting"><p class="degree-counting-intro">Start at <strong>#</strong> in the number column. Only the highest power in each factor decides how far to move.</p>'+
-       countingStep(firstLabel,first,firstDegree,0,firstDegree,'Start at # and move')+
-       countingStep(secondLabel,second,secondDegree,firstDegree,totalDegree,'Count more')+
+       countingStep(firstLabel,first,firstDegree,0,firstDegree,'Start at # and move '+countWord(firstDegree)+' '+plural(firstDegree)+' left.')+
+       countingStep(secondLabel,second,secondDegree,firstDegree,totalDegree,'Then move '+countWord(secondDegree)+' more '+plural(secondDegree)+' left.')+
        '<p class="degree-counting-conclusion">The highest-power column is '+powerLabel(totalDegree)+'.</p></div>';
      }
      checklist.append(tip);
