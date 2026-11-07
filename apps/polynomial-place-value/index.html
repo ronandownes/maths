@@ -493,10 +493,10 @@ function chosenQuestion(){
  const rng=state.slot==='fresh'
   ?seeded(seedFor(state.freshCount+1000)^((Math.random()*0xffffffff)>>>0))
   :seeded(seedFor(state.slot));
- // Fixed homework questions develop sign fluency progressively.
+ // Fixed exercises develop sign fluency progressively.
  // Fresh/random questions continue to honour the selected sign control.
  const homeworkSigns=['positive','negative','mixed','mixed'];
- // Monic is an optional random-practice mode; fixed homework is never modified.
+ // Monic and Challenge are optional modes; fixed exercises remain independent.
  return makeQuestion(rng,state.slot==='fresh'?null:homeworkSigns[state.slot]);
 }
 function selectQuestion(slot){
@@ -533,7 +533,7 @@ function individualProducts(a,b){
 }
 function renderSelectors(){
  const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);
- chooseButtons('questions',q,state.slot,v=>{switchMode('practice');if(beyondTypes.includes(state.type)){state.type=state.coreType;state.beyondOpen=false}state.constantOn=false;selectQuestion(v)});
+ chooseButtons('questions',q,state.slot,v=>{if(assessment.started)return;state.beyondOpen=false;state.type=state.coreType;state.factorRandom=false;state.constantOn=false;switchMode('practice');selectQuestion(v);assessmentConfigChanged()});
  const homeworkDescription=['Positive coefficients','Negative non-leading coefficients','Mixed positive and negative coefficients','Mixed signs · extra practice'];
  for(let i=0;i<4;i++)$('questions').children[i].title='Exercise '+(i+1)+': '+homeworkDescription[i];
  function filter(key,value){if(assessment.started)return;state[key]=value;freshQuestion();assessmentConfigChanged()}
