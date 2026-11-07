@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="A guided, mobile-friendly Sets Lab for representing sets, reading Venn diagrams and solving problems.">
+  <title>Venn Diagrams and Problem Solving | Maths Apps</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="sets.css">
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="../../index.html" aria-label="Maths Apps home">
+      <img src="../../assets/maths-logo.svg" alt="">
+      <span>Apps</span>
+    </a>
+    <button class="site-menu-toggle" id="siteMenuToggle" type="button" aria-expanded="false" aria-controls="siteLinks">☰ Menu</button>
+    <nav class="header-links" id="siteLinks" aria-label="Related pages">
+      <a href="index.html">Sets apps</a>
+      <a href="list-and-notation.html">List &amp; notation</a>
+      <a href="rule-builder.html">Rule builder</a>
+      <a href="universal-complement.html">Universal set &amp; complement</a>
+      <a href="../../number/sets/index.html">Sets lesson</a>
+      <a href="https://ronandownes.github.io/book/sets-first-look.html">Book chapter</a>
+    </nav>
+  </header>
+
+  <main class="app-main" id="main">
+    <div class="page-intro">
+      <p class="kicker">NUMBER · SETS</p>
+      <h1>Venn diagrams and problem solving</h1>
+      <p>Learn and explore two sets without a universal-set rectangle. See “both”, “only A”, “only B”, intersection, union and difference. The later challenge adds a third set.</p>
+    </div>
+
+    <div class="app-toolbar">
+      <button class="toolbar-toggle" id="activitiesToggle" type="button" aria-expanded="false" aria-controls="activityMenu">☰ Activities</button>
+      <nav class="activity-menu" id="activityMenu" aria-label="Choose an activity" hidden>
+        <button type="button" data-view="watch" aria-pressed="true">Watch first</button>
+        <button type="button" data-view="explore" aria-pressed="false">Explore</button>
+        <button type="button" data-view="practice" aria-pressed="false">Practise</button>
+        <button type="button" data-view="quiz" aria-pressed="false">Quiz</button>
+        <button type="button" data-view="game" aria-pressed="false">Game</button>
+        <button type="button" data-view="test" aria-pressed="false">Test</button>
+        <button type="button" data-view="pair-work" aria-pressed="false">Pair work</button>
+      </nav>
+      <button class="toolbar-toggle settings-toggle" id="settingsToggle" type="button" aria-expanded="false" aria-controls="settingsPanel">⚙ Settings</button>
+    </div>
+
+    <section class="settings-panel" id="settingsPanel" aria-label="Activity settings" hidden>
+      <div class="settings-heading">
+        <div><h2>Choose your challenge</h2><p>These settings affect practice, quiz, game and test questions.</p></div>
+        <button type="button" id="settingsClose" class="quiet-button">Done</button>
+      </div>
+      <div class="settings-groups">
+        <fieldset>
+          <legend>Difficulty</legend>
+          <div class="choice-row" id="levelChoices">
+            <button type="button" data-level="foundation" aria-pressed="true">Foundation</button>
+            <button type="button" data-level="core" aria-pressed="false">Core</button>
+            <button type="button" data-level="challenge" aria-pressed="false">Challenge</button>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Number of sets</legend>
+          <div class="choice-row" id="setChoices">
+            <button type="button" data-set-count="2" aria-pressed="true">Two sets</button>
+            <button type="button" data-set-count="3" aria-pressed="false" disabled>Three sets · Challenge</button>
+          </div>
+          <p class="settings-hint">Three sets unlock at Challenge level. You can still use the two-set problems at any level.</p>
+        </fieldset>
+      </div>
+    </section>
+
+    <p class="live-status" id="appStatus" role="status" aria-live="polite" hidden></p>
+
+    <section class="screen" id="screen-watch" aria-labelledby="watch-heading">
+      <div class="screen-heading">
+        <div>
+          <p class="step-label" id="watch-progress">Guided example 1 of 8</p>
+          <h2 id="watch-heading">Start with one collection</h2>
+        </div>
+        <span class="mode-badge">Watch first</span>
+      </div>
+      <p class="screen-lead">These first examples are demonstrations. Follow the picture and the language; there is nothing to select or drag.</p>
+      <div class="watch-layout">
+        <div class="watch-explanation">
+          <h3 id="watch-subtitle">A set of seasons</h3>
+          <p id="watch-text"></p>
+          <p class="math-display" id="watch-math"></p>
+          <div class="pronunciation-row" id="pronunciationRow" hidden>
+            <button type="button" id="listenSuchThat" class="quiet-button">🔊 Listen to “such that”</button>
+            <span>On an iPhone, sound starts when you tap the button.</span>
+          </div>
+        </div>
+        <div class="watch-diagram" id="watchDiagram" aria-live="polite"></div>
+      </div>
+      <div class="step-controls">
+        <button type="button" id="watchPrevious">← Previous</button>
+        <span class="step-dots" id="watchDots" aria-label="Guided example steps"></span>
+        <button type="button" id="watchNext">Next step →</button>
+      </div>
+      <div class="ready-card">
+        <div><strong>Ready to take part?</strong><p>Explore how regions change, then try a question when you are ready.</p></div>
+        <button type="button" data-view="explore" class="primary-button">Open Explore</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-explore" aria-labelledby="explore-heading" hidden>
+      <div class="screen-heading">
+        <div><p class="step-label">Look at the regions</p><h2 id="explore-heading">Explore a Venn diagram</h2></div>
+        <span class="mode-badge">Two sets by default</span>
+      </div>
+      <p class="screen-lead">Choose a meaning. Digital shading marks the selected region. For a pen-and-paper diagram, use only a few clear hatch strokes in that region.</p>
+      <div class="operation-buttons" id="operationButtons" role="group" aria-label="Choose a region to highlight"></div>
+      <div class="explore-layout">
+        <div class="canvas-wrap">
+          <canvas id="vennCanvas" width="900" height="520" role="img" aria-label="Two overlapping sets: A and B"></canvas>
+        </div>
+        <aside class="region-explanation" aria-live="polite">
+          <p class="step-label">Selected region</p>
+          <h3 id="operationName">All regions</h3>
+          <p id="operationMeaning"></p>
+          <div class="region-summary" id="regionSummary"></div>
+        </aside>
+      </div>
+      <details class="count-editor" id="twoSetEditor">
+        <summary>Change the two-set example counts</summary>
+        <p>Change the two set totals and the shared count. The shared count must fit inside both sets.</p>
+        <div class="number-inputs">
+          <label>In A <input id="inputA" type="number" inputmode="numeric" min="0" max="100" value="15"></label>
+          <label>In B <input id="inputB" type="number" inputmode="numeric" min="0" max="100" value="12"></label>
+          <label>In both <input id="inputBoth" type="number" inputmode="numeric" min="0" max="100" value="5"></label>
+        </div>
+        <p class="input-feedback" id="countFeedback" role="status" aria-live="polite"></p>
+      </details>
+      <div class="three-region-summary" id="threeRegionSummary" hidden>
+        <h3>Challenge example: eight regions</h3>
+        <p>The set totals are #A = 20, #B = 18 and #C = 15. The pair-only regions are 5, 4 and 3; the shared centre has 2.</p>
+        <ul>
+          <li>A only: 9</li><li>B only: 8</li><li>C only: 6</li><li>A and B only: 5</li>
+          <li>A and C only: 4</li><li>B and C only: 3</li><li>All three: 2</li><li>In at least one set: 37</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-practice" aria-labelledby="practice-heading" hidden>
+      <div class="screen-heading">
+        <div><p class="step-label">Instant feedback and worked reasoning</p><h2 id="practice-heading">Practice questions</h2></div>
+        <span class="mode-badge" id="practiceLevelBadge">Foundation</span>
+      </div>
+      <div class="practice-topline">
+        <p id="practiceProgress">Question 1</p>
+        <button type="button" id="practiceNew" class="quiet-button">New question set</button>
+      </div>
+      <article class="question-card">
+        <h3 id="practicePrompt"></h3>
+        <div class="answer-options" id="practiceOptions" role="group" aria-label="Choose an answer"></div>
+        <p class="answer-feedback" id="practiceFeedback" role="status" aria-live="polite"></p>
+        <details class="reasoning" id="practiceReasoning" hidden><summary>Show the reasoning</summary><p id="practiceWhy"></p></details>
+      </article>
+      <div class="question-nav"><button type="button" id="practicePrevious">← Previous</button><button type="button" id="practiceNext">Next →</button></div>
+    </section>
+
+    <section class="screen" id="screen-quiz" aria-labelledby="quiz-heading" hidden>
+      <div class="screen-heading">
+        <div><p class="step-label">Check what you know</p><h2 id="quiz-heading">Sets quiz</h2></div>
+        <span class="mode-badge">Feedback after each answer</span>
+      </div>
+      <div class="session-topline"><p id="quizProgress">Ready for 8 questions</p><button type="button" id="quizStart" class="primary-button">Start quiz</button></div>
+      <article class="question-card" id="quizCard" hidden>
+        <h3 id="quizPrompt"></h3>
+        <div class="answer-options" id="quizOptions" role="group" aria-label="Choose an answer"></div>
+        <p class="answer-feedback" id="quizFeedback" role="status" aria-live="polite"></p>
+        <details class="reasoning" id="quizReasoning" hidden><summary>Why does it work?</summary><p id="quizWhy"></p></details>
+      </article>
+      <div class="question-nav" id="quizNav" hidden><button type="button" id="quizPrevious">← Previous</button><button type="button" id="quizNext">Next →</button></div>
+      <div class="session-result" id="quizResult" hidden></div>
+    </section>
+
+    <section class="screen" id="screen-game" aria-labelledby="game-heading" hidden>
+      <div class="screen-heading">
+        <div><p class="step-label">Short rounds · no account or leaderboard</p><h2 id="game-heading">Region match</h2></div>
+        <span class="mode-badge">60-second round</span>
+      </div>
+      <p class="screen-lead">Match the mathematical words to the correct region. Read the clue carefully; speed comes after meaning.</p>
+      <div class="game-scoreboard"><span>Time <strong id="gameTimer">60</strong>s</span><span>Score <strong id="gameScore">0</strong></span><span>Round <strong id="gameRound">0</strong></span></div>
+      <article class="question-card game-card">
+        <p class="step-label" id="gamePromptLabel">When you are ready</p>
+        <h3 id="gamePrompt">Which notation means “in A and in B”?</h3>
+        <div class="answer-options" id="gameOptions" role="group" aria-label="Choose the matching set notation"></div>
+        <p class="answer-feedback" id="gameFeedback" role="status" aria-live="polite"></p>
+      </article>
+      <button type="button" id="gameStart" class="primary-button">Start the round</button>
+    </section>
+
+    <section class="screen" id="screen-test" aria-labelledby="test-heading" hidden>
+      <div class="screen-heading">
+        <div><p class="step-label">Work independently · explanations after submission</p><h2 id="test-heading">Sets test</h2></div>
+        <span class="mode-badge">No timer</span>
+      </div>
+      <div class="session-topline"><p id="testProgress">Choose Start when you are ready.</p><button type="button" id="testStart" class="primary-button">Start test</button></div>
+      <article class="question-card" id="testCard" hidden>
+        <h3 id="testPrompt"></h3>
+        <div class="answer-options" id="testOptions" role="group" aria-label="Choose an answer"></div>
+      </article>
+      <div class="question-nav" id="testNav" hidden><button type="button" id="testPrevious">← Previous</button><button type="button" id="testNext">Next →</button><button type="button" id="testSubmit" class="primary-button">Submit test</button></div>
+      <div class="session-result" id="testResult" hidden></div>
+    </section>
+
+    <section class="screen" id="screen-pair-work" aria-labelledby="pair-heading" hidden>
+      <div class="screen-heading">
+        <div><p class="step-label">Talk, draw, justify, swap roles</p><h2 id="pair-heading">Pair work and collaboration</h2></div>
+        <span class="mode-badge">Two sets first</span>
+      </div>
+      <p class="screen-lead">Use paper, a shared screen or a whiteboard. One partner explains the diagram; the other asks for reasons. Then swap.</p>
+      <article class="pair-card">
+        <p class="step-label">Round 1 · Two sets</p>
+        <h3>15 play football, 12 play an instrument, and 5 do both.</h3>
+        <ol>
+          <li><strong>Partner A:</strong> draw two overlapping ovals F and M. Put 5 in the shared region first.</li>
+          <li><strong>Partner B:</strong> ask why the shared 5 must be placed before the “only” counts.</li>
+          <li><strong>Together:</strong> find football only, music only and at least one activity.</li>
+          <li><strong>Swap:</strong> Partner B explains why 15 + 12 counts the shared students twice.</li>
+        </ol>
+        <details><summary>Reveal one worked solution</summary><p>Football only is 15 − 5 = 10. Music only is 12 − 5 = 7. At least one is 10 + 5 + 7 = 22. The check is 10 + 5 + 7 = 22.</p></details>
+      </article>
+      <article class="pair-card challenge-card">
+        <p class="step-label">Round 2 · Three-set stretch</p>
+        <h3>Set totals are A = 20, B = 18 and C = 15.</h3>
+        <p>There are 5 in A and B only, 4 in A and C only, 3 in B and C only, and 2 in all three.</p>
+        <ol>
+          <li><strong>Partner A:</strong> draw and label the eight regions.</li>
+          <li><strong>Partner B:</strong> calculate the three “only” regions and explain each subtraction.</li>
+          <li><strong>Together:</strong> find exactly two and at least two.</li>
+          <li><strong>Swap:</strong> explain how adding A + B + C can count a student more than once.</li>
+        </ol>
+        <details><summary>Reveal the three-set solution</summary><p>A only is 20 − 5 − 4 − 2 = 9. B only is 18 − 5 − 3 − 2 = 8. C only is 15 − 4 − 3 − 2 = 6. Exactly two is 5 + 4 + 3 = 12; at least two is 12 + 2 = 14. The union is 9 + 8 + 6 + 5 + 4 + 3 + 2 = 37.</p></details>
+      </article>
+      <div class="support-stretch">
+        <p><strong>Support:</strong> give each partner a region-label card: A only · both · B only.</p>
+        <p><strong>Core:</strong> solve the two-set problem and write a sentence for each operation.</p>
+        <p><strong>Stretch:</strong> create new totals and overlap counts, then ask another pair to find the two only regions and the union.</p>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <p>Sets are collections of distinct elements. Diagrams, words and symbols should tell the same story.</p>
+      <a href="index.html">Return to the Sets apps</a> · <a href="https://ronandownes.github.io/book/sets-first-look.html">Return to the Sets chapter</a>
+    </footer>
+  </main>
+  <script>if (new URLSearchParams(location.search).get("embed") === "1") document.body.classList.add("embed-mode");</script>
+  <script src="sets.js"></script>
+</body>
+</html>

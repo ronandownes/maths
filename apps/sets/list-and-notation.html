@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff"><meta name="description" content="Learn to list a set using braces and read element, equality and cardinality notation.">
+  <title>Set List and Notation | Maths Apps</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="foundations.css">
+</head>
+<body>
+  <header class="foundation-header">
+    <a class="foundation-brand" href="../../index.html" aria-label="Maths Apps home"><img src="../../assets/maths-logo.svg" alt=""><span>Apps</span></a>
+    <button class="foundation-menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="siteLinks">☰ Menu</button>
+    <nav class="foundation-links" id="siteLinks" aria-label="Sets apps">
+      <a href="index.html">Sets apps</a><a href="rule-builder.html">Rule builder</a><a href="venn-problem-solving.html">Venn app</a><a href="universal-complement.html">Universal &amp; complement</a>
+    </nav>
+  </header>
+  <main class="foundation-main">
+    <p class="foundation-kicker">SETS APP 1 · LISTS AND NOTATION</p>
+    <h1>Set list and notation</h1>
+    <p class="foundation-intro">A set is a collection of distinct elements. First watch the examples. Then make a list and check what each symbol says.</p>
+    <nav class="foundation-nav" aria-label="Choose an activity">
+      <button type="button" data-panel="watch" aria-pressed="true">Watch first</button>
+      <button type="button" data-panel="build" aria-pressed="false">Build a list</button>
+      <button type="button" data-panel="quiz" aria-pressed="false">Quick check</button>
+    </nav>
+
+    <section class="foundation-screen" id="panel-watch">
+      <p class="foundation-step" id="guideProgress">Guided example 1 of 4</p>
+      <h2 id="guideTitle">A set is a collection</h2>
+      <div class="foundation-panel">
+        <div>
+          <h3 id="guideSubtitle">Four distinct seasons</h3>
+          <p id="guideText"></p>
+          <p class="foundation-math" id="guideMath"></p>
+        </div>
+        <div class="foundation-display" id="guidePicture"></div>
+      </div>
+      <div class="foundation-controls">
+        <button type="button" id="guidePrevious">← Previous</button>
+        <span class="foundation-dots" id="guideDots" aria-label="Guided example steps"></span>
+        <button type="button" id="guideNext">Next example →</button>
+      </div>
+    </section>
+
+    <section class="foundation-screen" id="panel-build" hidden>
+      <p class="foundation-step">Your turn · element selection comes after the examples</p>
+      <h2>Make a list from a rule</h2>
+      <div class="builder-panel">
+        <div class="builder-row">
+          <label for="ruleChoice">Rule for set S</label>
+          <select id="ruleChoice">
+            <option value="even">even numbers in D</option>
+            <option value="odd">odd numbers in D</option>
+            <option value="prime">prime numbers in D</option>
+            <option value="three">multiples of 3 in D</option>
+          </select>
+        </div>
+        <p>The candidate list is <span class="foundation-math">D = {1, 2, 3, 4, 5, 6, 7, 8}</span>. Tap each element that belongs to S.</p>
+        <div class="element-bank" id="elementBank" role="group" aria-label="Choose elements for S"></div>
+        <div class="foundation-controls"><button type="button" id="checkList" class="primary-button">Check my list</button><button type="button" id="clearList">Clear choices</button></div>
+        <p class="feedback-box" id="listFeedback" role="status" aria-live="polite"></p>
+        <p class="answer-box" id="listAnswer" aria-live="polite">S = { }</p>
+        <p id="listCardinality" class="small-note"></p>
+      </div>
+    </section>
+
+    <section class="foundation-screen" id="panel-quiz" hidden>
+      <p class="foundation-step">Short practice · immediate explanation</p>
+      <h2>Quick check</h2>
+      <article class="foundation-quiz">
+        <p id="quizProgress" class="foundation-step">Question 1 of 8</p>
+        <h3 id="quizPrompt"></h3>
+        <div class="choice-bank" id="quizChoices" role="group" aria-label="Choose an answer"></div>
+        <p class="feedback-box" id="quizFeedback" role="status" aria-live="polite"></p>
+        <div class="foundation-controls"><button type="button" id="quizPrevious">← Previous</button><button type="button" id="quizNext">Next →</button></div>
+        <button type="button" id="quizRestart">Start again</button>
+      </article>
+    </section>
+
+    <footer class="foundation-footer"><span>Set properties · lists · membership · cardinality</span><a href="index.html">Back to all Sets apps</a></footer>
+  </main>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const toggle = $("menuToggle"), links = $("siteLinks");
+    toggle.addEventListener("click", () => { const open = links.classList.toggle("is-open"); toggle.setAttribute("aria-expanded", String(open)); });
+    document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => {
+      document.querySelectorAll("[data-panel]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      ["watch","build","quiz"].forEach((name) => $("panel-" + name).hidden = name !== button.dataset.panel);
+    }));
+
+    const guided = [
+      {title:"A set is a collection",subtitle:"Four distinct seasons",text:"Each solid dot is one season. The oval is a picture of the collection. The four elements are distinct.",math:"A = {Spring, Summer, Autumn, Winter}",pic:'<svg viewBox="0 0 700 380" role="img" aria-label="Oval A contains four distinct seasons"><rect width="700" height="380" fill="white"/><ellipse cx="350" cy="193" rx="305" ry="167" fill="#f7fafc" stroke="#225c86" stroke-width="5"/><text x="95" y="75" font-size="35" font-weight="700" fill="#174765">A</text><g font-size="31" fill="#173c57"><circle cx="160" cy="153" r="7" fill="#174765"/><text x="181" y="164">Spring</text><circle cx="401" cy="153" r="7" fill="#174765"/><text x="422" y="164">Summer</text><circle cx="160" cy="252" r="7" fill="#174765"/><text x="181" y="263">Autumn</text><circle cx="401" cy="252" r="7" fill="#174765"/><text x="422" y="263">Winter</text></g></svg>'},
+      {title:"Write a list inside braces",subtitle:"Braces show the collection",text:"A list gives the elements in braces. Separate the element names with commas. Each element is listed once.",math:"A = {Spring, Summer, Autumn, Winter}",pic:'<svg viewBox="0 0 700 380" role="img" aria-label="A set written as a list inside braces"><rect width="700" height="380" fill="white"/><rect x="35" y="45" width="630" height="285" rx="14" fill="#f7fafc" stroke="#d7e0e9" stroke-width="3"/><text x="350" y="155" text-anchor="middle" font-size="31" font-weight="700" fill="#174765">A = {Spring, Summer,</text><text x="350" y="210" text-anchor="middle" font-size="31" font-weight="700" fill="#174765">Autumn, Winter}</text><text x="350" y="278" text-anchor="middle" font-size="24" fill="#53677b">The braces group the elements together.</text></svg>'},
+      {title:"Order and repeats do not matter",subtitle:"Same distinct elements",text:"The elements can be written in any order. Repeating a name does not create a new element, so it does not change the set.",math:"{2, 4, 6, 8} = {8, 4, 2, 2, 6}",pic:'<svg viewBox="0 0 700 380" role="img" aria-label="Two lists with the same distinct elements"><rect width="700" height="380" fill="white"/><text x="350" y="115" text-anchor="middle" font-size="35" font-weight="700" fill="#174765">{2, 4, 6, 8}</text><text x="350" y="190" text-anchor="middle" font-size="26" fill="#53677b">same set</text><text x="350" y="255" text-anchor="middle" font-size="35" font-weight="700" fill="#174765">{8, 4, 2, 2, 6}</text></svg>'},
+      {title:"Cardinality counts distinct elements",subtitle:"How many are in the set?",text:"Cardinality is the number of distinct elements. The number after the equals sign is a count; it is not another element inside the set.",math:"A = {2, 4, 6, 8}     #A = 4",pic:'<svg viewBox="0 0 700 380" role="img" aria-label="Four distinct elements in A, so cardinality of A is four"><rect width="700" height="380" fill="white"/><ellipse cx="350" cy="165" rx="285" ry="115" fill="#f3f8fc" stroke="#225c86" stroke-width="5"/><text x="95" y="80" font-size="34" font-weight="700" fill="#174765">A</text><g font-size="34" font-weight="700" text-anchor="middle" fill="#173c57"><text x="210" y="175">2</text><text x="320" y="175">4</text><text x="430" y="175">6</text><text x="540" y="175">8</text></g><text x="350" y="330" text-anchor="middle" font-size="35" font-weight="700" fill="#174765">#A = 4</text></svg>'}
+    ];
+    let guideIndex=0;
+    function renderGuide(){
+      const step=guided[guideIndex];
+      $("guideProgress").textContent="Guided example "+(guideIndex+1)+" of "+guided.length;
+      $("guideTitle").textContent=step.title; $("guideSubtitle").textContent=step.subtitle;
+      $("guideText").textContent=step.text; $("guideMath").textContent=step.math;
+      $("guidePicture").innerHTML=step.pic;
+      $("guidePrevious").disabled=guideIndex===0;
+      $("guideNext").textContent=guideIndex===guided.length-1?"Start building a list →":"Next example →";
+      $("guideDots").innerHTML="";
+      guided.forEach((item,index)=>{
+        const b=document.createElement("button");b.type="button";b.textContent=String(index+1);
+        b.setAttribute("aria-label","Show example "+(index+1)+": "+item.title);
+        if(index===guideIndex)b.setAttribute("aria-current","step");
+        b.addEventListener("click",()=>{guideIndex=index;renderGuide();});
+        $("guideDots").appendChild(b);
+      });
+    }
+    $("guidePrevious").addEventListener("click",()=>{guideIndex=Math.max(0,guideIndex-1);renderGuide();});
+    $("guideNext").addEventListener("click",()=>{
+      if(guideIndex===guided.length-1){document.querySelector('[data-panel="build"]').click();return;}
+      guideIndex=Math.min(guided.length-1,guideIndex+1);renderGuide();
+    });
+
+    const selected=new Set();
+    const rules={
+      even:{name:"even numbers",values:[2,4,6,8]},
+      odd:{name:"odd numbers",values:[1,3,5,7]},
+      prime:{name:"prime numbers",values:[2,3,5,7]},
+      three:{name:"multiples of 3",values:[3,6]}
+    };
+    function ruleNow(){return rules[$("ruleChoice").value];}
+    function renderBank(){
+      $("elementBank").innerHTML="";
+      for(let value=1;value<=8;value++){
+        const b=document.createElement("button");b.type="button";b.textContent=String(value);
+        b.setAttribute("aria-pressed",String(selected.has(value)));
+        b.addEventListener("click",()=>{
+          if(selected.has(value))selected.delete(value);else selected.add(value);
+          b.setAttribute("aria-pressed",String(selected.has(value)));
+          $("listFeedback").textContent="";
+        });
+        $("elementBank").appendChild(b);
+      }
+      $("listAnswer").textContent="S = {"+Array.from(selected).sort((a,b)=>a-b).join(", ")+"}";
+      $("listCardinality").textContent="Current count: #S = "+selected.size+".";
+    }
+    $("ruleChoice").addEventListener("change",()=>{selected.clear();renderBank();$("listFeedback").textContent="";});
+    $("clearList").addEventListener("click",()=>{selected.clear();renderBank();$("listFeedback").textContent="Choices cleared.";});
+    $("checkList").addEventListener("click",()=>{
+      const expected=ruleNow().values;
+      const actual=Array.from(selected).sort((a,b)=>a-b);
+      const correct=expected.length===actual.length&&expected.every((v,i)=>v===actual[i]);
+      $("listFeedback").textContent=correct?"Correct. Your list contains exactly the elements that satisfy the rule.":"Check each number against the rule. A list has each correct element once, and no others.";
+      $("listFeedback").className="feedback-box "+(correct?"correct":"incorrect");
+      $("listAnswer").textContent="S = {"+expected.join(", ")+"}";
+      $("listCardinality").textContent="So #S = "+expected.length+".";
+    });
+    renderBank();
+
+    const questions=[
+      {q:"What do the braces in {2, 4, 6} do?",o:["Group the elements of a set","Show multiplication","Show a number interval"],a:0,w:"Braces collect the elements into one set."},
+      {q:"What is #{a, b, c}?",o:["2","3","4"],a:1,w:"There are three distinct elements."},
+      {q:"Is {1, 2, 3} equal to {3, 1, 2}?",o:["Yes","No","Only if 1 is repeated"],a:0,w:"Order does not change a set."},
+      {q:"What is #{2, 4, 4, 6}?",o:["4","3","2"],a:1,w:"There are three distinct elements: 2, 4 and 6."},
+      {q:"Which symbol says that 4 is an element of A?",o:["4 ⊆ A","4 ∈ A","#A = 4"],a:1,w:"The element symbol ∈ means “is an element of”."},
+      {q:"A = {1, 3, 5}. Which number is not in A?",o:["3","5","4"],a:2,w:"The list contains 1, 3 and 5; 4 is not listed."},
+      {q:"If B = {red, blue}, what is #B?",o:["1","2","3"],a:1,w:"B has two distinct elements."},
+      {q:"Does adding a second 5 to {2, 5, 8} make a new set element?",o:["Yes","No","Only if it is written last"],a:1,w:"Repeating an element does not add a new element."}
+    ];
+    let qIndex=0, answered={};
+    function renderQuiz(){
+      const item=questions[qIndex];$("quizProgress").textContent="Question "+(qIndex+1)+" of "+questions.length;
+      $("quizPrompt").textContent=item.q;$("quizFeedback").textContent="";$("quizFeedback").className="feedback-box";
+      $("quizChoices").innerHTML="";
+      item.o.forEach((choice,index)=>{
+        const b=document.createElement("button");b.type="button";b.textContent=String.fromCharCode(65+index)+". "+choice;
+        if(answered[qIndex]!==undefined)b.disabled=true;
+        if(answered[qIndex]!==undefined&&index===item.a)b.classList.add("correct");
+        if(answered[qIndex]===index&&index!==item.a)b.classList.add("incorrect");
+        b.addEventListener("click",()=>{
+          answered[qIndex]=index;renderQuiz();
+          $("quizFeedback").textContent=(index===item.a?"Correct. ":"Review: ")+item.w;
+          $("quizFeedback").className="feedback-box "+(index===item.a?"correct":"incorrect");
+        });
+        $("quizChoices").appendChild(b);
+      });
+      if(answered[qIndex]!==undefined){$("quizFeedback").textContent=(answered[qIndex]===item.a?"Correct. ":"Review: ")+item.w;$("quizFeedback").className="feedback-box "+(answered[qIndex]===item.a?"correct":"incorrect");}
+      $("quizPrevious").disabled=qIndex===0;$("quizNext").textContent=qIndex===questions.length-1?"Finish →":"Next →";
+    }
+    $("quizPrevious").addEventListener("click",()=>{qIndex=Math.max(0,qIndex-1);renderQuiz();});
+    $("quizNext").addEventListener("click",()=>{
+      if(qIndex===questions.length-1){const score=questions.reduce((total,item,index)=>total+(answered[index]===item.a?1:0),0);$("quizFeedback").textContent="Quiz complete: "+score+" / "+questions.length+". "+(score<6?"Review the guided examples and try again.":"Good work. Now try the Rule Builder or Venn app.");$("quizFeedback").className="feedback-box";}
+      else{qIndex++;renderQuiz();}
+    });
+    $("quizRestart").addEventListener("click",()=>{qIndex=0;answered={};renderQuiz();});
+    renderGuide();renderQuiz();
+  </script>
+</body>
+</html>

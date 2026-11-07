@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff"><meta name="description" content="Build a set from a rule and connect set-builder notation to a list and a diagram.">
+  <title>Set Builder by Rule | Maths Apps</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="foundations.css">
+</head>
+<body>
+  <header class="foundation-header">
+    <a class="foundation-brand" href="../../index.html" aria-label="Maths Apps home"><img src="../../assets/maths-logo.svg" alt=""><span>Apps</span></a>
+    <button class="foundation-menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="siteLinks">☰ Menu</button>
+    <nav class="foundation-links" id="siteLinks" aria-label="Sets apps">
+      <a href="index.html">Sets apps</a><a href="list-and-notation.html">List &amp; notation</a><a href="venn-problem-solving.html">Venn app</a><a href="universal-complement.html">Universal &amp; complement</a>
+    </nav>
+  </header>
+  <main class="foundation-main">
+    <p class="foundation-kicker">SETS APP 2 · RULES AND SET-BUILDER NOTATION</p>
+    <h1>Build a set from a rule</h1>
+    <p class="foundation-intro">A rule tells us which elements belong. Begin by watching a rule turn into notation, a list and a picture. Then choose a rule and build a set yourself.</p>
+    <nav class="foundation-nav" aria-label="Choose an activity">
+      <button type="button" data-panel="watch" aria-pressed="true">Watch first</button>
+      <button type="button" data-panel="builder" aria-pressed="false">Build a set</button>
+      <button type="button" data-panel="quiz" aria-pressed="false">Quick check</button>
+    </nav>
+
+    <section class="foundation-screen" id="panel-watch">
+      <p class="foundation-step" id="guideProgress">Guided example 1 of 5</p>
+      <h2 id="guideTitle">Agree the collection first</h2>
+      <div class="foundation-panel">
+        <div>
+          <h3 id="guideSubtitle">A candidate collection</h3>
+          <p id="guideText"></p>
+          <p class="foundation-math" id="guideMath"></p>
+          <button type="button" id="listenRule" hidden>🔊 Listen to “such that”</button>
+        </div>
+        <div class="foundation-display" id="guidePicture"></div>
+      </div>
+      <div class="foundation-controls">
+        <button type="button" id="guidePrevious">← Previous</button>
+        <span class="foundation-dots" id="guideDots" aria-label="Guided example steps"></span>
+        <button type="button" id="guideNext">Next example →</button>
+      </div>
+    </section>
+
+    <section class="foundation-screen" id="panel-builder" hidden>
+      <p class="foundation-step">Your turn · make choices after the guided example</p>
+      <h2>Choose a collection and a rule</h2>
+      <div class="builder-panel">
+        <div class="builder-row">
+          <label for="universeChoice">Candidate collection</label>
+          <select id="universeChoice"><option value="8">D = {1, 2, …, 8}</option><option value="10">D = {1, 2, …, 10}</option><option value="12">D = {1, 2, …, 12}</option></select>
+          <label for="ruleChoice">Rule</label>
+          <select id="ruleChoice">
+            <option value="even">even</option><option value="odd">odd</option><option value="prime">prime</option><option value="three">a multiple of 3</option><option value="square">a square number</option>
+          </select>
+        </div>
+        <p id="ruleSentence"></p>
+        <p class="foundation-math" id="builderNotation"></p>
+        <div class="number-line" id="numberLine" aria-label="Elements in the candidate collection"></div>
+        <p class="answer-box" id="builderList"></p>
+        <div class="builder-row">
+          <label for="membershipNumber">Is this number in the set?</label>
+          <select id="membershipNumber"></select>
+          <button type="button" id="checkMembership" class="primary-button">Check</button>
+        </div>
+        <p class="feedback-box" id="membershipFeedback" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="foundation-screen" id="panel-quiz" hidden>
+      <p class="foundation-step">Read the rule before choosing</p>
+      <h2>Quick check</h2>
+      <article class="foundation-quiz">
+        <p id="quizProgress" class="foundation-step"></p>
+        <h3 id="quizPrompt"></h3>
+        <div class="choice-bank" id="quizChoices" role="group" aria-label="Choose an answer"></div>
+        <p class="feedback-box" id="quizFeedback" role="status" aria-live="polite"></p>
+        <div class="foundation-controls"><button type="button" id="quizPrevious">← Previous</button><button type="button" id="quizNext">Next →</button></div>
+        <button type="button" id="quizRestart">Start again</button>
+      </article>
+    </section>
+
+    <footer class="foundation-footer"><span>Rule · set-builder notation · “such that” · list · membership</span><a href="index.html">Back to all Sets apps</a></footer>
+  </main>
+  <script>
+    const $=(id)=>document.getElementById(id);
+    const toggle=$("menuToggle"),links=$("siteLinks");
+    toggle.addEventListener("click",()=>{const open=links.classList.toggle("is-open");toggle.setAttribute("aria-expanded",String(open));});
+    document.querySelectorAll("[data-panel]").forEach(button=>button.addEventListener("click",()=>{
+      document.querySelectorAll("[data-panel]").forEach(item=>item.setAttribute("aria-pressed",String(item===button)));
+      ["watch","builder","quiz"].forEach(name=>$("panel-"+name).hidden=name!==button.dataset.panel);
+    }));
+    const guided=[
+      {title:"Agree the collection first",subtitle:"The candidate collection",text:"We are considering the whole numbers from 1 to 8. This candidate collection is D. The rule for the new set selects elements from D.",math:"D = {1, 2, 3, 4, 5, 6, 7, 8}",pic:'<svg viewBox="0 0 700 380" role="img" aria-label="The numbers 1 to 8 in the candidate collection D"><rect width="700" height="380" fill="white"/><text x="350" y="92" text-anchor="middle" font-size="31" font-weight="700" fill="#173c57">Candidate collection D</text><g font-size="34" font-weight="700" text-anchor="middle" fill="#173c57"><text x="115" y="210">1</text><text x="185" y="210">2</text><text x="255" y="210">3</text><text x="325" y="210">4</text><text x="395" y="210">5</text><text x="465" y="210">6</text><text x="535" y="210">7</text><text x="605" y="210">8</text></g></svg>'},
+      {title:"Say the rule in words",subtitle:"A clear membership test",text:"Let E be the even numbers in D. For each number in D, ask the same question: is it even? If yes, it belongs to E.",math:"E is the set of even numbers in D.",pic:'<svg viewBox="0 0 700 380" role="img" aria-label="A rule selects the even numbers"><rect width="700" height="380" fill="white"/><rect x="35" y="45" width="630" height="290" rx="12" fill="#f8fbff" stroke="#2b526c" stroke-width="4"/><text x="350" y="130" text-anchor="middle" font-size="30" font-weight="700" fill="#174765">Is x even?</text><text x="200" y="220" text-anchor="middle" font-size="32" font-weight="700" fill="#315b43">Yes → E</text><text x="500" y="220" text-anchor="middle" font-size="32" font-weight="700" fill="#765143">No → outside E</text><text x="350" y="290" text-anchor="middle" font-size="24" fill="#53677b">Every x is tested against the same rule.</text></svg>'},
+      {title:"Write the set-builder rule",subtitle:"The words “such that”",text:"The variable x stands for an element we are testing. Read the colon as “such that”: E is the set of x in D such that x is even.",math:"E = {x ∈ D : x is even}",pic:'<svg viewBox="0 0 700 380" role="img" aria-label="Set-builder notation explains the rule for E"><rect width="700" height="380" fill="white"/><rect x="35" y="50" width="630" height="280" rx="12" fill="#f4f8fb" stroke="#d7e0e9" stroke-width="3"/><text x="350" y="155" text-anchor="middle" font-size="37" font-weight="700" fill="#174765">E = {x ∈ D : x is even}</text><text x="350" y="225" text-anchor="middle" font-size="29" fill="#294b65">“the set of x in D such that x is even”</text><text x="350" y="282" text-anchor="middle" font-size="24" fill="#53677b">The rule decides whether each x belongs.</text></svg>',speak:true},
+      {title:"List the elements that pass",subtitle:"From rule to list",text:"Only 2, 4, 6 and 8 satisfy the rule. The list and the rule describe the same set.",math:"E = {2, 4, 6, 8}",pic:'<svg viewBox="0 0 700 380" role="img" aria-label="The even numbers 2, 4, 6 and 8 form E"><rect width="700" height="380" fill="white"/><g font-size="35" font-weight="700" text-anchor="middle"><circle cx="150" cy="150" r="52" fill="#e6f1f8" stroke="#225c86" stroke-width="4"/><circle cx="285" cy="150" r="52" fill="#e6f1f8" stroke="#225c86" stroke-width="4"/><circle cx="420" cy="150" r="52" fill="#e6f1f8" stroke="#225c86" stroke-width="4"/><circle cx="555" cy="150" r="52" fill="#e6f1f8" stroke="#225c86" stroke-width="4"/><text x="150" y="162" fill="#173c57">2</text><text x="285" y="162" fill="#173c57">4</text><text x="420" y="162" fill="#173c57">6</text><text x="555" y="162" fill="#173c57">8</text></g><text x="350" y="275" text-anchor="middle" font-size="28" fill="#294b65">Four numbers in D satisfy the rule.</text></svg>'},
+      {title:"See the rule in a Venn diagram",subtitle:"Same set, third representation",text:"The oval E groups the elements that satisfy the rule. The two-set Venn app comes next in the learning path.",math:"#E = 4",pic:'<svg viewBox="0 0 700 380" role="img" aria-label="Oval E contains the even numbers 2, 4, 6 and 8"><rect width="700" height="380" fill="white"/><ellipse cx="350" cy="198" rx="245" ry="105" fill="#e7f1f8" stroke="#225c86" stroke-width="5"/><text x="145" y="123" font-size="30" font-weight="700" fill="#174765">E</text><g font-size="28" font-weight="700" text-anchor="middle" fill="#173c57"><text x="190" y="205">2</text><text x="300" y="205">4</text><text x="410" y="205">6</text><text x="520" y="205">8</text></g><g font-size="25" font-weight="700" text-anchor="middle" fill="#53677b"><text x="70" y="210">1</text><text x="630" y="210">3</text><text x="210" y="340">5</text><text x="490" y="340">7</text></g><text x="350" y="370" text-anchor="middle" font-size="21" fill="#53677b">1, 3, 5 and 7 do not satisfy the rule.</text></svg>'}
+    ];
+    let guideIndex=0;
+    function renderGuide(){
+      const step=guided[guideIndex];
+      $("guideProgress").textContent="Guided example "+(guideIndex+1)+" of "+guided.length;
+      $("guideTitle").textContent=step.title;$("guideSubtitle").textContent=step.subtitle;
+      $("guideText").textContent=step.text;$("guideMath").textContent=step.math;
+      $("guidePicture").innerHTML=step.pic;$("listenRule").hidden=!step.speak;
+      $("guidePrevious").disabled=guideIndex===0;
+      $("guideNext").textContent=guideIndex===guided.length-1?"Start building a set →":"Next example →";
+      $("guideDots").innerHTML="";
+      guided.forEach((item,index)=>{const button=document.createElement("button");button.type="button";button.textContent=String(index+1);button.setAttribute("aria-label","Show example "+(index+1)+": "+item.title);if(index===guideIndex)button.setAttribute("aria-current","step");button.addEventListener("click",()=>{guideIndex=index;renderGuide();});$("guideDots").appendChild(button);});
+    }
+    $("guidePrevious").addEventListener("click",()=>{guideIndex=Math.max(0,guideIndex-1);renderGuide();});
+    $("guideNext").addEventListener("click",()=>{if(guideIndex===guided.length-1){document.querySelector('[data-panel="builder"]').click();return;}guideIndex=Math.min(guided.length-1,guideIndex+1);renderGuide();});
+    $("listenRule").addEventListener("click",()=>{
+      if(!("speechSynthesis" in window)){ $("guideText").textContent="Read aloud: “E is the set of x in D such that x is even.”";return;}
+      window.speechSynthesis.cancel();const speech=new SpeechSynthesisUtterance("E is the set of x in D such that x is even.");speech.lang="en-IE";window.speechSynthesis.speak(speech);
+    });
+
+    const predicates={
+      even:{text:"even",test:x=>x%2===0},
+      odd:{text:"odd",test:x=>x%2===1},
+      prime:{text:"prime",test:x=>x>1&&Array.from({length:x-2},(_,i)=>i+2).every(d=>x%d!==0)},
+      three:{text:"a multiple of 3",test:x=>x%3===0},
+      square:{text:"a square number",test:x=>Number.isInteger(Math.sqrt(x))}
+    };
+    function renderBuilder(){
+      const max=Number($("universeChoice").value),rule=predicates[$("ruleChoice").value];
+      const values=Array.from({length:max},(_,i)=>i+1),members=values.filter(rule.test);
+      $("ruleSentence").textContent="Let R be the set of "+rule.text+" in D.";
+      $("builderNotation").textContent="R = {x ∈ D : x is "+rule.text+"}";
+      $("builderList").textContent="R = {"+members.join(", ")+"}     #R = "+members.length;
+      $("numberLine").innerHTML="";
+      values.forEach(value=>{const chip=document.createElement("span");chip.className="number-chip "+(members.includes(value)?"in-set":"out-set");chip.textContent=String(value);chip.setAttribute("aria-label",value+(members.includes(value)?" is in R":" is not in R"));$("numberLine").appendChild(chip);});
+      $("membershipNumber").innerHTML="";
+      values.forEach(value=>{const option=document.createElement("option");option.value=String(value);option.textContent=String(value);$("membershipNumber").appendChild(option);});
+      $("membershipFeedback").textContent="";
+    }
+    $("universeChoice").addEventListener("change",renderBuilder);$("ruleChoice").addEventListener("change",renderBuilder);
+    $("checkMembership").addEventListener("click",()=>{
+      const value=Number($("membershipNumber").value),rule=predicates[$("ruleChoice").value],inside=rule.test(value);
+      $("membershipFeedback").textContent=value+(inside?" is":" is not")+" in R because it "+(inside?"satisfies":"does not satisfy")+" the rule “"+rule.text+"”.";
+      $("membershipFeedback").className="feedback-box "+(inside?"correct":"");
+    });
+
+    const questions=[
+      {q:"In E = {x ∈ D : x is even}, what does the colon mean?",o:["such that","multiply by","is equal to"],a:0,w:"Read the colon as “such that”: x must satisfy the rule after it."},
+      {q:"D = {1, 2, 3, 4, 5, 6}. What is the list for even numbers in D?",o:["{2, 4, 6}","{1, 3, 5}","{2, 4, 6, 8}"],a:0,w:"Only even numbers that are in D can be listed, so the set is {2, 4, 6}."},
+      {q:"In {x ∈ D : x is prime}, where must x come from?",o:["From D","From any number anywhere","From the list of primes only"],a:0,w:"The condition x ∈ D restricts the elements being tested to D."},
+      {q:"D = {1, 2, 3, 4, 5, 6, 7, 8}. How many even numbers are in D?",o:["3","4","8"],a:1,w:"The even numbers are 2, 4, 6 and 8, so there are four."},
+      {q:"Which rule describes {1, 3, 5, 7} when D = {1, …, 8}?",o:["x is even","x is odd","x is a multiple of 4"],a:1,w:"The listed elements are exactly the odd numbers in D."},
+      {q:"If D = {1, 2, 3, 4, 5, 6, 7, 8}, is 9 allowed in a set defined by x ∈ D?",o:["Yes","No","Only if 9 is prime"],a:1,w:"The rule only tests elements of D, and 9 is not in it."}
+    ];
+    let qIndex=0,answers={};
+    function renderQuiz(){
+      const item=questions[qIndex];$("quizProgress").textContent="Question "+(qIndex+1)+" of "+questions.length;
+      $("quizPrompt").textContent=item.q;$("quizFeedback").textContent="";$("quizFeedback").className="feedback-box";
+      $("quizChoices").innerHTML="";
+      item.o.forEach((choice,index)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=String.fromCharCode(65+index)+". "+choice;
+        if(answers[qIndex]!==undefined)button.disabled=true;
+        if(answers[qIndex]!==undefined&&index===item.a)button.classList.add("correct");
+        if(answers[qIndex]===index&&index!==item.a)button.classList.add("incorrect");
+        button.addEventListener("click",()=>{answers[qIndex]=index;renderQuiz();$("quizFeedback").textContent=(index===item.a?"Correct. ":"Review: ")+item.w;$("quizFeedback").className="feedback-box "+(index===item.a?"correct":"incorrect");});
+        $("quizChoices").appendChild(button);
+      });
+      if(answers[qIndex]!==undefined){$("quizFeedback").textContent=(answers[qIndex]===item.a?"Correct. ":"Review: ")+item.w;$("quizFeedback").className="feedback-box "+(answers[qIndex]===item.a?"correct":"incorrect");}
+      $("quizPrevious").disabled=qIndex===0;$("quizNext").textContent=qIndex===questions.length-1?"Finish →":"Next →";
+    }
+    $("quizPrevious").addEventListener("click",()=>{qIndex=Math.max(0,qIndex-1);renderQuiz();});
+    $("quizNext").addEventListener("click",()=>{if(qIndex<questions.length-1){qIndex++;renderQuiz();}else{const score=questions.reduce((sum,item,index)=>sum+(answers[index]===item.a?1:0),0);$("quizFeedback").textContent="Quick check complete: "+score+" / "+questions.length+". Review any explanation, then try another Sets app.";$("quizFeedback").className="feedback-box";}});
+    $("quizRestart").addEventListener("click",()=>{qIndex=0;answers={};renderQuiz();});
+    renderGuide();renderBuilder();renderQuiz();
+  </script>
+</body>
+</html>

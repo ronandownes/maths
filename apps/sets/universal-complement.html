@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff"><meta name="description" content="Learn the universal set and complement with digital shading and cardinality practice.">
+  <title>Universal Set and Complement | Maths Apps</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="foundations.css">
+</head>
+<body>
+  <header class="foundation-header">
+    <a class="foundation-brand" href="../../index.html" aria-label="Maths Apps home"><img src="../../assets/maths-logo.svg" alt=""><span>Apps</span></a>
+    <button class="foundation-menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="siteLinks">☰ Menu</button>
+    <nav class="foundation-links" id="siteLinks" aria-label="Sets apps">
+      <a href="index.html">Sets apps</a><a href="list-and-notation.html">List &amp; notation</a><a href="rule-builder.html">Rule builder</a><a href="venn-problem-solving.html">Two-set Venn</a>
+    </nav>
+  </header>
+  <main class="foundation-main">
+    <p class="foundation-kicker">SETS APP 4 · UNIVERSAL SET AND COMPLEMENT</p>
+    <h1>Everything in U outside A</h1>
+    <p class="foundation-intro">This app introduces a new idea after working with sets on their own: agree the universal set first. The complement of A is the part of U that is not in A.</p>
+    <nav class="foundation-nav" aria-label="Choose an activity">
+      <button type="button" data-panel="watch" aria-pressed="true">Watch first</button>
+      <button type="button" data-panel="explore" aria-pressed="false">Explore</button>
+      <button type="button" data-panel="practice" aria-pressed="false">Practice</button>
+    </nav>
+
+    <section class="foundation-screen" id="panel-watch">
+      <p class="foundation-step" id="guideProgress">Guided example 1 of 4</p>
+      <h2 id="guideTitle">Agree the universe</h2>
+      <div class="foundation-panel">
+        <div>
+          <h3 id="guideSubtitle">A boundary for the question</h3>
+          <p id="guideText"></p>
+          <p class="foundation-math" id="guideMath"></p>
+        </div>
+        <div class="foundation-display" id="guidePicture"></div>
+      </div>
+      <div class="foundation-controls">
+        <button type="button" id="guidePrevious">← Previous</button>
+        <span class="foundation-dots" id="guideDots" aria-label="Guided example steps"></span>
+        <button type="button" id="guideNext">Next example →</button>
+      </div>
+    </section>
+
+    <section class="foundation-screen" id="panel-explore" hidden>
+      <p class="foundation-step">One set inside its agreed universe</p>
+      <h2>See the complement</h2>
+      <p>On screen, the selected region is shown with shading. On paper, leave the rest blank and use three or four short hatch strokes.</p>
+      <div class="foundation-nav" role="group" aria-label="Choose region">
+        <button type="button" data-region="A" aria-pressed="false">Set A</button>
+        <button type="button" data-region="complement" aria-pressed="true">Complement · Aᶜ</button>
+      </div>
+      <canvas class="universal-canvas" id="universalCanvas" width="900" height="520" role="img" aria-label="The complement of A is the region inside U and outside A"></canvas>
+      <div class="card-row" style="margin-top:12px">
+        <div class="activity-card">
+          <h3>Change the cardinalities</h3>
+          <div class="builder-row"><label for="universeCount">#U</label><input id="universeCount" type="number" inputmode="numeric" min="0" max="100" value="10"><label for="setCount">#A</label><input id="setCount" type="number" inputmode="numeric" min="0" max="100" value="3"></div>
+          <p class="foundation-math" id="complementCount">#Aᶜ = 7</p>
+          <p class="feedback-box" id="countFeedback" role="status" aria-live="polite"></p>
+        </div>
+        <div class="activity-card">
+          <h3>Read the diagram</h3>
+          <p><strong>Universal set:</strong> the agreed collection inside the rectangle U.</p>
+          <p><strong>Complement:</strong> everything in U that is outside A.</p>
+          <p class="foundation-math">#A + #Aᶜ = #U</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="foundation-screen" id="panel-practice" hidden>
+      <p class="foundation-step">Instant feedback · explain the boundary</p>
+      <h2>Complement practice</h2>
+      <article class="foundation-quiz">
+        <p id="practiceProgress" class="foundation-step"></p>
+        <h3 id="practicePrompt"></h3>
+        <div class="choice-bank" id="practiceChoices" role="group" aria-label="Choose an answer"></div>
+        <p class="feedback-box" id="practiceFeedback" role="status" aria-live="polite"></p>
+        <div class="foundation-controls"><button type="button" id="practicePrevious">← Previous</button><button type="button" id="practiceNext">Next →</button></div>
+        <button type="button" id="practiceRestart">Start again</button>
+      </article>
+    </section>
+    <footer class="foundation-footer"><span>Universal set · complement · diagram · cardinality</span><a href="index.html">Back to all Sets apps</a></footer>
+  </main>
+  <script>
+    const $=(id)=>document.getElementById(id);
+    const toggle=$("menuToggle"),links=$("siteLinks");
+    toggle.addEventListener("click",()=>{const open=links.classList.toggle("is-open");toggle.setAttribute("aria-expanded",String(open));});
+    document.querySelectorAll("[data-panel]").forEach(button=>button.addEventListener("click",()=>{
+      document.querySelectorAll("[data-panel]").forEach(item=>item.setAttribute("aria-pressed",String(item===button)));
+      ["watch","explore","practice"].forEach(name=>$("panel-"+name).hidden=name!==button.dataset.panel);
+    }));
+    const guided=[
+      {title:"Agree the universe",subtitle:"A boundary for the question",text:"If A is the red playing cards, “not A” only has a clear meaning when we agree which objects we are considering. Let U be the 52 cards in a standard pack.",math:"U = all 52 cards in the pack",pic:universeSvg("none")},
+      {title:"Put A inside U",subtitle:"One set within the boundary",text:"The rectangle represents U. The oval A contains the elements in A. The part outside A but still inside U is the only region that can belong to Aᶜ.",math:"Aᶜ = elements in U that are not in A",pic:universeSvg("complement")},
+      {title:"Mark the complement clearly",subtitle:"Shading on screen, hatching on paper",text:"This digital diagram uses clear shading. When drawing by hand, leave the rest of the page blank and add only three or four short hatch strokes inside the complement.",math:"Aᶜ is inside U and outside A",pic:universeSvg("complement")},
+      {title:"Check the cardinalities",subtitle:"A and its complement make U",text:"Every element in U is either in A or in Aᶜ, never both. Their cardinalities add to the total number of elements in U.",math:"#A + #Aᶜ = #U",pic:universeSvg("counts")}
+    ];
+    function universeSvg(mark){
+      let markSvg="";
+      if(mark==="complement")markSvg='<path d="M86 86H814V438H86Z M450 165 A205 130 0 1 0 450 425 A205 130 0 1 0 450 165Z" fill="#efc36b" fill-rule="evenodd" fill-opacity=".72"/>';
+      if(mark==="counts")markSvg='<text x="450" y="250" text-anchor="middle" font-family="Arial,sans-serif" font-size="29" font-weight="700" fill="#294b65">#A = 3</text><text x="705" y="400" text-anchor="middle" font-family="Arial,sans-serif" font-size="29" font-weight="700" fill="#294b65">#Aᶜ = 7</text>';
+      return '<svg viewBox="0 0 900 520" role="img" aria-label="A universal set U is a rectangle containing an oval A and the region A complement">'+markSvg+'<rect x="86" y="86" width="728" height="352" fill="none" stroke="#2b526c" stroke-width="6"/><text x="72" y="68" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#173c57">U</text><ellipse cx="450" cy="295" rx="205" ry="130" fill="'+(mark==="none"?"#f6faff":"#fff")+'" stroke="#225c86" stroke-width="6"/><text x="275" y="194" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#174765">A</text><text x="450" y="310" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" fill="#31516a">inside A</text></svg>';
+    }
+    let guideIndex=0;
+    function renderGuide(){
+      const step=guided[guideIndex];$("guideProgress").textContent="Guided example "+(guideIndex+1)+" of "+guided.length;
+      $("guideTitle").textContent=step.title;$("guideSubtitle").textContent=step.subtitle;$("guideText").textContent=step.text;
+      $("guideMath").textContent=step.math;$("guidePicture").innerHTML=step.pic;
+      $("guidePrevious").disabled=guideIndex===0;$("guideNext").textContent=guideIndex===guided.length-1?"Open Explore →":"Next example →";
+      $("guideDots").innerHTML="";
+      guided.forEach((item,index)=>{const b=document.createElement("button");b.type="button";b.textContent=String(index+1);b.setAttribute("aria-label","Show example "+(index+1)+": "+item.title);if(index===guideIndex)b.setAttribute("aria-current","step");b.addEventListener("click",()=>{guideIndex=index;renderGuide();});$("guideDots").appendChild(b);});
+    }
+    $("guidePrevious").addEventListener("click",()=>{guideIndex=Math.max(0,guideIndex-1);renderGuide();});
+    $("guideNext").addEventListener("click",()=>{if(guideIndex===guided.length-1){document.querySelector('[data-panel="explore"]').click();return;}guideIndex++;renderGuide();});
+
+    const canvas=$("universalCanvas"),ctx=canvas.getContext("2d");
+    let region="complement";
+    function ellipsePath(){const p=new Path2D();p.ellipse(450,285,215,132,0,0,Math.PI*2);return p;}
+    function drawCanvas(){
+      const dpr=Math.max(1,window.devicePixelRatio||1);canvas.width=900*dpr;canvas.height=520*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,900,520);ctx.fillStyle="#fff";ctx.fillRect(0,0,900,520);
+      const path=ellipsePath();
+      if(region==="A"){ctx.fillStyle="rgba(231,168,61,.64)";ctx.fill(path);}
+      else{ctx.fillStyle="rgba(231,168,61,.64)";ctx.fillRect(86,70,728,375);ctx.globalCompositeOperation="destination-out";ctx.fill(path);ctx.globalCompositeOperation="source-over";}
+      ctx.strokeStyle="#2b526c";ctx.lineWidth=5;ctx.strokeRect(86,70,728,375);
+      ctx.beginPath();ctx.ellipse(450,285,215,132,0,0,Math.PI*2);ctx.strokeStyle="#225c86";ctx.lineWidth=6;ctx.stroke();
+      ctx.font="700 34px Arial";ctx.fillStyle="#173c57";ctx.textAlign="left";ctx.fillText("U",63,60);
+      ctx.fillStyle="#174765";ctx.fillText("A",285,180);
+      canvas.setAttribute("aria-label",region==="A"?"The oval A is marked inside the rectangle U":"The region inside U and outside A is marked as A complement");
+    }
+    document.querySelectorAll("[data-region]").forEach(button=>button.addEventListener("click",()=>{
+      region=button.dataset.region;document.querySelectorAll("[data-region]").forEach(item=>item.setAttribute("aria-pressed",String(item===button)));drawCanvas();
+    }));
+    function cardinality(){
+      const total=Number($("universeCount").value),inside=Number($("setCount").value),feedback=$("countFeedback");
+      if(!Number.isInteger(total)||!Number.isInteger(inside)||total<0||inside<0||total>100||inside>total){
+        feedback.textContent="Use whole-number counts with 0 ≤ #A ≤ #U ≤ 100.";feedback.className="feedback-box incorrect";$("complementCount").textContent="#Aᶜ = ?";return;
+      }
+      $("complementCount").textContent="#Aᶜ = "+(total-inside);
+      feedback.textContent="Check: #A + #Aᶜ = "+inside+" + "+(total-inside)+" = "+total+" = #U.";feedback.className="feedback-box correct";
+    }
+    $("universeCount").addEventListener("input",cardinality);$("setCount").addEventListener("input",cardinality);
+
+    const questions=[
+      {q:"What does the rectangle U represent?",o:["The universal set","The complement","The overlap of A and B"],a:0,w:"The rectangle sets the boundary of the objects under discussion."},
+      {q:"What is Aᶜ?",o:["Everything in the world outside A","Everything in U that is not in A","Everything inside A"],a:1,w:"A complement is relative to the agreed universal set U."},
+      {q:"#U = 10 and #A = 3. Find #Aᶜ.",o:["3","7","13"],a:1,w:"The two parts make U, so #Aᶜ = 10 − 3 = 7."},
+      {q:"Which identity is true?",o:["#A + #Aᶜ = #U","#A × #Aᶜ = #U","#Aᶜ = #A"],a:0,w:"A and its complement are disjoint and together contain every element in U."},
+      {q:"Can a pencil belong to Aᶜ when U is a standard pack of cards?",o:["Yes, because it is not a red card","No, it is outside the agreed U","Only if A is empty"],a:1,w:"Aᶜ contains only elements of U. A pencil is not one of the cards in the pack."},
+      {q:"#U = 36 and #Aᶜ = 21. Find #A.",o:["15","21","57"],a:0,w:"#A = #U − #Aᶜ = 36 − 21 = 15."},
+      {q:"Aᶜ is drawn where in a Venn diagram?",o:["Outside the rectangle U","Inside U and outside A","Inside A only"],a:1,w:"The complement is part of U and lies outside A."},
+      {q:"A set has 4 elements in U of 11 elements. How many are outside A but still in U?",o:["4","7","15"],a:1,w:"There are 11 − 4 = 7 elements in the complement."}
+    ];
+    let qIndex=0,answers={};
+    function renderPractice(){
+      const item=questions[qIndex];$("practiceProgress").textContent="Question "+(qIndex+1)+" of "+questions.length;
+      $("practicePrompt").textContent=item.q;$("practiceFeedback").textContent="";$("practiceFeedback").className="feedback-box";$("practiceChoices").innerHTML="";
+      item.o.forEach((choice,index)=>{
+        const button=document.createElement("button");button.type="button";button.textContent=String.fromCharCode(65+index)+". "+choice;
+        if(answers[qIndex]!==undefined)button.disabled=true;
+        if(answers[qIndex]!==undefined&&index===item.a)button.classList.add("correct");
+        if(answers[qIndex]===index&&index!==item.a)button.classList.add("incorrect");
+        button.addEventListener("click",()=>{answers[qIndex]=index;renderPractice();$("practiceFeedback").textContent=(index===item.a?"Correct. ":"Review: ")+item.w;$("practiceFeedback").className="feedback-box "+(index===item.a?"correct":"incorrect");});
+        $("practiceChoices").appendChild(button);
+      });
+      if(answers[qIndex]!==undefined){$("practiceFeedback").textContent=(answers[qIndex]===item.a?"Correct. ":"Review: ")+item.w;$("practiceFeedback").className="feedback-box "+(answers[qIndex]===item.a?"correct":"incorrect");}
+      $("practicePrevious").disabled=qIndex===0;$("practiceNext").textContent=qIndex===questions.length-1?"Finish →":"Next →";
+    }
+    $("practicePrevious").addEventListener("click",()=>{qIndex=Math.max(0,qIndex-1);renderPractice();});
+    $("practiceNext").addEventListener("click",()=>{if(qIndex<questions.length-1){qIndex++;renderPractice();}else{const score=questions.reduce((sum,item,index)=>sum+(answers[index]===item.a?1:0),0);$("practiceFeedback").textContent="Practice complete: "+score+" / "+questions.length+". Review the explanations and try again.";$("practiceFeedback").className="feedback-box";}});
+    $("practiceRestart").addEventListener("click",()=>{qIndex=0;answers={};renderPractice();});
+    renderGuide();drawCanvas();cardinality();renderPractice();
+  </script>
+  <script>if(new URLSearchParams(location.search).get("embed")==="1")document.body.classList.add("embed-mode");</script>
+</body>
+</html>
