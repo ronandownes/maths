@@ -50,7 +50,7 @@ button:disabled{opacity:.38;cursor:default}
 .coefficient-arrows button{flex:1;border:0;border-radius:0;padding:0;font:10px/1 Arial,sans-serif;color:#7b8490;background:transparent;cursor:pointer}
 .coefficient-arrows button:hover{background:#e8edf5;color:#26364d}
 .coefficient-arrows button+button{border-top:1px solid #e5e8ed}
-.canvas{border:1px solid #d9dfe6;border-radius:9px;padding:18px 14px;min-height:250px;overflow-x:auto}
+.canvas{position:relative;border:1px solid #d9dfe6;border-radius:9px;padding:18px 14px;min-height:250px;overflow-x:auto}
 .step-introduction{min-height:210px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font:700 clamp(1.55rem,3.3vw,2.4rem)/1.35 Arial,Helvetica,sans-serif;color:#25364b;padding:18px}
 .step-introduction strong{font-weight:750;font-size:.9em}
 .step-introduction em{font-family:"Cambria Math",Cambria,Georgia,serif;font-style:italic}
@@ -78,10 +78,11 @@ button:disabled{opacity:.38;cursor:default}
 .partial-buttons button.partial-all{width:auto;min-width:43px;border-radius:6px;padding:0 6px}
 .partial-buttons button.partial-all[aria-pressed=true]{background:#174ea6;color:white;border-color:#174ea6}
 .coefficients{position:relative}
-.operand-connector{position:absolute;height:3px;background:#5c80ba;transform-origin:0 50%;pointer-events:none;z-index:2;border-radius:4px;box-shadow:0 0 0 1px #fff}
-.operand-connector::before,.operand-connector::after{content:"";position:absolute;width:9px;height:9px;border:2px solid #5c80ba;background:white;border-radius:50%;top:-3px}
-.operand-connector::before{left:-4px}.operand-connector::after{right:-4px}
+.table-operand-connector{position:absolute;height:3px;background:#346bb5;transform-origin:0 50%;pointer-events:none;z-index:2;border-radius:4px;box-shadow:0 0 0 1px #fff}
+.table-operand-connector::before,.table-operand-connector::after{content:"";position:absolute;width:8px;height:8px;border:2px solid #346bb5;background:#fff;border-radius:50%;top:-3px}
+.table-operand-connector::before{left:-4px}.table-operand-connector::after{right:-4px}
 .coefficient-control.coefficient-highlight{background:#eaf1fd!important;border-color:#426eae!important}
+.math-table td.table-operand{background:#deebff;color:#174ea6;font-weight:750;box-shadow:inset 0 0 0 2px #6794d3}
 .partial-buttons button.partial-done{background:#eaf1fe;border-color:#8caee3;color:#174ea6}
 .partial-buttons button[aria-pressed=true]{background:#174ea6;color:#fff;border-color:#174ea6}
 .coefficient-control.coefficient-highlight{border:3px solid #1a73e8;background:#edf5ff}
@@ -228,13 +229,13 @@ button:disabled{opacity:.38;cursor:default}
 </main>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
-const actions=['Set up the place-value columns','Place the coefficients','Calculate partial products','Group like terms','Interpret the powers of x','Box the answer','Reflection'];
+const actions=['Set up the place-value columns','Place the coefficients','Calculate partial products','Group like terms','Interpret and populate the powers of x','Box the answer','Reflect'];
 const instructions=[
  'Set up the place-value columns with powers of x',
  'Place the coefficients in the correct columns, with the higher-degree factor on top',
  'Calculate the partial products',
  'Group like terms by adding the coefficients in each column',
- 'Interpret each coefficient using its power of x',
+ 'Interpret and populate the powers of x',
  'Box the final answer',
  'Reflect on the efficiency of the method'
 ];
@@ -485,6 +486,16 @@ function draw(){
   if(mode!=='step'||step>=2){
    row(table,pad(a),'','',degree);
    row(table,pad(b),'underline','',degree);
+  }
+  if(mode==='step'&&step===3&&state.partialCount>0&&!state.partialAll){
+   const active=individualProducts(a,b)[state.partialCount-1];
+   if(active){
+    const rows=table.children;
+    const top=rows[1]?.children[n-a.length+active.i+1];
+    const bottom=rows[2]?.children[n-b.length+active.j+1];
+    if(top){top.className+=' table-operand table-operand-first'}
+    if(bottom){bottom.className+=' table-operand table-operand-second'}
+   }
   }
   if(step>=3){
    const products=individualProducts(a,b);
@@ -791,25 +802,27 @@ function switchMode(mode){
 $('practiceMode').onclick=()=>switchMode('practice');
 $('quizMode').onclick=()=>switchMode('quiz');
 $('testMode').onclick=()=>switchMode('test');
-function connectSelectedCoefficients(){
- const host=$('coefficients');
- const previous=host.querySelector&&host.querySelector('.operand-connector');
+function connectTableOperands(){
+ const host=$('canvas');
+ const previous=host.querySelector&&host.querySelector('.table-operand-connector');
  if(previous)previous.remove();
- if(state.mode!=='step'||state.step!==3||state.partialCount<1||state.partialAll||!host.querySelectorAll||!host.getBoundingClientRect)return;
- const selected=host.querySelectorAll('.coefficient-highlight');
- if(selected.length!==2)return;
- const base=host.getBoundingClientRect(),r1=selected[0].getBoundingClientRect(),r2=selected[1].getBoundingClientRect();
- const x1=r1.left+r1.width/2-base.left,y1=r1.bottom-base.top+5;
- const x2=r2.left+r2.width/2-base.left,y2=r2.bottom-base.top+5;
+ if(state.mode!=='step'||state.step!==3||!state.partialCount||state.partialAll||
+    !host.querySelector||!host.getBoundingClientRect)return;
+ const first=host.querySelector('.table-operand-first');
+ const second=host.querySelector('.table-operand-second');
+ if(!first||!second||!first.getBoundingClientRect||!second.getBoundingClientRect)return;
+ const base=host.getBoundingClientRect(),a=first.getBoundingClientRect(),b=second.getBoundingClientRect();
+ const x1=a.left+a.width/2-base.left,y1=a.bottom-base.top-6;
+ const x2=b.left+b.width/2-base.left,y2=b.top-base.top+6;
  const length=Math.hypot(x2-x1,y2-y1);
- if(length<10)return;
- const line=document.createElement('div');line.className='operand-connector';
+ if(length<1)return;
+ const line=document.createElement('div');line.className='table-operand-connector';
  line.style.left=x1+'px';line.style.top=y1+'px';line.style.width=length+'px';
  line.style.transform='rotate('+Math.atan2(y2-y1,x2-x1)+'rad)';
  host.append(line);
 }
-function render(){renderSelectors();coefficientInputs();draw();connectSelectedCoefficients()}
-window.addEventListener('resize',connectSelectedCoefficients);
+function render(){renderSelectors();coefficientInputs();draw();connectTableOperands()}
+window.addEventListener('resize',connectTableOperands);
 selectQuestion(0);
 })();</script>
 </body>
