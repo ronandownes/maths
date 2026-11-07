@@ -430,6 +430,7 @@ function drawTest(){
  const host=$('testArea');host.replaceChildren();
  const h=el('div',undefined,'test-header');
  const summary=el('div');
+ const opt=el('div',undefined,'test-options');
  const quiz=assessment.mode==='quiz';
  summary.append(el('h2',quiz?'Expansion quiz':'Expansion test'),el('p',quiz?'Four questions · select an answer to check immediately · you may try again':'Four questions · 1 mark per complete correct expansion · results after submission'));
  if(quiz){
@@ -444,7 +445,6 @@ function drawTest(){
   sound.onclick=()=>{assessment.sound=!assessment.sound;drawTest()};
   opt.append(sound);
  }
- const opt=el('div',undefined,'test-options');
  const choose=el('select');choose.setAttribute('aria-label','Test question selection');
  [['bank','Homework questions 1–4'],['random','Four fresh random questions']].forEach(([value,label])=>{
   const item=el('option',label);item.value=value;item.selected=assessment.source===value;choose.append(item);
