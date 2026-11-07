@@ -431,6 +431,19 @@ main{margin:5px auto;padding:10px 19px 18px}
 .board-answer{width:100%;max-width:100%;display:flex;align-items:center;justify-content:center;align-content:center;flex-wrap:wrap;gap:.08em .23em;overflow-wrap:anywhere;padding:1px 4px}
 .board-answer-term{display:inline-flex;white-space:nowrap;align-items:baseline;gap:.12em}
 .board-answer-equals{white-space:nowrap}
+.board-custom{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
+.board-custom-label{font-weight:600}
+.board-range-stack{display:grid;gap:3px}
+.board-range-control{display:grid;grid-template-columns:64px 105px 18px;align-items:center;gap:6px;font-size:.78rem;white-space:nowrap}
+.board-range-control input[type=range]{width:105px;height:24px;accent-color:#2563ad;cursor:ew-resize;touch-action:pan-y}
+.board-range-control output{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+.board-expression,.board-answer{font-family:"Cambria Math",Cambria,Georgia,serif;font-weight:400;line-height:1.22}
+.board-expression{flex-wrap:wrap;gap:.13em;overflow:visible}
+.board-factor{white-space:nowrap;overflow-wrap:normal;max-width:none}
+.board-answer{color:#174ea6;flex-wrap:wrap;gap:.06em .22em;margin-top:.20em;padding:0 2px;overflow:visible}
+.board-answer-first,.board-answer-term{display:inline-flex;align-items:baseline;gap:.12em;white-space:nowrap;flex-shrink:0}
+.board-answer sup,.board-expression sup{font-size:.62em;line-height:0;vertical-align:super}
+@media(max-width:680px){.board-range-control{grid-template-columns:52px 80px 18px}.board-range-control input[type=range]{width:80px}}
 </style>
 </head>
 <body>
@@ -1456,7 +1469,8 @@ function boardAnswerHTML(q){
   const term=(p&&Math.abs(v)===1?'':Math.abs(v))+pow(p);
   terms.push('<span class="board-answer-term">'+(sign?'<span class="board-answer-sign">'+sign+'</span>':'')+term+'</span>');
  });
- return '<span class="board-answer-equals">=</span>'+(terms.length?terms.join(''):'<span class="board-answer-term">0</span>');
+ const first=terms.shift()||'<span class="board-answer-term">0</span>';
+ return '<span class="board-answer-first"><span class="board-answer-equals">=</span>'+first+'</span>'+terms.join('');
 }
 function boardQuestions(count){
  const signOverride=Number.isInteger(state.slot)?['positive','negative','mixed','mixed'][state.slot]:null;
@@ -1472,20 +1486,20 @@ function fitBoardQuestions(){
  const grid=host.querySelector('.board-grid');if(!grid)return;
  grid.querySelectorAll('.board-question').forEach(cell=>{
   const expr=cell.querySelector('.board-expression'),answer=cell.querySelector('.board-answer');
-  const width=Math.max(70,cell.clientWidth-20),height=Math.max(50,cell.clientHeight-22);
-  const exprHeight=answer?Math.max(28,height*.48):height;
-  let font=Math.min(230,Math.floor(exprHeight*.63));
-  expr.style.fontSize=font+'px';expr.style.flexWrap='wrap';
-  while(font>15&&(expr.scrollWidth>width||expr.scrollHeight>exprHeight)){
-   font-=2;expr.style.fontSize=font+'px';
+  const width=Math.max(35,cell.clientWidth-20),height=Math.max(35,cell.clientHeight-22);
+  // Question and answer are ONE typographic unit: always exactly the same size.
+  let font=Math.min(230,Math.floor(height*(answer?.33:.70)));
+  function sizeMath(){
+   expr.style.fontSize=font+'px';
+   if(answer)answer.style.fontSize=font+'px';
   }
-  if(answer){
-   const answerHeight=Math.max(28,height-Math.min(expr.scrollHeight,exprHeight)-8);
-   let af=Math.min(130,Math.floor(answerHeight*.56));
-   answer.style.fontSize=af+'px';
-   while(af>12&&(answer.scrollWidth>width||answer.scrollHeight>answerHeight)){
-    af-=2;answer.style.fontSize=af+'px';
-   }
+  sizeMath();
+  while(font>8&&(
+   expr.scrollWidth>width+2||
+   expr.scrollHeight+(answer?answer.scrollHeight+7:0)>height||
+   (answer&&answer.scrollWidth>width+2)
+  )){
+   font-=2;sizeMath();
   }
  });
 }
@@ -1505,14 +1519,27 @@ function drawBoard(){
  transpose.title='Swap columns and rows while keeping the same questions';
  transpose.setAttribute('aria-label','Transpose grid: swap columns and rows');
  transpose.onclick=()=>{[boardState.columns,boardState.rows]=[boardState.rows,boardState.columns];drawBoard()};controls.append(transpose);
- const custom=el('label',undefined,'board-custom');
- custom.append(el('span','Custom'));
- const col=el('input');col.type='number';col.min='1';col.max='6';col.value=String(boardState.columns);col.title='Columns across';col.setAttribute('aria-label','Columns across');
- const by=el('span','×');
- const rows=el('input');rows.type='number';rows.min='1';rows.max='5';rows.value=String(boardState.rows);rows.title='Rows down';rows.setAttribute('aria-label','Rows down');
- const apply=el('button','Apply');apply.type='button';
- apply.onclick=()=>{boardState.columns=Math.max(1,Math.min(6,Number(col.value)||1));boardState.rows=Math.max(1,Math.min(5,Number(rows.value)||1));boardState.offset=0;drawBoard()};
- custom.append(col,by,rows,apply);controls.append(custom);
+ const custom=el('div',undefined,'board-custom');
+ custom.append(el('span','Custom','board-custom-label'));
+ const sliderStack=el('div',undefined,'board-range-stack');
+ function addBoardSlider(label,key){
+  const line=el('label',undefined,'board-range-control');
+  const name=el('span',label);
+  const slider=el('input');slider.type='range';slider.min='1';slider.max='6';slider.step='1';
+  slider.value=String(boardState[key]);
+  slider.title=label+' — drag to resize the board immediately';
+  slider.setAttribute('aria-label',label+' in the display');
+  const value=el('output',String(boardState[key]));
+  slider.oninput=()=>{
+   boardState[key]=Number(slider.value);
+   value.textContent=slider.value;
+   resizeBoardGrid();
+  };
+  line.append(name,slider,value);sliderStack.append(line);
+ }
+ addBoardSlider('Columns','columns');
+ addBoardSlider('Rows','rows');
+ custom.append(sliderStack);controls.append(custom);
  const answers=el('button',boardState.answers?'Hide answers':'Answers');
  answers.type='button';answers.setAttribute('aria-pressed',String(boardState.answers));answers.onclick=()=>{boardState.answers=!boardState.answers;drawBoard()};
  controls.append(answers);
@@ -1523,21 +1550,36 @@ function drawBoard(){
  controls.append(full);
  const close=el('button','Close');close.type='button';close.onclick=()=>switchMode('practice');controls.append(close);
  host.append(controls);
- const count=boardState.columns*boardState.rows;
- const questions=boardQuestions(count);
  const grid=el('div',undefined,'board-grid');
- grid.style.gridTemplateColumns='repeat('+boardState.columns+',minmax(0,1fr))';
- grid.style.gridTemplateRows='repeat('+boardState.rows+',minmax(0,1fr))';
- questions.forEach((item,i)=>{
-  const cell=el('article',undefined,'board-question');
-  const number=el('span',String(i+1)+'.','board-number');
-  const expression=el('div',undefined,'board-expression');expression.innerHTML=boardFormula(item.q);
-  cell.append(number,expression);
-  if(boardState.answers){const answer=el('div',undefined,'board-answer');answer.innerHTML=boardAnswerHTML(item.q);cell.append(answer)}
-  grid.append(cell);
- });
  host.append(grid);
- requestAnimationFrame(fitBoardQuestions);
+ const cellCache=[];
+ let fitPending=false;
+ function resizeBoardGrid(){
+  const count=boardState.columns*boardState.rows;
+  grid.style.gridTemplateColumns='repeat('+boardState.columns+',minmax(0,1fr))';
+  grid.style.gridTemplateRows='repeat('+boardState.rows+',minmax(0,1fr))';
+  if(cellCache.length<count){
+   const questions=boardQuestions(count);
+   for(let i=cellCache.length;i<count;i++){
+    const item=questions[i],cell=el('article',undefined,'board-question');
+    const number=el('span',String(i+1)+'.','board-number');
+    const expression=el('div',undefined,'board-expression');
+    expression.innerHTML=boardFormula(item.q);
+    cell.append(number,expression);
+    if(boardState.answers){
+     const answer=el('div',undefined,'board-answer');
+     answer.innerHTML=boardAnswerHTML(item.q);cell.append(answer);
+    }
+    cellCache.push(cell);
+   }
+  }
+  grid.replaceChildren(...cellCache.slice(0,count));
+  if(!fitPending){
+   fitPending=true;
+   requestAnimationFrame(()=>{fitPending=false;fitBoardQuestions()});
+  }
+ }
+ resizeBoardGrid();
 }
 window.addEventListener('resize',()=>{if(assessment.mode==='board')requestAnimationFrame(fitBoardQuestions)});
 document.addEventListener('fullscreenchange',()=>{if(assessment.mode==='board')requestAnimationFrame(fitBoardQuestions)});
