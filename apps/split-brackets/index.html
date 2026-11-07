@@ -238,11 +238,17 @@ function diagramHTML(q){
  const first=fmtTerm(q.a,'x',true)+common;
  const second=fmtTerm(q.b,'',true)+common;
  const p=products(q);
+ const revealed=state.direction==='factor'||state.view==='worked'?4:Math.min(4,state.step);
+ function pair(offset,left,leftVar,right,rightVar){
+  if(revealed<=offset)return '· · ·';
+  if(revealed===offset+1)return fmtTerm(left,leftVar,true)+' + …';
+  return fmtTerm(left,leftVar,true)+fmtTerm(right,rightVar,false);
+ }
  const groups=[
-  {title:'Group 1 · multiply the first term',factor:first,expanded:fmtTerm(p[0],'xy',true)+fmtTerm(p[1],'x',false)},
-  {title:'Group 2 · multiply the second term',factor:second,expanded:fmtTerm(p[2],'y',true)+fmtTerm(p[3],'',false)}
+  {title:'Group 1 · multiply the first term',factor:first,expanded:pair(0,p[0],'xy',p[1],'x')},
+  {title:'Group 2 · multiply the second term',factor:second,expanded:pair(2,p[2],'y',p[3],'')}
  ];
- return '<div class="split-layout" role="group" aria-label="Split the multiplication into two intact groups">'+groups.map((g,i)=>
+ return '<div class="split-layout" role="group" aria-label="Two intact distributive groups">'+groups.map(g=>
   '<div class="split-card"><strong>'+g.title+'</strong><div class="split-math">'+g.factor+'</div><div class="split-arrow">↓</div><div class="split-math">'+g.expanded+'</div></div>').join('')+'</div>';
 }
 function renderPractice(){
