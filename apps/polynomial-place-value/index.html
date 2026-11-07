@@ -994,7 +994,7 @@ function printWorksheet(){
  const columns=ws.columns==='auto'?(all.some(x=>x.type==='qq')?3:4):Number(ws.columns);
  // Use two full rows on landscape A4; centre incomplete rows while preserving exact columns.
  const perPage=columns*2, pages=[];
- const support=i=>ws.support==='independent'?'none':ws.support==='example'?(i===0?'full':'none'):['full','guided','faded','none'][i%4];
+ const support=i=>ws.support==='independent'?'none':ws.support==='example'?(i===0?'full':'none'):(['full','guided','faded'][i]||'none');
  const names={ll:'Linear × Linear',ql:'Linear × Quadratic',qq:'Quadratic × Quadratic'};
  function problem(item,index){
   const q=item.q,n=q.a.length+q.b.length-1,degree=n-1,mode=support(index);
