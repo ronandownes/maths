@@ -11,7 +11,7 @@ body{margin:0}
 header{background:#fff;border-bottom:1px solid #dadce0;padding:4px max(16px,calc((100vw - 1150px)/2));display:flex;align-items:center;gap:8px;min-height:48px}
 header img{width:122px;display:block}.apps-name{font-size:1.05rem;font-weight:700;margin-left:-7px;margin-right:14px}header a{color:#174ea6;text-decoration:none;font-size:.88rem}
 header h1{font-weight:650;font-size:1.16rem;margin:0}
-main{max-width:1100px;margin:8px auto;background:white;padding:20px 26px 38px;min-height:82vh;border:1px solid #e2e4e7}
+main{max-width:1100px;margin:8px auto;background:white;padding:14px 26px 28px;min-height:0;border:1px solid #e2e4e7}
 button,input{font:inherit;border-radius:6px;border:1px solid #b8c0c9;background:#fff;color:inherit}
 button{padding:9px 13px;cursor:pointer;white-space:nowrap}
 button:hover{background:#f1f5fb}button:focus-visible,input:focus-visible{outline:3px solid #78aaff;outline-offset:2px}
@@ -19,8 +19,8 @@ button[aria-pressed=true]{background:#e8f0fe;border-color:#1a73e8;color:#174ea6;
 button:disabled{opacity:.38;cursor:default}
 .top-questions,.modes,.stepper,.control-line,.button-group{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
 .top-questions{margin-bottom:12px}
-.top-questions button{flex:1 1 62px;padding:11px 8px;font-weight:700}
-.top-questions #random{flex:1.5 1 110px}
+.top-questions button{flex:1 1 98px;padding:11px 8px;font-weight:700}
+.top-questions #random{flex:1.2 1 130px}
 .settings{display:flex;flex-wrap:wrap;gap:8px 12px;padding:10px 0 12px;border-top:1px solid #e2e6ea;border-bottom:1px solid #e2e6ea}
 .setting{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:6px 12px;border:1px solid #dce2e9;border-radius:8px;background:#fbfcfe}
 .setting .caption{font-size:.81rem;font-weight:700;color:#59636f;min-width:0}
@@ -28,23 +28,23 @@ button:disabled{opacity:.38;cursor:default}
 .modes{margin:14px 0 11px}
 .modes button{font-size:.94rem}
 .modes button[aria-pressed=true]{border-color:#174ea6}
-.coefficients{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin:13px 0 16px}
+.coefficients{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin:10px 0 12px}
 .factor-fields{display:flex;flex-wrap:wrap;gap:9px}
 .factor-fields .group-label{width:100%;color:#586575;font-size:.84rem;font-weight:650}
 .coefficient{display:flex;flex-direction:column;gap:3px;font-size:.83rem;color:#536170}
 .coefficient input{width:96px;min-width:96px;padding:8px 5px 8px 10px;font-size:1.2rem;font-variant-numeric:tabular-nums;line-height:1.3}
 .coefficient input::-webkit-inner-spin-button{opacity:1}
-.canvas{border:1px solid #d9dfe6;border-radius:9px;padding:20px 14px;min-height:295px;overflow-x:auto}
+.canvas{border:1px solid #d9dfe6;border-radius:9px;padding:18px 14px;min-height:250px;overflow-x:auto}
 #heading{font-size:1.12rem;margin:0 0 9px;font-weight:650}
 .math-table{margin:0 auto;border-collapse:collapse;table-layout:fixed;width:min(100%,760px)}
 .math-table td,.math-table th{font:clamp(1.25rem,2.5vw,2rem)/1.35 "Cambria Math",Cambria,Georgia,serif;text-align:center;padding:8px 5px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .math-table th{font:1.03rem Arial,sans-serif;font-weight:500;color:#69747f}
-.math-table .row-label{width:68px;text-align:right;font:1rem Arial,sans-serif;color:#5f6973;padding-right:10px}
+.math-table .row-label{width:45px;text-align:right;font:1rem Arial,sans-serif;color:#5f6973;padding-right:6px}
 .math-table .underline td{border-bottom:2px solid #8d99a5}
 .math-table .sum td{border-top:2px solid #8d99a5;font-weight:700}
 .math-table sup{font-size:.62em;vertical-align:super}.math-table .final-power td{font-weight:700;border-top:1px solid #b3bdc7}.math-table .final-power td:not(.row-label){font-family:"Cambria Math",Cambria,Georgia,serif}
 .equation{font:clamp(1.4rem,3vw,2.2rem)/1.4 "Cambria Math",Cambria,Georgia,serif;text-align:center;margin:18px 0 3px;overflow-wrap:anywhere}
-.equation sup{font-size:.62em;vertical-align:super}
+.equation sup{font-size:.62em;vertical-align:super}.equation.worked-conclusion{font-size:clamp(1.35rem,2.6vw,1.85rem);margin:8px auto 0;max-width:100%;text-align:center}.math-table .final-power td{padding-top:4px;padding-bottom:3px}.math-table .sum td{padding-bottom:3px}
 .stepper{justify-content:space-between;gap:12px;margin-top:12px}
 .stepper button:last-child{margin-left:auto;font-weight:650}
 #stepProgress{font-size:.86rem;color:#647080}
@@ -81,128 +81,157 @@ button:disabled{opacity:.38;cursor:default}
 <section class="canvas" id="canvas" aria-live="polite"></section>
 <div class="stepper"><button id="back">← Previous</button><span id="stepProgress"></span><button id="forward">Next →</button></div>
 </main>
-<script>
-(()=>{'use strict';
-const $=id=>document.getElementById(id);
-const bank=[
- {a:[1,2],b:[1,7],type:'ll',sign:'positive',level:1},
- {a:[1,4],b:[1,-3],type:'ll',sign:'mixed',level:1},
- {a:[3,5],b:[4,-2],type:'ll',sign:'mixed',level:2},
- {a:[2,3,4],b:[5,6],type:'ql',sign:'positive',level:2},
- {a:[3,-4,5],b:[7,-2],type:'ql',sign:'mixed',level:2},
- {a:[2,3,4],b:[5,6,-3],type:'qq',sign:'mixed',level:2},
- {a:[2,-5,6],b:[3,2,-5],type:'qq',sign:'mixed',level:2},
- {a:[12,-15,17],b:[11,13,-8],type:'qq',sign:'mixed',level:3}
-];
-const actions=['Stack the factors','Strip the powers of x','Calculate the partial products','Group like terms','Bring back the powers of x'];
-const questionTypes=[['ll','Linear × linear'],['ql','Quadratic × linear'],['qq','Quadratic × quadratic']];
+<script>(()=>{'use strict';
+const $ = id=>document.getElementById(id);
+const actions=['Stack the factors vertically','Strip the powers of x','Calculate the partial products','Group like terms','Bring back the powers of x'];
+const factorTypes=[['ll','Linear × linear'],['ql','Quadratic × linear'],['qq','Quadratic × quadratic']];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
-const views=[['question','Question only'],['step','Step by step'],['answer','Answer'],['worked','Fully worked']];
-const copy=x=>({a:[...x.a],b:[...x.b],type:x.type,sign:x.sign,level:x.level});
-const state={type:'ll',sign:'positive',level:1,mode:'question',step:0,selected:0,randomNumber:0,question:copy(bank[0]),randomHistory:[],randomIndex:-1};
-const power=n=>n===0?'':n===1?'x':'x<sup>'+n+'</sup>';
-function formatPoly(a){let s='',d=a.length-1;for(let i=0;i<a.length;i++){let v=a[i],k=d-i;if(v===0)continue;let term=(k&&Math.abs(v)===1?'':Math.abs(v))+power(k);s+=(s?(v<0?' − ':' + '):(v<0?'−':''))+term;}return s||'0'}
-function multiply(a,b){let result=Array(a.length+b.length-1).fill(0);a.forEach((v,i)=>b.forEach((w,j)=>{result[i+j]+=v*w}));return result}
-const rand=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
-function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t}return a}
-function primitive(coefficients){return coefficients.reduce((g,c)=>gcd(g,c),0)===1}
-function generate(){
- const type=state.type,al=type==='ll'?2:3,bl=type==='qq'?3:2,level=state.level,sign=state.sign;
- function coefficients(n){
-  const high=level===3?18:level===2?8:5;
-  // The leading coefficient is positive. Every other coefficient follows the sign selection.
-  for(let trial=0;trial<1000;trial++){
-   const arr=Array.from({length:n},(_,i)=>i===0?(level===1?1:rand(level===2?2:4,high)):rand(1,high));
-   for(let i=1;i<n;i++)if(sign==='negative'||(sign==='mixed'&&rand(0,1)===1))arr[i]*=-1;
-   if(primitive(arr))return arr;
-  }
-  // Deterministic safe fallback if the random trial limit is ever reached.
-  const arr=Array.from({length:n},(_,i)=>i===0?1:2);
-  if(sign==='negative')for(let i=1;i<n;i++)arr[i]=-arr[i];
-  return arr;
- }
+const modes=[['question','Question only'],['step','Step by step'],['answer','Answer'],['worked','Fully worked']];
+const state={type:'ql',sign:'positive',level:1,mode:'question',step:0,slot:0,randomCount:0,question:null};
+const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
+const minus=v=>v<0?'−'+Math.abs(v):String(v);
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t}return a};
+const primitive=a=>a.reduce((g,v)=>gcd(g,v),0)===1;
+function poly(a){let result='',degree=a.length-1;
+ for(let i=0;i<a.length;i++){const v=a[i],p=degree-i;if(v===0)continue;
+  const body=(p&&Math.abs(v)===1?'':Math.abs(v))+pow(p);
+  result+=(result?(v<0?' − ':' + '):(v<0?'−':''))+body;
+ }return result||'0';
+}
+function product(a,b){const out=Array(a.length+b.length-1).fill(0);a.forEach((x,i)=>b.forEach((y,j)=>{out[i+j]+=x*y}));return out}
+function seedFor(slot){const typeIndex=factorTypes.findIndex(x=>x[0]===state.type),signIndex=signTypes.findIndex(x=>x[0]===state.sign);
+ return ((slot+1)*209759+(state.level+13)*17539+(typeIndex+1)*9151+(signIndex+2)*1877)>>>0}
+function seeded(seed){let x=seed>>>0;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))}}
+function makeQuestion(next,serial){
+ const [na,nb]=state.type==='ll'?[2,2]:state.type==='ql'?[3,2]:[3,3];
+ const level=state.level,sign=state.sign;
+ const choose=(a)=>a[next(0,a.length-1)];
+ const small=()=>next(2,9),low=()=>next(1,6),big=()=>choose([10,11,11,11,20,21,30,31]);
  let a,b;
- for(let trial=0;trial<1000;trial++){
-  a=coefficients(al);b=coefficients(bl);
-  if(sign==='mixed'){
-   const all=a.slice(1).concat(b.slice(1));
-   if(all.every(x=>x>0))b[b.length-1]*=-1;
-   if(all.every(x=>x<0))a[a.length-1]*=-1;
+ for(let trial=0;trial<2000;trial++){
+  if(level===1){
+   a=Array.from({length:na},()=>low());b=Array.from({length:nb},()=>low());
+   // One unit coefficient in each factor, at independently selected positions.
+   a[next(0,na-1)]=1;b[next(0,nb-1)]=1;
+  }else if(level===2){
+   a=Array.from({length:na},small);b=Array.from({length:nb},small);
+   if(next(0,3)===0)(next(0,1)?a:b)[0]=11;
+  }else{
+   a=Array.from({length:na},small);b=Array.from({length:nb},small);
+   // A useful two-digit factor, usually 11, rather than unrestricted large coefficients.
+   const target=next(0,1)?a:b;target[next(0,target.length-1)]=big();
   }
-  if(primitive(a)&&primitive(b))break;
+  for(const arr of [a,b]){
+   for(let i=1;i<arr.length;i++){
+    if(sign==='negative'||(sign==='mixed'&&next(0,1)===1))arr[i]*=-1;
+   }
+  }
+  if(sign==='mixed'){
+   const other=a.slice(1).concat(b.slice(1));
+   if(other.every(v=>v>0))b[b.length-1]*=-1;
+   if(other.every(v=>v<0))a[a.length-1]*=-1;
+  }
+  if(primitive(a)&&primitive(b)&&a[0]>0&&b[0]>0)return{a,b};
  }
- return {a,b,type,sign,level};
+ // Guaranteed primitive fallback, retaining the selected sign pattern.
+ return{a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],
+        b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)]};
 }
-function choices(node,options,value,onClick){const host=$(node);host.replaceChildren();options.forEach(([id,label])=>{let b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(id===value));b.onclick=()=>onClick(id);host.append(b)})}
-function questionButtons(){$('questions').replaceChildren();bank.forEach((q,i)=>{const b=document.createElement('button');b.textContent='Q'+(i+1);b.type='button';b.setAttribute('aria-pressed',String(state.selected===i));b.onclick=()=>openFixed(i);$('questions').append(b)});
- const b=document.createElement('button');b.id='random';b.type='button';b.textContent='Random';b.setAttribute('aria-pressed',String(state.selected==='random'));b.onclick=()=>nextRandom();$('questions').append(b)}
-function openFixed(i){state.selected=i;state.question=copy(bank[i]);state.type=state.question.type;state.sign=state.question.sign;state.level=state.question.level;render()}
-function nextRandom(){const q=generate();state.randomHistory.push(copy(q));state.randomIndex=state.randomHistory.length-1;state.selected='random';state.question=copy(q);state.randomNumber++;render()}
-function renderFilters(){
- choices('types',questionTypes,state.type,id=>{state.type=id;renderFilters()});
- choices('signs',signTypes,state.sign,id=>{state.sign=id;renderFilters()});
- choices('levels',levels,state.level,id=>{state.level=id;renderFilters()});
- choices('modes',views,state.mode,id=>{state.mode=id;if(id==='step')state.step=0;render()});
+function chosenQuestion(){const rng=state.slot==='random'?seeded(seedFor(state.randomCount+1000) ^ ((Math.random()*0xffffffff)>>>0)):seeded(seedFor(state.slot));return makeQuestion(rng,state.slot)}
+function selectQuestion(slot){state.slot=slot;state.question=chosenQuestion();render()}
+function freshRandom(){state.randomCount++;selectQuestion('random')}
+function chooseButtons(id,entries,current,change){
+ const host=$(id);host.replaceChildren();
+ entries.forEach(([value,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(value===current));b.onclick=()=>change(value);host.append(b)});
 }
-function coefficientInputs(){$('coefficients').replaceChildren();
- [['First factor','a'],['Second factor','b']].forEach(([name,key])=>{
-  const div=document.createElement('div');div.className='factor-fields';
-  let title=document.createElement('div');title.className='group-label';title.textContent=name;div.append(title);
-  state.question[key].forEach((v,i)=>{let d=state.question[key].length-i-1;
-   let lab=document.createElement('label');lab.className='coefficient';lab.innerHTML=d===0?'#':d===1?'x':'x<sup>'+d+'</sup>';
-   const input=document.createElement('input');input.type='number';input.step='1';input.min='-999';input.max='999';input.value=v;
-   input.setAttribute('aria-label',name+', coefficient of '+(d===0?'constant':d===1?'x':'x to the power '+d));
-   input.addEventListener('input',()=>{let val=Number(input.value);if(input.value.trim()===''||!Number.isInteger(val)||Math.abs(val)>999)return;state.question[key][i]=val;draw();});
-   lab.append(input);div.append(lab);
-  });$('coefficients').append(div);
+function renderSelectors(){
+ const q=[];for(let i=0;i<6;i++)q.push([i,'Q'+(i+1)]);q.push(['random','Random']);
+ chooseButtons('questions',q,state.slot,v=>v==='random'?freshRandom():selectQuestion(v));
+ function filter(key,value){state[key]=value;state.slot=0;state.question=chosenQuestion();render()}
+ chooseButtons('types',factorTypes,state.type,v=>filter('type',v));
+ chooseButtons('signs',signTypes,state.sign,v=>filter('sign',v));
+ chooseButtons('levels',levels,state.level,v=>filter('level',v));
+ chooseButtons('modes',modes,state.mode,v=>{state.mode=v;if(v==='step')state.step=0;render()});
+}
+function coefficientInputs(){
+ const host=$('coefficients');host.replaceChildren();
+ [['First factor','a'],['Second factor','b']].forEach(([title,key])=>{
+  const group=document.createElement('div');group.className='factor-fields';
+  const h=document.createElement('div');h.className='group-label';h.textContent=title;group.append(h);
+  state.question[key].forEach((v,i)=>{
+   const degree=state.question[key].length-i-1;
+   const label=document.createElement('label');label.className='coefficient';label.innerHTML=degree===0?'#':degree===1?'x':pow(degree);
+   const input=document.createElement('input');input.type='number';input.step='1';input.value=v;input.min='-999';input.max='999';
+   input.setAttribute('aria-label',title+', coefficient of '+(degree===0?'constant':degree===1?'x':'x to the power '+degree));
+   input.addEventListener('input',()=>{if(input.value.trim()==='')return;const val=Number(input.value);if(!Number.isInteger(val)||Math.abs(val)>999)return;state.question[key][i]=val;draw()});
+   label.append(input);group.append(label);
+  });host.append(group);
  });
 }
-function addRow(table,values,kind,label,degree,withPowers,asFactors){
- let tr=document.createElement('tr');tr.className=kind||'';
- const labelCell=document.createElement('td');labelCell.className='row-label';labelCell.textContent=label||'';tr.append(labelCell);
- let encountered=false;
- values.forEach((v,i)=>{let td=document.createElement('td'),p=degree-i;
-  if(asFactors){if(v===null||v===0){td.textContent='';}else{let prefix=encountered?(v>0?'+':'−'):(v<0?'−':'');let magnitude=Math.abs(v);td.innerHTML=prefix+(p&&magnitude===1?'':magnitude)+(p?power(p):'');encountered=true;}}
-  else td.innerHTML=(v===null?'':(v<0?'−'+Math.abs(v):String(v))+(withPowers&&v&&p?power(p):''));
-  tr.append(td);
+function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomial=false){
+ const tr=document.createElement('tr');if(kind)tr.className=kind;
+ const head=document.createElement('td');head.className='row-label';head.textContent=label;tr.append(head);
+ let started=false;
+ values.forEach((v,i)=>{const cell=document.createElement('td');const p=degree-i;
+  if(v===null){cell.textContent='';}
+  else if(asPolynomial){if(v===0){cell.textContent='';}else{
+   const sign=started?(v>0?'+':'−'):(v<0?'−':'');
+   const number=Math.abs(v);
+   cell.innerHTML=sign+(p&&number===1?'':number)+(p?pow(p):'');
+   started=true;
+  }}
+  else cell.innerHTML=minus(v)+(showPowers&&v!==0&&p?pow(p):'');
+  tr.append(cell);
  });table.append(tr);
 }
 function draw(){
- let {a,b}=state.question,answer=multiply(a,b),n=answer.length,degree=n-1;
- let root=$('canvas');root.replaceChildren();
- let mode=state.mode,step=mode==='worked'?4:mode==='question'||mode==='answer'?0:state.step;
- $('heading').textContent=mode==='step'?actions[step]:mode==='worked'?'Fully worked':mode==='answer'?'Answer':'';
+ const {a,b}=state.question,final=product(a,b),n=final.length,degree=n-1;
+ const mode=state.mode,step=mode==='worked'?4:mode==='answer'||mode==='question'?0:state.step;
+ const root=$('canvas');root.replaceChildren();
+ $('heading').textContent=mode==='step'?actions[step]:mode==='worked'?'Fully worked':'';
  $('help').textContent='';
- const pad=x=>Array(n-x.length).fill(null).concat(x);
- function makeTable(){let table=document.createElement('table');table.className='math-table';
-  if(step>0){let hdr=document.createElement('tr');let corner=document.createElement('th');hdr.append(corner);for(let d=degree;d>=0;d--){let th=document.createElement('th');th.innerHTML=d===0?'#':power(d);hdr.append(th)}table.append(hdr)}
-  addRow(table,pad(a),'','',degree,false,step===0);
-  addRow(table,pad(b),'underline','',degree,false,step===0);
-  if(step>=1){ // Replace blank structural cells with zeros, not empty spaces.
-    for(let row of Array.from(table.rows).slice(-2)){for(let cell of Array.from(row.cells).slice(1)){if(cell.textContent==='')cell.textContent='0'}}
-  }
-  if(step>=2){for(let j=b.length-1;j>=0;j--){let shift=b.length-1-j,vals=Array(n).fill(0);
-   for(let i=0;i<a.length;i++)vals[n-a.length+i-shift]=a[i]*b[j];
-   addRow(table,vals,'','',degree,false,false);
-  }}
-  if(step>=3)addRow(table,answer,'sum','+',degree,false,false);
-  if(step>=4)addRow(table,answer,'final-power','',degree,true,false);
-  return table;
- }
+ const pad=v=>Array(n-v.length).fill(null).concat(v);
  if(mode==='answer'){
-   let eq=document.createElement('div');eq.className='equation';eq.innerHTML='('+formatPoly(a)+')('+formatPoly(b)+') = '+formatPoly(answer);root.append(eq);
- }else{root.append(makeTable())}
- $('stepProgress').textContent=mode==='step'?(step+1)+' / 5':'';
+  const eq=document.createElement('div');eq.className='equation';
+  eq.innerHTML='('+poly(a)+')('+poly(b)+') = '+poly(final);
+  root.append(eq);
+ }else{
+  const table=document.createElement('table');table.className='math-table';
+  if(step>0){
+   const headings=document.createElement('tr');headings.append(document.createElement('th'));
+   for(let p=degree;p>=0;p--){const th=document.createElement('th');th.innerHTML=p?pow(p):'#';headings.append(th)}table.append(headings);
+  }
+  row(table,pad(a),'','',degree,false,step===0);
+  row(table,pad(b),'underline','',degree,false,step===0);
+  if(step>=1){
+   // Keep the higher-degree placeholders empty; only actual coefficients are shown.
+  }
+  if(step>=2){
+   for(let j=b.length-1;j>=0;j--){
+    const shift=b.length-1-j,values=Array(n).fill(null);
+    for(let i=0;i<a.length;i++)values[n-a.length+i-shift]=a[i]*b[j];
+    row(table,values,'','',degree);
+   }
+  }
+  if(step>=3)row(table,final,'sum','+',degree);
+  if(step>=4)row(table,final,'final-power','',degree,true);
+  root.append(table);
+  if(step>=4){
+   const eq=document.createElement('div');eq.className='equation worked-conclusion';
+   eq.innerHTML='('+poly(a)+')('+poly(b)+') = '+poly(final);
+   root.append(eq);
+  }
+ }
  $('back').hidden=mode!=='step';$('forward').hidden=mode!=='step';
+ $('stepProgress').textContent=mode==='step'?(step+1)+' / 5':'';
  $('back').disabled=step===0;$('forward').disabled=step===4;
  $('forward').textContent=step===4?'Complete':'Next: '+actions[step+1]+' →';
 }
-function render(){questionButtons();renderFilters();coefficientInputs();draw()}
+function render(){renderSelectors();coefficientInputs();draw()}
 $('back').onclick=()=>{state.step=Math.max(0,state.step-1);draw()};
 $('forward').onclick=()=>{state.step=Math.min(4,state.step+1);draw()};
-render();
-})();
-</script>
+selectQuestion(0);
+})();</script>
 </body>
 </html>
