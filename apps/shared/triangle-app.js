@@ -7,31 +7,41 @@ const ratioSides={sin:['opp','hyp'],cos:['adj','hyp'],tan:['opp','adj']},round=v
 const tripleList=T.bank();
 function makeQuestion(n=cfg.question){
  if(pyth){
-  const entry=tripleList[n%tripleList.length],legs=[entry.a,entry.b],useTriple=cfg.bank==='triples'||cfg.bank==='mixed'&&n%2===0;
-  let a=useTriple?legs[0]:4+n%6,b=useTriple?legs[1]:n%3===0?10:7+n%5,h=T.hyp(a,b);
-  if(!useTriple&&Number.isInteger(h)){b+=1;h=T.hyp(a,b)}
-  if(cfg.bank==='surds'){a=3+(n%4);b=4+(n%3);h=T.hyp(a,b)}
-  if(n%12===11&&!useTriple){a=10;b=26;h=T.hyp(a,b)}
-  if(cfg.bank==='decimal'){a=3.2+n%5*.7;b=4.1+n%4*.8;h=T.hyp(a,b)}
-  if(cfg.bank==='near'){a=6+n%4+.04;b=8+n%3+.06;h=T.hyp(a,b)}
+  const entry=tripleList[n%tripleList.length],useTriple=cfg.bank==='triples'||cfg.bank==='mixed'&&n%2===0;
+  let a=useTriple?entry.a:4+n%6,b=useTriple?entry.b:n%3===0?10:7+n%5;
+  if(!useTriple&&Number.isInteger(T.hyp(a,b)))b+=1;
+  if(cfg.bank==='surds'){a=3+n%4;b=4+n%3}
+  if(n%12===11&&!useTriple){a=10;b=26}
+  if(cfg.bank==='decimal'){a=3.2+n%5*.7;b=4.1+n%4*.8}
+  if(cfg.bank==='near'){a=6+n%4+.04;b=8+n%3+.06}
+  const h=T.hyp(a,b);
   const find=cfg.testType==='any'?(n%3===0?'hyp':n%2===0?'adj':'opp'):cfg.testType;
-  return {a,b,h,find,angle:Math.atan2(a,b)*180/Math.PI,exact:useTriple,triplet:entry};
+  const given={opp:round(a),adj:round(b),hyp:round(h)};
+  // All marked input lengths are rounded BEFORE calculating the answer.
+  const answer=find==='hyp'?T.hyp(given.opp,given.adj):
+   find==='adj'?Math.sqrt(Math.max(0,given.hyp**2-given.opp**2)):
+   Math.sqrt(Math.max(0,given.hyp**2-given.adj**2));
+  return {a,b,h,given,answer,find,angle:Math.atan2(a,b)*180/Math.PI,exact:useTriple,triplet:entry};
  }
  const entry=tripleList[n%tripleList.length],useTriple=cfg.bank==='triples';
- const angle=useTriple?entry.angle:cfg.bank==='surds'?[30,45,60][n%3]:cfg.angle+(n%3-1)*4;
- const h=useTriple?entry.c:cfg.hyp;
- const s=T.sides(angle,h),find=cfg.route==='unknown'?cfg.find:['num','den','angle'][n%3];
- const [num,den]=ratioSides[cfg.ratio],known=find==='angle'?{[num]:s[num],[den]:s[den]}:find==='num'?{[den]:s[den]}:{[num]:s[num]};
- const answer=find==='angle'?angle:find==='num'?s[num]:s[den];
- return {...s,angle,find,known,answer,ratio:cfg.ratio};
+ const rawAngle=useTriple?entry.angle:cfg.bank==='surds'?[30,45,60][n%3]:cfg.angle+(n%3-1)*4;
+ const h=useTriple?entry.c:cfg.hyp,original=T.sides(rawAngle,h);
+ const given={opp:round(original.opp),adj:round(original.adj),hyp:round(original.hyp)};
+ const find=cfg.route==='unknown'?cfg.find:['num','den','angle'][n%3],[num,den]=ratioSides[cfg.ratio];
+ const displayAngle=round(rawAngle),value=T.trig(cfg.ratio,displayAngle),ratio=given[num]/given[den];
+ const answer=find==='angle'?
+  (cfg.ratio==='sin'?Math.asin(Math.min(1,Math.max(-1,ratio))):
+   cfg.ratio==='cos'?Math.acos(Math.min(1,Math.max(-1,ratio))):Math.atan(ratio))*180/Math.PI:
+  find==='num'?given[den]*value:given[num]/value;
+ return {...given,hyp:original.hyp,angle:find==='angle'?answer:displayAngle,find,answer,ratio:cfg.ratio};
 }
-function correctAnswer(q){return pyth?q.find==='hyp'?q.h:q.find==='adj'?q.b:q.a:q.answer}
+function correctAnswer(q){return q.answer}
 function questionText(q){
  if(pyth)return q.find==='hyp'?'Find the hypotenuse.':q.find==='adj'?'Find the missing horizontal side.':'Find the missing vertical side.';
  const [num,den]=ratioSides[q.ratio];return q.find==='angle'?'Find θ using the two marked sides.':q.find==='num'?'Find the '+num+' side.':'Find the '+den+' side.';
 }
 function questionTriangle(q,answers=false){
- if(pyth){const marks={adj:q.find==='adj'?'?':fmt(q.b),opp:q.find==='opp'?'?':fmt(q.a),hyp:q.find==='hyp'?'?':fmt(q.h)};
+ if(pyth){const marks={adj:q.find==='adj'?'?':fmt(q.given.adj),opp:q.find==='opp'?'?':fmt(q.given.opp),hyp:q.find==='hyp'?'?':fmt(q.given.hyp)};
   return T.triangle({angle:q.angle,hypotenuse:q.h,marks,highlight:cfg.showRays?['adj','opp','hyp']:[]});}
  const [num,den]=ratioSides[q.ratio];let marks={opp:'O',adj:'A',hyp:'H'};
  for(const k of [num,den])marks[k]=q.find==='angle'?fmt(q[k]):q.find==='num'&&k===num?'?':q.find==='den'&&k===den?'?':fmt(q[k]);
@@ -39,10 +49,15 @@ function questionTriangle(q,answers=false){
 }
 function equation(q,worked=false){
  if(pyth){
-  const a=round(q.a),b=round(q.b),h=round(q.h);
-  if(q.find==='hyp')return worked?'h = √('+a+'² + '+b+'²) = '+h:'h² = '+a+'² + '+b+'²';
+  const a=q.given.opp,b=q.given.adj,h=q.given.hyp;
+  if(q.find==='hyp'){
+   const squared=a*a+b*b;
+   const exact=Number.isInteger(squared)?T.surd(squared):null;
+   return worked?'h = √('+a+'² + '+b+'²)'+(exact?' = '+exact:'')+' ≈ '+fmt(q.answer):'h² = '+a+'² + '+b+'²';
+  }
   const k=q.find==='adj'?'b':'a',known=q.find==='adj'?a:b;
-  return worked?k+' = √('+h+'² − '+known+'²) = '+(q.find==='adj'?b:a):k+'² = '+h+'² − '+known+'²';
+  const squared=h*h-known*known,exact=Number.isInteger(squared)?T.surd(squared):null;
+  return worked?k+' = √('+h+'² − '+known+'²)'+(exact?' = '+exact:'')+' ≈ '+fmt(q.answer):k+'² = '+h+'² − '+known+'²';
  }
  const r=q.ratio,[num,den]=ratioSides[r],value=T.trig(r,q.angle);
  if(!worked)return r+(q.find==='angle'?' θ':' '+fmt(q.angle)+'°')+' = '+num+' / '+den;
@@ -141,6 +156,11 @@ function startAssessment(type){
  cfg.testAnswers=Array(4).fill('');
  assessment();
 }
+function matchesAnswer(value,q){
+ if(String(value).trim()==='')return false;
+ const entered=Number(value);
+ return Number.isFinite(entered)&&round(entered)===round(correctAnswer(q));
+}
 function assessment(){
  const host=$('assessmentPanel');host.replaceChildren();
  if(cfg.mode==='quiz'){
@@ -179,13 +199,13 @@ function assessment(){
   const input=document.createElement('input');input.className='input-answer';input.type='number';input.step='any';input.value=cfg.testAnswers[i];input.disabled=cfg.submitted;
   input.setAttribute('aria-label','Answer for question '+(i+1));input.oninput=()=>{cfg.testAnswers[i]=input.value};label.append(input);row.append(label);
   if(cfg.submitted){
-   const answer=correctAnswer(q),user=Number(cfg.testAnswers[i]),ok=cfg.testAnswers[i]!==''&&Number.isFinite(user)&&Math.abs(user-answer)<=Math.max(.11,Math.abs(answer)*.005);
+   const answer=correctAnswer(q),ok=matchesAnswer(cfg.testAnswers[i],q);
    const feedback=document.createElement('p');feedback.className='feedback'+(ok?' correct':'');feedback.textContent=ok?'Correct.':'Expected '+fmt(answer);row.append(feedback)
   }
   box.append(row);
  });
  if(!cfg.submitted){const submit=document.createElement('button');submit.className='primary';submit.textContent='Submit test';submit.onclick=()=>{cfg.submitted=true;assessment()};box.append(submit)}
- else {const count=cfg.quizQuestions.filter((q,i)=>cfg.testAnswers[i]!==''&&Math.abs(Number(cfg.testAnswers[i])-correctAnswer(q))<=Math.max(.11,Math.abs(correctAnswer(q))*.005)).length;
+ else {const count=cfg.quizQuestions.filter((q,i)=>matchesAnswer(cfg.testAnswers[i],q)).length;
   const summary=document.createElement('h3');summary.textContent='Score: '+count+' / 4';box.append(summary)}
  host.append(box)
 }
