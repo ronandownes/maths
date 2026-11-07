@@ -83,6 +83,9 @@ button:disabled{opacity:.38;cursor:default}
 .level-random{font-size:.78rem!important;padding:7px 8px!important;color:#6b7280!important;background:#f8fafc!important;border-style:dashed!important}
 .level-random[aria-pressed=true]{background:#f8fafc!important;border-color:#b8c0c9!important}
 #types button:first-child,#signs button:first-child{font-weight:700}
+#oreos{font-size:.78rem;padding:7px 9px;color:#667085;border:1px dashed #c9ced7;background:#fafbfc}
+#oreos[aria-pressed=true]{background:#f0f3f7;border-color:#98a4b6;color:#48566c}
+.math-table td.oreo-zero{color:#a7afb9;font-weight:400}
 @media(max-width:700px){.toolbar-bottom .modes{margin-left:0}.toolbar-bottom{gap:8px}.settings-top{gap:7px}}
 </style>
 </head>
@@ -94,13 +97,13 @@ button:disabled{opacity:.38;cursor:default}
 <main>
 
 <div class="settings settings-top">
-<div class="setting"><div class="button-group" id="types" aria-label="Factors: choose a degree combination or random factors"></div></div>
+<div class="setting"><span class="caption">Factors</span><div class="button-group" id="types" aria-label="Factors: choose a degree combination or random factors"></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 </div>
 <div class="toolbar-bottom">
 <div class="setting bank-setting"><span class="caption">Question bank</span><nav class="top-questions" id="questions" aria-label="Four reproducible questions for the selected settings"></nav></div>
-<div class="setting"><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
-<div class="modes" id="modes" aria-label="How to view the solution"></div>
+<div class="setting"><span class="caption">Signs</span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
+<div class="modes" id="modes" aria-label="How to view the solution"></div><button id="oreos" type="button" hidden aria-pressed="false" title="Show or hide optional zero placeholders">Oreos! (zeros)</button>
 </div>
 <div class="factor-expression" id="factorExpression" aria-label="Current multiplication question"></div>
 
@@ -113,14 +116,14 @@ button:disabled{opacity:.38;cursor:default}
 </main>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
-const actions=['Set up the place-value columns','Calculate the partial products','Group like terms','Bring back the powers of x'];
+const actions=['Set up the place-value columns','Keep the coefficients only','Calculate the partial products','Group like terms','Bring back the powers of x'];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
-const factorChoices=[['any','Factors ↻'],...factorTypes];
+const factorChoices=[...factorTypes,['any','↻']];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
-const signChoices=[['random','Signs'],['positive','Positive'],['negative','Negative'],['mixed','Mixed']];
+const signChoices=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','↻']];
 const levels=[[1,'1'],[2,'2'],[3,'3'],['any','↻']];
 
-const state={type:'ql',factorRandom:false,sign:'positive',level:1,mode:'worked',step:0,slot:0,freshCount:0,question:null};
+const state={type:'ql',factorRandom:false,sign:'positive',level:1,mode:'worked',step:0,slot:0,freshCount:0,showOreos:false,question:null};
 const fixedBank=[
  {type:'ll',sign:'positive',level:1,a:[1,2],b:[2,3]},
  {type:'ql',sign:'mixed',level:1,a:[1,2,3],b:[2,-1]},
@@ -199,12 +202,13 @@ function renderSelectors(){
  chooseButtons('signs',signChoices,state.sign,v=>filter('sign',v));
  chooseButtons('levels',levels,state.level,v=>{if(v==='any'){state.level=1+Math.floor(Math.random()*3);freshQuestion()}else filter('level',v)});
  const randomLevel=$('levels').children[3];randomLevel.className='level-random';randomLevel.title='Randomly choose Level 1, 2 or 3';randomLevel.setAttribute('aria-label','Random level');
- const randomFactor=$('types').children[0];randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
+ const randomFactor=$('types').children[factorTypes.length];randomFactor.className='level-random';randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
+ const randomSign=$('signs').children[3];randomSign.className='level-random';randomSign.title='Randomly choose a sign pattern';randomSign.setAttribute('aria-label','Random signs');
  const host=$('modes');host.replaceChildren();
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
  toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
- const steps=document.createElement('button');steps.type='button';steps.textContent=state.mode!=='step'?'Step by step':state.step===3?'Restart steps':'Next: '+actions[state.step+1]+' →';steps.setAttribute('aria-pressed',String(state.mode==='step'));
- steps.onclick=()=>{if(state.mode!=='step'){state.mode='step';state.step=0;}else{state.step=state.step===3?0:state.step+1;}render()};host.append(steps);
+ const steps=document.createElement('button');steps.type='button';steps.textContent=state.mode!=='step'?'Step by step':state.step===4?'Restart steps':'Next: '+actions[state.step+1]+' →';steps.setAttribute('aria-pressed',String(state.mode==='step'));
+ steps.onclick=()=>{if(state.mode!=='step'){state.mode='step';state.step=0;}else{state.step=state.step===4?0:state.step+1;}render()};host.append(steps);
 }
 function coefficientInputs(){
  const host=$('coefficients');host.replaceChildren();
@@ -240,51 +244,58 @@ function coefficientInputs(){
   });host.append(group);
  });
 }
-function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomial=false){
+function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomial=false,oreos=false){
  const tr=document.createElement('tr');if(kind)tr.className=kind;
  const head=document.createElement('td');head.className='row-label';head.textContent=label;tr.append(head);
  let started=false;
- values.forEach((v,i)=>{const cell=document.createElement('td');const p=degree-i;
-  if(v===null){cell.textContent='';}
-  else if(asPolynomial){if(v===0){cell.textContent='';}else{
-   const sign=started?(v>0?'+':'−'):(v<0?'−':'');
-   const number=Math.abs(v);
-   cell.innerHTML=sign+(p&&number===1?'':number)+(p?pow(p):'');
-   started=true;
-  }}
-  else cell.innerHTML=minus(v)+(showPowers&&v!==0&&p?pow(p):'');
+ values.forEach((v,i)=>{
+  const cell=document.createElement('td'),p=degree-i;
+  if(v===null){
+   if(oreos){cell.textContent='0';cell.className='oreo-zero'}
+  }else if(asPolynomial){
+   if(v!==0){
+    const prefix=started?(v>0?' + ':' − '):(v<0?'−':'');
+    const magnitude=Math.abs(v);
+    cell.innerHTML=prefix+(p&&magnitude===1?'':magnitude)+(p?pow(p):'');
+    started=true;
+   }
+  }else cell.innerHTML=minus(v)+(showPowers&&v!==0&&p?pow(p):'');
   tr.append(cell);
- });table.append(tr);
+ });
+ table.append(tr);
 }
 function draw(){
  const {a,b}=state.question,final=product(a,b),n=final.length,degree=n-1;
- const mode=state.mode,step=mode==='worked'?3:mode==='question'?0:state.step;
+ const mode=state.mode,step=mode==='worked'?4:mode==='question'?0:state.step;
  const root=$('canvas');root.replaceChildren();
  $('heading').textContent=mode==='step'?actions[step]:'';
  $('help').textContent='';
  const pad=v=>Array(n-v.length).fill(null).concat(v);
  const visibleFactors=state.type==='ql'?[b,a]:[a,b];
  $('factorExpression').innerHTML=visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
+ const oreos=$('oreos');
+ oreos.hidden=mode==='question'||(mode==='step'&&step<2);
+ oreos.setAttribute('aria-pressed',String(state.showOreos));
  if(mode!=='question'){
   const table=document.createElement('table');table.className='math-table';
   if(true){
    const headings=document.createElement('tr');headings.append(document.createElement('th'));
    for(let p=degree;p>=0;p--){const th=document.createElement('th');th.innerHTML=p?pow(p):'#';headings.append(th)}table.append(headings);
   }
-  row(table,pad(a),'','',degree,false,false);
-  row(table,pad(b),'underline','',degree,false,false);
-  if(step>=1){
+  row(table,pad(a),'','',degree,false,mode==='step'&&step===0);
+  row(table,pad(b),'underline','',degree,false,mode==='step'&&step===0);
+  if(step>=2){
    for(let j=b.length-1;j>=0;j--){
     if(b[j]===0)continue;
     const shift=b.length-1-j,values=Array(n).fill(null);
     for(let i=0;i<a.length;i++)values[n-a.length+i-shift]=a[i]*b[j];
-    row(table,values,'','',degree);
+    row(table,values,'','',degree,false,false,state.showOreos);
    }
   }
-  if(step>=2)row(table,final,'sum','+',degree);
-  if(step>=3)row(table,final,'final-power','',degree,true);
+  if(step>=3)row(table,final,'sum','+',degree);
+  if(step>=4)row(table,final,'final-power','',degree,true);
   root.append(table);
-  if(step>=3){
+  if(step>=4){
    const eq=document.createElement('div');eq.className='equation worked-conclusion';
    eq.innerHTML=visibleFactors.map(f=>'('+poly(f)+')').join('')+' = '+poly(final);
    root.append(eq);
@@ -293,6 +304,7 @@ function draw(){
 
 }
 function render(){renderSelectors();coefficientInputs();draw()}
+$('oreos').onclick=()=>{state.showOreos=!state.showOreos;draw()};
 selectQuestion(0);
 })();</script>
 </body>
