@@ -1,172 +1,485 @@
 <!doctype html>
 <html lang="en-IE">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FOIL · Four Channels | Maths Apps</title>
-<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Unlike Factors · Expansion and Grouping | Maths Apps</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <style>
-:root{font-family:Arial,Helvetica,sans-serif;color:#243142;background:#f5f7fa;--edge:#d7e0ea;--blue:#2464aa;--green:#28683e}
-*{box-sizing:border-box}body{margin:0}button,input{font:inherit}
-button{cursor:pointer;border:1px solid #bbcbdc;border-radius:8px;padding:9px 12px;background:white;color:inherit}
-button:hover{border-color:#598ac5;background:#f1f7ff}button:focus-visible,input:focus-visible{outline:3px solid #2d7dd2;outline-offset:2px}
-button[aria-pressed=true]{background:#e5f0fc;border-color:#3b7fbe;color:#154a7b;font-weight:700}
-.top{display:flex;gap:14px;align-items:center;padding:10px clamp(12px,3vw,32px);border-bottom:1px solid var(--edge);background:white}
-.brand{display:flex;flex-direction:column;align-items:flex-end;text-decoration:none;color:#26333e;gap:0;width:112px;flex:none}
-.brand img{width:110px;height:auto}.brand small{font-size:.92rem;font-weight:750;line-height:1;margin-top:-5px}
-.top h1{font-size:clamp(1.2rem,2.6vw,1.7rem);margin:0}.top p{margin:3px 0;color:#667587;font-size:.88rem}
-.top nav{margin-left:auto;font-size:.86rem}.top nav a{color:#235b91}
-main{max-width:1150px;margin:auto;padding:16px 18px 38px}
-.choices,.edit{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
-.choices strong{font-size:.9rem;margin-right:6px;color:#536274}
-.main-panel{background:white;border:1px solid var(--edge);border-radius:14px;padding:clamp(13px,2vw,24px);box-shadow:0 5px 22px #1a34510c}
-.edit{justify-content:center;gap:15px;margin:16px 0}.edit label{display:grid;gap:5px;text-align:center;color:#59687a;font-size:.87rem}
-.edit input{width:88px;text-align:center;border-radius:9px;padding:9px 7px;border:1px solid #b4c4d5;color:#182738;background:#fff;font:1.35rem "Cambria Math",Cambria,Georgia,serif}
-.statement{font:clamp(1.65rem,4vw,2.5rem)/1.5 "Cambria Math",Cambria,Georgia,serif;text-align:center;margin:14px auto 24px;overflow-wrap:anywhere}
-.statement .bracket{display:inline-block;white-space:nowrap}
-.channel-header{margin:18px 0 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.channel-header h2{font-size:1.1rem;margin:0}.muted{color:#647487;font-size:.88rem}
-.channels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
-.channel{min-width:0;border:2px solid #d7e2ee;background:#f9fbfe;border-radius:12px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:8px;min-height:150px}
-.channel.middle{border-color:#abc6e7;background:#f3f8ff}
-.channel.selected{outline:3px solid #226bba;outline-offset:-3px;background:#e8f2fd}
-.channel .number{font-size:.77rem;color:#60748c;font-weight:700}
-.channel .pair{font:clamp(1.15rem,2.1vw,1.6rem) Cambria,Georgia,serif}
-.channel .result{font:clamp(1.45rem,3vw,2.1rem) Cambria,Georgia,serif;min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;overflow-wrap:anywhere}
-.channel .direction{font-size:.75rem;color:#60768b;text-align:center}
-.channel .result.hidden-product{color:#aab4c0}
-.flow{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0 5px}
-.flow button{min-width:110px}
-.detail{margin-top:14px;min-height:44px;border:1px solid #d9e4ef;padding:10px 12px;border-radius:8px;background:#fafcff;font-size:1rem;line-height:1.4}
-.math{font-family:"Cambria Math",Cambria,Georgia,serif;font-size:1.15em}
-.expansion{margin-top:20px;padding-top:15px;border-top:1px solid var(--edge)}
-.expansion h2{font-size:1rem;margin:0 0 9px}
-.formula{font:clamp(1.5rem,3.6vw,2.15rem)/1.5 "Cambria Math",Cambria,Georgia,serif;text-align:center;overflow-wrap:anywhere}
-.checkline{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px auto;color:#526577;font-size:.9rem;flex-wrap:wrap}
-.simplify{margin:10px auto 0;text-align:center;min-height:44px;font:clamp(1.4rem,3vw,2rem) Cambria,Georgia,serif}
-.note{color:#5f6b7a;max-width:760px;margin:14px auto 0;text-align:center;line-height:1.5;font-size:.88rem}
-@media(max-width:700px){.channels{grid-template-columns:repeat(2,minmax(0,1fr))}.channel{min-height:133px}.edit input{width:70px}.top{flex-wrap:wrap}.top nav{margin-left:0}.flow button{min-width:0;flex:1 1 140px}}
-@media print{body{background:white}.choices,.edit,.flow,.top nav{display:none}.main-panel{border:0;box-shadow:none}.channel{break-inside:avoid}}
-#all[hidden],#groupingNote[hidden]{display:none}
+:root{font-family:Arial,Helvetica,sans-serif;color:#233044;background:#f1f3f5;--blue:#215f9b;--line:#dae1e9}
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+button,input,select{font:inherit;color:inherit}
+button{padding:8px 12px;border:1px solid #b9c4cf;border-radius:7px;background:#fff;cursor:pointer;white-space:nowrap}
+button:hover{background:#eff5fe}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #75a7e4;outline-offset:2px}
+button[aria-pressed=true]{background:#e5f0fc;color:#144a83;border-color:#3575b9;font-weight:750}
+button.primary{background:#185fab;color:white;border-color:#185fab;font-weight:700}
+button.primary:hover{background:#0d4e94}
+button:disabled{opacity:.43;cursor:default}
+.topbar{background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:6px max(13px,calc((100vw - 1140px)/2))}
+.brand{display:flex;flex-direction:column;align-items:flex-end;color:#172e45;text-decoration:none;line-height:1;font-weight:700}
+.brand img{width:112px;display:block}.brand span{font-size:.88rem;margin-top:-4px}
+.topbar h1{font-size:1.24rem;margin:2px 0}
+.topbar .crumb{font-size:.82rem;color:#53677d;text-decoration:none}
+.topbar .tagline{font-size:.8rem;color:#617083;margin:0}
+main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px solid #e1e5eb;background:white}
+.settings{display:flex;gap:7px 12px;align-items:center;flex-wrap:wrap;padding:0 0 9px;border-bottom:1px solid #e3e9f0}
+.setting{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:5px 8px;background:#fafcff;border:1px solid #e0e6ee;border-radius:8px}
+.setting strong{font-size:.79rem;color:#53657a}
+.setting button{font-size:.84rem;padding:7px 10px}
+.activity-switch{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;gap:8px 13px;align-items:end;border-bottom:1px solid #e2e8ed;padding:10px 0}
+.cluster{display:flex;flex-direction:column;gap:5px;align-items:center;min-width:0}
+.cluster h2{font-size:.8rem;color:#596a7f;margin:0;font-weight:750}
+.cluster .buttons{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap}
+.cluster .buttons button{font-size:.86rem;font-weight:650}
+.cluster.activities{justify-self:center}
+.cluster.procedure{justify-self:end}
+.cluster.classwork{justify-self:start}
+.cluster.classwork button{min-width:34px;padding:7px}
+#practicePanel{padding-top:8px}
+.example-title{text-align:center;font-size:1.42rem;font-weight:700;margin:9px 0 6px}
+.expression{text-align:center;font:clamp(1.75rem,3.8vw,2.8rem)/1.38 "Cambria Math",Cambria,Georgia,serif;margin:6px auto;overflow-wrap:anywhere}
+.editors{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:4px auto 8px}
+.editors label{font-size:.77rem;color:#54687d;display:flex;gap:6px;align-items:center;font-weight:700}
+.editors input{font:1.08rem Cambria,Georgia,serif;width:66px;border:1px solid #b5c5d7;border-radius:6px;padding:5px;text-align:center}
+.diagram{max-width:1000px;width:100%;margin:0 auto}
+.diagram svg{display:block;width:100%;height:auto;max-height:410px}
+.diagram .path{stroke:#c4d2e1;stroke-width:7;stroke-linecap:round;opacity:.26;fill:none}
+.diagram .path.done{stroke:#2e76b3;opacity:.48}
+.diagram .path.active{stroke:#0c6dbb;stroke-width:10;opacity:1}
+.diagram .term{font-family:"Cambria Math",Cambria,Georgia,serif;font-size:57px;fill:#142e4c;text-anchor:middle;dominant-baseline:middle}
+.diagram .hint{font:700 19px Arial,sans-serif;fill:#6d7c8e;text-anchor:middle}
+.diagram .cell{fill:white;stroke:#dbe4ee;stroke-width:2}
+.partials{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:8px auto 12px}
+.partial{min-width:0;border:1px solid #dbe2e9;border-radius:9px;padding:10px 6px;text-align:center;background:#fafcff}
+.partial strong{display:block;color:#5e6e80;font-size:.78rem;margin-bottom:7px}
+.partial .value{display:block;min-height:36px;font:clamp(1.32rem,2.4vw,2.15rem) Cambria,Georgia,serif;overflow-wrap:anywhere}
+.partial.pending .value{color:#b0bdca}
+.partial.active{border-color:#286fba;background:#e9f4ff}
+.status{font-size:.96rem;text-align:center;color:#275d90;font-weight:700;min-height:29px;margin:5px auto}
+.method-options,.transport{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;align-items:center;margin:9px auto}
+.transport button{min-width:89px}
+.working{border-top:1px solid #e5ebf1;padding:12px 3px 4px;text-align:center;display:grid;gap:8px}
+.working .mathline{font:clamp(1.35rem,2.6vw,2.08rem)/1.4 "Cambria Math",Cambria,Georgia,serif;overflow-wrap:anywhere}
+.working .mathline.final{font-weight:700}
+.working .explain{font-size:.88rem;color:#576a80;line-height:1.4}
+.pedagogy{font-size:.85rem;color:#596a7c;text-align:center;max-width:860px;margin:12px auto}
+#boardPanel{position:fixed;inset:1.5vh 1.1vw;width:auto;height:97vh;padding:11px;z-index:1000;background:white;border:1px solid #bfcedd;border-radius:10px;box-shadow:0 12px 55px #0003;display:flex;flex-direction:column}
+#boardPanel:fullscreen{inset:0;width:100vw;height:100vh;padding:10px;border:0;border-radius:0;box-shadow:none}
+.board-controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.board-controls strong{margin-right:auto;font-size:.85rem}
+.board-controls button{padding:6px 9px;font-size:.85rem}
+.board-custom{display:flex;gap:4px;align-items:center;font-size:.82rem;color:#617489}
+.board-custom input{width:40px;border:1px solid #acbdcf;border-radius:5px;padding:6px 2px;text-align:center}
+.board-grid{display:grid;gap:5px;flex:1 1 auto;min-height:0}
+.board-cell{position:relative;border:1px solid #eef1f4;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:0;min-height:0;overflow:hidden;padding:18px 8px}
+.board-number{position:absolute;top:6px;left:9px;color:#9ba8b7;font:700 13px Arial,sans-serif}
+.board-question,.board-answer{font-family:"Cambria Math",Cambria,Georgia,serif;line-height:1.26;max-width:100%;width:100%;text-align:center;overflow-wrap:anywhere}
+.board-answer{color:#176398}
+#boardPanel:fullscreen .board-controls{display:none}
+#assessmentPanel{padding:11px 0}
+.assessment-header{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.assessment-header h2{margin:0;font-size:1.13rem}
+.assessment-card{border:1px solid #dae4ee;border-radius:10px;background:#fafcff;padding:17px;margin:12px 0}
+.assessment-question{font:clamp(1.35rem,2.6vw,2rem) Cambria,Georgia,serif;overflow-wrap:anywhere;margin:9px 0}
+.assessment-choices{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.assessment-choices button{white-space:normal;text-align:left;font:clamp(1.06rem,2vw,1.43rem) Cambria,Georgia,serif;line-height:1.35;overflow-wrap:anywhere;min-height:61px}
+.assessment-choices button.correct{border-color:#277447;background:#e5f7e9}
+.assessment-choices button.incorrect{border-color:#ba5858;background:#fff0f0}
+.assessment-feedback{min-height:26px;font-weight:700;font-size:.9rem;color:#355977;margin:8px 0}
+.assessment-actions{display:flex;justify-content:flex-end;align-items:center;gap:9px;flex-wrap:wrap}
+#worksheetPanel{padding:17px 6px}
+#worksheetPanel h2{margin-top:0;font-size:1.1rem}
+.ws-options{display:flex;gap:13px;flex-wrap:wrap;align-items:center;padding:13px;background:#f8fbff;border:1px solid #e1e7ee;border-radius:8px}
+.ws-options label{display:flex;align-items:center;gap:7px;font-size:.87rem}
+.ws-options select{padding:7px;border:1px solid #bac6d5;background:white;border-radius:6px}
+.ws-buttons{display:flex;gap:8px;margin-top:13px}
+@media(max-width:990px){.activity-switch{grid-template-columns:1fr 1fr}.cluster.classwork{grid-column:1/-1}.cluster.activities{justify-self:start}.cluster.procedure{justify-self:end}}
+@media(max-width:660px){main{margin:0;padding:10px}.activity-switch{display:flex;flex-direction:column;align-items:stretch}.cluster{align-items:flex-start}.cluster.procedure{align-self:start}.partials{grid-template-columns:1fr 1fr}.assessment-choices{grid-template-columns:1fr}.topbar{gap:8px}.brand img{width:77px}.diagram .term{font-size:52px}}
+@media print{.topbar,.settings,.activity-switch,.transport,.editors,.method-options{display:none}main{border:0}.partials{break-inside:avoid}}
 </style>
 </head>
 <body>
-<header class="top"><a class="brand" href="../../index.html" aria-label="Maths Apps home"><img src="../../assets/maths-logo.svg" alt="Maths with four coloured dots"><small>Apps</small></a><div><h1>FOIL · Four Channels</h1><p>Distribute first. Combining like terms is optional.</p></div><nav><a href="../../algebra/index.html">Algebra</a> · <a href="../polynomial-place-value/index.html">Place value</a></nav></header>
+<header class="topbar">
+<a class="brand" href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"><span>Apps</span></a>
+<div><a class="crumb" href="../../algebra/index.html">Algebra</a> <h1>Unlike Factors</h1><p class="tagline">Four product routes · expansion and factorisation by grouping</p></div>
+</header>
 <main>
-<div class="choices" role="group" aria-label="Choose example">
-<strong>Examples</strong>
-<button type="button" data-example="symbols">A, B, C, D</button>
-<button type="button" data-example="distinct">Four different letters</button>
-<button type="button" data-example="numeric">Like terms</button>
-<button type="button" data-example="grouping">Grouping connection</button>
+<div class="settings" aria-label="Question settings">
+<div class="setting"><strong>Method</strong><button id="expandBtn" aria-pressed="true">Expand</button><button id="factorBtn" aria-pressed="false">Factorise</button></div>
+<div class="setting"><strong>Level</strong><button data-level="1">1</button><button data-level="2">2</button><button data-level="3">3</button></div>
+<div class="setting"><strong>Sign pattern</strong><button data-sign="positive">Positive</button><button data-sign="negative">Negative non-leading</button><button data-sign="mixed">Mixed</button><button data-sign="random">Random</button></div>
 </div>
-<section class="main-panel" aria-label="Four-channel binomial multiplication">
-<div class="edit" aria-label="Edit each of the four terms">
-<label>A<input id="a" aria-label="First term of first binomial" maxlength="8" autocomplete="off" spellcheck="false" value="a"></label>
-<label>B<input id="b" aria-label="Second term of first binomial" maxlength="8" autocomplete="off" spellcheck="false" value="b"></label>
-<label>C<input id="c" aria-label="First term of second binomial" maxlength="8" autocomplete="off" spellcheck="false" value="c"></label>
-<label>D<input id="d" aria-label="Second term of second binomial" maxlength="8" autocomplete="off" spellcheck="false" value="d"></label>
+<div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
+<div class="cluster classwork"><h2>Classwork</h2><div class="buttons"><button data-slot="0">1</button><button data-slot="1">2</button><button data-slot="2">3</button><button data-slot="3">4</button><button data-slot="random">Random</button></div></div>
+<div class="cluster activities"><h2>Activities</h2><div class="buttons"><button id="practiceBtn">Practice</button><button id="displayBtn">Display</button><button id="quizBtn">Quiz</button><button id="testBtn">Test</button><button id="worksheetsBtn">Worksheets</button></div></div>
+<div class="cluster procedure"><h2>Procedural fluency</h2><div class="buttons"><button id="stepsBtn">Step by step</button><button id="workedBtn">Worked</button><button id="resetBtn">Reset steps</button></div></div>
 </div>
-<div id="statement" class="statement" aria-live="polite"></div>
-<div class="channel-header"><h2>The four product channels</h2><span class="muted">Channels 2 and 3 are the middle pair</span></div>
-<div class="channels" id="channels"></div>
-<div class="flow" aria-label="Control product reveal">
-<button type="button" id="all">Show all four</button>
-<button type="button" id="one">One by one</button>
-<button type="button" id="next">Next product →</button>
-<button type="button" id="reset">Hide products</button>
+<section id="practicePanel" aria-label="Four-route practice">
+<div class="example-title" id="questionNumber"></div>
+<div class="expression" id="prompt"></div>
+<div class="editors" aria-label="Editable factor coefficients">
+<label>Coefficient of x <input id="coefA" type="number" min="1" max="99" step="1" aria-label="Coefficient of x"></label>
+<label>First constant <input id="coefB" type="number" min="-99" max="99" step="1" aria-label="First constant"></label>
+<label>Coefficient of y <input id="coefC" type="number" min="1" max="99" step="1" aria-label="Coefficient of y"></label>
+<label>Second constant <input id="coefD" type="number" min="-99" max="99" step="1" aria-label="Second constant"></label>
 </div>
-<div id="detail" class="detail" role="status" aria-live="polite">Choose a channel or reveal the four products.</div>
-<div class="expansion"><h2>Expansion: the four products stay separate</h2><div id="expanded" class="formula"></div>
-<div class="checkline"><label><input type="checkbox" id="combine"> Combine like terms (only when there are any)</label></div>
-<div id="simplified" class="simplify" aria-live="polite"></div><div id="groupingNote" class="note" hidden></div></div>
-<p class="note">FOIL describes an order for four applications of the distributive law. The method also works when the middle products are not like terms. For grouping, reversing the expansion can expose a shared binomial factor.</p>
+<div class="diagram" id="diagram" aria-label="Vertical stack and four routes"></div>
+<div id="partials" class="partials" aria-label="Four separate products"></div>
+<p class="status" id="status" aria-live="polite"></p>
+<div class="method-options" id="groupOptions" hidden><button data-group="intact">Groups intact</button><button data-group="swapped">Swap middle terms</button></div>
+<div class="working" id="working" aria-live="polite"></div>
+<div class="transport"><button id="backStep">← Previous</button><button id="nextStep" class="primary">Next →</button><button id="allSteps">Show all</button><button id="newQuestion">New question</button></div>
+<p class="pedagogy" id="pedagogy">Every term in the first bracket multiplies every term in the second. The four products stay distinct; regrouping can reverse the process.</p>
+</section>
+<section id="boardPanel" hidden aria-label="Classroom display"></section>
+<section id="assessmentPanel" hidden aria-label="Quiz and test"></section>
+<section id="worksheetPanel" hidden aria-label="Worksheet settings">
+<h2>Printable unlike-factors worksheet</h2>
+<p>Generates a fresh set of questions with the selected level, signs and method. Generous working space is retained.</p>
+<div class="ws-options">
+<label>Questions <select id="wsCount"><option value="6">6</option><option value="8" selected>8</option><option value="12">12</option></select></label>
+<label>Columns <select id="wsColumns"><option value="2" selected>2</option><option value="3">3</option></select></label>
+<label><input id="wsAnswers" type="checkbox" checked> Answers on a separate page</label>
+</div>
+<div class="ws-buttons"><button id="openWorksheet" class="primary">Open printable worksheet</button><button id="closeWorksheet">Close</button></div>
 </section>
 </main>
 <script>
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id);
-const examples={symbols:['a','b','c','d'],distinct:['x','y','p','q'],numeric:['x','2','x','3'],grouping:['x','y','a','b']};
-let revealed=4,focus=-1;
-const clean=text=>String(text).replace(/\s+/g,'').replace(/−/g,'-');
-function parse(text){
- const m=/^([+-]?)(\d*)([a-z]?)$/.exec(clean(text));
- if(!m||(!m[2]&&!m[3]))return null;
- const coeff=(m[2]?Number(m[2]):1)*(m[1]==='-'?-1:1);
- return {coeff,vars:m[3]?{[m[3]]:1}:{}};
+const state={level:2,sign:'positive',slot:0,seq:0,direction:'expand',mode:'practice',view:'step',step:0,group:'intact',q:null};
+const board={cols:1,rows:1,offset:0,answers:false,cache:[]};
+const assessment={mode:null,questions:[],selected:[],completed:false,quizIndex:0};
+const positions=[['Left vertical','ax × cy'],['Left diagonal','ax × d'],['Right diagonal','b × cy'],['Right vertical','b × d']];
+function rand(seed){let x=(seed>>>0)||1234567;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))};}
+function randomSign(next){return ['positive','negative','mixed'][next(0,2)];}
+function getSign(){return state.slot===0?'positive':state.slot===1?'negative':state.slot===2||state.slot===3?'mixed':state.sign;}
+function generator(index=0,offset=0){
+ const slot=typeof state.slot==='number'?state.slot:17;
+ const next=rand((91931+state.level*7717+slot*6217+state.seq*10333+offset*50077+index*8819)>>>0);
+ const range=state.level===1?3:state.level===2?7:12;
+ const a=next(1,range),c=next(1,range);
+ let b=next(1,range),d=next(1,range);
+ const sign=getSign()==='random'?randomSign(next):getSign();
+ if(sign==='negative'){b=-b;d=-d}
+ else if(sign==='mixed'){if(next(0,1)){b=-b}else{d=-d}}
+ return {a,b,c,d};
 }
-function multiply(left,right){
- const p=parse(left),q=parse(right);
- if(!p||!q)return null;
- const coeff=p.coeff*q.coeff,vars={...p.vars};
- Object.entries(q.vars).forEach(([letter,n])=>vars[letter]=(vars[letter]||0)+n);
- return {coeff,vars};
+function products(q){return [q.a*q.c,q.a*q.d,q.b*q.c,q.b*q.d]}
+function fmtTerm(value,variable,first){
+ const abs=Math.abs(value);
+ const body=(variable&&abs===1?'':String(abs))+variable;
+ const sign=value<0?(first?'−':' − '):(first?'':' + ');
+ return sign+body;
 }
-function varKey(m){return Object.keys(m.vars).sort().map(key=>key+':'+m.vars[key]).join('|')}
-function format(m,absolute=false){
- if(!m)return '?';
- const c=absolute?Math.abs(m.coeff):m.coeff;
- const v=Object.keys(m.vars).sort().map(key=>key+(m.vars[key]===1?'':'<sup>'+m.vars[key]+'</sup>')).join('');
- if(!v)return String(c);
- return (c===1?'':c===-1?'−':String(c))+v;
+function binomial(a,letter,b){return '('+fmtTerm(a,letter,true)+fmtTerm(b,'',false)+')'}
+function factored(q){return binomial(q.a,'x',q.b)+binomial(q.c,'y',q.d)}
+function expanded(q,swap=false){
+ const p=products(q),terms=[{n:p[0],v:'xy'},{n:p[1],v:'x'},{n:p[2],v:'y'},{n:p[3],v:''}];
+ const order=swap?[0,2,1,3]:[0,1,2,3];
+ return order.map((i,j)=>fmtTerm(terms[i].n,terms[i].v,j===0)).join('');
 }
-function signed(m,first=false){
- if(!m)return first?'?':' + ?';
- return (m.coeff<0?(first?'−':' − '):(first?'':' + '))+format(m,true);
+function grouping(q,swap){
+ const p=products(q);
+ const groups=swap?[[0,2],[1,3]]:[[0,1],[2,3]];
+ const v=['xy','x','y',''];
+ return groups.map(group=>'('+group.map((i,j)=>fmtTerm(p[i],v[i],j===0)).join('')+')').join(' + ');
 }
-function term(text,first){
- const p=parse(text);return p?signed(p,first):'?';
+function groupsFactored(q,swap){
+ const lead=swap?fmtTerm(q.c,'y',true):fmtTerm(q.a,'x',true);
+ const tail=swap?fmtTerm(q.d,'',false):fmtTerm(q.b,'',false);
+ const same=swap?binomial(q.a,'x',q.b):binomial(q.c,'y',q.d);
+ return lead+same+tail+same;
 }
-function bracket(a,b){return '<span class="bracket">('+term(a,true)+signed(parse(b),false)+')</span>'}
-const channelPairs=[[0,2],[0,3],[1,2],[1,3]];
-const channelLabels=['Shimmy left · channel 1','Middle · channel 2','Middle · channel 3','Shimmy right · channel 4'];
-function data(){return ['a','b','c','d'].map(id=>clean($(id).value))}
-function render(){
- const values=data();
- $('all').hidden=revealed===4;
- const valid=values.every(v=>parse(v)!==null);
- $('statement').innerHTML=valid?bracket(values[0],values[1])+' '+bracket(values[2],values[3]):'Enter numbers or simple terms such as x, −x, 3 or 2y.';
- const terms=channelPairs.map(([i,j])=>multiply(values[i],values[j]));
- const host=$('channels');host.replaceChildren();
- channelPairs.forEach(([i,j],k)=>{
-  const b=document.createElement('button');b.type='button';b.className='channel'+(k===1||k===2?' middle':'')+(k===focus?' selected':'');
-  b.setAttribute('aria-label','Channel '+(k+1)+': '+['AC','AD','BC','BD'][k]);
-  b.setAttribute('aria-pressed',String(k===focus));
-  const show=revealed>k;
-  b.innerHTML='<span class="number">CHANNEL '+(k+1)+'</span><span class="pair">'+['AC','AD','BC','BD'][k]+'</span><span class="result'+(show?'':' hidden-product')+'">'+(show?format(terms[k]):'· · ·')+'</span><span class="direction">'+channelLabels[k]+'</span>';
-  b.onclick=()=>{focus=k;revealed=Math.max(revealed,k+1);render()};
-  host.append(b);
+function divisionHint(q,swap){
+ if(swap)return fmtTerm(q.a*q.d,'x',true)+' ÷ '+fmtTerm(q.a,'x',true)+' = '+fmtTerm(q.d,'',true);
+ return fmtTerm(q.b*q.c,'y',true)+' ÷ '+fmtTerm(q.c,'y',true)+' = '+fmtTerm(q.b,'',true);
+}
+function safeText(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function resetBoard(){board.offset=0;board.cache=[]}
+function refreshQuestion(){state.q=generator(0);state.step=0;state.view='step';resetBoard();render()}
+function newQuestion(){state.seq++;state.slot='random';refreshQuestion()}
+function setMode(mode){
+ if(document.fullscreenElement===$('boardPanel'))document.exitFullscreen().catch(()=>{});
+ state.mode=mode;
+ $('practicePanel').hidden=mode!=='practice';
+ $('boardPanel').hidden=mode!=='display';
+ $('assessmentPanel').hidden=mode!=='quiz'&&mode!=='test';
+ $('worksheetPanel').hidden=mode!=='worksheets';
+ renderToolbar();
+ if(mode==='practice')renderPractice();
+ if(mode==='display')renderBoard();
+ if(mode==='worksheets'){}
+}
+function renderToolbar(){
+ for(const button of document.querySelectorAll('[data-slot]'))button.setAttribute('aria-pressed',String(String(state.slot)===button.dataset.slot));
+ for(const button of document.querySelectorAll('[data-level]'))button.setAttribute('aria-pressed',String(state.level===Number(button.dataset.level)));
+ for(const button of document.querySelectorAll('[data-sign]'))button.setAttribute('aria-pressed',String(state.sign===button.dataset.sign));
+ $('expandBtn').setAttribute('aria-pressed',String(state.direction==='expand'));
+ $('factorBtn').setAttribute('aria-pressed',String(state.direction==='factor'));
+ for(const [id,mode] of [['practiceBtn','practice'],['displayBtn','display'],['quizBtn','quiz'],['testBtn','test'],['worksheetsBtn','worksheets']])$(id).setAttribute('aria-pressed',String(state.mode===mode));
+ $('stepsBtn').setAttribute('aria-pressed',String(state.view==='step'));
+ $('workedBtn').setAttribute('aria-pressed',String(state.view==='worked'));
+ for(const button of document.querySelectorAll('[data-group]'))button.setAttribute('aria-pressed',String(state.group===button.dataset.group));
+}
+function diagramHTML(q,shown){
+ const lines=[
+  ['M305 155 L305 320',0],
+  ['M319 155 L679 320',1],
+  ['M681 155 L321 320',2],
+  ['M695 155 L695 320',3]
+ ];
+ const active=state.direction==='expand'?(state.view==='worked'?4:state.step):0;
+ const paths=lines.map((line,i)=>'<path class="path'+(active>i?(active===i+1?' active':' done'):'')+'" d="'+line[0]+'"/>').join('');
+ const labels=[
+  ['First bracket',500,48],['Second bracket',500,425],
+  [fmtTerm(q.a,'x',true),305,120],[fmtTerm(q.b,'',q.b<0),695,120],
+  [fmtTerm(q.c,'y',true),305,367],[fmtTerm(q.d,'',q.d<0),695,367]
+ ];
+ // The sign of the right-hand constant is shown explicitly.
+ const nodes=labels.slice(2).map((r,i)=>'<rect class="cell" x="'+(r[1]-82)+'" y="'+(r[2]-41)+'" width="164" height="79" rx="14"/><text class="term" x="'+r[1]+'" y="'+r[2]+'">'+safeText((i===1||i===3)?(i===1?(q.b<0?'−':' + ')+String(Math.abs(q.b)):(q.d<0?'−':' + ')+String(Math.abs(q.d))):r[0])+'</text>').join('');
+ return '<svg viewBox="0 0 1000 465" role="img" aria-label="Top row: first binomial in x. Bottom row: second binomial in y. Four paths: left vertical, left diagonal, right diagonal, right vertical.">'+
+ '<text class="hint" x="500" y="46">FIRST BRACKET</text>'+
+ paths+nodes+'<text class="hint" x="500" y="453">SECOND BRACKET</text></svg>';
+}
+function renderPractice(){
+ const q=state.q;
+ if(!q)return;
+ $('questionNumber').textContent=typeof state.slot==='number'?'Classwork '+(state.slot+1):'New question';
+ $('prompt').innerHTML=state.direction==='expand'?factored(q):expanded(q);
+ for(const [id,value] of [['coefA',q.a],['coefB',q.b],['coefC',q.c],['coefD',q.d]])if(document.activeElement!==$(id))$(id).value=value;
+ $('groupOptions').hidden=state.direction!=='factor';
+ $('diagram').innerHTML=diagramHTML(q);
+ const visible=state.direction==='expand'?(state.view==='worked'?4:Math.min(4,state.step)):4;
+ const labels=['Left vertical','Left diagonal','Right diagonal','Right vertical'];
+ const vars=['xy','x','y',''];
+ const p=products(q);
+ $('partials').innerHTML=labels.map((label,i)=>'<div class="partial'+(i>=visible?' pending':'')+(state.view==='step'&&state.direction==='expand'&&state.step===i+1?' active':'')+'"><strong>'+(i+1)+'. '+label+'</strong><span class="value">'+(i<visible?fmtTerm(p[i],vars[i],true):'· · ·')+'</span></div>').join('');
+ const limit=state.direction==='expand'?5:4;
+ const step=state.view==='worked'?limit:state.step;
+ const work=[];
+ if(state.direction==='expand'){
+  const status=step===0?'Follow the four routes, one at a time.':step<=4?labels[step-1]+' — multiply the connected terms.':'Four unlike terms: no like terms to collect.';
+  $('status').textContent=status;
+  if(step>=4)work.push('<div class="mathline">'+expanded(q)+'</div>');
+  if(step>=5)work.push('<div class="explain">The expansion has four unlike terms. Nothing is combined; each route contributes one term.</div>');
+ }else{
+  const swapped=state.group==='swapped';
+  const stageLabels=['Start with four unlike terms.','Group adjacent pairs'+(swapped?' after swapping the middle terms.':'; no swapping required.'),'Extract each group’s common factor.','Identify the repeated binomial.','Reverse the expansion.'];
+  $('status').textContent=stageLabels[Math.min(step,4)];
+  if(step>=1)work.push('<div class="mathline">'+(swapped?expanded(q,true):expanded(q))+'</div><div class="mathline">'+grouping(q,swapped)+'</div>');
+  if(step>=2)work.push('<div class="mathline">'+groupsFactored(q,swapped)+'</div>');
+  if(step>=3)work.push('<div class="explain">Missing coefficient by division: <span class="math">'+divisionHint(q,swapped)+'</span>. This is why the two groups must expose the same binomial.</div>');
+  if(step>=4)work.push('<div class="mathline final">'+(swapped?binomial(q.c,'y',q.d)+binomial(q.a,'x',q.b):factored(q))+'</div>');
+ }
+ $('working').innerHTML=work.join('');
+ $('backStep').disabled=state.view==='worked'||state.step===0;
+ $('nextStep').disabled=state.view==='worked'||state.step>=limit;
+ $('nextStep').textContent=state.step>=limit?'Complete':'Next →';
+ renderToolbar();
+}
+function boardItems(){
+ const count=board.cols*board.rows;
+ if(board.cache.length!==count){
+  board.cache=Array.from({length:count},(_,i)=>i===0&&board.offset===0?{...state.q}:generator(i+1,board.offset));
+ }
+ return board.cache;
+}
+function renderBoard(){
+ const host=$('boardPanel');if(state.mode!=='display')return;
+ const controls=document.createElement('div');controls.className='board-controls';
+ const h=document.createElement('strong');h.textContent=(typeof state.slot==='number'?'Classwork '+(state.slot+1):'Random')+' · '+(state.direction==='expand'?'Expansion':'Factorisation');controls.append(h);
+ for(const [cols,rows] of [[1,1],[1,2],[1,3],[2,3],[3,2],[5,3]]){
+  const button=document.createElement('button');button.textContent=cols+' × '+rows;
+  button.setAttribute('aria-pressed',String(board.cols===cols&&board.rows===rows));
+  button.setAttribute('aria-label',cols+' across, '+rows+' down');
+  button.onclick=()=>{if(board.cols===cols&&board.rows===rows){board.offset++;board.cache=[]}else{board.cols=cols;board.rows=rows;board.cache=[]}renderBoard()};
+  controls.append(button);
+ }
+ function smallButton(label,onclick){const b=document.createElement('button');b.textContent=label;b.type='button';b.onclick=onclick;controls.append(b);return b}
+ smallButton('Transpose ⇄',()=>{[board.cols,board.rows]=[board.rows,board.cols];renderBoard()});
+ const custom=document.createElement('label');custom.className='board-custom';custom.textContent='Custom ';
+ const col=document.createElement('input');col.type='number';col.min=1;col.max=6;col.value=board.cols;col.setAttribute('aria-label','Columns across');
+ const row=document.createElement('input');row.type='number';row.min=1;row.max=6;row.value=board.rows;row.setAttribute('aria-label','Rows down');
+ const mult=document.createTextNode(' × ');const go=document.createElement('button');go.textContent='Apply';go.onclick=()=>{board.cols=Math.max(1,Math.min(6,Number(col.value)||1));board.rows=Math.max(1,Math.min(6,Number(row.value)||1));board.cache=[];renderBoard()};
+ custom.append(col,mult,row,go);controls.append(custom);
+ smallButton(board.answers?'Hide answers':'Answers',()=>{board.answers=!board.answers;renderBoard()});
+ smallButton('New questions',()=>{board.offset++;board.cache=[];renderBoard()});
+ smallButton('Present ⛶',()=>{if(document.fullscreenElement===host)document.exitFullscreen();else host.requestFullscreen().then(()=>requestAnimationFrame(fitBoard)).catch(()=>{})});
+ smallButton('Close',()=>setMode('practice'));
+ const grid=document.createElement('div');grid.className='board-grid';
+ grid.style.gridTemplateColumns='repeat('+board.cols+',minmax(0,1fr))';
+ grid.style.gridTemplateRows='repeat('+board.rows+',minmax(0,1fr))';
+ boardItems().forEach((q,i)=>{
+  const cell=document.createElement('article');cell.className='board-cell';
+  const number=document.createElement('span');number.className='board-number';number.textContent=(i+1)+'.';
+  const question=document.createElement('div');question.className='board-question';question.innerHTML=state.direction==='expand'?factored(q):expanded(q);
+  cell.append(number,question);
+  if(board.answers){const answer=document.createElement('div');answer.className='board-answer';answer.innerHTML='= '+(state.direction==='expand'?expanded(q):factored(q));cell.append(answer)}
+  grid.append(cell);
  });
- let expression='';
- if(valid&&revealed){for(let i=0;i<revealed;i++)expression+=signed(terms[i],i===0)}
- $('expanded').innerHTML=expression||'Choose Show all four or One by one';
- if(focus>=0&&terms[focus]){
-  const [i,j]=channelPairs[focus];
-  $('detail').innerHTML='Channel '+(focus+1)+': multiply <span class="math">'+format(parse(values[i]))+'</span> by <span class="math">'+format(parse(values[j]))+'</span> to obtain <span class="math">'+format(terms[focus])+'</span>.';
- }else $('detail').textContent=revealed===4?'All four products are visible. Select any channel to inspect it.':'Click Next product to reveal the following channel.';
- const groups=new Map();
- terms.forEach(m=>{if(!m)return;const key=varKey(m);if(!groups.has(key))groups.set(key,{vars:m.vars,coeff:0});groups.get(key).coeff+=m.coeff});
- const combined=[...groups.values()].filter(m=>m.coeff!==0);
- const hasLike=groups.size<terms.length;
- $('combine').disabled=!valid||!hasLike;
- if(!hasLike)$('combine').checked=false;
- $('simplified').innerHTML=$('combine').checked&&hasLike?'<span class="muted">After combining like terms: </span>'+ (combined.map((m,i)=>signed(m,i===0)).join('')||'0'):'';
- const grouping=values.join(',')==='x,y,a,b';$('groupingNote').hidden=!grouping;
- if(grouping)$('groupingNote').innerHTML='Reverse the distribution for grouping: <span class="math">ax + bx + ay + by = x(a + b) + y(a + b) = (x + y)(a + b)</span>. No like terms are needed.';
+ host.replaceChildren(controls,grid);
+ requestAnimationFrame(fitBoard);
 }
-$('all').onclick=()=>{revealed=4;focus=-1;render()};
-$('one').onclick=()=>{revealed=1;focus=0;render()};
-$('next').onclick=()=>{revealed=Math.min(4,revealed+1);focus=revealed-1;render()};
-$('reset').onclick=()=>{revealed=0;focus=-1;render()};
-$('combine').onchange=render;
-for(const key of ['a','b','c','d'])$(key).addEventListener('input',()=>{focus=-1;revealed=4;render()});
-document.querySelectorAll('[data-example]').forEach(button=>button.addEventListener('click',()=>{
- const vals=examples[button.dataset.example];['a','b','c','d'].forEach((id,i)=>$(id).value=vals[i]);
- document.querySelectorAll('[data-example]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn===button)));
- $('combine').checked=false;focus=-1;revealed=4;render();
-}));
-document.querySelector('[data-example="symbols"]').setAttribute('aria-pressed','true');
+function fitBoard(){
+ if(state.mode!=='display')return;
+ const host=$('boardPanel'),grid=host.querySelector('.board-grid');if(!grid)return;
+ grid.querySelectorAll('.board-cell').forEach(cell=>{
+  const question=cell.querySelector('.board-question'),answer=cell.querySelector('.board-answer');
+  const w=Math.max(70,cell.clientWidth-25),h=Math.max(60,cell.clientHeight-25);
+  let font=Math.min(190,Math.floor(h*(answer?.32:.58)));
+  question.style.fontSize=font+'px';
+  while(font>16&&(question.scrollWidth>w||question.scrollHeight>h*(answer?.5:.88))){font-=2;question.style.fontSize=font+'px'}
+  if(answer){let af=Math.min(135,Math.floor(h*.29));answer.style.fontSize=af+'px';while(af>13&&(answer.scrollWidth>w||answer.scrollHeight>h*.48)){af-=2;answer.style.fontSize=af+'px'}}
+ });
+}
+function optionSet(q,direction){
+ const original=direction==='expand'?expanded(q):factored(q);
+ const choice=(v)=>direction==='expand'?expanded(v):factored(v);
+ const options=[{text:original,correct:true}];
+ const variants=[{...q,b:q.b>0?q.b+1:q.b-1},{...q,d:q.d>0?q.d+1:q.d-1},{...q,a:q.a+1},{...q,c:q.c+1},{...q,b:-q.b},{...q,d:-q.d}];
+ for(const variant of variants){
+  const candidate=choice(variant);
+  if(!options.some(o=>o.text===candidate)){options.push({text:candidate,correct:false});if(options.length===4)break}
+ }
+ const shift=Math.abs(products(q)[0]+products(q)[1])%4;
+ const shuffled=options.map((o,i)=>({o,k:(i+shift)%4})).sort((x,y)=>x.k-y.k).map(t=>t.o);
+ return shuffled;
+}
+function beginAssessment(mode){
+ assessment.mode=mode;assessment.completed=false;assessment.quizIndex=0;
+ assessment.questions=Array.from({length:4},(_,i)=>{
+  const q=generator(i+37,state.seq+19);
+  return {q,options:optionSet(q,state.direction)};
+ });
+ assessment.selected=Array(4).fill(-1);
+ setMode(mode);renderAssessment();
+}
+function renderAssessment(){
+ const mode=assessment.mode,quiz=mode==='quiz',panel=$('assessmentPanel');
+ if(state.mode!==mode)return;
+ panel.replaceChildren();
+ const header=document.createElement('div');header.className='assessment-header';
+ const h=document.createElement('h2');h.textContent=(quiz?'Quiz':'Test')+' · '+(state.direction==='expand'?'Expansion':'Factorisation');
+ const info=document.createElement('span');info.textContent=quiz?'Immediate feedback · 4 questions':'Results after submission · 4 questions';
+ header.append(h,info);panel.append(header);
+ function questionCard(i){
+  const item=assessment.questions[i],q=item.q,selected=assessment.selected[i];
+  const card=document.createElement('div');card.className='assessment-card';
+  const heading=document.createElement('strong');heading.textContent='Question '+(i+1)+' of 4';
+  const question=document.createElement('div');question.className='assessment-question';
+  question.innerHTML=(state.direction==='expand'?'Expand: ':'Factorise: ')+(state.direction==='expand'?factored(q):expanded(q));
+  card.append(heading,question);
+  const choices=document.createElement('div');choices.className='assessment-choices';
+  item.options.forEach((option,j)=>{
+   const btn=document.createElement('button');btn.type='button';
+   btn.innerHTML=String.fromCharCode(65+j)+'. '+option.text;
+   btn.setAttribute('aria-pressed',String(selected===j));
+   const showMark=assessment.completed||(quiz&&selected>=0);
+   if(showMark&&option.correct)btn.classList.add('correct');
+   if(showMark&&selected===j&&!option.correct)btn.classList.add('incorrect');
+   btn.disabled=assessment.completed||(quiz&&selected>=0);
+   btn.onclick=()=>{assessment.selected[i]=j;if(quiz&&i<3){assessment.quizIndex=i}renderAssessment()};
+   choices.append(btn);
+  });card.append(choices);
+  if(quiz&&selected>=0||assessment.completed){
+   const feedback=document.createElement('p');feedback.className='assessment-feedback';
+   const correct=item.options[selected]?.correct===true;
+   feedback.textContent=correct?'Correct.':selected<0?'Not answered.':'Not correct. The correct option is highlighted.';
+   card.append(feedback);
+  }
+  return card;
+ }
+ if(quiz){
+  const i=assessment.quizIndex;panel.append(questionCard(i));
+  const actions=document.createElement('div');actions.className='assessment-actions';
+  const count=document.createElement('span');count.textContent=assessment.selected.filter(n=>n>=0).length+' / 4 answered';
+  actions.append(count);
+  if(assessment.selected[i]>=0){
+   const next=document.createElement('button');next.textContent=i===3?'Results':'Next question →';next.className='primary';
+   next.onclick=()=>{if(i===3){assessment.completed=true;renderAssessment()}else{assessment.quizIndex++;renderAssessment()}};actions.append(next);
+  }
+  panel.append(actions);
+  if(assessment.completed){
+   panel.replaceChildren(header);
+   const correct=assessment.questions.filter((q,i)=>q.options[assessment.selected[i]]?.correct).length;
+   const result=document.createElement('h2');result.textContent='Quiz result: '+correct+' / 4';panel.append(result);
+   for(let i=0;i<4;i++)panel.append(questionCard(i));
+  }
+ }else{
+  assessment.questions.forEach((_,i)=>panel.append(questionCard(i)));
+  const controls=document.createElement('div');controls.className='assessment-actions';
+  if(assessment.completed){
+   const correct=assessment.questions.filter((q,i)=>q.options[assessment.selected[i]]?.correct).length;
+   controls.append(document.createTextNode('Test result: '+correct+' / 4'));
+  }else{
+   const submit=document.createElement('button');submit.className='primary';submit.textContent='Submit test';
+   submit.onclick=()=>{assessment.completed=true;renderAssessment()};
+   controls.append(submit);
+  }
+  panel.append(controls);
+ }
+ const restart=document.createElement('button');restart.textContent=quiz?'New quiz':'New test';restart.onclick=()=>beginAssessment(mode);
+ const leave=document.createElement('button');leave.textContent='Close';leave.onclick=()=>setMode('practice');
+ const bottom=document.createElement('div');bottom.className='assessment-actions';bottom.append(restart,leave);panel.append(bottom);
+}
+function worksheet(){
+ const count=Number($('wsCount').value),cols=Number($('wsColumns').value),answers=$('wsAnswers').checked;
+ const qs=Array.from({length:count},(_,i)=>generator(i+97,33+state.seq));
+ const title='Unlike Factors · '+(state.direction==='expand'?'Expansion':'Factorisation');
+ const heading=qs.map((q,i)=>'<article class="question"><strong>'+(i+1)+'.</strong><div class="expr">'+(state.direction==='expand'?factored(q):expanded(q))+'</div><div class="space"></div></article>').join('');
+ const key=qs.map((q,i)=>'<div class="answer"><strong>'+(i+1)+'.</strong> '+(state.direction==='expand'?expanded(q):factored(q))+'</div>').join('');
+ const doc='<!doctype html><html lang="en-IE"><head><meta charset="utf-8"><title>'+title+'</title><style>'+
+ '@page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}body{margin:0;color:#151515;font-family:Arial,sans-serif}header{display:flex;justify-content:space-between;border-bottom:1px solid #333;padding-bottom:8px;font-size:16px}main{display:grid;grid-template-columns:repeat('+cols+',minmax(0,1fr));gap:9mm;margin-top:6mm}.question{break-inside:avoid;min-height:'+(count<=6?'65mm':'46mm')+';border-bottom:1px solid #ddd;padding:3mm}.question strong{font-size:13px}.expr{font:clamp(16px,2vw,24px) Cambria,Georgia,serif;overflow-wrap:anywhere;margin-top:3mm}.answer{font:19px Cambria,Georgia,serif;padding:3mm 0;overflow-wrap:anywhere;break-inside:avoid}.key{break-before:page}.key h2{font-size:18px}.key-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5mm}.actions{padding:12px;background:#eef4fb}.actions button{padding:9px;margin-right:8px;cursor:pointer}@media print{.actions{display:none}.key{break-before:page}}'+
+ '</style></head><body><div class="actions"><button onclick="window.print()">Print / save PDF</button></div><header><b>'+title+'</b><span>Name: __________________________</span></header><main>'+heading+'</main>'+(answers?'<section class="key"><h2>Answer key</h2><div class="key-grid">'+key+'</div></section>':'')+'</body></html>';
+ const w=window.open('','_blank');if(!w){alert('Allow pop-ups to open the printable worksheet.');return}
+ w.document.open();w.document.write(doc);w.document.close();
+}
+function render(){renderToolbar();if(state.mode==='practice')renderPractice();else if(state.mode==='display')renderBoard()}
+for(const btn of document.querySelectorAll('[data-level]'))btn.onclick=()=>{state.level=Number(btn.dataset.level);refreshQuestion()};
+for(const btn of document.querySelectorAll('[data-sign]'))btn.onclick=()=>{state.sign=btn.dataset.sign;state.slot='random';refreshQuestion()};
+for(const btn of document.querySelectorAll('[data-slot]'))btn.onclick=()=>{state.slot=btn.dataset.slot==='random'?'random':Number(btn.dataset.slot);if(state.slot==='random')state.seq++;refreshQuestion()};
+$('expandBtn').onclick=()=>{state.direction='expand';state.step=0;state.view='step';resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');else render()};
+$('factorBtn').onclick=()=>{state.direction='factor';state.step=0;state.view='step';resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');else render()};
+$('practiceBtn').onclick=()=>setMode('practice');
+$('displayBtn').onclick=()=>setMode('display');
+$('quizBtn').onclick=()=>beginAssessment('quiz');
+$('testBtn').onclick=()=>beginAssessment('test');
+$('worksheetsBtn').onclick=()=>setMode('worksheets');
+$('stepsBtn').onclick=()=>{state.view='step';setMode('practice')};
+$('workedBtn').onclick=()=>{state.view='worked';setMode('practice')};
+$('resetBtn').onclick=()=>{state.view='step';state.step=0;setMode('practice')};
+$('backStep').onclick=()=>{state.view='step';state.step=Math.max(0,state.step-1);renderPractice()};
+$('nextStep').onclick=()=>{state.view='step';state.step=Math.min(state.direction==='expand'?5:4,state.step+1);renderPractice()};
+$('allSteps').onclick=()=>{state.view='worked';renderPractice()};
+$('newQuestion').onclick=newQuestion;
+for(const btn of document.querySelectorAll('[data-group]'))btn.onclick=()=>{state.group=btn.dataset.group;state.step=0;state.view='step';renderPractice()};
+for(const [id,key] of [['coefA','a'],['coefB','b'],['coefC','c'],['coefD','d']]){
+ $(id).addEventListener('change',()=>{
+  const n=Number($(id).value);
+  if(!Number.isInteger(n)||Math.abs(n)>99||(key==='a'||key==='c')&&n<=0||!n){$(id).value=state.q[key];return}
+  state.q[key]=n;state.step=0;state.view='step';resetBoard();renderPractice();
+ });
+}
+$('openWorksheet').onclick=worksheet;
+$('closeWorksheet').onclick=()=>setMode('practice');
+document.addEventListener('keydown',e=>{
+ if(state.mode!=='display'||e.target.matches('input,textarea,select'))return;
+ if(e.key==='Escape'&&!document.fullscreenElement){e.preventDefault();setMode('practice');return}
+ if(document.fullscreenElement!==$('boardPanel'))return;
+ if(e.key==='ArrowRight'||e.key.toLowerCase()==='n'){e.preventDefault();board.offset++;board.cache=[];renderBoard()}
+ if(e.key.toLowerCase()==='a'){e.preventDefault();board.answers=!board.answers;renderBoard()}
+});
+document.addEventListener('fullscreenchange',()=>requestAnimationFrame(fitBoard));
+window.addEventListener('resize',()=>{if(state.mode==='display')requestAnimationFrame(fitBoard)});
+state.q=generator(0);
 render();
 })();
 </script>
-</body></html>
+</body>
+</html>
