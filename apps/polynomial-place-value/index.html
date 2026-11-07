@@ -303,6 +303,14 @@ main{margin:5px auto;padding:10px 19px 18px}
 /* Optional student guidance; large, accessible print-friendly text. */
 .step-explain-button{margin:3px 0 7px 36px;padding:5px 12px;min-height:32px;background:#fff;color:#265c93;border:1px solid #a9c2dd;border-radius:7px;font-size:.88rem;cursor:pointer}
 .step-current-tip{font-size:1.05rem;line-height:1.42;margin:3px 0 11px 36px;color:#283b52;max-width:48ch}
+.degree-counting{display:grid;gap:9px;margin-top:8px;padding:10px;border:1px solid #d9e2ed;border-radius:8px;background:#fff}
+.degree-counting-intro{margin:0;color:#3d5067}
+.degree-counting-step{padding-top:8px;border-top:1px solid #e7edf4}
+.degree-counting-label{margin-bottom:3px;font-size:.82rem;font-weight:750;color:#52667f}
+.degree-counting-copy{margin:0 0 5px}
+.degree-counting-route{display:block;overflow-x:auto;white-space:nowrap;text-align:right;padding:5px 8px;border-radius:6px;background:#f1f5fb;color:#174ea6;font:650 1rem/1.3 Georgia,serif}
+.degree-counting-route sup{font-size:.68em}
+.degree-counting-conclusion{margin:0;font-weight:750;color:#174ea6}
 .deepen-panel{padding:8px 6px;max-width:100%}
 .deepen-panel h3{font-size:1.42rem;margin:6px 0 10px;line-height:1.25}
 .deepen-main,.deepen-revisit{font-size:1.1rem;line-height:1.45;margin:8px 0}
@@ -667,7 +675,7 @@ window.matchMedia('(min-width: 761px)').addEventListener('change',event=>{
 });
 
 const actions=[
- 'Set up powers-of-x columns',
+ 'Count left from # using the factor degrees',
  'Place coefficients in matching rows and columns',
  'Calculate partial products',
  'Combine like terms',
@@ -676,7 +684,7 @@ const actions=[
  'Deepen your learning'
 ];
 const everydayActions=[
- 'Make a column for each power of x',
+ 'Count left from # to the top column',
  'Line up matching powers',
  'Multiply and put each result in its column',
  'Add numbers in the same column',
@@ -685,7 +693,7 @@ const everydayActions=[
  'Check what you have learned'
 ];
 const everydayInstructions=[
- 'Start with the largest power needed, then make columns all the way down to the constant.',
+ 'Start at #. Count left by the degree of the higher-degree factor, then count left again for the other factor.',
  'Put the higher-degree factor on top. Put x terms below x terms and constants below constants.',
  'Multiply each bottom number by the top numbers. Shift your working to the right column for each power.',
  'Add numbers only when they belong to the same power of x.',
@@ -696,7 +704,7 @@ const everydayInstructions=[
 const stepWords=()=>state.language==='everyday'?everydayActions:actions;
 const stepTips=()=>state.language==='everyday'?everydayInstructions:instructions;
 const instructions=[
- 'Find the highest powers of the two factors and add them to find the top column.',
+ 'Start at #. Use the degree of each factor to count left to the top column.',
  'Keep the higher-degree factor on top. Match constants, x terms and other like powers in the same columns.',
  'Multiply the bottom coefficients by those above. Each partial product belongs in its matching power-of-x column.',
  'Add each column. The coefficient sequence runs from the highest power to the constant.',
@@ -1012,11 +1020,33 @@ function draw(){
     explain.onclick=()=>{state.helpStage=state.helpStage===i?-1:i;render()};
     checklist.append(explain);
     if(state.helpStage===i){
-     const tip=el('p',stepTips()[i],'step-current-tip');tip.setAttribute('role','note');
+     const tip=el('div',stepTips()[i],'step-current-tip');tip.setAttribute('role','note');
      if(i===0){
-      const largest=Math.max(a.length,b.length)-1,extra=Math.min(a.length,b.length)-1;
-      const label=k=>k===0?'constant':pow(k);
-      tip.innerHTML='Highest powers: '+label(largest)+' and '+label(extra)+'. Add the indices: '+largest+' + '+extra+' = '+(largest+extra)+'. Start at '+label(largest+extra)+'.'+(extra>0?' That is '+extra+' extra higher-power '+(extra===1?'column':'columns')+'.':' No extra column is needed.');
+      const degreeA=a.length-1,degreeB=b.length-1;
+      const [first,second]=degreeA>=degreeB?[a,b]:[b,a];
+      const firstDegree=first.length-1,secondDegree=second.length-1,totalDegree=firstDegree+secondDegree;
+      const countWords=['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
+      const countWord=n=>countWords[n]||String(n);
+      const degreeName=n=>({0:'constant',1:'linear',2:'quadratic',3:'cubic',4:'quartic',5:'quintic'}[n]||'degree '+n);
+      const powerLabel=n=>n===0?'#':pow(n);
+      const spokenPower=n=>n===0?'number column':n===1?'x':'x to the power '+n;
+      const route=(from,to)=>{
+       const labels=[];
+       for(let p=to;p>=from;p--)labels.push(powerLabel(p));
+       return labels.join(' <span aria-hidden="true">←</span> ');
+      };
+      const spokenRoute=(from,to)=>Array.from({length:to-from+1},(_,i)=>spokenPower(from+i)).join(', then ');
+      const plural=n=>n===1?'column':'columns';
+      const firstLabel=degreeA===degreeB?'First factor':'Higher-degree factor';
+      const secondLabel=degreeA===degreeB?'Second factor':'Other factor';
+      const countingStep=(heading,factor,degree,from,to,verb)=>
+       '<div class="degree-counting-step"><div class="degree-counting-label">'+heading+' · degree '+degree+' ('+degreeName(degree)+')</div>'+
+       '<p class="degree-counting-copy">In ('+poly(factor)+'), use the highest power '+powerLabel(degree)+'. '+verb+' '+countWord(degree)+' '+plural(degree)+' left.</p>'+
+       '<div class="degree-counting-route" role="img" aria-label="'+spokenRoute(from,to)+'">'+route(from,to)+'</div></div>';
+      tip.innerHTML='<div class="degree-counting"><p class="degree-counting-intro">Start at <strong>#</strong> in the number column. Only the highest power in each factor decides how far to move.</p>'+
+       countingStep(firstLabel,first,firstDegree,0,firstDegree,'Start at # and move')+
+       countingStep(secondLabel,second,secondDegree,firstDegree,totalDegree,'Count more')+
+       '<p class="degree-counting-conclusion">The highest-power column is '+powerLabel(totalDegree)+'.</p></div>';
      }
      checklist.append(tip);
     }
