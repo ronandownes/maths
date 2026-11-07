@@ -71,8 +71,14 @@ button:disabled{opacity:.38;cursor:default}
 .factor-expression .bracket{display:inline-block;font-size:1.14em;line-height:1;vertical-align:-.035em}
 .factor-expression .factor{display:inline-block;white-space:nowrap}
 @media(max-width:680px){.factor-expression{font-size:1.55rem}}
-.caption-action{border:0;border-radius:4px;background:transparent;padding:4px 3px;font-size:.81rem;min-width:0;color:#59636f;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
-.caption-action:hover,.caption-action:focus-visible{background:#e8f0fe;color:#174ea6}
+.toolbar-bottom{display:flex;flex-wrap:wrap;align-items:center;gap:7px 10px;margin:7px 0 4px}
+.toolbar-bottom .setting{padding:4px 8px;gap:8px}
+.toolbar-bottom .top-questions{margin:0}
+.toolbar-bottom .modes{margin:0 0 0 auto}
+.settings-top{justify-content:flex-start;border-top:0;padding-top:1px}
+.settings-top .setting{padding:4px 8px}
+#types button:first-child,#signs button:first-child{font-weight:700}
+@media(max-width:700px){.toolbar-bottom .modes{margin-left:0}.toolbar-bottom{gap:8px}.settings-top{gap:7px}}
 </style>
 </head>
 <body>
@@ -82,13 +88,15 @@ button:disabled{opacity:.38;cursor:default}
 </header>
 <main>
 
-<div class="settings">
-<div class="setting"><button class="caption caption-action" id="randomFactors" type="button" title="Random factor type" aria-label="Randomly choose factor type and generate a question">Factors</button><div class="button-group" id="types" aria-label="Polynomial degrees"></div></div>
-<div class="setting"><button class="caption caption-action" id="randomSigns" type="button" title="Random signs" aria-label="Generate a question with random signs">Signs</button><div class="button-group" id="signs" aria-label="Coefficient signs"></div></div>
+<div class="settings settings-top">
+<div class="setting"><div class="button-group" id="types" aria-label="Factors: choose a degree combination or random factors"></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 </div>
-<div class="bankbar"><span id="bankLabel">Questions for these settings</span><nav class="top-questions" id="questions" aria-label="Questions for the selected factors, signs and level"></nav></div>
+<div class="toolbar-bottom">
+<div class="setting bank-setting"><span class="caption">Bank</span><nav class="top-questions" id="questions" aria-label="Four reproducible questions for the selected settings"></nav></div>
+<div class="setting"><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
 <div class="modes" id="modes" aria-label="How to view the solution"></div>
+</div>
 <div class="factor-expression" id="factorExpression" aria-label="Current multiplication question"></div>
 
 
@@ -101,11 +109,13 @@ button:disabled{opacity:.38;cursor:default}
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
 const actions=['Set up the place-value columns','Calculate the partial products','Group like terms','Bring back the powers of x'];
-const factorTypes=[['ll','Lin × Lin'],['ql','Quad × Lin'],['qq','Quad × Quad'],['ml','Monomial × Lin']];
-const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Random']];
+const factorTypes=[['ll','Lin × Lin'],['ql','Quad × Lin'],['qq','Quad × Quad'],['lm','Lin × Mono']];
+const factorChoices=[['any','Factors'],...factorTypes];
+const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
+const signChoices=[['random','Signs'],['positive','Positive'],['negative','Negative'],['mixed','Mixed']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
-const state={type:'ql',sign:'positive',level:1,mode:'worked',step:0,slot:0,freshCount:0,question:null};
+const state={type:'ql',factorRandom:false,sign:'positive',level:1,mode:'worked',step:0,slot:0,freshCount:0,question:null};
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
 const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t}return a};
@@ -122,7 +132,7 @@ function seedFor(slot){const typeIndex=factorTypes.findIndex(x=>x[0]===state.typ
 function seeded(seed){let x=seed>>>0;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))}}
 function chooseSign(next){return ['positive','negative','mixed'][next(0,2)]}
 function makeQuestion(next,serial){
- const [na,nb]=state.type==='ml'?[2,2]:state.type==='ll'?[2,2]:state.type==='ql'?[3,2]:[3,3];
+ const [na,nb]=state.type==='lm'?[2,2]:state.type==='ll'?[2,2]:state.type==='ql'?[3,2]:[3,3];
  const level=state.level,sign=state.sign==='random'?chooseSign(next):state.sign;
  const choose=(a)=>a[next(0,a.length-1)];
  const small=()=>next(2,9),low=()=>next(1,6),big=()=>choose([10,11,11,11,20,21,30,31]);
@@ -140,7 +150,7 @@ function makeQuestion(next,serial){
    // A useful two-digit factor, usually 11, rather than unrestricted large coefficients.
    const target=next(0,1)?a:b;target[next(0,target.length-1)]=big();
   }
-  if(state.type==='ml')a[1]=0; // ax is a single-term polynomial.
+  if(state.type==='lm')b[1]=0; // A linear factor followed by a monomial cx.
   for(const arr of [a,b]){
    for(let i=1;i<arr.length;i++){
     if(sign==='negative'||(sign==='mixed'&&next(0,1)===1))arr[i]*=-1;
@@ -151,11 +161,11 @@ function makeQuestion(next,serial){
    if(other.every(v=>v>0))b[b.length-1]*=-1;
    if(other.every(v=>v<0))a[a.length-1]*=-1;
   }
-  if((state.type==='ml'||primitive(a))&&primitive(b)&&a[0]>0&&b[0]>0)return{a,b};
+  if(primitive(a)&&(state.type==='lm'||primitive(b))&&a[0]>0&&b[0]>0)return{a,b};
  }
  // Guaranteed primitive fallback, retaining the selected sign pattern.
- return{a:state.type==='ml'?[2,0]:[1,...Array(na-1).fill(sign==='negative'?-2:2)],
-        b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)]};
+ return{a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],
+        b:state.type==='lm'?[5,0]:[1,...Array(nb-1).fill(sign==='positive'?3:-3)]};
 }
 function chosenQuestion(){const rng=state.slot==='fresh'?seeded(seedFor(state.freshCount+1000) ^ ((Math.random()*0xffffffff)>>>0)):seeded(seedFor(state.slot));return makeQuestion(rng,state.slot)}
 function selectQuestion(slot){state.slot=slot;state.question=chosenQuestion();render()}
@@ -168,8 +178,11 @@ function renderSelectors(){
  const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);
  chooseButtons('questions',q,state.slot,v=>selectQuestion(v));
  function filter(key,value){state[key]=value;freshQuestion()}
- chooseButtons('types',factorTypes,state.type,v=>filter('type',v));
- chooseButtons('signs',signTypes,state.sign,v=>filter('sign',v));
+ chooseButtons('types',factorChoices,state.factorRandom?'any':state.type,v=>{
+  if(v==='any'){state.factorRandom=true;state.type=factorTypes[Math.floor(Math.random()*factorTypes.length)][0];freshQuestion()}
+  else {state.factorRandom=false;filter('type',v)}
+ });
+ chooseButtons('signs',signChoices,state.sign,v=>filter('sign',v));
  chooseButtons('levels',levels,state.level,v=>filter('level',v));
  const host=$('modes');host.replaceChildren();
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
@@ -182,7 +195,7 @@ function coefficientInputs(){
  [['First factor','a'],['Second factor','b']].forEach(([title,key])=>{
   const group=document.createElement('div');group.className='factor-fields';
   state.question[key].forEach((v,i)=>{
-   if(state.type==='ml'&&key==='a'&&i===1)return;
+   if(state.type==='lm'&&key==='b'&&i===1)return;
    const degree=state.question[key].length-i-1;
    const label=document.createElement('label');label.className='coefficient';
    label.innerHTML=degree===0?'#':degree===1?'x':pow(degree);
@@ -241,10 +254,11 @@ function draw(){
    const headings=document.createElement('tr');headings.append(document.createElement('th'));
    for(let p=degree;p>=0;p--){const th=document.createElement('th');th.innerHTML=p?pow(p):'#';headings.append(th)}table.append(headings);
   }
-  row(table,pad(a).map(v=>state.type==='ml'&&v===0?null:v),'','',degree,false,false);
-  row(table,pad(b),'underline','',degree,false,false);
+  row(table,pad(a),'','',degree,false,false);
+  row(table,pad(b).map(v=>state.type==='lm'&&v===0?null:v),'underline','',degree,false,false);
   if(step>=1){
    for(let j=b.length-1;j>=0;j--){
+    if(b[j]===0)continue;
     const shift=b.length-1-j,values=Array(n).fill(null);
     for(let i=0;i<a.length;i++)values[n-a.length+i-shift]=a[i]*b[j];
     row(table,values,'','',degree);
@@ -261,9 +275,7 @@ function draw(){
  }
 
 }
-function render(){renderSelectors();$('bankLabel').textContent='Bank · '+factorTypes.find(x=>x[0]===state.type)[1]+' · '+signTypes.find(x=>x[0]===state.sign)[1]+' · Level '+state.level;coefficientInputs();draw()}
-$('randomFactors').onclick=()=>{const options=factorTypes.map(v=>v[0]);state.type=options[Math.floor(Math.random()*options.length)];freshQuestion()};
-$('randomSigns').onclick=()=>{state.sign='random';freshQuestion()};
+function render(){renderSelectors();coefficientInputs();draw()}
 selectQuestion(0);
 })();</script>
 </body>
