@@ -544,6 +544,42 @@ main{margin:5px auto;padding:10px 19px 18px}
 .instruction-algebra-result{color:#174ea6}
 .instruction-panel .instruction-stage{gap:clamp(8px,1.8vh,18px)}
 @media(max-width:700px){.instruction-place-grid{font-size:clamp(1.45rem,5vw,3rem)}.instruction-place-grid thead th{font-size:.95rem}.instruction-place-grid th:first-child{width:20%;padding-right:3px}.instruction-place-grid td{padding:3px 1px}}
+
+/* Responsive Maths app settings prototype: one unobtrusive mobile toggle. */
+.mobile-settings-toggle,.mobile-settings-close,.mobile-settings-backdrop{display:none}
+.sign-short{display:none}
+.instruction-method-intro{width:min(100%,1000px);display:grid;justify-items:center;gap:clamp(16px,3vh,35px)}
+.instruction-intro-example{font:clamp(2rem,5.2vw,6.5rem)/1.22 "Cambria Math",Cambria,Georgia,serif;text-align:center;max-width:100%}
+.instruction-intro-counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,2vw,22px);width:100%}
+.instruction-intro-counts>span{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;padding:clamp(9px,1.7vw,23px);border:2px solid #d2deed;border-radius:12px;text-align:center;font-size:clamp(.95rem,1.75vw,1.5rem);font-weight:600}
+.instruction-intro-counts strong{font:700 clamp(2.5rem,4.4vw,5rem)/1 "Cambria Math",Cambria,Georgia,serif;color:#225da4}
+.instruction-intro-message{font-size:clamp(1.2rem,2.7vw,2.7rem);line-height:1.25;color:#24588e;text-align:center;font-weight:700}
+@media(max-width:760px){
+ main{position:relative;padding-top:7px}
+ .mobile-settings-toggle{display:block;position:fixed;z-index:1150;right:max(9px,env(safe-area-inset-right));top:calc(env(safe-area-inset-top) + 9px);min-width:85px;min-height:41px;padding:7px 10px;border-radius:22px;color:#145191;background:#eef6ff;border:2px solid #7baddc;box-shadow:0 2px 9px #0002;font-weight:700;font-size:.87rem}
+ .mobile-settings-toggle[aria-expanded=true]{background:#215aa0;color:white}
+ .mobile-settings-backdrop:not([hidden]){display:block;position:fixed;inset:0;z-index:1100;width:100%;height:100%;border:0;border-radius:0;background:rgba(18,31,49,.20);cursor:default}
+ #mobileSettingsPanel{position:fixed;z-index:1120;top:calc(env(safe-area-inset-top) + 56px);right:max(7px,env(safe-area-inset-right));left:auto;bottom:auto;display:flex;flex-direction:column;flex-wrap:nowrap;gap:6px;align-items:stretch;width:min(340px,calc(100vw - 14px));max-height:calc(100dvh - env(safe-area-inset-top) - 66px);overflow-y:auto;overscroll-behavior:contain;padding:12px;background:#fff;border:1px solid #a7bbd1;border-radius:14px;box-shadow:0 13px 36px #13233e44}
+ #mobileSettingsPanel:not(.mobile-open){display:none!important}
+ #mobileSettingsPanel .mobile-settings-close{display:block;align-self:flex-start;border-radius:16px;min-height:35px;padding:5px 13px;color:#285477;font-weight:600}
+ #mobileSettingsPanel .setting{width:100%;min-width:0;padding:8px;box-sizing:border-box;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+ #mobileSettingsPanel .setting .caption{font-size:.8rem;min-width:0}
+ #mobileSettingsPanel .button-group{gap:5px;flex-wrap:nowrap}
+ #mobileSettingsPanel #signs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;gap:5px}
+ #mobileSettingsPanel #signs button{display:flex;align-items:center;justify-content:center;min-width:0;min-height:44px;padding:4px 2px;font-size:1.35rem}
+ #mobileSettingsPanel #signs .sign-long{display:none}
+ #mobileSettingsPanel #signs .sign-short{display:inline}
+ #mobileSettingsPanel .factor-pattern-controls{width:100%;gap:5px;flex-wrap:wrap}
+ #mobileSettingsPanel #challengeSelect{max-width:100%;flex:1 1 125px}
+ #mobileSettingsPanel .setting--advanced{margin:0;align-items:stretch}
+ #mobileSettingsPanel .advanced-buttons{width:100%}
+ #mobileSettingsPanel .beyond-choices{max-width:100%}
+ .instruction-intro-counts>span{font-size:.85rem;padding:8px 3px}
+ .instruction-intro-example{font-size:clamp(1.6rem,5vw,3rem)}
+}
+@media(max-width:390px){#mobileSettingsPanel #types button{font-size:.72rem;padding:6px 7px}}
+@media print{.mobile-settings-toggle,.mobile-settings-close,.mobile-settings-backdrop{display:none!important}#mobileSettingsPanel{position:static!important}}
+
 </style>
 </head>
 <body>
@@ -552,7 +588,10 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div><a href="../../algebra/index.html">Algebra</a> · <a href="../../algebra/expansions/index.html">Expansions</a><h1 title="Distributive law: multiply every term in one bracket by every term in the other">Expanding Brackets · Place Value</h1></div>
 </header>
 <main>
-<div class="settings settings-top common-settings">
+<button id="mobileSettingsToggle" class="mobile-settings-toggle" type="button" aria-expanded="false" aria-controls="mobileSettingsPanel" aria-label="Open question settings">⚙ Settings</button>
+<button id="mobileSettingsBackdrop" class="mobile-settings-backdrop" type="button" aria-label="Close question settings" hidden></button>
+<div class="settings settings-top common-settings" id="mobileSettingsPanel" aria-label="Question settings">
+<button id="mobileSettingsClose" type="button" class="mobile-settings-close" aria-label="Close settings">✕ Close</button>
 <div class="setting"><span class="caption">Factor pattern</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor pattern"></div><select id="challengeSelect" aria-label="Optional higher degree factor patterns"><option value="">Challenge…</option><option value="l3">Linear × Cubic</option><option value="l4">Linear × Quartic</option><option value="l5">Linear × Quintic</option><option value="q3">Quadratic × Cubic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 <div class="setting"><span class="caption">Signs within factors</span><div class="button-group" id="signs" aria-label="Choose signs"></div></div>
@@ -591,6 +630,29 @@ main{margin:5px auto;padding:10px 19px 18px}
 <script src="../shared/assessment.js"></script>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
+
+const mobileSettingsPanel=$('mobileSettingsPanel'),mobileSettingsToggle=$('mobileSettingsToggle');
+const mobileSettingsBackdrop=$('mobileSettingsBackdrop'),mobileSettingsClose=$('mobileSettingsClose');
+function setMobileSettings(open){
+ mobileSettingsPanel.classList.toggle('mobile-open',open);
+ mobileSettingsToggle.setAttribute('aria-expanded',String(open));
+ mobileSettingsToggle.setAttribute('aria-label',open?'Close question settings':'Open question settings');
+ mobileSettingsBackdrop.hidden=!open;
+ if(open)mobileSettingsClose.focus();
+ else mobileSettingsToggle.focus();
+}
+mobileSettingsToggle.addEventListener('click',()=>setMobileSettings(!mobileSettingsPanel.classList.contains('mobile-open')));
+mobileSettingsClose.addEventListener('click',()=>setMobileSettings(false));
+mobileSettingsBackdrop.addEventListener('click',()=>setMobileSettings(false));
+document.addEventListener('keydown',event=>{
+ if(event.key==='Escape'&&mobileSettingsPanel.classList.contains('mobile-open')){
+  event.stopImmediatePropagation();event.preventDefault();setMobileSettings(false);
+ }
+},true);
+window.matchMedia('(min-width: 761px)').addEventListener('change',event=>{
+ if(event.matches&&mobileSettingsPanel.classList.contains('mobile-open'))setMobileSettings(false);
+});
+
 const actions=[
  'Set up powers-of-x columns',
  'Place coefficients in matching rows and columns',
@@ -787,6 +849,15 @@ function renderSelectors(){
  // Numbered homework questions follow fixed signs; the sign buttons must
  // describe the question currently on screen, not a stale selection.
  chooseButtons('signs',signChoices,state.slot==='fresh'?state.sign:state.question.sign,v=>filter('sign',v));
+ // Keep a full accessible description; phones show only compact symbolic controls.
+ const compactSigns={'positive':'++','negative':'−−','mixed':'+−','random':'±'};
+ const descriptions={'positive':'All non-leading signs positive','negative':'All non-leading signs negative','mixed':'Mixed positive and negative non-leading signs','random':'Random signs'};
+ signChoices.forEach(([value,label],i)=>{
+  const button=$('signs').children[i];
+  const long=el('span',label,'sign-long'),short=el('span',compactSigns[value],'sign-short');
+  short.setAttribute('aria-hidden','true');button.replaceChildren(long,short);
+  button.setAttribute('aria-label',descriptions[value]);button.title=descriptions[value];
+ });
  if(state.sign==='random'&&state.question){
   const outcome=signChoices.findIndex(([value])=>value===state.question.sign);
   if(outcome>=0&&outcome<3){
@@ -1945,7 +2016,7 @@ $('worksheetMode').onclick=()=>switchMode('worksheet');
 // x is an indeterminate: coefficient columns do not carry into adjacent powers.
 // Connect long multiplication to algebra. Distinguish decimal digits from unrestricted polynomial coefficients.
 const instructionSlides=[
- {heading:'Keep the products organised',caption:'Cross-products work, but longer expansions can become crowded.',kind:'why'},
+ {heading:'From cross-products to place value',caption:'Cross-products work. Place-value columns keep bigger expansions organised.',kind:'why'},
  {heading:'Powers of ten organise numbers',caption:'Each digit has its own place: 10⁴, 10³, 10², 10 and # (units).',kind:'num-setup'},
  {heading:'First multiply by 4',caption:'321 × 4 = 1284',kind:'num-ones'},
  {heading:'Then multiply by 30',caption:'321 × 30 = 9630. Move one place left.',kind:'num-tens'},
@@ -2008,9 +2079,14 @@ function drawInstruction(){
  stage.append(el('h2',slide.heading));
  const big=el('div',undefined,'instruction-focus');
  if(slide.kind==='why'){
-  big.classList.add('instruction-analogue');
-  big.innerHTML='<div>(3x<sup>2</sup> + 2x + 1)(3x + 4)</div>';
-  stage.append(big);
+  const intro=el('div',undefined,'instruction-method-intro');
+  intro.innerHTML='<div class="instruction-intro-example">(3x<sup>2</sup> + 2x + 1)(3x + 4)</div>'+
+   '<div class="instruction-intro-counts" aria-label="Four, six or nine individual products">'+
+   '<span>Linear × linear<strong>4</strong></span>'+
+   '<span>Quadratic × linear<strong>6</strong></span>'+
+   '<span>Quadratic × quadratic<strong>9</strong></span></div>'+
+   '<div class="instruction-intro-message">Same multiplication. Clearer columns.</div>';
+  stage.append(intro);
  }else if(slide.kind==='num-setup'||slide.kind==='num-ones'||slide.kind==='num-tens'||slide.kind==='num-sum'){
   const phase={ 'num-setup':0,'num-ones':1,'num-tens':2,'num-sum':3 }[slide.kind];
   stage.insertAdjacentHTML('beforeend',instructionGrid('number',phase));
