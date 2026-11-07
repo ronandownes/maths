@@ -94,6 +94,7 @@ def build():
             tiles += '<a class="tile" href="expansions/index.html"><strong>Expansions</strong><small>Compare the representations and see why each is useful.</small></a>'
             tiles += '<a class="tile" href="../apps/split-brackets/index.html"><strong>Split the Brackets</strong><small>Two distributive groups and reverse factorisation.</small></a>'
             tiles += '<a class="tile" href="../apps/vertical-foil/index.html"><strong>Vertical FOIL</strong><small>Four multiplication routes through stacked binomials.</small></a>'
+            tiles += '<a class="tile" href="../apps/inline-rainbow/index.html"><strong>Inline Rainbow</strong><small>Upper and lower arcs, four partial products and reverse grouping.</small></a>'
             tiles += '<a class="tile" href="../apps/polynomial-place-value/index.html"><strong>Place-Value Multiplication</strong><small>Align by powers for larger expansions.</small></a>'
         planned=''.join(f'<li>{e(t["title"])}</li>' for t in data['topics'] if not t['ready'])
         book_link='<p class="note"><a href="https://ronandownes.github.io/book/chapter-trigonometry.html#trig-intro">Book section: Right-angled triangles</a></p>' if category == 'Trigonometry' else ''
