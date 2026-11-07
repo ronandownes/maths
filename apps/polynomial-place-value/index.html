@@ -25,9 +25,9 @@ button:disabled{opacity:.38;cursor:default}
 .setting{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:6px 12px;border:1px solid #dce2e9;border-radius:8px;background:#fbfcfe}
 .setting .caption{font-size:.81rem;font-weight:700;color:#59636f;min-width:0}
 .button-group button{font-size:.87rem;padding:8px 11px}
-.modes{margin:14px 0 11px}
+.modes{margin:10px 0 7px}
 .modes button{font-size:.94rem}
-.modes button[aria-pressed=true]{border-color:#174ea6}
+.modes button[aria-pressed=true]{border-color:#174ea6}.modes button:first-child{font-weight:700}
 .coefficients{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin:10px 0 12px}
 .factor-fields{display:flex;flex-wrap:wrap;gap:9px}
 .factor-fields .group-label{width:100%;color:#586575;font-size:.84rem;font-weight:650}
@@ -92,11 +92,11 @@ button:disabled{opacity:.38;cursor:default}
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
 const actions=['Set up the place-value columns','Calculate the partial products','Group like terms','Bring back the powers of x'];
-const factorTypes=[['ll','Linear × linear'],['ql','Quadratic × linear'],['qq','Quadratic × quadratic']];
-const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed']];
+const factorTypes=[['ll','Lin × Lin'],['ql','Quad × Lin'],['qq','Quad × Quad']];
+const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Random']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
-const modes=[['question','Question only'],['step','Step by step'],['answer','Answer'],['worked','Fully worked']];
-const state={type:'ql',sign:'positive',level:1,mode:'question',step:0,slot:0,randomCount:0,question:null};
+
+const state={type:'ql',sign:'positive',level:1,mode:'worked',step:0,slot:0,randomCount:0,question:null};
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
 const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t}return a};
@@ -111,9 +111,10 @@ function product(a,b){const out=Array(a.length+b.length-1).fill(0);a.forEach((x,
 function seedFor(slot){const typeIndex=factorTypes.findIndex(x=>x[0]===state.type),signIndex=signTypes.findIndex(x=>x[0]===state.sign);
  return ((slot+1)*209759+(state.level+13)*17539+(typeIndex+1)*9151+(signIndex+2)*1877)>>>0}
 function seeded(seed){let x=seed>>>0;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))}}
+function chooseSign(next){return ['positive','negative','mixed'][next(0,2)]}
 function makeQuestion(next,serial){
  const [na,nb]=state.type==='ll'?[2,2]:state.type==='ql'?[3,2]:[3,3];
- const level=state.level,sign=state.sign;
+ const level=state.level,sign=state.sign==='random'?chooseSign(next):state.sign;
  const choose=(a)=>a[next(0,a.length-1)];
  const small=()=>next(2,9),low=()=>next(1,6),big=()=>choose([10,11,11,11,20,21,30,31]);
  let a,b;
@@ -160,7 +161,11 @@ function renderSelectors(){
  chooseButtons('types',factorTypes,state.type,v=>filter('type',v));
  chooseButtons('signs',signTypes,state.sign,v=>filter('sign',v));
  chooseButtons('levels',levels,state.level,v=>filter('level',v));
- chooseButtons('modes',modes,state.mode,v=>{state.mode=v;if(v==='step')state.step=0;render()});
+ const host=$('modes');host.replaceChildren();
+ const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
+ toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
+ const steps=document.createElement('button');steps.type='button';steps.textContent='Step by step';steps.setAttribute('aria-pressed',String(state.mode==='step'));
+ steps.onclick=()=>{state.mode='step';state.step=0;render()};host.append(steps);
 }
 function coefficientInputs(){
  const host=$('coefficients');host.replaceChildren();
@@ -195,17 +200,13 @@ function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomia
 }
 function draw(){
  const {a,b}=state.question,final=product(a,b),n=final.length,degree=n-1;
- const mode=state.mode,step=mode==='worked'?3:mode==='answer'||mode==='question'?0:state.step;
+ const mode=state.mode,step=mode==='worked'?3:mode==='question'?0:state.step;
  const root=$('canvas');root.replaceChildren();
- $('heading').textContent=mode==='step'?actions[step]:mode==='worked'?'Fully worked':'';
+ $('heading').textContent=mode==='step'?actions[step]:'';
  $('help').textContent='';
  const pad=v=>Array(n-v.length).fill(null).concat(v);
  $('factorExpression').innerHTML='<span class="factor"><span class="bracket">(</span>'+poly(a)+'<span class="bracket">)</span></span> <span class="factor"><span class="bracket">(</span>'+poly(b)+'<span class="bracket">)</span></span>';
- if(mode==='answer'){
-  const eq=document.createElement('div');eq.className='equation';
-  eq.innerHTML=poly(final);
-  root.append(eq);
- }else if(mode!=='question'){
+ if(mode!=='question'){
   const table=document.createElement('table');table.className='math-table';
   if(true){
    const headings=document.createElement('tr');headings.append(document.createElement('th'));
