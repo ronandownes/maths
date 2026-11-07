@@ -338,6 +338,11 @@ function renderSelectors(){
  toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
  const steps=document.createElement('button');steps.type='button';steps.textContent='Step by step';steps.setAttribute('aria-pressed',String(state.mode==='step'));
  steps.onclick=()=>{state.mode='step';state.step=0;render()};host.append(steps);
+ if(state.mode==='step'){
+  const reset=document.createElement('button');reset.type='button';reset.textContent='Reset steps';
+  reset.setAttribute('aria-label','Reset step-by-step working');
+  reset.onclick=()=>{state.step=0;render()};host.append(reset);
+ }
 }
 function coefficientInputs(){
  const host=$('coefficients');host.replaceChildren();
@@ -395,9 +400,9 @@ function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomia
 }
 function draw(){
  const {a,b}=state.question,final=product(a,b),n=final.length,degree=n-1;
- const mode=state.mode,step=mode==='worked'?5:mode==='question'?0:state.step;
+ const mode=state.mode,step=mode==='worked'?6:mode==='question'?0:state.step;
  const root=$('canvas');root.replaceChildren();
- $('heading').textContent=mode==='step'&&step>=0?actions[step]:'';
+ $('heading').textContent='';
  $('help').textContent='';
  $('practiceArea').className=mode==='step'?'step-active':'';
  const checklist=$('stepChecklist');
@@ -413,24 +418,24 @@ function draw(){
    const marker=document.createElement('span');marker.className='checklist-marker';marker.textContent=i<step?'✓':String(i+1);
    const label=document.createElement('span');label.textContent=action;
    entry.append(marker,label);
-   entry.onclick=()=>{state.step=i;render()};
+   entry.onclick=()=>{state.step=i+1;render()};
    checklist.append(entry);
   });
  }
  const pad=v=>Array(n-v.length).fill(null).concat(v);
  const visibleFactors=state.question.type==='ql'?[b,a]:[a,b];
  $('factorExpression').innerHTML=visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
- if(mode!=='question'){
+ if(mode!=='question'&&(mode!=='step'||step>=1)){
   const table=document.createElement('table');table.className='math-table';
   if(true){
    const headings=document.createElement('tr');headings.append(document.createElement('th'));
    for(let p=degree;p>=0;p--){const th=document.createElement('th');th.innerHTML=p?pow(p):'#';headings.append(th)}table.append(headings);
   }
-  if(mode!=='step'||step>=1){
+  if(mode!=='step'||step>=2){
    row(table,pad(a),'','',degree);
    row(table,pad(b),'underline','',degree);
   }
-  if(step>=2){
+  if(step>=3){
    for(let j=b.length-1;j>=0;j--){
     if(b[j]===0)continue;
     const shift=b.length-1-j,values=Array(n).fill(null);
@@ -438,14 +443,14 @@ function draw(){
     row(table,values,'','',degree,false,false,shift);
    }
   }
-  if(step>=3)row(table,final,'sum','+',degree,step>=4);
+  if(step>=4)row(table,final,'sum','+',degree,step>=5);
   root.append(table);
-  if(step>=5){
+  if(step>=6){
    const eq=document.createElement('div');eq.className='equation worked-conclusion';
    eq.innerHTML=poly(final);
    root.append(eq);
   }
-  if(mode==='step'&&step===6){
+  if(mode==='step'&&step===7){
    const reflection=document.createElement('div');reflection.className='reflection';
    const heading=document.createElement('strong');heading.textContent='Reflection';
    const paragraph=document.createElement('p');
