@@ -379,10 +379,9 @@ function individualProducts(a,b){
     power:(a.length-1-i)+(b.length-1-j)});
   }
  }
- // Follow place value from the constant column towards higher powers.
- // Within each degree, multiply the bottom factor's higher-power term first
- // (e.g. constant × x before x × constant).
- products.sort((left,right)=>left.power-right.power||left.j-right.j);
+ // Complete one full multiplication row at a time:
+ // bottom constant × each top term (constant, x, x²), then bottom x, then x².
+ // The nested loops above already provide this order.
  return products;
 }
 function renderSelectors(){
@@ -516,7 +515,7 @@ function draw(){
     const individually=document.createElement('button');individually.type='button';
     individually.textContent='One by one';
     individually.setAttribute('aria-pressed',String(!state.partialAll));
-    individually.onclick=()=>{state.partialAll=false;state.partialCount=Math.max(1,Math.min(state.partialCount,items.length-1));render()};
+    individually.onclick=()=>{state.partialAll=false;state.partialCount=1;render()};
     const all=document.createElement('button');all.type='button';all.textContent='Show all';
     all.setAttribute('aria-pressed',String(state.partialAll));
     all.onclick=()=>{state.partialCount=items.length;state.partialAll=true;render()};
@@ -546,7 +545,7 @@ function draw(){
     const modes=document.createElement('div');modes.className='stage-mode-buttons';
     const individually=document.createElement('button');individually.type='button';individually.textContent='One by one';
     individually.setAttribute('aria-pressed',String(!state.groupAll));
-    individually.onclick=()=>{state.groupAll=false;state.groupCount=Math.max(1,Math.min(state.groupCount,n-1));render()};
+    individually.onclick=()=>{state.groupAll=false;state.groupCount=1;render()};
     const all=document.createElement('button');all.type='button';all.textContent='Show all';
     all.setAttribute('aria-pressed',String(state.groupAll));
     all.onclick=()=>{state.groupCount=n;state.groupAll=true;render()};
@@ -805,20 +804,20 @@ function drawTest(){
  const summary=el('div');
  const opt=el('div',undefined,'test-options');
  const quiz=assessment.mode==='quiz';
- summary.append(el('h2',quiz?'Expansion quiz':'Expansion test'),el('p',quiz?'Four questions · select an answer to check immediately · you may try again':'Four questions · 1 mark per complete correct expansion · results after submission'));
+ summary.append(el('h2',quiz?'Expansion quiz':'Expansion test'),el('p',quiz?'Four questions · multiple choice or fill in · immediate feedback':'Four questions · 1 mark per complete correct expansion · results after submission'));
  if(quiz){
   const marks=assessment.firstAttempts.filter(value=>value===true).length;
   const score=el('div','Marks: '+marks+' / 4','quiz-running-score');
   score.setAttribute('role','status');score.setAttribute('aria-live','polite');
   summary.append(score);
   const kind=el('div',undefined,'quiz-toggle');
-  [['working','Working'],['answer','Answer'],['fill','Fill in']].forEach(([value,label])=>{
+  [['working','Working · choices'],['answer','Answer · choices'],['fill','Fill in']].forEach(([value,label])=>{
    const btn=el('button',label);btn.type='button';
    btn.setAttribute('aria-pressed',String(assessment.quizType===value));
    btn.onclick=()=>{if(assessment.quizType!==value){assessment.quizType=value;initialiseTest('random')}};
    kind.append(btn);
   });
-  kind.setAttribute('role','group');kind.setAttribute('aria-label','Quiz type');
+  kind.setAttribute('role','group');kind.setAttribute('aria-label','Quiz type: multiple-choice working or answer, or fill in');
   opt.append(kind);
   const sound=el('div',undefined,'quiz-toggle');
   [['on','Sound on'],['off','Sound off']].forEach(([value,label])=>{
