@@ -150,8 +150,8 @@ button:disabled{opacity:.38;cursor:default}
 .level-random[aria-pressed=true]{background:#e8f0fe!important;border-color:#1a73e8!important;color:#174ea6!important}
 #types button:first-child,#signs button:first-child{font-weight:700}
 .math-table td.placeholder-zero{color:#a7afb9;font-weight:400}
-.reflection{max-width:760px;margin:15px auto 3px;padding:10px 12px;border-top:1px solid #d8dee6;color:#344054;font-size:.95rem;line-height:1.45}
-.reflection strong{font-size:1rem}
+.reflection{max-width:760px;margin:13px auto 3px;padding:12px 14px;border-top:1px solid #d8dee6;color:#344054;font-size:clamp(1.12rem,1.75vw,1.32rem);line-height:1.45}
+.reflection strong{font-size:1.12em}
 .reflection p{margin:5px 0 0}
 [hidden]{display:none!important}
 .activity-switch{display:flex;gap:6px;margin-bottom:9px;border-bottom:1px solid #e2e6ea;padding-bottom:8px}
@@ -335,7 +335,7 @@ const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed
 const signChoices=[['positive','Both\npositive'],['negative','Both\nnegative'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
-const state={type:'ql',factorRandom:false,sign:'positive',level:1,levelRandom:false,mode:'worked',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,question:null};
+const state={type:'ql',factorRandom:false,sign:'random',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,question:null};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
