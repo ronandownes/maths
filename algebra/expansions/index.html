@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Visual, efficient and mathematically connected methods for expanding brackets: split groups, vertical FOIL, horizontal FOIL and place-value multiplication.">
+<meta name="theme-color" content="#ffffff">
+<title>Expansions | Algebra | Maths</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="stylesheet" href="../../assets/styles.css">
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#243145;background:#f4f6f8}
+*{box-sizing:border-box}
+body{margin:0}
+header.local-top{display:flex;align-items:center;gap:14px;padding:8px max(16px,calc((100vw - 1150px)/2));background:white;border-bottom:1px solid #dfe5ec}
+header.local-top img{display:block;width:115px}
+header.local-top a{color:#235b95;text-decoration:none;font-size:.87rem}
+header.local-top h1{margin:4px 0 0;font-size:1.26rem;color:#21344b}
+main{width:min(1100px,calc(100% - 25px));margin:12px auto;background:#fff;border:1px solid #e0e6ec;padding:clamp(17px,3vw,31px)}
+.lead{max-width:890px;font-size:1.05rem;line-height:1.55;margin:0 0 15px;color:#34475a}
+.math{font-family:"Cambria Math",Cambria,Georgia,serif}
+.equation{font:clamp(1.25rem,2.8vw,1.8rem)/1.5 Cambria,Georgia,serif;text-align:center;max-width:100%;overflow-wrap:anywhere;margin:13px auto}
+h2{font-size:1.18rem;margin:24px 0 12px}
+.models{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.model{border:1px solid #d5e1ed;border-radius:11px;padding:17px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.model h3{font-size:1.07rem;margin:0}
+.model p{line-height:1.45;margin:0;font-size:.93rem}
+.model small{font-size:.85rem;color:#53657a}
+.model a{color:#165a9b;font-weight:700;text-underline-offset:3px;margin-top:auto;padding-top:8px}
+.model.pending{border-style:dashed;background:#fcfcfd}
+.model.pending small{font-weight:750}
+.diagram{display:flex;align-items:center;justify-content:space-around;gap:14px;min-height:70px;padding:10px;background:#f7faff;border-radius:7px;font:clamp(1rem,2vw,1.35rem) Cambria,Georgia,serif;flex-wrap:wrap}
+.note{font-size:.92rem;line-height:1.5;color:#4c5e71;max-width:900px}
+table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{padding:11px 12px;border-bottom:1px solid #e1e8ee;text-align:left;vertical-align:top}th{background:#f6f9fc}
+footer{font-size:.85rem;color:#5a6b7b;margin-top:25px}
+@media(max-width:670px){.models{grid-template-columns:1fr}table{font-size:.82rem}th,td{padding:8px}}
+@media print{body{background:white}main{width:100%;border:0;margin:0;padding:0}header.local-top{display:none}.model{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header class="local-top">
+<a href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"></a>
+<div><a href="../index.html">Algebra</a><h1>Expansions</h1></div>
+</header>
+<main>
+<p class="lead">Different diagrams should reveal the <strong>same distributive law</strong>, not teach unrelated tricks. The student learns to see every multiplication, record the four products accurately, combine like terms only when appropriate, and reverse the process to factorise.</p>
+<div class="equation">(a + b)(c + d) = ac + ad + bc + bd</div>
+<h2>Choose a representation</h2>
+<div class="models">
+<article class="model">
+<h3>1. Split the Brackets</h3>
+<div class="diagram"><span>(a + b)(c + d)</span><span>↓</span><span>a(c + d) + b(c + d)</span></div>
+<p>Split the first bracket into two intact groups, expand each group, then reverse by extracting the repeated binomial. Supports explaining why grouping works and when terms may be rearranged.</p>
+<small>Practice · Display · Quiz · Test · Worksheets</small>
+<a href="../../apps/split-brackets/index.html">Open Split the Brackets</a>
+</article>
+<article class="model">
+<h3>2. Vertical FOIL</h3>
+<div class="diagram"><span>ax + b<br>cy + d</span><span>↓ ↙ ↘ ↓</span><span>acxy, bcy, adx, bd</span></div>
+<p>Place one binomial above the other and follow the teacher's four routes: <strong>left vertical, left diagonal, right diagonal, right vertical</strong>. Support both unlike variables and two binomials in <span class="math">x</span>.</p>
+<small>Practice · Display · Quiz · Test · Worksheets</small>
+<a href="../../apps/vertical-foil/index.html">Open Vertical FOIL</a>
+</article>
+<article class="model pending">
+<h3>3. Horizontal FOIL</h3>
+<div class="diagram"><span>(ax + b)(cy + d)</span><span>↶ ⤴ ⤵ ↷</span></div>
+<p>Keep both brackets inline, tracing the four pairs through curved paths. The third photograph is a starting reference; the final drawing will follow your additional image.</p>
+<small>Planned · visual reference awaiting refinement</small>
+</article>
+<article class="model">
+<h3>4. Place-Value Multiplication</h3>
+<div class="diagram"><span>(ax + b)(cx² + dx + e)</span><span>→</span><span>align powers of x</span></div>
+<p>A more scalable column algorithm for Linear × Quadratic, Quadratic × Quadratic and higher-degree factors. Alignment replaces repeated full-line copying.</p>
+<small>Practice · Display · Quiz · Test · Worksheets</small>
+<a href="../../apps/polynomial-place-value/index.html">Open Place-Value Multiplication</a>
+</article>
+</div>
+<h2>The recording principle: navigate first, write economically</h2>
+<table>
+<thead><tr><th>Situation</th><th>Efficient written mathematics</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>Four unlike products</td><td class="math">15xy + 20y + 21x + 28</td><td>The four products are already distinct. There is nothing to collect.</td></tr>
+<tr><td>Two like middle products</td><td class="math">(3x + 2)(5x + 4) = 15x² + 22x + 8</td><td>The two cross-products are <span class="math">12x</span> and <span class="math">10x</span>. Visualise them before combining.</td></tr>
+<tr><td>Two terms times three</td><td>Place-value grid or column method</td><td>There are six pairwise products. A structured arrangement is clearer than repeatedly writing full intermediate expressions.</td></tr>
+<tr><td>Repeated brackets</td><td class="math">(a + b)² = (a + b)(a + b)</td><td>One product appears twice. The square is a special case of the same distributive law, not a separate multiplication rule.</td></tr>
+</tbody>
+</table>
+<h2>Planned: Inline Expansion and Repeated Brackets</h2>
+<p class="note">Inline expansion will highlight one pair of terms at a time directly on the original expression, without forcing students to copy and rewrite each partial product. For <span class="math">2 × 3</span> and larger cases it should offer a transition to the place-value approach. Repeated brackets will grow out of the general expansion, including the middle term arising from two routes.</p>
+<footer>Maths · Algebra · Expansions · Consistent notation, explicit structure and economical written work.</footer>
+</main>
+</body>
+</html>
