@@ -350,42 +350,143 @@ function check(p,value){
  let v=f?(Number(f[1])/Number(f[2])):Number(x.replace(/,/g,''));
  return Number.isFinite(v)&&Math.abs(v-Number(p.expected))<1e-7;
 }
+function updateScore(){
+ const total=state.questions.length||1;
+ $('scoreLive').textContent=(state.mode==='quiz'?'Quiz score: ':'Score: ')+state.points+' / '+total;
+ $('answeredLive').textContent=state.records.length+' of '+total+' completed';
+ $('progressFill').style.width=(100*state.records.length/total)+'%';
+}
 function start(mode){
  state.mode=mode;state.step=0;state.questions=problems();state.q=0;state.attempts=0;state.complete=false;state.points=0;state.records=[];
+ state.choices=[];state.attemptedChoices=[];state.lastWrongChoice=null;
  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
- $('learn').hidden=mode!=='learn';$('assessment').hidden=mode==='learn';$('results').hidden=true;$('questionPanel').hidden=false;
- if(mode==='learn')showLesson();else renderQuestion();
+ $('learn').hidden=mode!=='learn';$('assessment').hidden=mode==='learn';
+ $('results').hidden=true;$('questionPanel').hidden=false;
+ if(mode==='learn'){showLesson();return}
+ $('assessmentIntro').textContent=mode==='quiz'?
+   'Choose the ONE correct worked solution. A click checks immediately: green for correct, red for a mistake. Two attempts maximum; the next question is another slide.':
+   'Type an answer, then press Return to check it. Two attempts maximum per question; your worked review appears after the test.';
+ renderQuestion();
 }
+function paintChoices(){
+ const wrap=$('choices'),used=new Set(state.attemptedChoices);
+ wrap.innerHTML=state.choices.map((choice,i)=>{
+  const wrong=used.has(i)&&!choice.correct,correct=state.complete&&choice.correct;
+  const cls='choice-card'+(wrong?' wrong-choice':'')+(correct?' correct-choice':'');
+  const disabled=state.complete||used.has(i);
+  return '<button type="button" class="'+cls+'" data-choice="'+i+'" '+(disabled?'disabled':'')+
+    ' aria-label="Worked solution '+String.fromCharCode(65+i)+(wrong?', contains a mistake':correct?', correct':'')+'">'+
+    '<span class="choice-letter">'+String.fromCharCode(65+i)+'</span>'+
+    '<span class="choice-content"><span class="choice-work">'+prettyWorking(choice.work)+'</span>'+
+    '<span class="choice-value">Result: '+esc(formatChoice(choice.value))+'</span></span></button>';
+ }).join('');
+ wrap.querySelectorAll('button[data-choice]').forEach(b=>{
+  b.onclick=()=>choose(Number(b.dataset.choice));
+ });
+}
+function formatChoice(value){return typeof value==='number'?format(value):String(value).replace(/-/g,'−')}
 function renderQuestion(){
- const p=state.questions[state.q];
- $('questionCount').textContent='Question '+(state.q+1)+' of '+state.questions.length+' · '+(state.mode==='quiz'?'Quiz':'Test');
+ const p=state.questions[state.q],quiz=state.mode==='quiz';
+ $('questionCount').textContent=(quiz?'Quiz':'Test')+' · Question '+(state.q+1)+' of '+state.questions.length;
  $('questionText').textContent=p.prompt;$('numbers').textContent=p.numbers;
- $('answer').value='';$('answer').disabled=false;$('check').hidden=false;$('check').disabled=false;
+ $('entryArea').hidden=quiz;$('choices').hidden=!quiz;
+ $('answer').value='';$('answer').disabled=false;$('check').hidden=quiz;$('check').disabled=false;
  $('advance').hidden=true;$('feedback').hidden=true;$('feedback').className='feedback';
- $('tries').textContent='Two attempts maximum';state.attempts=0;state.complete=false;
- $('answer').focus();
+ $('reviewActions').hidden=true;$('reviewPanel').hidden=true;$('reviewPanel').className='explanation-panel';
+ $('tries').textContent=quiz?'Choose one of four solutions · two attempts':'Press Return or Check · two attempts';
+ state.attempts=0;state.complete=false;state.attemptedChoices=[];state.lastWrongChoice=null;
+ if(quiz){state.choices=workedChoices(p);paintChoices();}else{$('choices').innerHTML='';$('answer').focus()}
+ updateScore();
 }
-function grade(){
- if(state.complete)return;
- let p=state.questions[state.q],value=$('answer').value;if(!value.trim())return;
- state.attempts++;const ok=check(p,value),out=window.MathsAssessment?MathsAssessment.outcome(ok,state.attempts):{done:ok||state.attempts>=2,correct:ok,feedback:ok?'Correct':state.attempts>=2?'Two attempts used':'One more chance'};
- if(window.MathsAssessment)MathsAssessment.playSound(ok?true:out.done?'final-wrong':false,$('sound').checked);
- $('tries').textContent='Attempt '+state.attempts+' of 2';
- $('feedback').hidden=false;$('feedback').className='feedback '+(ok?'good':out.done?'bad':'');
- if(ok){state.points++;state.complete=true;state.records.push({p,ok:true,attempts:state.attempts});$('feedback').textContent='Correct! '+(state.mode==='quiz'?p.explanation:'');}
- else if(out.done){state.complete=true;state.records.push({p,ok:false,attempts:state.attempts});$('feedback').textContent=state.mode==='quiz'?'Two attempts used. '+p.explanation+' Answer: '+p.expected:'Two attempts used. The solution will appear in your test review.';}
- else {$('feedback').textContent='One more chance. Your second answer is final.';}
- if(state.complete){$('answer').disabled=true;$('check').hidden=true;$('advance').hidden=false;$('advance').textContent=state.q===state.questions.length-1?'View results':'Next question →';}
+function soundResult(result){
+ if(window.MathsAssessment)window.MathsAssessment.playSound(result,$('sound').checked);
+}
+function settle(p,correct){
+ state.complete=true;
+ if(correct)state.points++;
+ state.records.push({p,ok:correct,attempts:state.attempts,choice:state.lastWrongChoice});
+ $('advance').hidden=false;
+ $('advance').textContent=state.q===state.questions.length-1?'View results':'Next question →';
+ $('reviewActions').hidden=false;
+ updateScore();
+ if(state.mode==='quiz')paintChoices();
+}
+function choose(index){
+ if(state.mode!=='quiz'||state.complete||state.attemptedChoices.includes(index)||index<0||index>3)return;
+ const option=state.choices[index],p=state.questions[state.q];
+ state.attempts++;state.attemptedChoices.push(index);
+ const result=window.MathsAssessment?window.MathsAssessment.outcome(option.correct,state.attempts):
+   {done:option.correct||state.attempts>=2,correct:option.correct};
+ $('tries').textContent='Attempt '+state.attempts+' / 2';
+ $('feedback').hidden=false;
+ if(option.correct){
+  soundResult(true);
+  $('feedback').className='feedback good';
+  $('feedback').textContent='Correct. You have identified the valid working. '+p.explanation;
+  settle(p,true);
+ }else{
+  state.lastWrongChoice=index;
+  soundResult(result.done?'final-wrong':false);
+  $('feedback').className='feedback bad';
+  $('feedback').textContent=(result.done?'Both attempts used. The correct solution is now shown in green. ':
+     'This solution contains a mistake. One attempt remains. ')+option.why;
+  if(result.done)settle(p,false);
+ }
+ paintChoices();
+}
+function gradeTest(){
+ if(state.mode!=='test'||state.complete)return;
+ const p=state.questions[state.q],value=$('answer').value;
+ if(!value.trim())return;
+ state.attempts++;const correct=check(p,value);
+ const result=window.MathsAssessment?window.MathsAssessment.outcome(correct,state.attempts):
+   {done:correct||state.attempts>=2,correct};
+ soundResult(correct?true:result.done?'final-wrong':false);
+ $('tries').textContent='Attempt '+state.attempts+' / 2';
+ $('feedback').hidden=false;
+ $('feedback').className='feedback '+(correct?'good':result.done?'bad':'');
+ $('feedback').textContent=correct?'Answer recorded. Continue to the next question.':
+   result.done?'Two attempts used. The correct solution will appear in your results.':
+   'One more chance. Read the question and check the signs.';
+ if(result.done){
+   $('answer').disabled=true;$('check').hidden=true;
+   settle(p,correct);
+ }
 }
 function advance(){
- state.q++;if(state.q<state.questions.length)return renderQuestion();
+ if(!state.complete)return;
+ state.q++;
+ if(state.q<state.questions.length)return renderQuestion();
  $('questionPanel').hidden=true;$('results').hidden=false;
+ $('questionCount').textContent=(state.mode==='quiz'?'Quiz':'Test')+' completed';
+ updateScore();
  const first=state.records.filter(r=>r.ok&&r.attempts===1).length;
- $('results').innerHTML='<div class="score">'+state.points+' of '+state.questions.length+' correct · '+first+' correct on the first attempt</div>'+
- '<h2>Review your reasoning</h2>'+state.records.map((r,i)=>'<p><strong>Question '+(i+1)+' · '+(r.ok?'Correct':'Review')+'</strong> — '+esc(r.p.prompt)+'<br><span class="small">'+esc(r.p.numbers)+' · Answer: '+esc(r.p.expected)+' · '+esc(r.p.explanation)+'</span></p>').join('')+
- '<button type="button" class="primary" id="again">Try another '+(state.mode==='quiz'?'quiz':'test')+'</button>';
+ $('results').innerHTML='<div class="score">'+state.points+' of '+state.questions.length+' correct · '+first+
+   ' correct on the first attempt</div><h2>Review your reasoning</h2>'+
+   state.records.map((r,i)=>'<p><strong>Question '+(i+1)+' · '+(r.ok?'Correct':'Review')+'</strong> — '+esc(r.p.prompt)+
+   '<br><span class="small">'+esc(r.p.numbers)+' · Answer: '+esc(r.p.expected)+'</span><br>'+prettyWorking(r.p.explanation)+'</p>').join('')+
+   '<button type="button" class="primary" id="again">Try another '+(state.mode==='quiz'?'quiz':'test')+'</button>';
  $('again').onclick=()=>start(state.mode);
+ if(state.points===state.questions.length)soundResult('fanfare');
 }
+function explainCorrect(){
+ if(!state.complete)return;
+ const p=state.questions[state.q],correct=state.choices?.find(o=>o.correct);
+ $('reviewPanel').hidden=false;$('reviewPanel').className='explanation-panel';
+ $('reviewPanel').innerHTML='<strong>Correct method</strong><p>'+prettyWorking(correct?.work||p.explanation)+'</p>'+
+   '<p><strong>Answer:</strong> '+esc(formatChoice(p.expected))+'</p>';
+}
+function explainMistake(){
+ if(!state.complete)return;
+ const wrong=state.choices?.[state.lastWrongChoice]||state.choices?.find(o=>!o.correct);
+ if(!wrong){
+  $('reviewPanel').hidden=false;$('reviewPanel').textContent='Review your working against the correct solution above.';return;
+ }
+ $('reviewPanel').hidden=false;$('reviewPanel').className='explanation-panel error';
+ $('reviewPanel').innerHTML='<strong>Find the error</strong><p>'+prettyWorking(wrong.work)+'</p>'+
+   '<p>'+esc(wrong.why)+'</p>';
+}
+
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>start(b.dataset.mode));
 $('prev').onclick=()=>{state.step=Math.max(0,state.step-1);showLesson()};
 $('next').onclick=()=>{state.step=Math.min(lesson.length-1,state.step+1);showLesson()};
@@ -394,9 +495,14 @@ document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>{state.step=Ma
 $('optionsBtn').onclick=()=>{let h=$('settings').hidden;$('settings').hidden=!h;$('optionsBtn').setAttribute('aria-expanded',String(h))};
 $('closeSettings').onclick=()=>{$('settings').hidden=true;$('optionsBtn').setAttribute('aria-expanded','false')};
 $('example').onchange=e=>{state.example=Number(e.target.value);state.step=0;showLesson()};
-$('check').onclick=grade;$('advance').onclick=advance;
-$('answer').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();state.complete?advance():grade()}};
+$('check').onclick=gradeTest;$('advance').onclick=advance;
+$('showCorrect').onclick=explainCorrect;$('showMistake').onclick=explainMistake;
+$('answer').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();if(state.complete)advance();else gradeTest()}};
 document.addEventListener('keydown',e=>{
+ if(state.mode==='quiz' && e.target.tagName!=='INPUT' && e.target.tagName!=='SELECT' && $('settings').hidden){
+   if(['1','2','3','4'].includes(e.key)){e.preventDefault();choose(Number(e.key)-1);return}
+   if(e.key==='Enter' && state.complete){e.preventDefault();advance();return}
+ }
  if(state.mode!=='learn'||e.target.tagName==='INPUT'||e.target.tagName==='SELECT'||!$('settings').hidden)return;
  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();$('next').click()}
  if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();$('prev').click()}
