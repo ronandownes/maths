@@ -717,10 +717,10 @@ function draw(){
     const sub=document.createElement('div');sub.className='stage-controls';
     sub.setAttribute('aria-label','Calculate partial products');
     const description=document.createElement('div');description.className='stage-control-title';
-    description.textContent=state.partialAll?items.length+' partial products calculated. Does your homework agree? If not, check them one by one to find the mistake.':'Check each multiplication to discover where your working differs.';
+    description.textContent=state.partialAll?'All partial products are shown.':'Partial product '+state.partialCount+' of '+items.length+'.';
     sub.append(description);
     if(state.partialAll){
-     const drill=document.createElement('button');drill.type='button';drill.textContent='See them one by one';
+     const drill=document.createElement('button');drill.type='button';drill.textContent='One by one';
      drill.onclick=()=>{state.partialAll=false;state.partialCount=1;render()};
      sub.append(drill);
     }
@@ -736,7 +736,9 @@ function draw(){
      const next=document.createElement('button');next.type='button';next.textContent='Next →';next.className='stage-next';
      next.disabled=state.partialCount>=items.length;
      next.onclick=()=>{state.partialCount=Math.min(items.length,state.partialCount+1);state.partialAll=false;render()};
-     chooser.append(next);sub.append(chooser);
+     chooser.append(next);
+     const all=document.createElement('button');all.type='button';all.textContent='All';all.onclick=()=>{state.partialAll=true;state.partialCount=items.length;render()};chooser.append(all);
+     sub.append(chooser);
     }
     checklist.append(sub);
    }
@@ -744,10 +746,10 @@ function draw(){
     const sub=document.createElement('div');sub.className='stage-controls';
     sub.setAttribute('aria-label','Combine like terms by column');
     const description=document.createElement('div');description.className='stage-control-title';
-    description.textContent=state.groupAll?'Coefficients combined by powers of x. If your answer differs, inspect each column one by one.':'Check the addition in each power-of-x column to find the mistake.';
+    description.textContent=state.groupAll?'All column sums are shown.':'Column '+state.groupCount+' of '+n+'.';
     sub.append(description);
     if(state.groupAll){
-     const drill=document.createElement('button');drill.type='button';drill.textContent='See them one by one';
+     const drill=document.createElement('button');drill.type='button';drill.textContent='One by one';
      drill.onclick=()=>{state.groupAll=false;state.groupCount=1;render()};
      sub.append(drill);
     }
@@ -764,7 +766,9 @@ function draw(){
      const next=document.createElement('button');next.type='button';next.textContent='Next →';next.className='stage-next';
      next.disabled=state.groupCount>=n;
      next.onclick=()=>{state.groupCount=Math.min(n,state.groupCount+1);state.groupAll=false;render()};
-     chooser.append(next);sub.append(chooser);
+     chooser.append(next);
+     const all=document.createElement('button');all.type='button';all.textContent='All';all.onclick=()=>{state.groupAll=true;state.groupCount=n;render()};chooser.append(all);
+     sub.append(chooser);
     }
     checklist.append(sub);
    }
