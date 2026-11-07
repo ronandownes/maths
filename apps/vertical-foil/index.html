@@ -148,6 +148,31 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 #lessonPanel:fullscreen{background:white;overflow:auto}#lessonPanel:fullscreen .lesson-slide{min-height:75vh;max-width:95vw}
 @media(max-width:950px){.practice-layout{grid-template-columns:minmax(0,1fr) 210px;gap:8px}}
 @media(max-width:760px){.practice-layout{grid-template-columns:1fr}.step-checklist{position:static;order:2}.diagram svg{max-height:310px}}
+
+/* Teacher-led visual modelling: two-way table, proportional area and FOIL routes. */
+.lesson-two-way{width:min(730px,100%);margin:6px auto;border-collapse:separate;border-spacing:5px;table-layout:fixed}
+.lesson-two-way th,.lesson-two-way td{border:1px solid #afc6dd;border-radius:7px;text-align:center;padding:clamp(9px,1.8vw,17px);font-size:clamp(1.1rem,2.15vw,1.65rem)}
+.lesson-two-way th{background:#eaf2fb;color:#275174;font-weight:750}
+.lesson-two-way td{font-size:clamp(1.6rem,3.1vw,2.3rem);font-weight:750;background:#f6faff}
+.lesson-two-way th:first-child{font-size:clamp(.83rem,1.3vw,1.03rem);width:34%}
+.lesson-area-model{max-width:730px;margin:3px auto 8px;padding:0 5px}
+.lesson-area-column-labels{display:grid;grid-template-columns:3fr 2fr;margin-left:48px;text-align:center;font-weight:750;font-size:1.25rem}
+.lesson-area-inner{display:grid;grid-template-columns:43px minmax(0,1fr);height:220px}
+.lesson-area-row-labels{display:grid;grid-template-rows:4fr 5fr;align-items:stretch;font-weight:750;font-size:1.25rem;text-align:center}
+.lesson-area-row-labels span{display:grid;place-items:center}
+.lesson-area-regions{display:grid;grid-template-columns:3fr 2fr;grid-template-rows:4fr 5fr;gap:2px;border:2px solid #4e7298;background:#4e7298;min-width:0}
+.lesson-area-regions span{display:grid;place-items:center;text-align:center;padding:6px;background:#e7f1fe;font-size:clamp(.95rem,1.75vw,1.37rem);font-weight:700;color:#225381}
+.lesson-area-regions span:nth-child(2),.lesson-area-regions span:nth-child(3){background:#f0f7e9;color:#365a34}
+.lesson-comparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.lesson-comparison .lesson-choice{min-width:0}
+.lesson-comparison .lesson-choice strong{font-size:clamp(1rem,1.6vw,1.22rem)}
+.lesson-comparison .lesson-maths{font-size:clamp(1.35rem,2.2vw,1.95rem)}
+.lesson-terms{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.lesson-terms span{padding:7px 16px;border:1px solid #b1c7dc;border-radius:8px;background:#f2f8fd;white-space:nowrap}
+.lesson-route-demo{width:min(890px,100%);margin:0 auto;overflow:hidden}
+.lesson-route-demo svg{display:block;width:100%;max-height:330px}
+.lesson-slide .lesson-route-demo + p{font-size:clamp(.96rem,1.7vw,1.35rem)}
+@media(max-width:610px){.lesson-comparison{grid-template-columns:1fr}.lesson-area-inner{height:175px}.lesson-area-regions span{font-size:.95rem}.lesson-two-way th:first-child{width:32%}}
 </style>
 </head>
 <body>
@@ -335,7 +360,7 @@ function renderToolbar(){
  $('workedBtn').setAttribute('aria-pressed',String(state.view==='worked'));
  for(const button of document.querySelectorAll('[data-group]'))button.setAttribute('aria-pressed',String(state.group===button.dataset.group));
 }
-function diagramHTML(q){
+function diagramHTML(q,forceAll=false){
  const terms=fourTerms(q),ids=[0,2,1,3],p=products(q);
  const routes=[
   'M300 93 C275 220 162 308 158 385',
@@ -343,7 +368,7 @@ function diagramHTML(q){
   'M310 93 C420 230 620 294 620 385',
   'M700 93 C735 215 845 317 846 385'
  ];
- const count=state.direction==='factor'||state.view==='worked'?4:Math.min(4,state.step);
+ const count=forceAll||state.direction==='factor'||state.view==='worked'?4:Math.min(4,state.step);
  const arrows=routes.map((d,i)=>'<path class="route'+(i<count?' revealed':'')+(state.direction==='expand'&&state.view==='step'&&state.step===i+1?' current':'')+'" d="'+d+'" marker-end="url(#arrowTip)"/>').join('');
  const circles=[[210,220],[527,215],[478,305],[785,220]].map(([x,y],i)=>'<circle class="route-number'+(i<count?' revealed':'')+'" cx="'+x+'" cy="'+y+'" r="20"/><text class="route-index" x="'+x+'" y="'+(y+7)+'">'+(i+1)+'</text>').join('');
  const result=ids.map((j,i)=>'<text class="route-result'+(i<count?' revealed':'')+'" text-anchor="middle" x="'+[158,389,620,846][i]+'" y="454">'+(i<count?safeText(plainMono(terms[j].n,terms[j].vars,true)):'?')+'</text>').join('');
@@ -368,7 +393,7 @@ function renderChecklist(){
  host.hidden=state.view!=='step'||state.mode!=='practice';
  if(host.hidden)return;
  const titles=state.direction==='expand'?
- ['See the two groups','Left goalpost · Firsts','Left diagonal · Inners','Right diagonal · Outers','Right goalpost · Lasts','Combine only like terms']:
+ ['Align factors vertically','Left goalpost · Firsts','Left diagonal · Inners','Right diagonal · Outers','Right goalpost · Lasts',new Set(fourTerms(state.q).map(term=>monoKey(term.vars))).size===4?'Observe: four unlike terms':'Check and combine like terms']:
  ['Identify four products','Group adjacent terms','Take common factors','Find repeated bracket','Restore both factors'];
  const current=Math.min(state.step,titles.length-1);
  host.innerHTML='<h2>Steps</h2>';
@@ -396,12 +421,12 @@ function renderPractice(){
  $('partials').innerHTML=routeLabels.map((name,i)=>'<div class="partial'+(i>=visible?' pending':'')+(state.view==='step'&&state.direction==='expand'&&state.step===i+1?' active':'')+'"><strong>'+(i+1)+'. '+name+'</strong><span class="value">'+(i<visible?fmtMono(terms[ids[i]].n,terms[ids[i]].vars,true):'· · ·')+'</span></div>').join('');
  const limit=state.direction==='expand'?5:4,step=state.view==='worked'?limit:state.step,work=[];
  if(state.direction==='expand'){
-  $('status').textContent=step===0?'Start with two groups: every term in one multiplies every term in the other.':step<=4?routeLabels[step-1]+' — multiply the connected terms.':'Check the variable parts before combining.';
+  $('status').textContent=step===0?'Align the top and bottom factors vertically. Each top term multiplies each bottom term.':step<=4?routeLabels[step-1]+' — multiply the connected terms.':new Set(fourTerms(q).map(t=>monoKey(t.vars))).size===4?'Observe four unlike terms, as expected: there is nothing to collect.':'The variable parts match in some products: combine only those like terms.';
   if(step>=4)work.push('<div class="mathline">'+expanded(q)+'</div>');
   if(step>=5){
    const list=fourTerms(q),distinct=new Set(list.map(t=>monoKey(t.vars))).size===4;
    if(!distinct)work.push('<div class="mathline final">= '+solution(q)+'</div><div class="explain">Only terms with exactly matching letters and powers can be combined.</div>');
-   else work.push('<div class="explain">All four products are unlike terms: no combining is necessary.</div>');
+   else work.push('<div class="explain">Observe four unlike terms, as expected. They have distinct variable parts, so no combining is necessary.</div>');
   }
  }else{
   const swapped=state.group==='swapped';
@@ -420,15 +445,45 @@ function renderPractice(){
 }
 
 const lessonSlides=[
- {title:'Four products, two groups',body:'<p>Imagine choosing one top and one bottom. There are <b>3 red tops</b>, <b>2 blue tops</b>, <b>4 kinds of shorts</b> and <b>5 kinds of trousers</b>.</p><div class="lesson-maths">(3 + 2)(4 + 5)</div><p>How many different outfits could you make?</p>',reveal:'<div class="lesson-outfits"><div>3 red tops × 4 shorts<br><strong>12</strong></div><div>2 blue tops × 4 shorts<br><strong>8</strong></div><div>3 red tops × 5 trousers<br><strong>15</strong></div><div>2 blue tops × 5 trousers<br><strong>10</strong></div></div><div class="lesson-maths">12 + 8 + 15 + 10 = 45</div><p>Each cell counts one category of outfit. Every outfit is counted exactly once.</p>'},
- {title:'Two different ways to count',body:'<p>Count <b>by type of bottom</b>: shirts-and-shorts, followed by shirts-and-trousers. Or count <b>by type of top</b>: red outfits, followed by blue outfits.</p><div class="lesson-maths">(3 + 2) × 4 + (3 + 2) × 5</div>',reveal:'<div class="lesson-maths">3(4 + 5) + 2(4 + 5) = 45</div><p>Both ways group exactly the same four products.</p>'},
- {title:'From choices to algebra',body:'<div class="lesson-maths">(A + B)(C + D)</div><p>Each term in the first group multiplies each term in the second. Four partial products are created.</p>',reveal:'<div class="lesson-maths">AC + BC + AD + BD</div><p><b>A+B</b> and <b>C+D</b> are the two factors. <b>AC, BC, AD and BD</b> are the four resulting terms. Like or unlike describes the variable parts of <i>terms</i>, not a switch for the factors.</p>'},
- {title:'Vertical routes: four steps',body:'<div class="lesson-maths"><b>1.</b> Left goalpost · Firsts<br><b>2.</b> Left diagonal · Inners<br><b>3.</b> Right diagonal · Outers<br><b>4.</b> Right goalpost · Lasts</div><p>These are spatial names for this diagram, not the order used by the horizontal rainbow FOIL method.</p>',reveal:'<div class="lesson-maths">AC → BC → AD → BD</div><p>All four products appear once, in a predictable order.</p>'},
- {title:'When are all four terms unlike?',body:'<div class="lesson-maths">(ax + b)(cy + d)</div><p>Assume x and y are different variables and a, b, c and d are non-zero numbers.</p><p>Will any terms combine?</p>',reveal:'<div class="lesson-maths">acxy + bcy + adx + bd</div><p>The variable parts are <b>xy, y, x</b> and <b>1</b>: all different. With identical variable parts, such as two x terms, combining is possible.</p>'},
- {title:'Grouping without rearranging',body:'<div class="lesson-maths">AC + BC + AD + BD</div><p>The first two products share C; the last two share D. Keep the pairs intact.</p>',reveal:'<div class="lesson-maths">C(A + B) + D(A + B)<br>= (C + D)(A + B)</div><p>We recover the two original factors.</p>'},
- {title:'Swap the two middle terms',body:'<div class="lesson-maths">AC + BC + AD + BD</div><p>Swap BC and AD if you want to group products by the <i>first</i> bracket instead.</p>',reveal:'<div class="lesson-maths">AC + AD + BC + BD<br>= A(C + D) + B(C + D)<br>= (A + B)(C + D)</div><p>Swapping the middle terms changes their order, not their sum.</p>'},
- {title:'A tempting misconception',body:'<div class="lesson-maths">AC + BD &nbsp;&nbsp; and &nbsp;&nbsp; BC + AD</div><p>What if we pair the two extremes and then the two middle products?</p>',reveal:'<p class="lesson-choice warn">These are legitimate sums, but they <b>generally do not expose the repeated original binomial</b> by ordinary grouping. Compare with the two productive pairings.</p><p>The rule is about how to <i>factor efficiently</i>, not about which terms may be added.</p>'},
- {title:'What should a pupil remember?',body:'<p>There are four partial products from multiplying two binomials. Keep track of each route; then check the variable parts before combining.</p><div class="lesson-maths">Firsts · Inners · Outers · Lasts</div>',reveal:'<p>To reverse the expansion, keep productive pairs together. If needed, swap the two middle products to reveal the other grouping. This is the structure behind the algorithm.</p>'}
+ {title:'Start with a two-way table',body:
+  '<p>There are <b>3 red tops</b>, <b>2 blue tops</b>, <b>4 kinds of shorts</b> and <b>5 kinds of trousers</b>. Choose one top and one bottom.</p>'+
+  '<table class="lesson-two-way" aria-label="Two-way table, columns 3 and 2, rows 4 and 5"><thead><tr><th scope="col">Bottom ↓ / Top →</th><th scope="col">3 red</th><th scope="col">2 blue</th></tr></thead><tbody><tr><th scope="row">4 shorts</th><td>12</td><td>8</td></tr><tr><th scope="row">5 trousers</th><td>15</td><td>10</td></tr></tbody></table>'+
+  '<p>Why are there <b>four cells</b>?</p>',
+  reveal:'<div class="lesson-maths">(3 + 2)(4 + 5) = 12 + 8 + 15 + 10 = 45</div><p>Each cell counts one combination. The total counts every possible outfit once.</p>'},
+ {title:'The same idea as an area model',body:
+  '<p>Split a rectangle into widths <b>3</b> and <b>2</b>, and heights <b>4</b> and <b>5</b>. Four smaller rectangles appear.</p>'+
+  '<div class="lesson-area-model" role="img" aria-label="Area model: widths 3 and 2; heights 4 and 5. Products 12, 8, 15 and 10."><div class="lesson-area-column-labels"><span>3</span><span>2</span></div><div class="lesson-area-inner"><div class="lesson-area-row-labels"><span>4</span><span>5</span></div><div class="lesson-area-regions"><span>3 × 4 = 12</span><span>2 × 4 = 8</span><span>3 × 5 = 15</span><span>2 × 5 = 10</span></div></div></div>',
+  reveal:'<p>The area is <b>(3 + 2)(4 + 5)</b>. We get the same four partial products as in the two-way table. A diagram explains <i>why</i> the distributive law works.</p>'},
+ {title:'What are like and unlike terms?',body:
+  '<div class="lesson-comparison"><div class="lesson-choice"><strong>Same variable part</strong><div class="lesson-maths">3p²q and 7p²q</div><p>These are <b>like terms</b>.</p></div><div class="lesson-choice"><strong>Different variable part</strong><div class="lesson-maths">3p²q² and 7p²q</div><p>These are <b>unlike terms</b>.</p></div></div>'+
+  '<p>What changes: the number, the letter, or the power?</p>',
+  reveal:'<p>Like terms have <b>identical variable parts</b> — same letters raised to the same powers. Coefficients may differ.</p><div class="lesson-maths">3p²q + 7p²q = 10p²q</div><p>But p²q² and p²q cannot be collected.</p>'},
+ {title:'Now align two factors vertically',body:
+  '<p>We use the <b>Vertical FOIL</b> routes. The upper group and lower group each have two terms.</p>'+
+  '<div class="lesson-route-demo diagram"><!--VERTICAL_ROUTE_DIAGRAM--></div>'+
+  '<p>Read the arrows: <b>left goalpost → left diagonal → right diagonal → right goalpost</b>.</p>',
+  reveal:'<div class="lesson-maths">15xy + 10y + 12x + 8</div><p>Each arrow gives one product, and every possible pairing is counted exactly once.</p>'},
+ {title:'Why four unlike products?',body:
+  '<div class="lesson-maths">(3x + 2)(5y + 4)</div>'+
+  '<div class="lesson-maths lesson-terms"><span>15xy</span><span>10y</span><span>12x</span><span>8</span></div>'+
+  '<p>Compare their variable parts: <b>xy, y, x, 1</b>. Can any two terms be combined?</p>',
+  reveal:'<p><b>No.</b> Because x and y are different variables, all four variable parts are different. That is why these four products remain separate.</p><p>Do not confuse having two <i>factors</i> with having <i>like terms</i>.</p>'},
+ {title:'Split the brackets to reveal two groups',body:
+  '<p>To undo an expansion, identify two groups which both contain the same bracket.</p>'+
+  '<div class="lesson-maths">AC + BC + AD + BD</div>'+
+  '<div class="lesson-comparison"><div class="lesson-choice"><strong>First pair</strong><div class="lesson-maths">AC + BC</div></div><div class="lesson-choice"><strong>Second pair</strong><div class="lesson-maths">AD + BD</div></div></div>',
+  reveal:'<div class="lesson-maths">C(A + B) + D(A + B)</div><div class="lesson-maths">= (A + B)(C + D)</div><p>Both groups reveal <b>(A + B)</b>. We have reversed the original multiplication without swapping terms.</p>'},
+ {title:'Why might we swap the middle terms?',body:
+  '<div class="lesson-maths">AC + BC + AD + BD</div>'+
+  '<p>The neighbouring pairs already work. What if we instead want to collect the products belonging to <b>A</b>, then those belonging to <b>B</b>?</p>'+
+  '<div class="lesson-maths">AC + AD + BC + BD</div>',
+  reveal:'<div class="lesson-maths">A(C + D) + B(C + D)</div><div class="lesson-maths">= (A + B)(C + D)</div><p>Swapping the middle terms exposes another productive pairing. Pairing <b>AC + BD</b> and <b>BC + AD</b> is a tempting alternative, but generally does not reveal the original binomial factor by ordinary grouping.</p>'},
+ {title:'Retrieval: explain the method',body:
+  '<p><b>1.</b> Why does a two-by-two table give four partial products?</p>'+
+  '<p><b>2.</b> Which four routes appear in Vertical FOIL?</p>'+
+  '<p><b>3.</b> Why are 3p²q and 7p²q like terms, but p²q² and p²q unlike?</p>'+
+  '<p><b>4.</b> When might swapping the middle two products help with factorisation?</p>',
+  reveal:'<p>Every top term pairs with every bottom term; follow both goalposts and both diagonals; like terms have identical variable parts; swapping the middle two terms can expose an alternative repeated binomial.</p>'}
 ];
 let lessonIndex=0,lessonReveal=false;
 function renderLesson(){
@@ -445,7 +500,8 @@ function renderLesson(){
  make('Close',()=>setMode('practice'));
  head.append(heading,controls);
  const body=document.createElement('div');body.className='lesson-slide';
- body.innerHTML='<h3>'+slide.title+'</h3>'+slide.body+(lessonReveal?'<div class="lesson-choice">'+slide.reveal+'</div>':'');
+ const instructionalContent=slide.body.replace('<!--VERTICAL_ROUTE_DIAGRAM-->',diagramHTML({a:3,b:2,c:5,d:4,m1:'x',m2:'y'},true));
+ body.innerHTML='<h3>'+slide.title+'</h3>'+instructionalContent+(lessonReveal?'<div class="lesson-choice">'+slide.reveal+'</div>':'');
  const reveal=document.createElement('button');reveal.type='button';reveal.className='primary';
  reveal.textContent=lessonReveal?'Hide explanation':'Reveal explanation';
  reveal.onclick=()=>{lessonReveal=!lessonReveal;renderLesson()};
