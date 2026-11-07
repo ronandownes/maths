@@ -627,9 +627,12 @@ function makeQuestion(next,signOverride=null){
   if(type==='cl'&&Math.abs(b[0])===1)continue;
   if(!beyondTypes.includes(type)&&level===2&&product(a,b).some(v=>Math.abs(v)>100))continue;
   if(!beyondTypes.includes(type)&&level===1&&product(a,b).some(v=>Math.abs(v)>60))continue;
-  return {a,b,type,sign,scalar:state.constantOn?pick([2,3,4,5]):1};
+  // Include the HCF in the actual coefficients, so every app surface calculates correctly.
+  // Since both unscaled integer factors are primitive, the expansion has coefficient HCF = scale.
+  const scale=state.constantOn?pick([2,3,4,5]):1;
+  return {a:a.map(v=>v*scale),b,type,sign,scalar:1};
  }
- return {a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)],type,sign,scalar:state.constantOn?2:1};
+ return {a:[state.constantOn?2:1,...Array(na-1).fill(sign==='negative'?-2:2).map(v=>v*(state.constantOn?2:1))],b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)],type,sign,scalar:1};
 }
 function chosenQuestion(){
  const rng=state.slot==='fresh'
@@ -638,7 +641,7 @@ function chosenQuestion(){
  // Six reproducible questions in each of six banks.
  const bankSigns=['positive','negative','mixed','positive','negative','mixed'];
  if(state.slot===0&&state.bankQuestion===0&&state.type==='ll'&&state.level===1&&!state.factorRandom){
-  return {a:[1,1],b:[2,1],type:'ll',sign:'positive',scalar:state.constantOn?2:1};
+  return {a:state.constantOn?[2,2]:[1,1],b:[2,1],type:'ll',sign:'positive',scalar:1};
  }
  return makeQuestion(rng,state.slot==='fresh'?null:bankSigns[state.slot]);
 }
@@ -1702,7 +1705,7 @@ function worksheetQuestions(countOverride){
  const levelBase=Math.max(1,Math.min(3,state.level));
  const signFor=i=>ws.category==='progressive'?['positive','positive','negative','mixed'][Math.min(3,Math.floor(4*i/count))]:ws.category;
  try{
-  state.slot='fresh';state.constantOn=false;state.factorRandom=false;
+  state.slot='fresh';state.factorRandom=false;
   for(let i=0;i<count;i++){
    const progress=count<=1?0:i/(count-1);
    const type=types[Math.min(types.length-1,Math.floor(progress*types.length))],sign=signFor(i);
@@ -1711,7 +1714,7 @@ function worksheetQuestions(countOverride){
    state.monic=(ws.sheet===1&&i%4===0)||(ws.sheet===2&&i%6===0);
    const seed=seedFor(50000+ws.sheet*1103+i*97+(ws.use==='homework'?10007:0));
    const q=makeQuestion(seeded(seed),sign);
-   if(ws.sheet>=3&&progress>.6&&i%4===1){
+   if(!state.constantOn&&ws.sheet>=3&&progress>.6&&i%4===1){
     const arr=i%2?q.a:q.b;
     arr[arr.length-1]=(arr[arr.length-1]<0?-1:1)*[21,31,41][i%3];
    }
