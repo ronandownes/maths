@@ -2,7 +2,7 @@
 <html lang="en-IE">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Place-Value Expansion in One Variable | Maths Apps</title>
+<title>Expanding Brackets · Place Value | Maths Apps</title>
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <style>
 :root{font-family:Arial,Helvetica,sans-serif;color:#202124;background:#f1f3f4}
@@ -233,12 +233,58 @@ button:disabled{opacity:.38;cursor:default}
 .test-number-arrows button+button{border-top:1px solid #e4e8ef}
 @media(max-width:600px){.quiz-choices{grid-template-columns:1fr}}
 @media(max-width:700px){.toolbar-bottom .modes{margin-left:0}.toolbar-bottom{gap:8px}.settings-top{gap:7px}}
+
+/* Compact classroom layout: prioritise the working table, not control chrome. */
+main{margin:5px auto;padding:10px 19px 18px}
+.settings-top{padding:2px 0 7px}
+.common-settings{margin-bottom:6px;padding-bottom:7px}
+.settings-top .setting{padding:3px 7px}
+#types button,#signs button{min-height:39px}
+.button-group button{padding:6px 9px}
+.activity-switch{align-items:center;flex-wrap:wrap;gap:6px 8px;margin-bottom:5px;padding-bottom:6px}
+.activity-switch>button{padding:7px 11px;font-size:.9rem}
+#worksheetMode{margin-left:0;border-color:#b8c0c9;background:#fff;color:inherit}
+#worksheetMode[aria-pressed=true]{background:#e8f0fe;color:#174ea6;border-color:#1a73e8}
+.practice-quick-controls{display:flex;flex:1 1 auto;align-items:center;gap:8px;justify-content:flex-end;min-width:0;flex-wrap:wrap}
+.homework-controls{display:flex;align-items:center;gap:6px}
+.homework-label{font-size:.82rem;font-weight:700;color:#536376}
+.homework-controls .top-questions{margin:0;gap:4px}
+.homework-controls .top-questions button{width:30px;min-width:30px;height:30px;flex-basis:30px}
+.homework-controls .top-questions button:last-child{flex-basis:auto;min-width:68px}
+.practice-quick-controls .modes{margin:0;gap:5px}
+.practice-quick-controls .modes button{padding:7px 9px;font-size:.85rem}
+#practiceArea.step-active{grid-template-columns:minmax(0,1fr) minmax(270px,335px);column-gap:10px}
+#practiceArea.step-active>.practice-layout{display:contents}
+#practiceArea.step-active .practice-working{grid-column:1;grid-row:1}
+#practiceArea.step-active .step-checklist{grid-column:2;grid-row:1}
+.step-checklist{padding:9px 12px}
+.step-checklist-title{font-size:1.12rem;margin-bottom:5px}
+.checklist-item{padding:9px 3px;gap:8px;font-size:.99rem;line-height:1.23}
+.checklist-marker{width:29px;height:29px;flex-basis:29px}
+.factor-expression{font-size:clamp(1.65rem,3vw,2.16rem);padding:1px 5px 0;line-height:1.2}
+.coefficients{margin:2px 0 4px;gap:10px}
+.coefficient-control{height:61px;width:83px}
+.coefficient-symbol{height:24px;flex-basis:24px;line-height:23px;font-size:1.3rem}
+.coefficient-control input{font-size:1.25rem;padding:1px 0 1px 3px}
+.coefficient-arrows{width:21px;flex-basis:21px}
+.canvas{padding:8px 9px;min-height:190px}
+.math-table td{padding:5px 3px;line-height:1.19}
+.math-table th{padding:4px 3px 5px;line-height:1.16}
+.equation.worked-conclusion{margin:7px auto 0;padding:6px 12px}
+@media(max-width:850px){
+ #practiceArea.step-active{display:flex;flex-direction:column;gap:8px}
+ #practiceArea.step-active>.practice-layout{display:contents}
+ #practiceArea.step-active .practice-working{order:2;width:100%}
+ #practiceArea.step-active .step-checklist{order:1;width:100%}
+ .practice-quick-controls{justify-content:flex-start}
+}
+@media(max-width:520px){.activity-switch>button{flex:1 1 auto}.coefficient-control{width:76px}}
 </style>
 </head>
 <body>
 <header>
 <a href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"></a><span class="apps-name">Apps</span>
-<div><a href="../../algebra/index.html">Algebra</a><h1>Place-Value Expansion in One Variable</h1></div>
+<div><a href="../../algebra/index.html">Algebra</a><h1 title="Distributive law: multiply every term in one bracket by every term in the other">Expanding Brackets · Place Value</h1></div>
 </header>
 <main>
 <div class="settings settings-top common-settings">
@@ -250,14 +296,14 @@ button:disabled{opacity:.38;cursor:default}
  <button id="practiceMode" type="button" aria-pressed="true">Practice</button>
  <button id="quizMode" type="button" aria-pressed="false">Quiz</button>
  <button id="testMode" type="button" aria-pressed="false">Test</button>
- <button id="worksheetMode" type="button" aria-label="Generate printable worksheet with twelve homework questions and four challenges">Generate worksheet</button>
+ <button id="worksheetMode" type="button" aria-pressed="false">Worksheet</button>
+ <div class="practice-quick-controls" id="practiceQuickControls">
+  <div class="homework-controls"><span class="homework-label">Homework</span><nav class="top-questions" id="questions" aria-label="Four fixed homework questions or a new random question"></nav></div>
+  <div class="modes" id="modes" aria-label="How to view the solution"></div>
+ </div>
 </div>
 <section id="worksheetPanel" class="worksheet-panel" hidden aria-label="Worksheet settings"></section>
 <div id="practiceArea">
-<div class="toolbar-bottom">
-<div class="setting bank-setting"><span class="caption caption-wrapped">Question bank<span>(Homework)</span></span><nav class="top-questions" id="questions" aria-label="Four reproducible homework questions for the selected settings"></nav></div>
-<div class="modes" id="modes" aria-label="How to view the solution"></div>
-</div>
 <div class="practice-layout">
  <div class="practice-working">
   <div class="factor-expression" id="factorExpression" aria-label="Current multiplication question"></div>
@@ -416,7 +462,7 @@ function renderSelectors(){
  if(state.mode==='step'){
   const reset=document.createElement('button');reset.type='button';reset.textContent='Reset steps';
   reset.setAttribute('aria-label','Reset step-by-step working');
-  reset.onclick=()=>{state.step=0;state.partialCount=0;state.partialAll=false;render()};host.append(reset);
+  reset.onclick=()=>{state.step=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render()};host.append(reset);
  }
 }
 function coefficientInputs(){
@@ -509,7 +555,7 @@ function draw(){
     const sub=document.createElement('div');sub.className='stage-controls';
     sub.setAttribute('aria-label','Calculate partial products');
     const description=document.createElement('div');description.className='stage-control-title';
-    description.textContent=items.length+' partial products';
+    description.textContent=items.length+' products · every term × every term';
     sub.append(description);
     const modes=document.createElement('div');modes.className='stage-mode-buttons';
     const individually=document.createElement('button');individually.type='button';
@@ -1058,7 +1104,7 @@ function worksheetOptions(){
  stepsField.append(stepsLabel);
  panel.append(grid);
  const actions=el('div',undefined,'worksheet-actions'),go=el('button','Open printable worksheet','primary'),close=el('button','Close');
- const status=el('span');status.id='wsStatus';go.onclick=printWorksheet;close.onclick=()=>{panel.hidden=true;$('worksheetMode').setAttribute('aria-expanded','false')};
+ const status=el('span');status.id='wsStatus';go.onclick=printWorksheet;close.onclick=()=>switchMode('practice');
  actions.append(go,close,status);panel.append(actions);wsStatus();
 }
 function wsStatus(){
@@ -1230,19 +1276,22 @@ function printWorksheet(){
  const popup=window.open('','_blank');if(!popup){alert('Allow pop-ups to view the worksheet.');return}
  popup.document.open();popup.document.write(html);popup.document.close();
 }
-$('worksheetMode').onclick=()=>{
- const panel=$('worksheetPanel');panel.hidden=!panel.hidden;
- $('worksheetMode').setAttribute('aria-expanded',String(!panel.hidden));
- if(!panel.hidden)worksheetOptions();
-};
+$('worksheetMode').onclick=()=>switchMode('worksheet');
 function switchMode(mode){
+ const previous=assessment.mode;
  assessment.mode=mode;
- const active=mode!=='practice';
- $('practiceArea').hidden=active;$('testArea').hidden=!active;
- for(const [key,value] of [['practiceMode','practice'],['quizMode','quiz'],['testMode','test']]){
+ $('practiceArea').hidden=mode!=='practice';
+ $('testArea').hidden=mode!=='quiz'&&mode!=='test';
+ $('worksheetPanel').hidden=mode!=='worksheet';
+ $('practiceQuickControls').hidden=mode!=='practice';
+ for(const [key,value] of [['practiceMode','practice'],['quizMode','quiz'],['testMode','test'],['worksheetMode','worksheet']]){
   $(key).setAttribute('aria-pressed',String(mode===value));
  }
- if(active){initialiseTest('random')}
+ if(mode==='worksheet'){
+  worksheetOptions();
+ }else if((mode==='quiz'||mode==='test')&&mode!==previous){
+  initialiseTest('random');
+ }
 }
 $('practiceMode').onclick=()=>switchMode('practice');
 $('quizMode').onclick=()=>switchMode('quiz');
