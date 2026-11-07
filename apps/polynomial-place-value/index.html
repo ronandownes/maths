@@ -374,18 +374,23 @@ main{margin:5px auto;padding:10px 19px 18px}
 .worksheet-quick{display:grid;gap:10px;padding:12px;margin:8px 0 12px;border:1px solid #cfdeec;background:#f7fbff;border-radius:10px}
 .worksheet-quick-group{display:grid;gap:6px}.worksheet-quick-group>strong{font-size:.85rem;color:#4e6179}
 .worksheet-quick .worksheet-options button{min-height:36px}.worksheet-quick button[aria-pressed=true]{background:#dcecff;border-color:#4e83c5;font-weight:700}
-.board-panel{background:#fff;border:1px solid #cddae9;border-radius:12px;padding:12px;margin:10px 0}
-.board-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-.board-controls strong{margin-right:auto}
-.board-grid{display:grid;gap:12px;min-height:65vh;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
-.board-grid-9{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr))}
-.board-question{border:1px solid #d7e0eb;border-radius:9px;padding:16px;min-width:0;display:flex;align-items:center;justify-content:center;position:relative;flex-direction:column}
-.board-number{position:absolute;top:9px;left:11px;color:#778395;font-size:.96rem}
-.board-expression{font:clamp(1.4rem,2.65vw,3rem)/1.35 "Cambria Math",Cambria,Georgia,serif;text-align:center;overflow-wrap:anywhere}
-.board-answer{font:clamp(1.16rem,2vw,2.3rem)/1.4 "Cambria Math",Cambria,Georgia,serif;color:#275b87;text-align:center;margin-top:15px}
-.board-panel:fullscreen{background:#fff;padding:20px;display:flex;flex-direction:column}
-.board-panel:fullscreen .board-grid{flex:1;min-height:0}
-@media(max-width:660px){.board-grid,.board-grid-9{gap:5px}.board-question{padding:13px 5px}.board-expression{font-size:clamp(1rem,3.4vw,1.6rem)}}
+.board-panel{background:#fff;border:1px solid #d4dee8;border-radius:12px;padding:9px;margin:9px 0}
+.board-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.board-controls strong{font-size:.9rem;margin-right:auto}
+.board-controls button{padding:7px 10px;min-height:34px}
+.board-custom{display:flex;align-items:center;gap:5px;color:#5c6c7f;font-size:.8rem}
+.board-custom input{width:44px;height:34px;padding:3px;border:1px solid #bac7d5;border-radius:6px;text-align:center}
+.board-grid{display:grid;gap:5px;height:min(78vh,920px);min-height:400px;width:100%;background:#fff}
+.board-question{min-width:0;min-height:0;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 9px;border:1px solid #edf0f4;border-radius:7px;overflow:hidden}
+.board-number{position:absolute;left:10px;top:7px;color:#98a3b0;font-size:clamp(.8rem,1.2vw,1.3rem)}
+.board-expression{display:flex;align-items:center;justify-content:center;gap:.13em;max-width:100%;min-width:0;line-height:1.12;font-family:"Cambria Math",Cambria,Georgia,serif;text-align:center}
+.board-factor{display:inline-block;white-space:nowrap}
+.board-answer{max-width:100%;line-height:1.2;font-family:"Cambria Math",Cambria,Georgia,serif;color:#245d8c;text-align:center;margin-top:.3em}
+.board-panel:fullscreen{width:100vw;height:100vh;background:#fff;padding:10px;display:flex;flex-direction:column;overflow:hidden}
+.board-panel:fullscreen .board-controls{display:none}
+.board-panel:fullscreen .board-grid{flex:1;height:auto;min-height:0;gap:4px}
+.board-panel:fullscreen .board-question{border-color:#f0f2f5}
+@media(max-width:640px){.board-grid{min-height:340px;gap:3px}.board-question{padding:9px 4px}.board-number{left:4px;top:3px}}
 </style>
 </head>
 <body>
@@ -1379,41 +1384,86 @@ function worksheetOptions(){
  const status=el('span');status.id='wsStatus';go.onclick=printWorksheet;close.onclick=()=>switchMode('practice');
  actions.append(go,close,status);panel.append(actions);wsStatus();
 }
-const boardState={size:4,answers:false,offset:0};
+const boardState={columns:1,rows:1,answers:false,offset:0};
 function boardFormula(q){
  const factors=q.type==='ql'?[q.b,q.a]:[q.a,q.b];
- const scalar=q.scalar&&q.scalar!==1?minus(q.scalar):'';
- return scalar+'('+poly(factors[0])+')('+poly(factors[1])+')';
+ const scalar=q.scalar&&q.scalar!==1?'<span class="board-factor">'+minus(q.scalar)+'</span>':'';
+ return scalar+factors.map(f=>'<span class="board-factor">('+poly(f)+')</span>').join('');
+}
+function fitBoardQuestions(){
+ const host=$('boardPanel');if(host.hidden)return;
+ const grid=host.querySelector('.board-grid');if(!grid)return;
+ grid.querySelectorAll('.board-question').forEach(cell=>{
+  const expr=cell.querySelector('.board-expression'),answer=cell.querySelector('.board-answer');
+  const availableWidth=Math.max(85,cell.clientWidth-28);
+  const availableHeight=Math.max(55,cell.clientHeight-(answer?cell.clientHeight*.39:35));
+  let font=Math.min(230,Math.floor(availableHeight*.68));
+  expr.style.fontSize=font+'px';expr.style.flexWrap='nowrap';
+  while(font>22&&(expr.scrollWidth>availableWidth||expr.scrollHeight>availableHeight)){
+   font-=2;expr.style.fontSize=font+'px';
+  }
+  if(expr.scrollWidth>availableWidth){expr.style.flexWrap='wrap';font=Math.max(22,font);expr.style.fontSize=font+'px'}
+  if(answer){
+   let af=Math.min(140,Math.floor(availableHeight*.45));
+   answer.style.fontSize=af+'px';
+   while(af>18&&answer.scrollWidth>availableWidth){af-=2;answer.style.fontSize=af+'px'}
+  }
+ });
 }
 function drawBoard(){
  const host=$('boardPanel');host.replaceChildren();
  const controls=el('div',undefined,'board-controls');
- controls.append(el('strong','Classwork '+ws.sheet+' · '+({positive:'Positive only',negative:'Negative non-leading',mixed:'Mixed signs',progressive:'Progressive mix'}[ws.category])));
- [['4','2 × 2'],['9','3 × 3']].forEach(([n,label])=>{
-  const btn=el('button',label);btn.type='button';btn.setAttribute('aria-pressed',String(boardState.size===Number(n)));
-  btn.onclick=()=>{boardState.size=Number(n);boardState.offset=0;drawBoard()};controls.append(btn);
+ const heading=el('strong','Classwork '+ws.sheet);
+ controls.append(heading);
+ [[1,1],[2,1],[3,2],[5,3]].forEach(([columns,rows])=>{
+  const btn=el('button',columns+' × '+rows);btn.type='button';
+  btn.setAttribute('aria-label',columns+' across, '+rows+' down');
+  btn.setAttribute('aria-pressed',String(boardState.columns===columns&&boardState.rows===rows));
+  btn.onclick=()=>{boardState.columns=columns;boardState.rows=rows;boardState.offset=0;drawBoard()};
+  controls.append(btn);
  });
- const answers=el('button',boardState.answers?'Hide answers':'Show answers');
+ const custom=el('label',undefined,'board-custom');
+ custom.append(el('span','Custom'));
+ const col=el('input');col.type='number';col.min='1';col.max='6';col.value=String(boardState.columns);col.title='Columns across';col.setAttribute('aria-label','Columns across');
+ const by=el('span','×');
+ const rows=el('input');rows.type='number';rows.min='1';rows.max='5';rows.value=String(boardState.rows);rows.title='Rows down';rows.setAttribute('aria-label','Rows down');
+ const apply=el('button','Apply');apply.type='button';
+ apply.onclick=()=>{boardState.columns=Math.max(1,Math.min(6,Number(col.value)||1));boardState.rows=Math.max(1,Math.min(5,Number(rows.value)||1));boardState.offset=0;drawBoard()};
+ custom.append(col,by,rows,apply);controls.append(custom);
+ const answers=el('button',boardState.answers?'Hide answers':'Answers');
  answers.type='button';answers.setAttribute('aria-pressed',String(boardState.answers));answers.onclick=()=>{boardState.answers=!boardState.answers;drawBoard()};
  controls.append(answers);
- const fresh=el('button','Different questions');fresh.type='button';
- fresh.onclick=()=>{boardState.offset++;drawBoard()};controls.append(fresh);
- const full=el('button','Full screen');full.type='button';
- full.onclick=()=>{if(!document.fullscreenElement){host.requestFullscreen?.()}else document.exitFullscreen?.()};
+ const next=el('button','New questions');next.type='button';
+ next.onclick=()=>{boardState.offset++;drawBoard()};controls.append(next);
+ const full=el('button','Present ⛶');full.type='button';
+ full.onclick=()=>{if(document.fullscreenElement===host)document.exitFullscreen?.();else host.requestFullscreen?.().then(()=>requestAnimationFrame(fitBoardQuestions)).catch(()=>{})};
  controls.append(full);
- const close=el('button','Close board');close.type='button';close.onclick=()=>switchMode('worksheet');controls.append(close);
+ const close=el('button','Close');close.type='button';close.onclick=()=>switchMode('worksheet');controls.append(close);
  host.append(controls);
- const questions=worksheetQuestions(boardState.size+boardState.offset*boardState.size).slice(-boardState.size);
- const grid=el('div',undefined,'board-grid');grid.className+=' board-grid-'+boardState.size;
+ const count=boardState.columns*boardState.rows;
+ const questions=worksheetQuestions(count*(1+boardState.offset)).slice(-count);
+ const grid=el('div',undefined,'board-grid');
+ grid.style.gridTemplateColumns='repeat('+boardState.columns+',minmax(0,1fr))';
+ grid.style.gridTemplateRows='repeat('+boardState.rows+',minmax(0,1fr))';
  questions.forEach((item,i)=>{
   const cell=el('article',undefined,'board-question');
-  const num=el('span',(i+1)+'.','board-number'),expression=el('div',undefined,'board-expression');
-  expression.innerHTML=boardFormula(item.q);cell.append(num,expression);
-  if(boardState.answers){const solution=el('div',undefined,'board-answer');solution.innerHTML='= '+poly(product(item.q.a,item.q.b));cell.append(solution)}
+  const number=el('span',String(i+1)+'.','board-number');
+  const expression=el('div',undefined,'board-expression');expression.innerHTML=boardFormula(item.q);
+  cell.append(number,expression);
+  if(boardState.answers){const answer=el('div',undefined,'board-answer');answer.innerHTML='= '+poly(product(item.q.a,item.q.b));cell.append(answer)}
   grid.append(cell);
  });
  host.append(grid);
+ requestAnimationFrame(fitBoardQuestions);
 }
+window.addEventListener('resize',()=>{if(assessment.mode==='board')requestAnimationFrame(fitBoardQuestions)});
+document.addEventListener('fullscreenchange',()=>{if(assessment.mode==='board')requestAnimationFrame(fitBoardQuestions)});
+document.addEventListener('keydown',event=>{
+ if(document.fullscreenElement!==$('boardPanel')||event.target.matches('input,textarea,select'))return;
+ const key=event.key.toLowerCase();
+ if(key==='n'||key==='arrowright'){event.preventDefault();boardState.offset++;drawBoard()}
+ if(key==='a'){event.preventDefault();boardState.answers=!boardState.answers;drawBoard()}
+});
 function worksheetRowsPerSide(){
  if(ws.use==='classwork')return 2;
  return ({spacious:5,balanced:8,compact:10})[ws.density]||8;
