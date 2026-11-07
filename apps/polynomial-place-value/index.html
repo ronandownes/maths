@@ -456,6 +456,13 @@ main{margin:5px auto;padding:10px 19px 18px}
 .board-stack::before{content:"×";position:absolute;left:0;bottom:.10em;font-size:.76em;line-height:1}
 .board-stack-scalar{white-space:nowrap;flex-shrink:0}
 .board-stack sup{font-size:.62em;vertical-align:super;line-height:0}
+/* One-question board: question = answer on one line, with readable fallback. */
+.board-math-line{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:.2em;max-width:100%;min-width:0}
+.board-question--single .board-math-line:has(.board-answer){flex-direction:row;align-items:baseline;gap:.28em;width:max-content;max-width:none;flex-wrap:nowrap}
+.board-question--single .board-math-line .board-expression{flex-shrink:0;flex-wrap:nowrap}
+.board-question--single .board-math-line .board-answer{flex:0 0 auto;width:auto;margin:0;padding:0;flex-wrap:nowrap;justify-content:flex-start}
+.board-question--single.board-inline-wrap .board-math-line{width:100%;max-width:100%;flex-wrap:wrap;align-items:center}
+.board-question--single.board-inline-wrap .board-math-line .board-answer{width:100%;flex:1 1 100%;justify-content:center;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -1515,20 +1522,28 @@ function fitBoardQuestions(){
  const grid=host.querySelector('.board-grid');if(!grid)return;
  grid.querySelectorAll('.board-question').forEach(cell=>{
   const expr=cell.querySelector('.board-expression'),answer=cell.querySelector('.board-answer');
+  const line=cell.querySelector('.board-math-line');
   const width=Math.max(35,cell.clientWidth-20),height=Math.max(35,cell.clientHeight-22);
-  // Question and answer are ONE typographic unit: always exactly the same size.
-  let font=Math.min(230,Math.floor(height*(answer?.33:.70)));
+  const inline=Boolean(answer&&cell.classList.contains('board-question--single'));
+  cell.classList.remove('board-inline-wrap');
+  // Answer uses the same font size as the question, whether inline or stacked.
+  let font=Math.min(230,Math.floor(height*(inline?.45:answer?.33:.70)));
   function sizeMath(){
    expr.style.fontSize=font+'px';
    if(answer)answer.style.fontSize=font+'px';
   }
+  function tooLarge(){
+   if(inline)return line.scrollWidth>width+2||line.scrollHeight>height;
+   return expr.scrollWidth>width+2||
+    expr.scrollHeight+(answer?answer.scrollHeight+7:0)>height||
+    (answer&&answer.scrollWidth>width+2);
+  }
   sizeMath();
-  while(font>8&&(
-   expr.scrollWidth>width+2||
-   expr.scrollHeight+(answer?answer.scrollHeight+7:0)>height||
-   (answer&&answer.scrollWidth>width+2)
-  )){
-   font-=2;sizeMath();
+  while(font>(inline?20:8)&&tooLarge()){font-=2;sizeMath()}
+  // Extremely long challenge answers can still wrap, but never shrink to illegibility.
+  if(inline&&tooLarge()){
+   cell.classList.add('board-inline-wrap');
+   while(font>14&&tooLarge()){font-=2;sizeMath()}
   }
  });
 }
@@ -1592,17 +1607,20 @@ function drawBoard(){
    for(let i=cellCache.length;i<count;i++){
     const item=questions[i],cell=el('article',undefined,'board-question');
     const number=el('span',String(i+1)+'.','board-number');
+    const line=el('div',undefined,'board-math-line');
     const expression=el('div',undefined,'board-expression');
     expression.innerHTML=boardFormula(item.q);
-    cell.append(number,expression);
+    line.append(expression);
     if(boardState.answers){
      const answer=el('div',undefined,'board-answer');
-     answer.innerHTML=boardAnswerHTML(item.q);cell.append(answer);
+     answer.innerHTML=boardAnswerHTML(item.q);line.append(answer);
     }
+    cell.append(number,line);
     cellCache.push(cell);
    }
   }
   grid.replaceChildren(...cellCache.slice(0,count));
+  cellCache.forEach(cell=>cell.classList.toggle('board-question--single',count===1));
   if(!fitPending){
    fitPending=true;
    requestAnimationFrame(()=>{fitPending=false;fitBoardQuestions()});
