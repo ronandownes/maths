@@ -337,7 +337,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 <div class="setting"><span class="caption caption-wrapped">Sign<span>pattern</span></span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
 <div class="setting setting--advanced"><button type="button" id="monicBtn" aria-pressed="false" title="Optional support: leading coefficients 1. Numbered homework stays fixed.">Monic off</button></div>
-<div class="beyond-choices" id="beyondPanel" hidden><strong>Beyond school maths · optional exploration</strong><div class="button-group" id="beyondChoices"></div><span>Not included in Random or the numbered homework. Quintic means degree 5.</span></div>
+<div class="beyond-choices" id="beyondPanel" hidden><strong>Beyond school maths · optional exploration</strong><div class="button-group" id="beyondChoices"></div><span>Not included in Random or the numbered homework. Quartic means degree 4; quintic means degree 5.</span></div>
 </div>
 <div class="activity-switch" aria-label="Homework and learning activities">
  <div class="homework-controls"><span class="homework-label">Homework</span><nav class="top-questions" id="questions" aria-label="Four fixed numbered homework questions"></nav></div>
@@ -379,7 +379,7 @@ const instructions=[
 ];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
 const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\nQuad'],['beyond','Beyond\ncurriculum'],['any','Rand']];
-const beyondChoices=[['cl','Constant × Linear'],['l5','Linear × Quintic'],['q5','Quadratic × Quintic'],['55','Quintic × Quintic']];
+const beyondChoices=[['l5','Linear × Quintic'],['q4','Quadratic × Quartic'],['44','Quartic × Quartic']];
 const beyondTypes=beyondChoices.map(item=>item[0]);
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
 const signChoices=[['positive','Positive\nterms'],['negative','Negative\nnon-leading'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
@@ -404,7 +404,7 @@ function seeded(seed){let x=seed>>>0;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<
 function chooseSign(next){return ['positive','negative','mixed'][next(0,2)]}
 function makeQuestion(next,signOverride=null){
  const type=state.factorRandom?factorTypes[next(0,factorTypes.length-1)][0]:state.type;
- const [na,nb]=({ll:[2,2],ql:[3,2],qq:[3,3],cl:[2,1],l5:[6,2],q5:[6,3],'55':[6,6]})[type]||[3,2];
+ const [na,nb]=({ll:[2,2],ql:[3,2],qq:[3,3],cl:[2,1],l5:[6,2],q4:[5,3],'44':[5,5]})[type]||[3,2];
  const level=state.level,sign=signOverride||(state.sign==='random'?chooseSign(next):state.sign);
  const pick=values=>values[next(0,values.length-1)];
  const fav=()=>pick([1,2,2,2,3,3,3,5,5,4,7,8,9]);
@@ -691,7 +691,7 @@ function draw(){
   });
  }
  const pad=v=>Array(n-v.length).fill(null).concat(v);
- const visibleFactors=['ql','cl','l5','q5'].includes(state.question.type)?[b,a]:[a,b];
+ const visibleFactors=['ql','cl','l5','q4'].includes(state.question.type)?[b,a]:[a,b];
  $('factorExpression').innerHTML=visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
  if(mode!=='question'&&(mode!=='step'||step>=1)){
   const table=document.createElement('table');table.className='math-table';
@@ -899,7 +899,7 @@ function playQuizSound(correct){
  }catch(_err){/* Sound is optional; marking always works without audio. */}
 }
 function testExpression(q){
- const factors=['ql','cl','l5','q5'].includes(q.type)?[q.b,q.a]:[q.a,q.b];
+ const factors=['ql','cl','l5','q4'].includes(q.type)?[q.b,q.a]:[q.a,q.b];
  return factors.map(f=>'('+poly(f)+')').join(' ');
 }
 function createChoices(q,index){
