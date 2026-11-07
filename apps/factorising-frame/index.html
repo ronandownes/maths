@@ -87,7 +87,7 @@ setText("marginSum",state.step>=5?coeff(q.B,"x"):"");
 setText("result",state.step===6?factors(v):"");
 setText("note",state.blank?"Work out a factor pair. Switch back to the worked example to inspect the method.":steps[state.step]);
 setText("progress",(state.step+1)+" / "+steps.length);
-$("previous").disabled=state.step===0;$("next").disabled=state.step===6;
+$("previous").disabled=state.step===0;$("next").disabled=false;$("next").textContent=state.step===6?"Next example →":"Next →";
 ["area1","area2","area3","area4"].forEach((id,i)=>setText(id,[coeff(q.A,"x²"),coeff(q.p,"x"),coeff(q.r,"x"),coeff(q.C)][i]));
 }
 function orderIndices(){return state.order==="simple"?examples.map((_,i)=>i):examples.map((_,i)=>i).reverse()}
