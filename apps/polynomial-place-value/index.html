@@ -329,7 +329,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 #constantBtn[aria-pressed=true]{background:#e4eefc;border-color:#6c97d9;color:#224f91}
 #challengeBtn[aria-pressed=true]{background:#f8dbe2;border-color:#bc536d;color:#77253e}
 .setting--advanced{gap:5px}
-.scalar-prefix{color:#24558e;font-weight:750;white-space:nowrap;font-size:1.2em;line-height:1;margin-right:.12em;vertical-align:baseline}
+.scalar-prefix{color:inherit;font-weight:750;white-space:nowrap;font-size:1.2em;line-height:1;margin-right:.12em;vertical-align:baseline}
 .ws-live-preview{margin:14px 0 4px;padding:14px;background:#f8fafc;border:1px solid #d7e1ee;border-radius:10px}
 .ws-live-preview>strong{font-size:1rem}.ws-live-preview>p{font-size:.83rem;color:#4c6179;margin:7px 0}
 .ws-preview-grid{display:grid;gap:8px;padding:10px;background:#fff;border:1px solid #ccd6e4;min-height:240px}
@@ -351,6 +351,21 @@ main{margin:5px auto;padding:10px 19px 18px}
 .worksheet-stage{padding:7px 9px;border:1px solid #d9e2ed;border-radius:8px;background:#f9fbfd;font-size:.84rem;display:flex;align-items:center;gap:6px}
 .worksheet-stage:has(input:checked){background:#eaf3ff;border-color:#a7c7ef}
 .ws-progression-note{font-size:.8rem;color:#566477}
+
+/* Four matching groups on the same desktop row; headings above, not beside buttons. */
+.settings-top.common-settings{display:flex;align-items:stretch;flex-wrap:wrap;gap:7px;margin-bottom:7px}
+.settings-top.common-settings>.setting{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:5px;padding:7px 8px;flex:0 1 auto;min-width:0;margin:0}
+.settings-top.common-settings>.setting>.caption{font-size:.76rem;font-weight:700;color:#59636f;line-height:1.15;white-space:nowrap;margin:0}
+.settings-top.common-settings>.setting--advanced{margin-left:auto;background:#fbfcfe}
+.settings-top .advanced-buttons{display:flex;align-items:center;gap:4px}
+.settings-top .advanced-buttons button{font:500 .76rem/1.25 Arial,Helvetica,sans-serif;min-height:39px;padding:5px 7px;color:#26323d;background:#fff;border:1px solid #c8d0da;white-space:nowrap}
+.settings-top #monicBtn[aria-pressed=true]{background:#d7f5dd;border-color:#238344;color:#14552b}
+.settings-top #constantBtn[aria-pressed=true]{background:#e4eefc;border-color:#6c97d9;color:#224f91}
+.settings-top #challengeBtn[aria-pressed=true]{background:#f8dbe2;border-color:#bc536d;color:#77253e}
+.settings-top #types button,.settings-top #signs button{min-height:39px;padding:5px 7px;font-size:.81rem;line-height:1.15}
+.settings-top #levels button{padding:7px 9px;font-size:.85rem;min-height:39px}
+.settings-top .beyond-choices[hidden]{display:none}
+@media(max-width:850px){.settings-top.common-settings>.setting--advanced{margin-left:0}}
 </style>
 </head>
 <body>
@@ -360,11 +375,11 @@ main{margin:5px auto;padding:10px 19px 18px}
 </header>
 <main>
 <div class="settings settings-top common-settings">
-<div class="setting"><span class="caption caption-wrapped">Factor<span>pattern</span></span><div class="button-group" id="types" aria-label="Standard factor types, optional beyond-curriculum challenges, or standard random"></div></div>
+<div class="setting"><span class="caption">Factor pattern</span><div class="button-group" id="types" aria-label="Choose factor pattern"></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
-<div class="setting"><span class="caption caption-wrapped">Sign<span>pattern</span></span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
-<div class="setting setting--advanced"><button type="button" id="constantBtn" aria-pressed="false" title="Optional: place a constant multiplier before the algebraic factors">Constant off</button><button type="button" id="monicBtn" aria-pressed="false" title="Optional support: leading coefficients 1. Numbered homework stays fixed.">Monic off</button><button type="button" id="challengeBtn" aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false" title="Optional higher-degree mathematics">Challenge off</button></div>
-<div class="beyond-choices" id="beyondPanel" hidden><strong>Beyond school maths · optional exploration</strong><div class="button-group" id="beyondChoices"></div><span>Not included in Random or the numbered homework. Quartic means degree 4; quintic means degree 5.</span></div>
+<div class="setting"><span class="caption">Sign pattern</span><div class="button-group" id="signs" aria-label="Choose signs"></div></div>
+<div class="setting setting--advanced"><span class="caption">Options</span><div class="advanced-buttons"><button type="button" id="constantBtn" aria-pressed="false" title="Optional: constant multiplier">Constant off</button><button type="button" id="monicBtn" aria-pressed="false" title="Optional support: leading coefficient 1">Monic off</button><button type="button" id="challengeBtn" aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false" title="Optional higher-degree challenge">Challenge off</button></div></div>
+<div class="beyond-choices" id="beyondPanel" hidden><strong>Optional challenge</strong><div class="button-group" id="beyondChoices"></div><span id="beyondNote">Choose a factor pattern to explore.</span></div>
 </div>
 <div class="activity-switch" aria-label="Homework and learning activities">
  <div class="homework-controls"><span class="homework-label">Homework</span><nav class="top-questions" id="questions" aria-label="Four fixed numbered homework questions"></nav></div>
@@ -408,7 +423,7 @@ const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\n
 const beyondChoices=[['l5','Linear × Quintic'],['q4','Quadratic × Quartic'],['44','Quartic × Quartic']];
 const beyondTypes=beyondChoices.map(item=>item[0]);
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
-const signChoices=[['positive','Positive\nterms'],['negative','Negative\nnon-leading'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
+const signChoices=[['positive','Both\npositive'],['negative','Both\nnegative'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
 const state={type:'ql',factorRandom:false,coreType:'ql',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,reflectionUsed:0,reflectionNeed:0,question:null};
@@ -525,6 +540,7 @@ function renderSelectors(){
   state.beyondOpen=false;state.type=state.coreType;state.factorRandom=false;freshQuestion();
  });
  const beyondPanel=$('beyondPanel');beyondPanel.hidden=!state.beyondOpen;
+ $('beyondNote').textContent=state.type==='l5'?'Quintic: highest power is x⁵ (degree 5).':state.type==='q4'||state.type==='44'?'Quartic: highest power is x⁴ (degree 4).':'Choose a challenge. These questions are excluded from Random and Homework.';
  chooseButtons('beyondChoices',beyondChoices,state.type,v=>{state.type=v;state.beyondOpen=true;state.factorRandom=false;freshQuestion()});
  const challenge=$('challengeBtn');challenge.textContent=state.beyondOpen?'Challenge on':'Challenge off';
  challenge.setAttribute('aria-pressed',String(state.beyondOpen));challenge.setAttribute('aria-expanded',String(state.beyondOpen));
