@@ -6,7 +6,7 @@ main{max-width:1050px;margin:6px auto;background:white;padding:14px 20px 30px;bo
 nav,.row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}nav{margin:8px 0}.top{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap}.muted{color:#596879;font-size:.88rem}.choice{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:center;margin:7px 0 9px}.choice strong{font-size:.84rem}
 #question{text-align:center;font:clamp(1.55rem,5vw,2.6rem)/1.4 Cambria,"Cambria Math",Georgia,serif;margin:16px 0 9px}#prompt{text-align:center;font-size:clamp(1rem,2.25vw,1.25rem);max-width:780px;min-height:42px;margin:0 auto 8px}
 .sheet{max-width:790px;margin:auto;border:1px solid #d5deea;border-radius:9px;padding:16px 12px;min-height:206px}.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(95px,27%);gap:12px;align-items:start}
-.frame{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;justify-items:center;gap:3px 0;font:clamp(1.3rem,3.1vw,2.05rem)/1.45 Cambria,"Cambria Math",Georgia,serif;min-height:135px}.cell{min-width:1.4em;text-align:center;white-space:nowrap}.paren{font-size:1.6em;font-weight:400}.selected{background:#eaf3ff;outline:2px solid #5e94d3;border-radius:6px}.empty{color:#b8c2cf}.margin{border-left:2px solid #adbccc;min-height:150px;padding-left:10px}.margin h2{font-size:.83rem;color:#52657b;margin:0 0 8px}.math{font:clamp(1.16rem,2.5vw,1.65rem)/1.5 Cambria,Georgia,serif;min-height:35px}.sum{border-top:2px solid #91a3b8;margin-top:4px;padding-top:5px;font-weight:700}
+.frame{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:center;justify-items:center;gap:3px 0;font:clamp(1.3rem,3.1vw,2.05rem)/1.45 Cambria,"Cambria Math",Georgia,serif;min-height:135px}.cell{min-width:1.4em;text-align:center;white-space:nowrap}.paren{font-size:1.6em;font-weight:400}.bracket-sign{font-weight:700;transform:translateY(-1px);color:#195e97}.selected{background:#eaf3ff;outline:2px solid #5e94d3;border-radius:6px}.empty{color:#b8c2cf}.margin{border-left:2px solid #adbccc;min-height:150px;padding-left:10px}.margin h2{font-size:.83rem;color:#52657b;margin:0 0 8px}.math{font:clamp(1.16rem,2.5vw,1.65rem)/1.5 Cambria,Georgia,serif;min-height:35px}.sum{border-top:2px solid #91a3b8;margin-top:4px;padding-top:5px;font-weight:700}
 #result{font:clamp(1.3rem,3.1vw,1.95rem)/1.4 Cambria,Georgia,serif;text-align:center;min-height:50px;max-width:790px;margin:13px auto}
 #note{max-width:790px;min-height:48px;margin:5px auto;font-size:1.06rem;line-height:1.45;color:#34485e}.controls{max-width:790px;margin:9px auto;display:flex;gap:8px;justify-content:space-between;align-items:center}
 #settings{max-width:790px;margin:8px auto;border:1px solid #d4dce6;border-radius:9px;padding:12px}.settingsGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}label{display:grid;gap:5px;font-size:.85rem;color:#546476}select,input{max-width:100%;border:1px solid #aab9c9;padding:9px 7px;border-radius:6px}
@@ -59,18 +59,33 @@ function factors(v){return factor(v[0],v[1])+factor(v[2],v[3])}
 function current(){return values()}
 function setText(id,v){$(id).textContent=v}
 const steps=[
-"Begin with the complete quadratic. The first and last terms constrain the four corners.",
-"Find two leading x-terms whose product is the x² term.",
-"Find two constant terms whose product is the constant term.",
-"Multiply the outer pair of terms. Put this cross-product in the right margin.",
-"Multiply the inner pair. Put that cross-product underneath in the right margin.",
-"Add the two cross-products. Their sum must equal the original middle term.",
-"Complete the factors, then expand to verify. If the middle coefficient did not match, try another factor pair."
+"Read the quadratic and draw a large X-frame beneath it. Its four corners will become the two factors.",
+"Choose the x-terms. Their product must equal the leading term.",
+"Choose the constant magnitudes. Their product must equal the magnitude of the final term. Leave signs undecided for now.",
+"Calculate the first diagonal cross-product magnitude in the right margin.",
+"Calculate the other diagonal cross-product magnitude underneath it.",
+"Compare the two cross-products with the required middle term. For mixed signs, the larger contribution takes the sign of the middle term. Reveal that sign in its own bracket.",
+"The other sign now follows automatically: the constant product is negative, so the bracket signs must be opposite.",
+"Check the signed right-margin total against the original middle term.",
+"Extract the two completed brackets as the final answer. Expand to verify."
 ];
-function frame(v,s){const [a,b,c,d]=v;let cells=[
-{t:"(",on:true,cl:"paren"},{t:s>=1?coeff(a,"x"):"□x",on:s>=1},{t:s>=2?(b<0?"−":"+"):"±",on:s>=2},{t:s>=2?Math.abs(b):"□",on:s>=2},{t:")",on:true,cl:"paren"},
-{t:"(",on:true,cl:"paren"},{t:s>=1?coeff(c,"x"):"□x",on:s>=1},{t:s>=2?(d<0?"−":"+"):"±",on:s>=2},{t:s>=2?Math.abs(d):"□",on:s>=2},{t:")",on:true,cl:"paren"}
-];$("frame").replaceChildren(...cells.map(e=>{let sp=document.createElement("span");sp.className="cell "+(e.cl||"")+(e.on?"":" empty");sp.textContent=e.t;return sp}))}
+function frame(v,s){
+ const [a,b,c,d]=v, mixed=b*d<0, q=calc(v);
+ const leading=s>=1, numbers=s>=2, firstSign=s>=5, secondSign=s>=6;
+ const dominantTop=Math.abs(q.p)>=Math.abs(q.r); // p=a*d belongs to the SECOND bracket; r=b*c to the FIRST.
+ function signAt(row){
+  if(!numbers)return "·";
+  if(!mixed)return firstSign?(row===0?(b<0?"−":"+"):(d<0?"−":"+")):"·";
+  const primaryRow=dominantTop?1:0;
+  if(row===primaryRow)return firstSign?(row===0?(b<0?"−":"+"):(d<0?"−":"+")):"·";
+  return secondSign?(row===0?(b<0?"−":"+"):(d<0?"−":"+")):"·";
+ }
+ const cells=[
+ {t:"(",cl:"paren"},{t:leading?coeff(a,"x"):"□x"},{t:signAt(0),cl:"bracket-sign"},{t:numbers?Math.abs(b):"□"},{t:")",cl:"paren"},
+ {t:"(",cl:"paren"},{t:leading?coeff(c,"x"):"□x"},{t:signAt(1),cl:"bracket-sign"},{t:numbers?Math.abs(d):"□"},{t:")",cl:"paren"}
+ ];
+ $("frame").replaceChildren(...cells.map((e,i)=>{let sp=document.createElement("span");sp.className="cell "+(e.cl||"")+(e.t==="·"?" empty":"");sp.textContent=e.t;return sp}));
+}
 function render(){const v=current(),q=calc(v);setText("question",formula(v));setText("caseTitle",examples[state.index].name);setText("prompt",state.mode==="instruction"?"Use the four corners. Check the two cross-products in the right margin.":state.mode==="practice"?"Explore the frame, or work independently on the blank sheet.":"Factorise without hints.");
 $("assessment").hidden=!["game","quiz","test"].includes(state.mode);
 $("controls").hidden=["game","quiz","test"].includes(state.mode)||state.blank;
@@ -81,13 +96,13 @@ $("result").hidden=["game","quiz","test"].includes(state.mode);
 $("note").hidden=["game","quiz","test"].includes(state.mode);
 if(["game","quiz","test"].includes(state.mode))return;
 frame(v,state.step);
-setText("margin1",state.step>=3?coeff(q.p,"x"):"");
-setText("margin2",state.step>=4?coeff(q.r,"x"):"");
-setText("marginSum",state.step>=5?coeff(q.B,"x"):"");
-setText("result",state.step===6?factors(v):"");
+setText("margin1",state.step>=3?(state.step>=7?coeff(q.p,"x"):Math.abs(q.p)+"x"):"");
+setText("margin2",state.step>=4?(state.step>=7?coeff(q.r,"x"):Math.abs(q.r)+"x"):"");
+setText("marginSum",state.step>=7?coeff(q.B,"x"):"");
+setText("result",state.step===8?factors(v):"");
 setText("note",state.blank?"Work out a factor pair. Switch back to the worked example to inspect the method.":steps[state.step]);
 setText("progress",(state.step+1)+" / "+steps.length);
-$("previous").disabled=state.step===0;$("next").disabled=false;$("next").textContent=state.step===6?"Next example →":"Next →";
+$("previous").disabled=state.step===0;$("next").disabled=false;$("next").textContent=state.step===8?"Next example →":"Next →";
 ["area1","area2","area3","area4"].forEach((id,i)=>setText(id,[coeff(q.A,"x²"),coeff(q.p,"x"),coeff(q.r,"x"),coeff(q.C)][i]));
 }
 function orderIndices(){return state.order==="simple"?examples.map((_,i)=>i):examples.map((_,i)=>i).reverse()}
@@ -101,7 +116,7 @@ function submit(){if(state.locked)return;const ids=["a","b","c","d"];if(ids.some
 function advance(){if(state.q+1<state.questions.length){state.q++;loadAssessment();return}$("assessment").hidden=true;let out=document.createElement("div");out.className="message";out.textContent="Completed: "+state.score+"/"+state.questions.length+" correct."+(state.mode==="game"?" Time: "+Math.round((Date.now()-state.start)/1000)+" seconds.":"");$("feedback").replaceChildren(out)}
 $("general").onclick=()=>changeOrder("general");$("simple").onclick=()=>changeOrder("simple");
 document.querySelectorAll("[data-mode]").forEach(el=>el.onclick=()=>setMode(el.dataset.mode));
-$("next").onclick=()=>{if(state.step<6)state.step++;else nextExample();render()};
+$("next").onclick=()=>{if(state.step<8)state.step++;else nextExample();render()};
 $("previous").onclick=()=>{state.step=Math.max(0,state.step-1);render()};
 $("settingsToggle").onclick=()=>{let visible=$("settings").hidden;$("settings").hidden=!visible;$("settingsToggle").setAttribute("aria-expanded",String(visible))};
 $("newExample").onclick=()=>{let options=chooseExamples();if(!options.length){setText("feedback","No examples match these settings; broaden the filters.");return}state.index=options[Math.floor(Math.random()*options.length)];state.step=0;setMode("instruction")};
@@ -109,6 +124,6 @@ $("firstExample").onclick=()=>{state.index=orderIndices()[0];state.step=0;setMod
 $("worked").onclick=()=>{state.blank=false;state.step=0;$("worked").setAttribute("aria-pressed","true");$("blank").setAttribute("aria-pressed","false");render()};
 $("blank").onclick=()=>{state.blank=true;$("blank").setAttribute("aria-pressed","true");$("worked").setAttribute("aria-pressed","false");render()};
 $("submit").onclick=submit;$("advance").onclick=advance;
-document.addEventListener("keydown",e=>{const t=e.target;if(t.closest("input,textarea,select,button,summary,[contenteditable]"))return;if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "||e.key==="Enter"){e.preventDefault();if(!["game","quiz","test"].includes(state.mode))$("next").click()}else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();if(!["game","quiz","test"].includes(state.mode))$("previous").click()}else if(e.key==="Home"){e.preventDefault();state.step=0;render()}else if(e.key==="End"){e.preventDefault();state.step=6;render()}else if(e.key==="Escape"){$("settings").hidden=true}});
+document.addEventListener("keydown",e=>{const t=e.target;if(t.closest("input,textarea,select,button,summary,[contenteditable]"))return;if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "||e.key==="Enter"){e.preventDefault();if(!["game","quiz","test"].includes(state.mode))$("next").click()}else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();if(!["game","quiz","test"].includes(state.mode))$("previous").click()}else if(e.key==="Home"){e.preventDefault();state.step=0;render()}else if(e.key==="End"){e.preventDefault();state.step=8;render()}else if(e.key==="Escape"){$("settings").hidden=true}});
 changeOrder("general");
 </script></body></html>
