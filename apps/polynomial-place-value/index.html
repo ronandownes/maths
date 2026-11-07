@@ -679,14 +679,12 @@ function renderSelectors(){
  const host=$('modes');host.replaceChildren();
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
  toggle.onclick=()=>{if(assessment.mode!=='practice')switchMode('practice');state.mode=state.mode==='worked'?'question':'worked';render()};
- const steps=document.createElement('button');steps.type='button';steps.textContent='Step by step';steps.setAttribute('aria-pressed',String(state.mode==='step'));
- steps.onclick=()=>{if(assessment.mode!=='practice')switchMode('practice');state.mode='step';state.step=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render()};host.append(steps);
- host.append(toggle);
- if(state.mode==='step'){
-  const reset=document.createElement('button');reset.type='button';reset.textContent='Reset steps';
-  reset.setAttribute('aria-label','Reset step-by-step working');
-  reset.onclick=()=>{state.step=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render()};host.append(reset);
- }
+ const steps=document.createElement('button');steps.type='button';
+ steps.textContent=state.mode==='step'?'Restart steps':'Step by step';
+ steps.setAttribute('aria-pressed',String(state.mode==='step'));
+ steps.setAttribute('aria-label',state.mode==='step'?'Restart guided working from step one':'Start step-by-step working');
+ steps.onclick=()=>{if(assessment.mode!=='practice')switchMode('practice');state.mode='step';state.step=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render()};
+ host.append(steps,toggle);
 }
 function coefficientInputs(){
  const host=$('coefficients');host.replaceChildren();
