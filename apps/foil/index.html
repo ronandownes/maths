@@ -46,6 +46,7 @@ main{max-width:1150px;margin:auto;padding:16px 18px 38px}
 .note{color:#5f6b7a;max-width:760px;margin:14px auto 0;text-align:center;line-height:1.5;font-size:.88rem}
 @media(max-width:700px){.channels{grid-template-columns:repeat(2,minmax(0,1fr))}.channel{min-height:133px}.edit input{width:70px}.top{flex-wrap:wrap}.top nav{margin-left:0}.flow button{min-width:0;flex:1 1 140px}}
 @media print{body{background:white}.choices,.edit,.flow,.top nav{display:none}.main-panel{border:0;box-shadow:none}.channel{break-inside:avoid}}
+#all[hidden],#groupingNote[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -77,7 +78,7 @@ main{max-width:1150px;margin:auto;padding:16px 18px 38px}
 <div id="detail" class="detail" role="status" aria-live="polite">Choose a channel or reveal the four products.</div>
 <div class="expansion"><h2>Expansion: the four products stay separate</h2><div id="expanded" class="formula"></div>
 <div class="checkline"><label><input type="checkbox" id="combine"> Combine like terms (only when there are any)</label></div>
-<div id="simplified" class="simplify" aria-live="polite"></div></div>
+<div id="simplified" class="simplify" aria-live="polite"></div><div id="groupingNote" class="note" hidden></div></div>
 <p class="note">FOIL describes an order for four applications of the distributive law. The method also works when the middle products are not like terms. For grouping, reversing the expansion can expose a shared binomial factor.</p>
 </section>
 </main>
@@ -122,6 +123,7 @@ const channelLabels=['Shimmy left · channel 1','Middle · channel 2','Middle ·
 function data(){return ['a','b','c','d'].map(id=>clean($(id).value))}
 function render(){
  const values=data();
+ $('all').hidden=revealed===4;
  const valid=values.every(v=>parse(v)!==null);
  $('statement').innerHTML=valid?bracket(values[0],values[1])+' '+bracket(values[2],values[3]):'Enter numbers or simple terms such as x, −x, 3 or 2y.';
  const terms=channelPairs.map(([i,j])=>multiply(values[i],values[j]));
@@ -149,6 +151,8 @@ function render(){
  $('combine').disabled=!valid||!hasLike;
  if(!hasLike)$('combine').checked=false;
  $('simplified').innerHTML=$('combine').checked&&hasLike?'<span class="muted">After combining like terms: </span>'+ (combined.map((m,i)=>signed(m,i===0)).join('')||'0'):'';
+ const grouping=values.join(',')==='x,y,a,b';$('groupingNote').hidden=!grouping;
+ if(grouping)$('groupingNote').innerHTML='Reverse the distribution for grouping: <span class="math">ax + bx + ay + by = x(a + b) + y(a + b) = (x + y)(a + b)</span>. No like terms are needed.';
 }
 $('all').onclick=()=>{revealed=4;focus=-1;render()};
 $('one').onclick=()=>{revealed=1;focus=0;render()};
