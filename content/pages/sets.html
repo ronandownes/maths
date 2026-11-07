@@ -4,7 +4,7 @@
     <div class="sets-think">
       <div class="sets-question-label">Interactive Sets apps</div>
       <p>Move from set lists and rule notation to two-set Venn problems, then meet the universal set and complement.</p>
-      <p><a href="../../apps/sets/index.html">Open the four focused Sets apps →</a></p>
+      <p><a href="../../apps/sets/index.html">Open the five focused Sets apps →</a></p>
     </div>
   <nav class="sets-jump" aria-label="Jump to a Sets learning activity">
     <a href="#sets-start">Start here</a><a href="#sets-subsets">Subsets</a><a href="#sets-venn">Explore</a><a href="#sets-check">Check understanding</a><a href="#sets-reason">Prove or disprove</a><a href="#sets-exit">Exit ticket</a>
@@ -23,25 +23,30 @@
       <tbody>
         <tr><td class="math">∈</td><td>is an element of</td><td class="math">2 ∈ {1, 2, 3}</td></tr>
         <tr><td class="math">∉</td><td>is not an element of</td><td class="math">5 ∉ {1, 2, 3}</td></tr>
-        <tr><td class="math">⊆</td><td>is a subset of (possibly equal)</td><td class="math">{1, 2} ⊆ {1, 2, 3}</td></tr>
+        <tr><td class="math">⊂</td><td>is a subset of</td><td class="math">{1, 2} ⊂ {1, 2, 3}</td></tr>
         <tr><td class="math">∅</td><td>empty set</td><td>No elements</td></tr>
         <tr><td class="math">#A</td><td>number of elements in A</td><td class="math">#{1, 2, 3} = 3</td></tr>
         <tr><td class="math">U, Aᶜ</td><td>universal set; complement of A</td><td>Everything in U outside A</td></tr>
       </tbody>
     </table></div>
-    <p class="small-note">We use ⊆ when equality is allowed and ⊊ for a <strong>proper</strong> subset. Some textbooks use ⊂ differently, so the meaning must be stated clearly.</p>
+    <p class="small-note">We follow the log tables: ⊂ means “is a subset of”.</p>
+    <div class="sets-think">
+      <div class="sets-question-label">The four number sets in the log tables</div>
+      <p><span class="math">ℕ = {1, 2, 3, …}</span>; <span class="math">ℤ = {…, −2, −1, 0, 1, 2, …} = {0, ±1, ±2, …}</span>; <span class="math">ℚ</span> contains fractions of integers with non-zero denominators; and <span class="math">ℝ</span> contains all points on the number line.</p>
+      <p>Following the tables, zero is an integer but not a natural number. <a href="../../apps/sets/number-sets.html">Explore the four number sets and practise →</a></p>
+    </div>
     <div class="sets-think">
       <div class="sets-question-label">Spot the distinction</div>
-      <p>Let <span class="math">A = {1, 2, 3}</span>. Explain why <span class="math">2 ∈ A</span> and <span class="math">{2} ⊆ A</span> are both true, but say different things.</p>
+      <p>Let <span class="math">A = {1, 2, 3}</span>. Explain why <span class="math">2 ∈ A</span> and <span class="math">{2} ⊂ A</span> are both true, but say different things.</p>
       <details><summary>Reveal reasoning</summary><p>The number 2 is an <strong>element</strong> of A. The collection {2} is a <strong>set</strong>, and every one of its elements lies in A. An element is not the same object as the singleton set containing it.</p></details>
     </div>
   </section>
   <section id="sets-subsets">
     <h2>2. Subsets and equality</h2>
-    <p>We write <span class="math">A ⊆ B</span> exactly when <strong>every element of A is also an element of B</strong>.</p>
+    <p>We write <span class="math">A ⊂ B</span> exactly when <strong>every element of A is also an element of B</strong>, following the log tables' convention.</p>
     <div class="sets-feature">
       <span class="sets-feature-title">Key idea: inclusion in both directions</span>
-      <div class="sets-feature-math">A ⊆ B <span>and</span> B ⊆ A <span>⇒</span> A = B</div>
+      <div class="sets-feature-math">A ⊂ B <span>and</span> B ⊂ A <span>⇒</span> A = B</div>
       <p><strong>Why?</strong> The first statement says A contains nothing outside B; the second says B contains nothing outside A. Thus they have exactly the same elements.</p>
     </div>
     <div class="sets-two">
@@ -53,7 +58,7 @@
       <div class="sets-think">
         <div class="sets-question-label">Challenge</div>
         <p>Is the empty set a subset of every set, including itself?</p>
-        <details><summary>Reveal why</summary><p>Yes. There is no element of ∅ that fails to belong to any set A. Therefore ∅ ⊆ A for every A, including A = ∅.</p></details>
+        <details><summary>Reveal why</summary><p>Yes. There is no element of ∅ that fails to belong to any set A. Therefore ∅ ⊂ A for every A, including A = ∅.</p></details>
       </div>
     </div>
   </section>
@@ -73,7 +78,7 @@
     <div class="sets-think">
       <div class="sets-question-label">Make a conjecture</div>
       <p>Move A completely inside B. What do you expect <span class="math">A ∩ B</span> and <span class="math">A ∪ B</span> to be? Try it in the explorer, then justify your answers.</p>
-      <details><summary>Show mathematical explanation</summary><p>If A ⊆ B, every element of A lies in both sets, so A ∩ B = A. Combining A with B adds nothing to B, so A ∪ B = B.</p></details>
+      <details><summary>Show mathematical explanation</summary><p>If A ⊂ B, every element of A lies in both sets, so A ∩ B = A. Combining A with B adds nothing to B, so A ∪ B = B.</p></details>
     </div>
   </section>
   <section id="sets-check">
@@ -94,17 +99,17 @@
     <h2>5. Prove it, disprove it or find a counterexample</h2>
     <p>Strong mathematical thinking means making an argument that works <em>in every case</em>, or finding one counterexample that proves a claim is false.</p>
     <div class="sets-reason-grid">
-      <article class="sets-think"><div class="sets-question-label">Reasoning 1</div><p>If A ⊆ B and B ⊆ A, must A = B?</p><details><summary>Reveal a proof</summary><p>Yes. Choose any element x of A; because A ⊆ B, x ∈ B. Conversely, choose any y ∈ B; because B ⊆ A, y ∈ A. Thus both sets have precisely the same elements.</p></details></article>
+      <article class="sets-think"><div class="sets-question-label">Reasoning 1</div><p>If A ⊂ B and B ⊂ A, must A = B?</p><details><summary>Reveal a proof</summary><p>Yes. Choose any element x of A; because A ⊂ B, x ∈ B. Conversely, choose any y ∈ B; because B ⊂ A, y ∈ A. Thus both sets have precisely the same elements.</p></details></article>
       <article class="sets-think"><div class="sets-question-label">Reasoning 2</div><p>If #A = #B, must A = B?</p><details><summary>Reveal a counterexample</summary><p>No. A = {1, 2} and B = {3, 4} each have two elements but A ≠ B.</p></details></article>
       <article class="sets-think"><div class="sets-question-label">Reasoning 3</div><p>Is A \ B always equal to B \ A?</p><details><summary>Reveal a counterexample</summary><p>No. With A = {1} and B = {2}, A \ B = {1}, whereas B \ A = {2}. Set difference is not generally commutative.</p></details></article>
-      <article class="sets-think"><div class="sets-question-label">Reasoning 4</div><p>Can A ⊆ B and A ∩ B = ∅ both be true?</p><details><summary>Reveal the subtle case</summary><p>Yes, but only if A = ∅. Since A ⊆ B, the intersection is A. For it to be empty, A itself must be empty.</p></details></article>
+      <article class="sets-think"><div class="sets-question-label">Reasoning 4</div><p>Can A ⊂ B and A ∩ B = ∅ both be true?</p><details><summary>Reveal the subtle case</summary><p>Yes, but only if A = ∅. Since A ⊂ B, the intersection is A. For it to be empty, A itself must be empty.</p></details></article>
     </div>
   </section>
   <section id="sets-exit">
     <h2>6. Exit ticket</h2>
     <p>Try these without consulting the explanations. Each answer should contain a mathematical reason, not just a symbol.</p>
     <ol class="sets-exit-items">
-      <li>Explain the difference between <span class="math">3 ∈ A</span> and <span class="math">{3} ⊆ A</span>.</li>
+      <li>Explain the difference between <span class="math">3 ∈ A</span> and <span class="math">{3} ⊂ A</span>.</li>
       <li>Given <span class="math">A = {1, 3, 5}</span> and <span class="math">B = {3, 5, 7}</span>, find <span class="math">A ∪ B</span> and <span class="math">A ∩ B</span>.</li>
       <li>A student claims: “Whenever two sets have the same number of elements, they are equal.” Decide whether this is true and justify your decision.</li>
     </ol>

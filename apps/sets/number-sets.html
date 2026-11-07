@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Learn how the natural numbers, integers, rational numbers and real numbers fit together.">
+  <title>Four Number Sets | Maths Apps</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="foundations.css">
+  <style>
+    .number-set-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .number-set-card{padding:16px;background:#fff;border:1px solid var(--line);border-left:6px solid #3d7fa6;border-radius:10px}
+    .number-set-card h3{margin:0 0 4px;color:#214f79}
+    .number-set-card p{margin:5px 0}
+    .set-formula{font:700 clamp(1.1rem,2.4vw,1.5rem)/1.45 "Cambria Math",Cambria,Georgia,serif;color:#173c57;overflow-wrap:anywhere}
+    .number-sets-diagram{display:block;width:min(100%,800px);height:auto;margin:14px auto;background:white;border:1px solid var(--line);border-radius:12px}
+    .zero-note{margin:14px 0;padding:15px 17px;background:#fff8e7;border-left:5px solid #b27b22;border-radius:8px}
+    .zero-note p:last-child{margin-bottom:0}
+    .set-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
+    .set-options button{min-height:54px;font:700 1.15rem "Cambria Math",Cambria,Georgia,serif}
+    .set-options button[aria-pressed=true]{color:#fff;background:var(--blue-dark)}
+    .question-number{font:700 clamp(1.8rem,6vw,3rem) "Cambria Math",Cambria,Georgia,serif;color:#214f79}
+    @media(max-width:620px){.number-set-grid{grid-template-columns:1fr}.set-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  </style>
+</head>
+<body>
+  <header class="foundation-header">
+    <a class="foundation-brand" href="../../index.html" aria-label="Maths Apps home"><img src="../../assets/maths-logo.svg" alt=""><span>Apps</span></a>
+    <button class="foundation-menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="siteLinks">☰ Menu</button>
+    <nav class="foundation-links" id="siteLinks" aria-label="Related pages">
+      <a href="index.html">Sets apps</a>
+      <a href="../../number/sets/index.html">Sets lesson</a>
+      <a href="https://ronandownes.github.io/book/sets-first-look.html">Book chapter</a>
+    </nav>
+  </header>
+  <main class="foundation-main">
+    <p class="foundation-kicker">NUMBER · SETS APP 5</p>
+    <h1>Four familiar number sets</h1>
+    <p class="foundation-intro">The log tables list the natural numbers, integers, rational numbers and real numbers. First look at how they fit together; then practise choosing the smallest set that contains a number.</p>
+    <nav class="foundation-nav" aria-label="Choose an activity">
+      <button type="button" data-panel="watch" aria-pressed="true">Watch first</button>
+      <button type="button" data-panel="practice" aria-pressed="false">Practise</button>
+      <button type="button" data-panel="quiz" aria-pressed="false">Quiz</button>
+      <button type="button" data-panel="game" aria-pressed="false">Set sorter game</button>
+    </nav>
+
+    <section class="foundation-screen" id="panel-watch">
+      <p class="foundation-step">Read-only examples · no choices yet</p>
+      <h2>Each set contains the one before it</h2>
+      <svg class="number-sets-diagram" viewBox="0 0 1000 980" role="img" aria-labelledby="nsTitle nsDesc">
+        <title id="nsTitle">Four nested number sets</title>
+        <desc id="nsDesc">Natural numbers are inside integers, integers are inside rational numbers, and rational numbers are inside real numbers.</desc>
+        <rect width="1000" height="980" fill="#fff"/>
+        <text x="500" y="48" text-anchor="middle" font-family="Arial,sans-serif" font-size="38" font-weight="700" fill="#173c57">Four familiar number sets</text>
+        <rect x="35" y="80" width="930" height="825" rx="30" fill="#eef4f8" stroke="#225c86" stroke-width="5"/>
+        <text x="75" y="137" font-family="Arial,sans-serif" font-size="35" font-weight="700" fill="#174a76">REAL NUMBERS  ℝ</text>
+        <text x="75" y="180" font-family="Arial,sans-serif" font-size="27" fill="#294b65">All points on the number line</text>
+        <text x="770" y="180" text-anchor="end" font-family="Georgia,serif" font-size="34" font-weight="700" fill="#6b5b8e">√2, π</text>
+        <rect x="105" y="220" width="790" height="635" rx="26" fill="#e5f1f6" stroke="#3b7b9b" stroke-width="5"/>
+        <text x="145" y="277" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#28627f">RATIONAL NUMBERS  ℚ</text>
+        <text x="145" y="320" font-family="Arial,sans-serif" font-size="26" fill="#294b65">Can be written as a fraction of integers</text>
+        <text x="845" y="320" text-anchor="end" font-family="Georgia,serif" font-size="31" font-weight="700" fill="#28627f">−¾, ½, 5/1</text>
+        <rect x="180" y="365" width="640" height="440" rx="24" fill="#f8edcf" stroke="#b27b22" stroke-width="5"/>
+        <text x="220" y="422" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#855911">INTEGERS  ℤ</text>
+        <text x="220" y="466" font-family="Arial,sans-serif" font-size="25" fill="#58451f">Negative whole numbers, zero and positive whole numbers</text>
+        <line x1="255" y1="530" x2="745" y2="530" stroke="#58451f" stroke-width="4"/>
+        <path d="M745 530 l-16 -10 v20 z" fill="#58451f"/>
+        <g stroke="#58451f" stroke-width="3" fill="#fff">
+          <circle cx="290" cy="530" r="17"/><circle cx="385" cy="530" r="17"/>
+          <circle cx="480" cy="530" r="17"/><circle cx="575" cy="530" r="20"/>
+          <circle cx="670" cy="530" r="17"/><circle cx="735" cy="530" r="17"/>
+        </g>
+        <g font-family="Arial,sans-serif" font-size="27" font-weight="700" text-anchor="middle" fill="#4c3c1d">
+          <text x="290" y="582">−2</text><text x="385" y="582">−1</text><text x="575" y="582">1</text><text x="670" y="582">2</text>
+        </g>
+        <text x="480" y="582" text-anchor="middle" font-family="Arial,sans-serif" font-size="27" font-weight="700" fill="#4c3c1d">0</text>
+        <rect x="285" y="635" width="430" height="135" rx="22" fill="#e0f0e7" stroke="#39805a" stroke-width="5"/>
+        <text x="325" y="687" font-family="Arial,sans-serif" font-size="33" font-weight="700" fill="#286344">NATURAL NUMBERS  ℕ</text>
+        <text x="500" y="744" text-anchor="middle" font-family="Georgia,serif" font-size="35" font-weight="700" fill="#286344">1, 2, 3, …</text>
+        <text x="500" y="884" text-anchor="middle" font-family="Georgia,serif" font-size="38" font-weight="700" fill="#173c57">ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ</text>
+        <text x="500" y="940" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" fill="#53677b">Each set is contained in the one after it.</text>
+      </svg>
+
+      <div class="number-set-grid">
+        <article class="number-set-card">
+          <h3>Natural numbers · ℕ</h3>
+          <p class="set-formula">ℕ = {1, 2, 3, …}</p>
+          <p>In the log tables, the natural numbers start at 1: the first object, the second, the third and so on.</p>
+        </article>
+        <article class="number-set-card">
+          <h3>Integers · ℤ</h3>
+          <p class="set-formula">ℤ = {…, −2, −1, 0, 1, 2, …}<br>= {0, ±1, ±2, …}</p>
+          <p>Each ±n means the pair −n and +n. Zero appears once.</p>
+        </article>
+        <article class="number-set-card">
+          <h3>Rational numbers · ℚ</h3>
+          <p class="set-formula">ℚ = {p/q : p, q ∈ ℤ, q ≠ 0}</p>
+          <p>Examples include ½, −¾ and 5 = 5/1.</p>
+        </article>
+        <article class="number-set-card">
+          <h3>Real numbers · ℝ</h3>
+          <p class="set-formula">ℝ = all points on the number line</p>
+          <p>Real numbers include rational numbers and numbers such as √2 and π.</p>
+        </article>
+      </div>
+      <div class="zero-note">
+        <p><strong>Why does this book leave zero out of ℕ?</strong> When we count objects, we say first, second, third… If a chicken coop is empty, we say there are zero chickens. Zero tells the size of the empty collection; it is not a chicken we counted.</p>
+        <p>So, following the log tables, <span class="set-formula">ℕ = {1, 2, 3, …}</span> and <span class="set-formula">0 ∉ ℕ</span>. Zero is still an integer: <span class="set-formula">0 ∈ ℤ</span>. Some books use a different convention; in this class we follow the tables.</p>
+      </div>
+      <figure class="activity-card">
+        <figcaption><strong>One useful pattern in the integers</strong></figcaption>
+        <svg class="number-sets-diagram" viewBox="0 0 1200 650" role="img" aria-labelledby="intTitle intDesc">
+          <title id="intTitle">Integer partners on a number line</title>
+          <desc id="intDesc">Opposite integers are the same distance from zero. The roster form is zero, plus or minus one, plus or minus two, and so on.</desc>
+          <rect width="1200" height="650" fill="#fff"/>
+          <text x="600" y="62" text-anchor="middle" font-family="Arial,sans-serif" font-size="38" font-weight="700" fill="#173c57">Integers pair up around zero</text>
+          <rect x="55" y="92" width="1090" height="410" rx="24" fill="#f7fafc" stroke="#d7e0e9" stroke-width="3"/>
+          <text x="600" y="143" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="700" fill="#53677b">Opposite numbers are the same distance from zero.</text>
+          <path d="M480 185 Q600 125 720 185" fill="none" stroke="#6d4a88" stroke-width="4"/>
+          <text x="600" y="178" text-anchor="middle" font-family="Arial,sans-serif" font-size="27" font-weight="700" fill="#6d4a88">−1 and +1</text>
+          <path d="M330 255 Q600 173 870 255" fill="none" stroke="#b06b1f" stroke-width="4"/>
+          <text x="600" y="238" text-anchor="middle" font-family="Arial,sans-serif" font-size="27" font-weight="700" fill="#9a5a18">−2 and +2</text>
+          <line x1="125" y1="350" x2="1075" y2="350" stroke="#294b65" stroke-width="5"/>
+          <path d="M1075 350 l-18 -11 v22 z" fill="#294b65"/>
+          <g stroke="#294b65" stroke-width="4" fill="#fff">
+            <circle cx="180" cy="350" r="20"/><circle cx="330" cy="350" r="20"/>
+            <circle cx="480" cy="350" r="20"/><circle cx="600" cy="350" r="24"/>
+            <circle cx="720" cy="350" r="20"/><circle cx="870" cy="350" r="20"/>
+            <circle cx="1020" cy="350" r="20"/>
+          </g>
+          <g font-family="Arial,sans-serif" font-size="31" font-weight="700" text-anchor="middle" fill="#173c57">
+            <text x="180" y="410">−3</text><text x="330" y="410">−2</text>
+            <text x="480" y="410">−1</text><text x="600" y="410">0</text>
+            <text x="720" y="410">1</text><text x="870" y="410">2</text><text x="1020" y="410">3</text>
+          </g>
+          <text x="600" y="468" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" fill="#53677b">Zero appears once; each opposite pair contains two integers.</text>
+          <text x="600" y="575" text-anchor="middle" font-family="Georgia,serif" font-size="39" font-weight="700" fill="#173c57">ℤ = {0, ±1, ±2, ±3, …}</text>
+          <text x="600" y="620" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" fill="#53677b">For example, ±2 means both −2 and +2.</text>
+        </svg>
+      </figure>
+    </section>
+
+    <section class="foundation-screen" id="panel-practice" hidden>
+      <p class="foundation-step">Choose a level · immediate explanation</p>
+      <h2>Choose the smallest set</h2>
+      <div class="builder-panel">
+        <div class="builder-row">
+          <label for="practiceLevel">Difficulty
+            <select id="practiceLevel"><option value="start">Start · natural numbers and integers</option><option value="develop">Develop · include fractions</option><option value="challenge">Challenge · include irrational numbers</option></select>
+          </label>
+        </div>
+        <p>Every number belongs to ℝ, and some belong to several smaller sets. Choose the <strong>smallest</strong> set that contains the number shown.</p>
+        <p class="question-number" id="practiceNumber">4</p>
+        <div class="set-options" id="practiceOptions" role="group" aria-label="Choose the smallest number set"></div>
+        <p class="feedback-box" id="practiceFeedback" role="status" aria-live="polite"></p>
+        <div class="foundation-controls"><button type="button" id="practicePrevious">← Previous</button><span id="practiceProgress" class="foundation-step">Question 1</span><button type="button" id="practiceNext">Next →</button></div>
+        <button type="button" id="practiceRestart">Start this level again</button>
+      </div>
+    </section>
+
+    <section class="foundation-screen" id="panel-quiz" hidden>
+      <p class="foundation-step">Eight questions · your score stays on this device</p>
+      <h2>Quick quiz</h2>
+      <div class="foundation-quiz">
+        <div class="builder-row">
+          <label for="quizLevel">Difficulty
+            <select id="quizLevel"><option value="start">Start</option><option value="develop">Develop</option><option value="challenge">Challenge</option></select>
+          </label>
+          <button type="button" id="quizStart" class="primary-button">Start quiz</button>
+        </div>
+        <p id="quizProgress" class="foundation-step">Choose a level and start.</p>
+        <p class="question-number" id="quizNumber"></p>
+        <div class="set-options" id="quizOptions" role="group" aria-label="Choose the smallest number set"></div>
+        <p class="feedback-box" id="quizFeedback" role="status" aria-live="polite"></p>
+        <div class="foundation-controls"><button type="button" id="quizNext">Next →</button><button type="button" id="quizRestart">Start again</button></div>
+      </div>
+    </section>
+
+    <section class="foundation-screen" id="panel-game" hidden>
+      <p class="foundation-step">Optional game · no leaderboard</p>
+      <h2>Set sorter sprint</h2>
+      <div class="foundation-quiz">
+        <p>Sort as many numbers as you can in 60 seconds. Choose the smallest number set that contains each one. You can practise without a timer in the section above.</p>
+        <div class="foundation-controls"><button type="button" id="gameStart" class="primary-button">Start sprint</button><strong id="gameClock">60 seconds</strong><strong id="gameScore">Score: 0</strong></div>
+        <p class="question-number" id="gameNumber"></p>
+        <div class="set-options" id="gameOptions" role="group" aria-label="Choose the smallest number set"></div>
+        <p class="feedback-box" id="gameFeedback" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+    <footer class="foundation-footer"><span>Number sets · the log-table convention · classification</span><a href="index.html">Back to all Sets apps</a></footer>
+  </main>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const menuToggle = $("menuToggle"), siteLinks = $("siteLinks");
+    menuToggle.addEventListener("click", () => { const open = siteLinks.classList.toggle("is-open"); menuToggle.setAttribute("aria-expanded", String(open)); });
+    document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => {
+      document.querySelectorAll("[data-panel]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      ["watch", "practice", "quiz", "game"].forEach((name) => $("panel-" + name).hidden = name !== button.dataset.panel);
+    }));
+
+    const banks = {
+      start: [
+        {n:"4",s:"ℕ",w:"4 is a counting number, so the smallest set is ℕ."},
+        {n:"0",s:"ℤ",w:"The log tables start ℕ at 1. Zero belongs to ℤ, but not ℕ."},
+        {n:"−3",s:"ℤ",w:"A negative whole number is an integer."},
+        {n:"12",s:"ℕ",w:"12 is a positive counting number."},
+        {n:"−8",s:"ℤ",w:"−8 is an integer, but it is not a natural number in this convention."},
+        {n:"1",s:"ℕ",w:"1 is the first natural number in the log tables."},
+        {n:"25",s:"ℕ",w:"25 is a positive counting number."},
+        {n:"−1",s:"ℤ",w:"−1 is a negative integer."}
+      ],
+      develop: [
+        {n:"½",s:"ℚ",w:"½ is a ratio of integers, so it is rational; it is not an integer."},
+        {n:"−3/4",s:"ℚ",w:"A fraction of integers with non-zero denominator is rational."},
+        {n:"5",s:"ℕ",w:"5 is natural, so ℕ is the smallest set in the list that contains it."},
+        {n:"0",s:"ℤ",w:"Zero is an integer. It is not natural in the log-table convention."},
+        {n:"−2",s:"ℤ",w:"−2 is an integer. It can also be written as −2/1, but ℤ is the smallest set."},
+        {n:"0.25",s:"ℚ",w:"0.25 = 1/4, so it is rational but not an integer."},
+        {n:"−7/2",s:"ℚ",w:"−7/2 is a ratio of integers, but it is not an integer."},
+        {n:"3/1",s:"ℕ",w:"3/1 = 3, and 3 is a natural number."}
+      ],
+      challenge: [
+        {n:"√2",s:"ℝ",w:"√2 is real but cannot be written as a fraction of integers."},
+        {n:"π",s:"ℝ",w:"π is a real number, but it is not rational."},
+        {n:"0.333…",s:"ℚ",w:"0.333… = 1/3, so it is rational."},
+        {n:"−1.5",s:"ℚ",w:"−1.5 = −3/2, so it is rational but not an integer."},
+        {n:"−6",s:"ℤ",w:"−6 is an integer; it is not natural in this convention."},
+        {n:"9",s:"ℕ",w:"9 is a positive counting number."},
+        {n:"√9",s:"ℕ",w:"√9 = 3, so the smallest set is ℕ."},
+        {n:"−√4",s:"ℤ",w:"−√4 = −2, so it is an integer."}
+      ]
+    };
+    const setNames = ["ℕ", "ℤ", "ℚ", "ℝ"];
+    function shuffled(items) { const copy = items.slice(); for (let i=copy.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [copy[i],copy[j]]=[copy[j],copy[i]]; } return copy; }
+    function optionButtons(target, callback, selected) {
+      target.innerHTML = "";
+      setNames.forEach((name) => {
+        const button=document.createElement("button"); button.type="button"; button.textContent=name;
+        if (selected===name) button.setAttribute("aria-pressed","true");
+        button.addEventListener("click",()=>callback(name));
+        target.appendChild(button);
+      });
+    }
+
+    let practiceItems=[], practiceIndex=0, practiceAnswer=null;
+    function beginPractice() { practiceItems=shuffled(banks[$("practiceLevel").value]); practiceIndex=0; practiceAnswer=null; renderPractice(); }
+    function renderPractice() {
+      const item=practiceItems[practiceIndex];
+      $("practiceNumber").textContent=item.n; $("practiceProgress").textContent="Question "+(practiceIndex+1)+" of "+practiceItems.length;
+      $("practiceFeedback").textContent=practiceAnswer===null?"Choose the smallest set that contains this number.":(practiceAnswer===item.s?"Correct. ":"Try again. ")+item.w;
+      $("practiceFeedback").className="feedback-box"+(practiceAnswer===null?"":(practiceAnswer===item.s?" correct":" incorrect"));
+      optionButtons($("practiceOptions"),(name)=>{ if(practiceAnswer!==null)return; practiceAnswer=name; renderPractice(); },practiceAnswer);
+      $("practicePrevious").disabled=practiceIndex===0;
+      $("practiceNext").textContent=practiceIndex===practiceItems.length-1?"Finish level →":"Next →";
+    }
+    $("practicePrevious").addEventListener("click",()=>{if(practiceIndex>0){practiceIndex--;practiceAnswer=null;renderPractice();}});
+    $("practiceNext").addEventListener("click",()=>{
+      if(practiceAnswer===null){$("practiceFeedback").textContent="Choose an answer before moving on.";return;}
+      if(practiceIndex<practiceItems.length-1){practiceIndex++;practiceAnswer=null;renderPractice();}
+      else{$("practiceFeedback").textContent="Level complete. Choose another difficulty or start this level again."; $("practiceFeedback").className="feedback-box correct";}
+    });
+    $("practiceRestart").addEventListener("click",beginPractice);
+    $("practiceLevel").addEventListener("change",beginPractice);
+    beginPractice();
+
+    let quizItems=[], quizIndex=0, quizScore=0, quizAnswer=null, quizFinished=false;
+    function startQuiz() { quizItems=shuffled(banks[$("quizLevel").value]).slice(0,8); while(quizItems.length<8)quizItems=quizItems.concat(shuffled(banks[$("quizLevel").value])); quizItems=quizItems.slice(0,8); quizIndex=0; quizScore=0; quizAnswer=null; quizFinished=false; renderQuiz(); }
+    function renderQuiz() {
+      if(!quizItems.length){$("quizNumber").textContent="";$("quizProgress").textContent="Choose a level and start.";return;}
+      const item=quizItems[quizIndex]; $("quizNumber").textContent=item.n;
+      $("quizProgress").textContent=quizFinished?"Quiz complete · score "+quizScore+" / "+quizItems.length:"Question "+(quizIndex+1)+" of "+quizItems.length+" · score "+quizScore;
+      $("quizFeedback").textContent=quizAnswer===null?"Choose the smallest set that contains this number.":(quizAnswer===item.s?"Correct. ":"Review: ")+item.w;
+      $("quizFeedback").className="feedback-box"+(quizAnswer===null?"":(quizAnswer===item.s?" correct":" incorrect"));
+      optionButtons($("quizOptions"),(name)=>{if(quizAnswer!==null||quizFinished)return; quizAnswer=name;if(name===item.s)quizScore++;renderQuiz();},quizAnswer);
+      $("quizNext").textContent=quizIndex===quizItems.length-1?"Finish →":"Next →";
+      $("quizNext").disabled=quizAnswer===null||quizFinished;
+    }
+    $("quizStart").addEventListener("click",startQuiz);
+    $("quizNext").addEventListener("click",()=>{if(quizIndex<quizItems.length-1){quizIndex++;quizAnswer=null;renderQuiz();}else{quizFinished=true;renderQuiz();}});
+    $("quizRestart").addEventListener("click",startQuiz);
+    $("quizLevel").addEventListener("change",()=>{quizItems=[];renderQuiz();});
+
+    let gameTimer=null, gameSeconds=60, gameScore=0, gameItem=null, gameActive=false, gameAnswered=false;
+    function gameQuestion() {
+      const item=banks.challenge[Math.floor(Math.random()*banks.challenge.length)];
+      gameItem=item; gameAnswered=false; $("gameNumber").textContent=item.n; $("gameFeedback").textContent="Choose the smallest set."; $("gameFeedback").className="feedback-box";
+      optionButtons($("gameOptions"),(name)=>{
+        if(!gameActive||gameAnswered)return;
+        gameAnswered=true;
+        if(name===gameItem.s){gameScore++;$("gameFeedback").textContent="Correct. "+gameItem.w;$("gameFeedback").className="feedback-box correct";}
+        else{$("gameFeedback").textContent="Not quite. "+gameItem.w;$("gameFeedback").className="feedback-box incorrect";}
+        $("gameScore").textContent="Score: "+gameScore;
+        setTimeout(()=>{if(gameActive)gameQuestion();},650);
+      });
+    }
+    $("gameStart").addEventListener("click",()=>{
+      clearInterval(gameTimer); gameSeconds=60;gameScore=0;gameActive=true;
+      $("gameClock").textContent="60 seconds";$("gameScore").textContent="Score: 0";$("gameStart").disabled=true;
+      gameQuestion();
+      gameTimer=setInterval(()=>{
+        gameSeconds--; $("gameClock").textContent=gameSeconds+" seconds";
+        if(gameSeconds<=0){clearInterval(gameTimer);gameActive=false;$("gameStart").disabled=false;$("gameFeedback").textContent="Time. Your score was "+gameScore+". Practise a level, then try again.";$("gameFeedback").className="feedback-box";}
+      },1000);
+    });
+  </script>
+</body>
+</html>
