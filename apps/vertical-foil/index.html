@@ -414,6 +414,39 @@ function renderPractice(){
  $('nextStep').textContent=state.step>=limit?'Complete':'Next →';
  renderChecklist();renderToolbar();
 }
+
+const lessonSlides=[
+ {title:'Four products, two groups',body:'<p>Imagine choosing one top and one bottom. There are <b>3 red tops</b>, <b>2 blue tops</b>, <b>4 kinds of shorts</b> and <b>5 kinds of trousers</b>.</p><div class="lesson-maths">(3 + 2)(4 + 5)</div><p>How many different outfits could you make?</p>',reveal:'<div class="lesson-maths">3 × 4 + 2 × 4 + 3 × 5 + 2 × 5 = 45</div><p>Each product counts one type of outfit. Nothing has been missed or counted twice.</p>'},
+ {title:'Two different ways to count',body:'<p>Count <b>by type of bottom</b>: shirts-and-shorts, followed by shirts-and-trousers. Or count <b>by type of top</b>: red outfits, followed by blue outfits.</p><div class="lesson-maths">(3 + 2) × 4 + (3 + 2) × 5</div>',reveal:'<div class="lesson-maths">3(4 + 5) + 2(4 + 5) = 45</div><p>Both ways group exactly the same four products.</p>'},
+ {title:'From choices to algebra',body:'<div class="lesson-maths">(A + B)(C + D)</div><p>Each term in the first group multiplies each term in the second. Four partial products are created.</p>',reveal:'<div class="lesson-maths">AC + BC + AD + BD</div><p>The groups may represent counts, lengths or symbolic quantities.</p>'},
+ {title:'Vertical routes: four steps',body:'<div class="lesson-maths"><b>1.</b> Left goalpost · Firsts<br><b>2.</b> Left diagonal · Inners<br><b>3.</b> Right diagonal · Outers<br><b>4.</b> Right goalpost · Lasts</div><p>These are spatial names for this diagram, not the order used by the horizontal rainbow FOIL method.</p>',reveal:'<div class="lesson-maths">AC → BC → AD → BD</div><p>All four products appear once, in a predictable order.</p>'},
+ {title:'When are all four terms unlike?',body:'<div class="lesson-maths">(ax + b)(cy + d)</div><p>Assume x and y are different variables and a, b, c and d are non-zero numbers.</p><p>Will any terms combine?</p>',reveal:'<div class="lesson-maths">acxy + bcy + adx + bd</div><p>The variable parts are <b>xy, y, x</b> and <b>1</b>: all different. With identical variable parts, such as two x terms, combining is possible.</p>'},
+ {title:'Grouping without rearranging',body:'<div class="lesson-maths">AC + BC + AD + BD</div><p>The first two products share C; the last two share D. Keep the pairs intact.</p>',reveal:'<div class="lesson-maths">C(A + B) + D(A + B)<br>= (C + D)(A + B)</div><p>We recover the two original factors.</p>'},
+ {title:'Swap the two middle terms',body:'<div class="lesson-maths">AC + BC + AD + BD</div><p>Swap BC and AD if you want to group products by the <i>first</i> bracket instead.</p>',reveal:'<div class="lesson-maths">AC + AD + BC + BD<br>= A(C + D) + B(C + D)<br>= (A + B)(C + D)</div><p>Swapping the middle terms changes their order, not their sum.</p>'},
+ {title:'A tempting misconception',body:'<div class="lesson-maths">AC + BD &nbsp;&nbsp; and &nbsp;&nbsp; BC + AD</div><p>What if we pair the two extremes and then the two middle products?</p>',reveal:'<p class="lesson-choice warn">These are legitimate sums, but they <b>generally do not expose the repeated original binomial</b> by ordinary grouping. Compare with the two productive pairings.</p><p>The rule is about how to <i>factor efficiently</i>, not about which terms may be added.</p>'},
+ {title:'What should a pupil remember?',body:'<p>There are four partial products from multiplying two binomials. Keep track of each route; then check the variable parts before combining.</p><div class="lesson-maths">Firsts · Inners · Outers · Lasts</div>',reveal:'<p>To reverse the expansion, keep productive pairs together. If needed, swap the two middle products to reveal the other grouping. This is the structure behind the algorithm.</p>'}
+];
+let lessonIndex=0,lessonReveal=false;
+function renderLesson(){
+ if(state.mode!=='lesson')return;
+ const host=$('lessonPanel'),slide=lessonSlides[lessonIndex];
+ const head=document.createElement('div');head.className='lesson-head';
+ const heading=document.createElement('h2');heading.textContent='Vertical FOIL · Lesson';
+ const controls=document.createElement('div');controls.className='lesson-controls';
+ const info=document.createElement('strong');info.textContent=(lessonIndex+1)+' / '+lessonSlides.length;controls.append(info);
+ const make=(label,fn,disabled=false)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=disabled;b.onclick=fn;controls.append(b)};
+ make('← Previous',()=>{lessonIndex--;lessonReveal=false;renderLesson()},lessonIndex===0);
+ make('Next →',()=>{lessonIndex++;lessonReveal=false;renderLesson()},lessonIndex===lessonSlides.length-1);
+ make('Present ⛶',()=>{if(document.fullscreenElement===host)document.exitFullscreen();else host.requestFullscreen?.().catch(()=>{})});
+ make('Close',()=>setMode('practice'));
+ head.append(heading,controls);
+ const body=document.createElement('div');body.className='lesson-slide';
+ body.innerHTML='<h3>'+slide.title+'</h3>'+slide.body+(lessonReveal?'<div class="lesson-choice">'+slide.reveal+'</div>':'');
+ const reveal=document.createElement('button');reveal.type='button';reveal.className='primary';
+ reveal.textContent=lessonReveal?'Hide explanation':'Reveal explanation';
+ reveal.onclick=()=>{lessonReveal=!lessonReveal;renderLesson()};
+ body.append(reveal);host.replaceChildren(head,body);
+}
 function boardItems(){
  const count=board.cols*board.rows;
  if(board.cache.length!==count){
@@ -571,14 +604,27 @@ function worksheet(){
  const w=window.open('','_blank');if(!w){alert('Allow pop-ups to open the printable worksheet.');return}
  w.document.open();w.document.write(doc);w.document.close();
 }
-function render(){renderToolbar();if(state.mode==='practice')renderPractice();else if(state.mode==='display')renderBoard()}
-for(const btn of document.querySelectorAll('[data-vars]'))btn.onclick=()=>{state.variables=btn.dataset.vars;state.step=0;resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');render()};
-for(const btn of document.querySelectorAll('[data-level]'))btn.onclick=()=>{state.level=Number(btn.dataset.level);refreshQuestion()};
-for(const btn of document.querySelectorAll('[data-sign]'))btn.onclick=()=>{state.sign=btn.dataset.sign;state.slot='random';refreshQuestion()};
-for(const btn of document.querySelectorAll('[data-slot]'))btn.onclick=()=>{state.slot=btn.dataset.slot==='random'?'random':Number(btn.dataset.slot);if(state.slot==='random')state.seq++;refreshQuestion()};
-$('expandBtn').onclick=()=>{state.direction='expand';state.step=0;state.view='step';resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');else render()};
-$('factorBtn').onclick=()=>{state.direction='factor';state.step=0;state.view='step';resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');else render()};
+function render(){
+ renderToolbar();
+ if(state.mode==='practice')renderPractice();
+ else if(state.mode==='display')renderBoard();
+ else if(state.mode==='lesson')renderLesson();
+}
+function changed(){
+ if(state.mode==='quiz'||state.mode==='test')setMode('practice');
+ refreshQuestion();
+}
+$('letterPreset').onchange=()=>{state.preset=$('letterPreset').value;state.manual1=null;state.manual2=null;state.seq++;changed()};
+for(const [id,key,manual] of [['numberScale','numbers',false],['powerScale','powers',true]]){
+ $(id).oninput=()=>{state[key]=Number($(id).value);$(id==='numberScale'?'numberValue':'powerValue').textContent=$(id).value};
+ $(id).onchange=()=>{state[key]=Number($(id).value);if(manual){state.manual1=null;state.manual2=null}state.seq++;changed()};
+}
+for(const btn of document.querySelectorAll('[data-sign]'))btn.onclick=()=>{state.sign=btn.dataset.sign;state.seq++;changed()};
+for(const btn of document.querySelectorAll('[data-slot]'))btn.onclick=()=>{state.slot=btn.dataset.slot==='random'?'random':Number(btn.dataset.slot);if(state.slot==='random')state.seq++;changed()};
+$('expandBtn').onclick=()=>{state.direction='expand';state.step=0;state.view='step';resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');render()};
+$('factorBtn').onclick=()=>{state.direction='factor';state.step=0;state.view='step';resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');render()};
 $('practiceBtn').onclick=()=>setMode('practice');
+$('lessonBtn').onclick=()=>{lessonIndex=0;lessonReveal=false;setMode('lesson')};
 $('displayBtn').onclick=()=>setMode('display');
 $('quizBtn').onclick=()=>beginAssessment('quiz');
 $('testBtn').onclick=()=>beginAssessment('test');
@@ -594,8 +640,16 @@ for(const btn of document.querySelectorAll('[data-group]'))btn.onclick=()=>{stat
 for(const [id,key] of [['coefA','a'],['coefB','b'],['coefC','c'],['coefD','d']]){
  $(id).addEventListener('change',()=>{
   const n=Number($(id).value);
-  if(!Number.isInteger(n)||Math.abs(n)>99||(key==='a'||key==='c')&&n<=0||!n){$(id).value=state.q[key];return}
+  if(!Number.isInteger(n)||Math.abs(n)>99||((key==='a'||key==='c')&&n<=0)||n===0){$(id).value=state.q[key];return}
   state.q[key]=n;state.step=0;state.view='step';resetBoard();renderPractice();
+ });
+}
+for(const [id,key] of [['mono1','m1'],['mono2','m2']]){
+ $(id).addEventListener('change',()=>{
+  const input=$(id).value.trim().replace(/\s/g,'');
+  if(!parseMono(input)){$(id).value=state.q[key];return}
+  state[key==='m1'?'manual1':'manual2']=input;
+  state.q[key]=input;state.step=0;state.view='step';resetBoard();renderPractice();
  });
 }
 $('openWorksheet').onclick=worksheet;
