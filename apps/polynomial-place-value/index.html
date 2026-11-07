@@ -114,6 +114,9 @@ button:disabled{opacity:.38;cursor:default}
 .quiz-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
 .quiz-choice{text-align:left;font:clamp(1.12rem,2.1vw,1.55rem)/1.35 "Cambria Math",Cambria,Georgia,serif;padding:12px;white-space:normal;overflow-wrap:anywhere}
 .choice-letter{font:700 .9rem Arial,sans-serif;color:#5d6470;margin-right:8px}
+.quiz-choice.answer-correct,.quiz-choice.answer-correct[aria-pressed=true]{background:#e3f5e8;border-color:#29904e;color:#155e31}
+.quiz-choice.answer-incorrect,.quiz-choice.answer-incorrect[aria-pressed=true]{background:#fce7e7;border-color:#cb4545;color:#8b2020}
+.quiz-score{font-weight:700;margin:10px 0 0}
 .test-number-control{display:flex;align-items:stretch;border:1px solid #b8c0c9;border-radius:6px;overflow:hidden;background:#fff}
 .test-number-control input{width:79px;border:0;border-radius:0;outline:none!important}
 .test-number-arrows{display:flex;flex-direction:column;border-left:1px solid #e4e8ef;background:#f7f8fa}
@@ -365,7 +368,7 @@ function draw(){
 
 }
 
-const assessment={mode:'practice',questions:[],responses:[],submitted:false,checked:[],choices:[],selected:[],run:0,source:'bank'};
+const assessment={mode:'practice',questions:[],responses:[],submitted:false,checked:[],choices:[],selected:[],firstAttempts:[],run:0,source:'bank'};
 function el(tag,textValue,className){
  const e=document.createElement(tag);if(textValue!==undefined)e.textContent=textValue;
  if(className)e.className=className;return e;
@@ -375,30 +378,21 @@ function testExpression(q){
  return factors.map(f=>'('+poly(f)+')').join(' ');
 }
 function createChoices(q,index){
- const correct=product(q.a,q.b);
- const keys=new Set([correct.join(',')]),choices=[correct.slice()];
- const modifications=[
-  a=>a.map((v,i)=>i===a.length-1?v+1:a[i]),
-  a=>a.map((v,i)=>i===a.length-1?v-1:a[i]),
-  a=>a.map((v,i)=>i===1?v+1:a[i]),
-  a=>a.map((v,i)=>i===1?v-1:a[i]),
-  a=>a.map((v,i)=>i===0?-v:a[i]),
-  a=>a.map((v,i)=>i===a.length-1?-v:a[i]),
-  a=>a.map((v,i)=>i===Math.min(1,a.length-1)?-v:a[i]),
-  a=>a.map((v,i)=>i===0?v+2:a[i])
- ];
- const start=(index+assessment.run)%modifications.length;
- for(let j=0;j<modifications.length&&choices.length<4;j++){
-  const candidate=modifications[(j+start)%modifications.length](correct);
-  const key=candidate.join(',');
-  if(!keys.has(key)){keys.add(key);choices.push(candidate)}
- }
+ const correct=product(q.a,q.b),length=correct.length;
  const rng=seeded(seedFor(index+assessment.run*31+53));
+ const positions=[0,Math.floor(length/2),length-1];
+ const variants=positions.map((position,k)=>{
+  const answer=correct.slice(),magnitude=1+rng(0,2);
+  answer[position]+= (k===1?-1:1)*magnitude;
+  return answer;
+ });
+ const choices=[correct.slice(),...variants];
  for(let i=choices.length-1;i>0;i--){
   const j=rng(0,i);[choices[i],choices[j]]=[choices[j],choices[i]];
  }
  return choices;
 }
+
 function initialiseTest(source){
  assessment.source=source;assessment.run++;
  assessment.questions=Array.from({length:4},(_,i)=>{
@@ -407,7 +401,7 @@ function initialiseTest(source){
  });
  assessment.responses=assessment.questions.map(q=>Array(product(q.a,q.b).length).fill(''));
  assessment.submitted=false;assessment.checked=Array(4).fill(false);
- assessment.selected=Array(4).fill(-1);
+ assessment.selected=Array(4).fill(-1);assessment.firstAttempts=Array(4).fill(null);
  assessment.choices=assessment.questions.map((q,i)=>createChoices(q,i));
  drawTest();
 }
@@ -416,7 +410,7 @@ function drawTest(){
  const h=el('div',undefined,'test-header');
  const summary=el('div');
  const quiz=assessment.mode==='quiz';
- summary.append(el('h2',quiz?'Expansion quiz':'Expansion test'),el('p',quiz?'Four questions · check each answer when ready':'Four questions · 1 mark per complete correct expansion · results after submission'));
+ summary.append(el('h2',quiz?'Expansion quiz':'Expansion test'),el('p',quiz?'Four questions · select an answer to check immediately · you may try again':'Four questions · 1 mark per complete correct expansion · results after submission'));
  const opt=el('div',undefined,'test-options');
  const choose=el('select');choose.setAttribute('aria-label','Test question selection');
  [['bank','Homework questions 1–4'],['random','Four fresh random questions']].forEach(([value,label])=>{
@@ -436,16 +430,18 @@ function drawTest(){
     const choice=el('button',undefined,'quiz-choice');
     choice.type='button';
     choice.setAttribute('aria-pressed',String(assessment.selected[index]===j));
+    const selected=assessment.selected[index]===j;
+    if(selected){choice.className+=' '+(option.every((v,k)=>v===p[k])?'answer-correct':'answer-incorrect')}
     choice.setAttribute('aria-label','Answer '+String.fromCharCode(65+j));
     choice.innerHTML='<span class="choice-letter">'+String.fromCharCode(65+j)+'.</span> '+poly(option);
-    choice.onclick=()=>{assessment.selected[index]=j;assessment.checked[index]=false;drawTest()};
+    choice.onclick=()=>{
+     const correct=option.every((v,k)=>v===p[k]);
+     if(assessment.firstAttempts[index]===null)assessment.firstAttempts[index]=correct;
+     assessment.selected[index]=j;assessment.checked[index]=true;drawTest();
+    };
     answers.append(choice);
    });
    section.append(answers);
-   const check=el('button','Check');check.type='button';
-   check.disabled=assessment.selected[index]===-1;
-   check.onclick=()=>{assessment.checked[index]=true;drawTest()};
-   section.append(check);
    if(assessment.checked[index]){
     const selected=assessment.choices[index][assessment.selected[index]];
     const correct=selected.every((v,j)=>v===p[j]);
@@ -490,6 +486,10 @@ function drawTest(){
   restart.onclick=()=>initialiseTest(assessment.source);actions.append(restart);
  }
  host.append(actions);
+ if(quiz&&assessment.firstAttempts.every(x=>x!==null)){
+  const firstCorrect=assessment.firstAttempts.filter(Boolean).length;
+  host.append(el('p','First-attempt score: '+firstCorrect+' / 4. You can still revisit the questions.','quiz-score'));
+ }
  if(!quiz&&assessment.submitted){
   const result=el('section',undefined,'test-result');
   let correct=0;
