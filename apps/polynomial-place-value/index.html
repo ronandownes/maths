@@ -444,6 +444,8 @@ main{margin:5px auto;padding:10px 19px 18px}
 .board-answer-first,.board-answer-term{display:inline-flex;align-items:baseline;gap:.12em;white-space:nowrap;flex-shrink:0}
 .board-answer sup,.board-expression sup{font-size:.62em;line-height:0;vertical-align:super}
 @media(max-width:680px){.board-range-control{grid-template-columns:52px 80px 18px}.board-range-control input[type=range]{width:80px}}
+.worksheet-count-input{width:74px;min-height:36px;padding:6px 8px;border:1px solid #a9b8c8;border-radius:7px;font-size:1rem;text-align:center}
+.worksheet-actions .primary{font-weight:700;min-height:43px}
 
 /* Bracket-free place-value stacking: equal powers share exact grid columns. */
 .board-expression{display:flex;align-items:center;justify-content:center;min-width:0;overflow:visible}
@@ -1429,7 +1431,7 @@ function drawTest(){
  }
 }
 
-const ws={sheet:1,category:'positive',use:'classwork',counts:{ll:0,ql:1,qq:0},levels:[2],signs:['random'],support:'independent',layout:'inline',answers:'key',extra:0,steps:true,orientation:'portrait',columns:3,rows:8,sides:1,density:'balanced',labels:'question',progression:'guided',stages:['monic-positive','general-positive','general-negative','general-mixed']};
+const ws={sheet:1,category:'positive',use:'classwork',count:24,counts:{ll:0,ql:1,qq:0},levels:[2],signs:['random'],support:'independent',layout:'inline',answers:'key',extra:0,steps:true,orientation:'portrait',columns:3,rows:8,sides:1,density:'balanced',labels:'question',progression:'guided',stages:['monic-positive','general-positive','general-negative','general-mixed']};
 let wsPreviewCache=null;
 function worksheetOptions(){
  const panel=$('worksheetPanel');panel.replaceChildren();
@@ -1441,14 +1443,17 @@ function worksheetOptions(){
    button.onclick=()=>{onChange(v);worksheetOptions()};buttons.append(button)});
   field.append(label,buttons);top.append(field);
  };
- pickRow('Category',[['positive','Positive only'],['negative','Negative non-leading'],['mixed','Mixed signs'],['progressive','Progressive mix']],ws.category,v=>{ws.category=v});
- pickRow('Worksheet',[[1,'1'],[2,'2'],[3,'3'],[4,'4']],ws.sheet,v=>{ws.sheet=v});
- pickRow('Use',[['classwork','Classwork · exit ticket'],['homework','Homework · matching practice']],ws.use,v=>{ws.use=v});
+ pickRow('Worksheet preset',[[1,'1 · Positive'],[2,'2 · Negative'],[3,'3 · Mixed'],[4,'4 · Progressive']],ws.sheet,v=>{
+  ws.sheet=v;ws.category=['positive','negative','mixed','progressive'][v-1];
+ });
+ pickRow('Sign pattern',[['positive','Positive'],['negative','Negative non-leading'],['mixed','Mixed'],['progressive','Progressive']],ws.category,v=>{ws.category=v});
+ pickRow('Layout',[['inline','Inline'],['vertical','Stacked'],['mixed','Mixed']],ws.layout,v=>{ws.layout=v});
+ pickRow('Version',[['classwork','A'],['homework','B']],ws.use,v=>{ws.use=v});
  panel.append(top);
  const grid=el('div',undefined,'worksheet-config');
  function field(name){const area=el('div',undefined,'worksheet-field');area.append(el('strong',name));grid.append(area);return area}
  const summary=field('Chosen mathematics');
- summary.append(el('small','Uses Factor pattern and Level chosen above. The worksheet category determines the signs; matching classwork and homework have the same target difficulty.'));
+ summary.append(el('small','Ready to print: uses the factor pattern and level chosen above. Presets 1–4 are reproducible; Versions A and B have different questions.'));
  function multi(name,key,entries){
   const area=field(name),list=el('div',undefined,'worksheet-options');
   entries.forEach(([value,title])=>{const label=el('label'),cb=el('input');
@@ -1471,30 +1476,34 @@ function worksheetOptions(){
   ctrl.value=ws[key];ctrl.onchange=()=>{ws[key]=ctrl.value;wsStatus()};list.append(ctrl);area.append(list)
  }
  select('Level of support','support',[['none','None — questions only'],['independent','Independent — generous workspace'],['minimum','Minimum support — brief hint'],['example','One worked example'],['gradual','Graduated support — fading hints']]);
- const layoutArea=field('Question layout · choose how questions are displayed');
- const layoutChoices=el('div',undefined,'worksheet-options');
- [['inline','Inline'],['vertical','Stacked'],['mixed','Mixed (automatic)']].forEach(([value,label])=>{
-  const option=el('label'),radio=el('input');radio.type='radio';radio.name='worksheet-layout';
-  radio.checked=ws.layout===value;radio.onchange=()=>{ws.layout=value;wsStatus()};
-  option.append(radio,el('span',label));layoutChoices.append(option);
- });
- layoutArea.append(layoutChoices);
+ const countArea=field('Number of questions · exact print count');
+ const countQuick=el('div',undefined,'worksheet-options');
+ const countInput=el('input');countInput.type='number';countInput.min='1';countInput.max='160';countInput.step='1';
+ countInput.value=String(ws.count);countInput.className='worksheet-count-input';
+ countInput.setAttribute('aria-label','Number of worksheet questions (1 to 160)');
+ countInput.onchange=()=>{
+  const n=Number(countInput.value);ws.count=Number.isFinite(n)?Math.max(1,Math.min(160,Math.floor(n))):24;
+  countInput.value=String(ws.count);worksheetOptions();
+ };
+ for(const amount of [12,24,36,48,60]){
+  const b=el('button',String(amount));b.type='button';b.setAttribute('aria-pressed',String(ws.count===amount));
+  b.onclick=()=>{ws.count=amount;worksheetOptions()};countQuick.append(b);
+ }
+ countQuick.append(countInput);countArea.append(countQuick);
+ countArea.append(el('small','The selected number is printed exactly. More questions automatically continue onto additional pages.'));
  select('Answers','answers',[['key','Student answers at the end'],['none','No answers'],['integrated','Integrated — faint grey']]);
  select('Question labels','labels',[['none','No labels'],['question','Question numbers only'],['both','Question numbers and part letters']]);
  const paper=field('Paper and columns'),format=el('div',undefined,'worksheet-options');
  const orientation=el('select');[['portrait','A4 portrait'],['landscape','A4 landscape']].forEach(([v,label])=>{const o=el('option',label);o.value=v;orientation.append(o)});orientation.value=ws.orientation;orientation.onchange=()=>{ws.orientation=orientation.value;wsStatus()};
  const cols=el('select');[[2,'2 columns'],[3,'3 columns'],[4,'4 columns']].forEach(([v,label])=>{const o=el('option',label);o.value=v;cols.append(o)});cols.value=String(ws.columns);cols.onchange=()=>{ws.columns=Number(cols.value);wsStatus()};format.append(orientation,cols);paper.append(format);
- const pages=field('Print layout · fill the paper'),pageChoices=el('div',undefined,'worksheet-options');
- [['1','One-sided · one A4 page'],['2','Two-sided · two A4 pages']].forEach(([value,label])=>{
-  const button=el('button',label);button.type='button';button.setAttribute('aria-pressed',String(ws.sides===Number(value)));
-  button.onclick=()=>{ws.sides=Number(value);wsStatus()};pageChoices.append(button);
- });pages.append(pageChoices);
+ const pages=field('Page allocation');
+ pages.append(el('small','Automatic: questions fill A4 pages using your chosen columns, writing space and layout. Print as many pages as required.'));
  const densityField=field('Writing space'),densityChoices=el('div',undefined,'worksheet-options');
  [['spacious','Spacious'],['balanced','Balanced'],['compact','Compact']].forEach(([value,label])=>{
   const button=el('button',label);button.type='button';button.setAttribute('aria-pressed',String(ws.density===value));
   button.onclick=()=>{ws.density=value;wsStatus()};densityChoices.append(button);
  });densityField.append(densityChoices);
- const countHint=el('small','Questions are added automatically to fill complete rows, without a straggler.');
+ const countHint=el('small','Spacious, balanced or compact changes writing space per page, never the selected question count.');
  densityField.append(countHint);
  const stepsField=field('Written method steps'),stepsLabel=el('label'),stepsCheck=el('input');
  stepsCheck.type='checkbox';stepsCheck.checked=ws.steps;
@@ -1503,7 +1512,7 @@ function worksheetOptions(){
  stepsField.append(stepsLabel);
  panel.append(grid);
  const preview=el('section',undefined,'ws-live-preview');preview.id='wsLivePreview';panel.append(preview);
- const actions=el('div',undefined,'worksheet-actions'),go=el('button','Open printable worksheet','primary'),close=el('button','Close');
+ const actions=el('div',undefined,'worksheet-actions'),go=el('button','Print '+ws.count+' questions · '+(ws.layout==='vertical'?'Stacked':ws.layout==='inline'?'Inline':'Mixed'),'primary'),close=el('button','Close');
  const status=el('span');status.id='wsStatus';go.onclick=printWorksheet;close.onclick=()=>switchMode('practice');
  actions.append(go,close,status);panel.append(actions);wsStatus();
 }
@@ -1671,13 +1680,12 @@ document.addEventListener('keydown',event=>{
  if(key==='a'){event.preventDefault();boardState.answers=!boardState.answers;drawBoard()}
 });
 function worksheetRowsPerSide(){
- if(ws.use==='classwork')return 2;
  return ({spacious:5,balanced:8,compact:10})[ws.density]||8;
 }
-function worksheetTotal(){return ws.columns*worksheetRowsPerSide()*(ws.use==='classwork'?1:ws.sides)}
+function worksheetTotal(){return Math.max(1,Math.min(160,Math.round(ws.count)||24))}
 function wsStatus(){
  const total=worksheetTotal(),e=$('wsStatus');
- if(e)e.textContent=total+' questions · '+(ws.use==='classwork'?'Short classwork / exit ticket':'Matching homework')+' · '+ws.columns+' columns · '+ws.category+' · Worksheet '+ws.sheet;
+ if(e)e.textContent=total+' questions · '+ws.columns+' columns · '+ws.layout+' · Preset '+ws.sheet+' · Version '+(ws.use==='classwork'?'A':'B');
  wsPreviewCache=worksheetQuestions();drawWorksheetPreview();
 }
 function worksheetQuestions(countOverride){
@@ -1731,14 +1739,14 @@ function drawWorksheetPreview(){
  if(ws.layout==='inline')grid.className+=' ws-preview-inline-grid';
  host.append(heading,info,grid);
  if(ws.answers==='key')host.append(el('p','Answers at the end: '+(wsPreviewCache||[]).length+' numbered solutions.','ws-answer-note'));
- host.append(el('p','Matching '+(ws.use==='classwork'?'homework':'classwork')+' uses the same category and difficulty, with different questions.','ws-progression-note'));
+ host.append(el('p','Switch Version A/B for a different reproducible question set at the same level.','ws-progression-note'));
 }
 
 function worksheetTitle(){
  const names={ll:'Linear × Linear',ql:'Linear × Quadratic',qq:'Quadratic × Quadratic',l3:'Linear × Cubic',l4:'Linear × Quartic',l5:'Linear × Quintic',q3:'Quadratic × Cubic',q4:'Quadratic × Quartic','44':'Quartic × Quartic',any:'Mixed factors'};
  const type=state.factorRandom?'any':state.type;
  const signs={positive:'Positive only',negative:'Negative non-leading',mixed:'Mixed signs',progressive:'Progressive mix'};
- return 'Expanding Brackets · Worksheet '+ws.sheet+' · '+(ws.use==='classwork'?'Classwork':'Homework')+' · '+signs[ws.category]+' · '+(names[type]||'Mixed factors')+' · Level '+state.level;
+ return 'Expanding Brackets · Worksheet '+ws.sheet+' (Version '+(ws.use==='classwork'?'A':'B')+') · '+signs[ws.category]+' · '+(names[type]||'Mixed factors')+' · Level '+state.level;
 }
 function worksheetLetter(i){return String.fromCharCode(97+i%26)}
 function printInlineWorksheet(all){
@@ -1770,41 +1778,9 @@ function printWorksheet(){
  if(!all.length){alert('Select at least one factor pattern.');return;}
  if(ws.layout==='inline'){printInlineWorksheet(all);return;}
  const columns=worksheetColumns();
- // Use two full rows on landscape A4; centre incomplete rows while preserving exact columns.
+ // Allow any question count: use two generous rows per A4 page for stacked layouts.
  const perPage=columns*2, pages=[];
- // Respect the teacher's exact requested count. Only totals below four receive a minimum of four questions.
- const selectedTypeCount=['ll','ql','qq'].filter(type=>ws.counts[type]>0).length;
- const selectedSignCount=ws.signs.includes('random')?3:ws.signs.length;
- const desired=all.length;
- const minimum=all.length<4?4:all.length;
- if(all.length<minimum){
-  const originals={type:state.type,level:state.level,sign:state.sign,factorRandom:state.factorRandom};
-  const types=['ll','ql','qq'].filter(type=>ws.counts[type]>0);
-  const levels=ws.levels.includes('random')?[1,2,3]:ws.levels;
-  const signs=ws.signs.includes('random')?['positive','negative','mixed']:ws.signs;
-  const used=new Set(all.map(item=>JSON.stringify([item.q.a,item.q.b,item.type])));
-  try{
-   let attempts=0;
-   while(all.length<minimum&&attempts<400){
-    // Rotate through selected signs in pedagogical order, within each pattern.
-    // Rebalance from existing questions so page filling doesn't favour one sign.
-    const i=attempts++;
-    const patternCounts=types.map(type=>all.filter(item=>item.type===type).length);
-    const least=Math.min(...patternCounts);
-    const type=types[(i+types.length)%types.length];
-    const chosenType=patternCounts[types.indexOf(type)]===least?type:types[patternCounts.indexOf(least)];
-    const existing=all.filter(item=>item.type===chosenType);
-    const signCounts=signs.map(sign=>existing.filter(item=>item.q.sign===sign).length);
-    const sign=signs[signCounts.indexOf(Math.min(...signCounts))];
-    const level=levels[existing.length%levels.length];
-    state.type=chosenType;state.level=level;state.sign=sign;state.factorRandom=false;
-    const q=makeQuestion(seeded((seedFor(101+i)*2654435761)>>>0));
-    const key=JSON.stringify([q.a,q.b,chosenType]);
-    if(used.has(key))continue;
-    used.add(key);all.push({q,type:chosenType,level,number:null});
-   }
-  }finally{state.type=originals.type;state.level=originals.level;state.sign=originals.sign;state.factorRandom=originals.factorRandom}
- }
+ // The teacher's chosen count is exact; never silently pad or truncate it.
  // Present a graduated sequence separately for each selected factor type.
  const typeRank={ll:0,ql:1,qq:2},signRank={positive:0,negative:1,mixed:2};
  all.sort((a,b)=>typeRank[a.type]-typeRank[b.type]||signRank[a.q.sign]-signRank[b.q.sign]||a.level-b.level);
