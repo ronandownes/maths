@@ -763,7 +763,7 @@ function drawTest(){
     const input=el('input');input.type='text';input.inputMode='numeric';input.value=assessment.responses[index][i];
     input.setAttribute('aria-label','Question '+(index+1)+' coefficient of '+(power?'x to power '+power:'constant'));
     const fillQuiz=quiz&&assessment.quizType==='fill';
-    const fillCorrect=()=>assessment.responses[index].every((v,j)=>/^-?\\d+$/.test(v.trim())&&Number(v)===p[j]);
+    const fillCorrect=()=>assessment.responses[index].every((v,j)=>/^-?\d+$/.test(v.trim())&&Number(v)===p[j]);
     const fillLocked=fillQuiz&&(assessment.attempts[index]>=2||(assessment.checked[index]&&fillCorrect()));
     input.disabled=assessment.submitted||fillLocked;
     input.oninput=()=>{assessment.responses[index][i]=input.value};
@@ -790,8 +790,8 @@ function drawTest(){
    });
    section.append(answer);
    if(quiz){
-    const answered=assessment.responses[index].every(v=>/^-?\\d+$/.test(v.trim()));
-    const isCorrect=assessment.responses[index].every((v,j)=>/^-?\\d+$/.test(v.trim())&&Number(v)===p[j]);
+    const answered=assessment.responses[index].every(v=>/^-?\d+$/.test(v.trim()));
+    const isCorrect=assessment.responses[index].every((v,j)=>/^-?\d+$/.test(v.trim())&&Number(v)===p[j]);
     const attempts=assessment.attempts[index];
     const locked=attempts>=2||(attempts>0&&isCorrect);
     const check=el('button','Check answer');check.type='button';
@@ -803,7 +803,7 @@ function drawTest(){
      drawTest();
      const complete=assessment.questions.every((question,k)=>{
       const values=product(question.a,question.b);
-      return assessment.responses[k].every((v,j)=>/^-?\\d+$/.test(v.trim())&&Number(v)===values[j]);
+      return assessment.responses[k].every((v,j)=>/^-?\d+$/.test(v.trim())&&Number(v)===values[j]);
      });
      playQuizSound(complete?'fanfare':isCorrect?true:assessment.attempts[index]>=2?'final-wrong':false);
     };
@@ -817,7 +817,7 @@ function drawTest(){
       const fields=answer.children;
       fields.forEach((field,j)=>{
        const box=field.children[1].children[0];
-       if(!/^-?\\d+$/.test(assessment.responses[index][j].trim())||Number(assessment.responses[index][j])!==p[j]){
+       if(!/^-?\d+$/.test(assessment.responses[index][j].trim())||Number(assessment.responses[index][j])!==p[j]){
         box.className+=' fill-error';
        }
       });
