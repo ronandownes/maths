@@ -86,9 +86,7 @@ button:disabled{opacity:.38;cursor:default}
 .level-random{font-size:.78rem!important;padding:7px 8px!important;color:#6b7280!important;background:#f8fafc!important;border-style:dashed!important}
 .level-random[aria-pressed=true]{background:#e8f0fe!important;border-color:#1a73e8!important;color:#174ea6!important}
 #types button:first-child,#signs button:first-child{font-weight:700}
-#oreos{font-size:.78rem;padding:7px 9px;color:#667085;border:1px dashed #c9ced7;background:#fafbfc}
-#oreos[aria-pressed=true]{background:#f0f3f7;border-color:#98a4b6;color:#48566c}
-.math-table td.oreo-zero{color:#a7afb9;font-weight:400}
+.math-table td.placeholder-zero{color:#a7afb9;font-weight:400}
 .reflection{max-width:760px;margin:15px auto 3px;padding:10px 12px;border-top:1px solid #d8dee6;color:#344054;font-size:.95rem;line-height:1.45}
 .reflection strong{font-size:1rem}
 .reflection p{margin:5px 0 0}
@@ -109,7 +107,7 @@ button:disabled{opacity:.38;cursor:default}
 <div class="toolbar-bottom">
 <div class="setting bank-setting"><span class="caption caption-wrapped">Question bank<span>(Homework)</span></span><nav class="top-questions" id="questions" aria-label="Four reproducible questions for the selected settings"></nav></div>
 <div class="setting"><span class="caption caption-wrapped">Sign<span>pattern</span></span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
-<div class="modes" id="modes" aria-label="How to view the solution"></div><button id="oreos" type="button" hidden aria-pressed="false" title="Show or hide optional zero placeholders">Optional zeros</button>
+<div class="modes" id="modes" aria-label="How to view the solution"></div>
 </div>
 <div class="factor-expression" id="factorExpression" aria-label="Current multiplication question"></div>
 
@@ -122,14 +120,14 @@ button:disabled{opacity:.38;cursor:default}
 </main>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
-const actions=['Set up the place-value columns','Keep the coefficients only','Calculate the partial products','Group like terms','Bring back the powers of x','Reflection'];
+const actions=['Set up the place-value columns','Fill in the coefficients','Calculate the partial products','Group like terms','Bring back the powers of x','Reflection'];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
 const factorChoices=[...factorTypes,['any','Rand']];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
 const signChoices=[['positive','Positives'],['negative','Negatives'],['mixed','Mixed'],['random','Rand']];
 const levels=[[1,'1'],[2,'2'],[3,'3'],['any','Rand']];
 
-const state={type:'ql',factorRandom:false,sign:'positive',level:1,levelRandom:false,mode:'worked',step:0,slot:0,freshCount:0,showOreos:false,question:null};
+const state={type:'ql',factorRandom:false,sign:'positive',level:1,levelRandom:false,mode:'worked',step:0,slot:0,freshCount:0,question:null};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -264,14 +262,14 @@ function coefficientInputs(){
   });host.append(group);
  });
 }
-function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomial=false,oreos=false){
+function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomial=false,trailingZeros=0){
  const tr=document.createElement('tr');if(kind)tr.className=kind;
  const head=document.createElement('td');head.className='row-label';head.textContent=label;tr.append(head);
  let started=false;
  values.forEach((v,i)=>{
   const cell=document.createElement('td'),p=degree-i;
   if(v===null){
-   if(oreos){cell.textContent='0';cell.className='oreo-zero'}
+   if(trailingZeros>0&&i>=values.length-trailingZeros){cell.textContent='0';cell.className='placeholder-zero'}
   }else if(asPolynomial){
    if(v!==0){
     const prefix=started?(v>0?' + ':' − '):(v<0?'−':'');
@@ -293,23 +291,22 @@ function draw(){
  const pad=v=>Array(n-v.length).fill(null).concat(v);
  const visibleFactors=state.question.type==='ql'?[b,a]:[a,b];
  $('factorExpression').innerHTML=visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
- const oreos=$('oreos');
- oreos.hidden=mode==='question'||(mode==='step'&&step<2);
- oreos.setAttribute('aria-pressed',String(state.showOreos));
  if(mode!=='question'){
   const table=document.createElement('table');table.className='math-table';
   if(true){
    const headings=document.createElement('tr');headings.append(document.createElement('th'));
    for(let p=degree;p>=0;p--){const th=document.createElement('th');th.innerHTML=p?pow(p):'#';headings.append(th)}table.append(headings);
   }
-  row(table,pad(a),'','',degree,false,mode==='step'&&step===0);
-  row(table,pad(b),'underline','',degree,false,mode==='step'&&step===0);
+  if(mode!=='step'||step>=1){
+   row(table,pad(a),'','',degree);
+   row(table,pad(b),'underline','',degree);
+  }
   if(step>=2){
    for(let j=b.length-1;j>=0;j--){
     if(b[j]===0)continue;
     const shift=b.length-1-j,values=Array(n).fill(null);
     for(let i=0;i<a.length;i++)values[n-a.length+i-shift]=a[i]*b[j];
-    row(table,values,'','',degree,false,false,state.showOreos);
+    row(table,values,'','',degree,false,false,shift);
    }
   }
   if(step>=3)row(table,final,'sum','+',degree);
@@ -326,14 +323,13 @@ function draw(){
    const paragraph=document.createElement('p');
    paragraph.textContent=state.question.type==='ll'
     ?'Overkill! This method is overkill for linear × linear. FOIL or the cross-product method is quicker. But hey, it was fun!'
-    :'Place-value multiplication keeps like powers aligned. For larger polynomial products, this organisation helps prevent missing terms.';
+    :'This is by far the best method for these questions. Place-value multiplication keeps like powers aligned and makes the partial products easy to organise.';
    reflection.append(heading,paragraph);root.append(reflection);
   }
  }
 
 }
 function render(){renderSelectors();coefficientInputs();draw()}
-$('oreos').onclick=()=>{state.showOreos=!state.showOreos;draw()};
 selectQuestion(0);
 })();</script>
 </body>
