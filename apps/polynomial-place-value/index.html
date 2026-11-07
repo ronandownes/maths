@@ -911,7 +911,7 @@ function drawTest(){
  }
 }
 
-const ws={counts:{ll:3,ql:3,qq:0},levels:[1],signs:['positive'],support:'gradual',columns:'auto',answers:'key',extra:0};
+const ws={counts:{ll:3,ql:3,qq:0},levels:[1],signs:['positive'],support:'gradual',columns:'auto',answers:'key',extra:0,steps:true};
 function worksheetOptions(){
  const panel=$('worksheetPanel');panel.replaceChildren();
  const heading=el('h2','Printable worksheet · choose content and support');panel.append(heading);
@@ -954,6 +954,11 @@ function worksheetOptions(){
  const extras=field('Additional random questions'),row=el('div',undefined,'worksheet-options'),number=el('input');number.type='number';number.min='0';number.max='24';number.value=String(ws.extra);
  number.onchange=()=>{ws.extra=Math.max(0,Math.min(24,Math.floor(Number(number.value)||0)));number.value=String(ws.extra);wsStatus()};
  row.append(el('span','Extra:'),number);extras.append(row);
+ const stepsField=field('Written method steps'),stepsLabel=el('label'),stepsCheck=el('input');
+ stepsCheck.type='checkbox';stepsCheck.checked=ws.steps;
+ stepsCheck.onchange=()=>{ws.steps=stepsCheck.checked;wsStatus()};
+ stepsLabel.append(stepsCheck,el('span','Show short method prompts'));
+ stepsField.append(stepsLabel);
  panel.append(grid);
  const actions=el('div',undefined,'worksheet-actions'),go=el('button','Open printable worksheet','primary'),close=el('button','Close');
  const status=el('span');status.id='wsStatus';go.onclick=printWorksheet;close.onclick=()=>{panel.hidden=true;$('worksheetMode').setAttribute('aria-expanded','false')};
@@ -961,7 +966,7 @@ function worksheetOptions(){
 }
 function wsStatus(){
  const n=Object.values(ws.counts).reduce((sum,v)=>sum+v,0)+ws.extra;
- const e=$('wsStatus');if(e)e.textContent=n+' questions · '+ws.support+' support · levels: '+(ws.levels.includes('random')?'random':ws.levels.join(', '))+' · signs: '+(ws.signs.includes('random')?'random':ws.signs.join(', '))+' · answers: '+ws.answers;
+ const e=$('wsStatus');if(e)e.textContent=n+' questions · '+ws.support+' support · levels: '+(ws.levels.includes('random')?'random':ws.levels.join(', '))+' · signs: '+(ws.signs.includes('random')?'random':ws.signs.join(', '))+' · answers: '+ws.answers+' · page automatically filled';
 }
 function worksheetQuestions(){
  const old={type:state.type,level:state.level,sign:state.sign,random:state.factorRandom},out=[];
@@ -995,6 +1000,27 @@ function printWorksheet(){
  const columns=ws.columns==='auto'?(all.some(x=>x.type==='qq')?3:4):Number(ws.columns);
  // Use two full rows on landscape A4; centre incomplete rows while preserving exact columns.
  const perPage=columns*2, pages=[];
+ // Add fresh questions to finish the last page, without changing chosen patterns.
+ // The numbered homework questions remain unchanged and first in the sequence.
+ const minimum=Math.max(perPage,Math.ceil(all.length/perPage)*perPage);
+ if(all.length<minimum){
+  const originals={type:state.type,level:state.level,sign:state.sign,factorRandom:state.factorRandom};
+  const types=['ll','ql','qq'].filter(type=>ws.counts[type]>0);
+  const levels=ws.levels.includes('random')?[1,2,3]:ws.levels;
+  const signs=ws.signs.includes('random')?['positive','negative','mixed']:ws.signs;
+  const used=new Set(all.map(item=>JSON.stringify([item.q.a,item.q.b,item.type])));
+  try{
+   let attempts=0;
+   while(all.length<minimum&&attempts<400){
+    const i=attempts++,type=types[i%types.length],level=levels[i%levels.length],sign=signs[i%signs.length];
+    state.type=type;state.level=level;state.sign=sign;state.factorRandom=false;
+    const q=makeQuestion(seeded((seedFor(101+i)*2654435761)>>>0));
+    const key=JSON.stringify([q.a,q.b,type]);
+    if(used.has(key))continue;
+    used.add(key);all.push({q,type,level,number:null});
+   }
+  }finally{state.type=originals.type;state.level=originals.level;state.sign=originals.sign;state.factorRandom=originals.factorRandom}
+ }
  const support=i=>ws.support==='independent'?'none':ws.support==='example'?(i===0?'full':'none'):(['full','guided','faded'][i]||'none');
  const names={ll:'Linear × Linear',ql:'Linear × Quadratic',qq:'Quadratic × Quadratic'};
  function problem(item,index){
@@ -1003,13 +1029,14 @@ function printWorksheet(){
   const formula='('+poly(factors[0])+') × ('+poly(factors[1])+')';
   const label='<div class="meta">'+(index+1)+'. '+names[item.type]+' · Level '+item.level+(item.number?' · HW '+item.number:' · Random')+'</div>';
   const greyAnswer=ws.answers==='grey'?'<div class="grey-answer">= '+poly(product(q.a,q.b))+'</div>':'';
+  const prompt=ws.steps&&mode!=='full'?'<div class="method-prompts">1. Set up columns &nbsp; 2. Place coefficients &nbsp; 3. Multiply &nbsp; 4. Group like terms &nbsp; 5. Write the answer</div>':'';
   if(mode==='none'){
-   return '<article class="problem independent">'+label+'<div class="formula">'+formula+'</div>'+greyAnswer+'</article>';
+   return '<article class="problem independent">'+label+'<div class="formula">'+formula+'</div>'+prompt+greyAnswer+'</article>';
   }
   if(mode==='guided'||mode==='faded'){
    const hint=mode==='guided'?'Align coefficients by place value.':'Group like terms.';
    return '<article class="problem independent">'+label+'<div class="formula">'+formula+'</div>'+
-    '<div class="gentle-hint">'+hint+'</div>'+greyAnswer+'</article>';
+    '<div class="gentle-hint">'+hint+'</div>'+prompt+greyAnswer+'</article>';
   }
   const headers=Array.from({length:n},(_,i)=>'<th>'+(degree-i?pow(degree-i):'#')+'</th>').join('');
   function tableRow(values,cls='',mark=''){
@@ -1041,6 +1068,7 @@ function printWorksheet(){
  '.problem{min-width:0;padding:3mm 2mm;break-inside:avoid;min-height:70mm}'+
  '.meta{font-size:11px;font-weight:650;color:#455770;min-height:9mm}.formula{font:clamp(17px,1.9vw,26px)/1.3 Cambria,"Cambria Math",Georgia,serif;text-align:center;overflow-wrap:anywhere}'+
  '.problem.independent .formula{margin-top:4mm}.gentle-hint{margin-top:5mm;font-size:10px;color:#808b98;text-align:center}'+
+ '.method-prompts{font:10px/1.55 Arial,sans-serif;color:#69798a;margin-top:8mm;text-align:center}'+
  '.grey-answer{font:clamp(14px,1.3vw,18px) Cambria,Georgia,serif;color:#b3bbc5;text-align:center;margin-top:9mm}'+
  '.problem.worked{padding:2.5mm;border:1px solid #bfcbd8;border-radius:5px;background:#fff}'+
  '.problem.worked .formula{margin:1mm 0 4mm;font-size:clamp(16px,1.65vw,23px)}'+
