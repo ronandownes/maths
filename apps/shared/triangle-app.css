@@ -1,0 +1,23 @@
+:root{font-family:Arial,sans-serif;--blue:#1a73e8;--green:#168447;--ink:#243d55;--line:#dce5ee;background:#f1f3f4;color:var(--ink)}*{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}
+header{display:flex;align-items:center;gap:13px;padding:7px max(10px,calc((100vw - 1150px)/2));background:white;border-bottom:1px solid var(--line)}
+header img{width:106px}header a{color:#1d5b9d;text-decoration:none}header h1{margin:2px 0;font-size:1.28rem}header small{color:#60768a;font-size:.8rem}
+main{max-width:1150px;margin:7px auto;background:white;padding:10px 17px;min-height:75vh;border:1px solid var(--line)}
+button,input,select{font:inherit}button{border:1px solid #b4c6d7;border-radius:8px;padding:9px 12px;cursor:pointer;background:white;color:var(--ink)}button[aria-pressed=true]{background:#e7f1ff;border-color:var(--blue);font-weight:750}
+button.primary{background:var(--blue);color:white;border-color:var(--blue);font-weight:700}button:disabled{opacity:.4;cursor:default}button:focus-visible,input:focus-visible{outline:3px solid #8fb8eb;outline-offset:2px}
+.menu{display:flex;flex-wrap:wrap;gap:6px;padding:9px 0;border-bottom:1px solid var(--line)}.menu button{font-size:.9rem;font-weight:700}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 0}.controls button{font-size:.89rem}
+.options{display:none;align-items:center;gap:12px;flex-wrap:wrap;background:#f7faff;padding:11px;border-radius:9px}.options.open{display:flex}.options label{display:flex;align-items:center;gap:6px;font-size:.85rem}.options select,.options input{padding:7px;border:1px solid #b8c8d7;border-radius:6px;background:white}.options input[type=range]{accent-color:var(--green)}
+.stage{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(270px,.8fr);gap:13px;align-items:start;margin-top:12px}
+.triangle{border:1px solid var(--line);border-radius:11px;padding:7px;min-width:0}.triangle svg{display:block;width:100%;max-height:455px}.triangle-tools{display:flex;gap:6px;flex-wrap:wrap}
+.panel,.slide,.assessment{border:1px solid var(--line);border-radius:11px;padding:15px;display:grid;gap:12px}.panel h2,.slide h2{margin:0;font-size:1.25rem}.panel p,.slide p{margin:0;line-height:1.5}.math{font:clamp(1.4rem,2.7vw,2rem)/1.45 Cambria,Georgia,serif;overflow-wrap:anywhere}
+.label{font-size:.86rem;color:#5a7085}.notice{background:#eef8f2;padding:10px;border-left:4px solid var(--green);line-height:1.45}
+.answer-box{padding:9px;border-radius:8px;border:1px solid #d6e3ee}.buttons{display:flex;flex-wrap:wrap;gap:7px}.buttons button{flex:1}
+.lesson{max-width:1010px;margin:15px auto}.slide{min-height:330px;align-content:center;padding:clamp(16px,4vw,38px)}.slide h2{font-size:clamp(1.5rem,3vw,2.3rem)}.slide p{font-size:clamp(1.1rem,2vw,1.42rem)}.slide .math{font-size:clamp(1.7rem,3vw,2.45rem)}.slide-nav{display:flex;gap:10px;justify-content:space-between;align-items:center;margin:10px 0}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cards button{text-align:left;white-space:normal;min-height:55px}.cards button.wrong{border-color:#bc6666;background:#fff0ef}.cards button.right{border-color:#37945c;background:#e6f7ec}
+.input-answer{padding:10px;width:min(180px,100%);border-radius:7px;border:1px solid #adbed0;font-size:1.15rem}
+.assessment{max-width:840px;margin:13px auto}.assessment h2{margin:0;font-size:1.25rem}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.test-question{padding:11px 0;border-bottom:1px solid var(--line)}.test-question label{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.feedback{font-weight:700;padding:10px;border-radius:8px;background:#fff4df}.feedback.correct{background:#e7f7ed}
+#sheetPanel{padding:15px}.footer{font-size:.8rem;color:#5a7084;padding:12px 0}
+@media(max-width:800px){.stage{grid-template-columns:1fr}.triangle svg{max-height:330px}.menu button{flex:1 1 auto}.cards{grid-template-columns:1fr}}
+@media(max-width:590px){main{padding:7px}header img{width:78px}header h1{font-size:1.08rem}header small{display:none}.slide{min-height:270px}.triangle svg{max-height:270px}.panel{padding:10px}}
