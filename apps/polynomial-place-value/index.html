@@ -348,6 +348,10 @@ function individualProducts(a,b){
     power:(a.length-1-i)+(b.length-1-j)});
   }
  }
+ // Follow place value from the constant column towards higher powers.
+ // Within each degree, multiply the bottom factor's higher-power term first
+ // (e.g. constant × x before x × constant).
+ products.sort((left,right)=>left.power-right.power||left.j-right.j);
  return products;
 }
 function renderSelectors(){
@@ -463,7 +467,7 @@ function draw(){
    const marker=document.createElement('span');marker.className='checklist-marker';marker.textContent=i<step?'✓':String(i+1);
    const label=document.createElement('span');label.textContent=action;
    entry.append(marker,label);
-   entry.onclick=()=>{state.step=i+1;if(i===2){state.partialCount=0;state.partialAll=false;}render()};
+   entry.onclick=()=>{state.step=i+1;if(i===2){state.partialCount=1;state.partialAll=false;}render()};
    checklist.append(entry);
    if(i===2&&step===3){
     const sub=document.createElement('div');sub.className='partial-buttons';
@@ -473,9 +477,9 @@ function draw(){
      const btn=document.createElement('button');btn.type='button';
      btn.textContent=String(index+1);
      btn.setAttribute('aria-label','Show partial product '+(index+1)+' of '+items.length);
-     btn.setAttribute('aria-pressed',String(!state.partialAll&&state.partialCount===index+1));
+     btn.setAttribute('aria-pressed',String(state.partialCount===index+1));
      btn.className=index<state.partialCount?'partial-done':'';
-     btn.onclick=()=>{state.partialCount=index+1;state.partialAll=false;render()};
+     btn.onclick=()=>{state.partialCount=index+1;state.partialAll=index===items.length-1;render()};
      sub.append(btn);
     });
     const all=document.createElement('button');all.type='button';all.className='partial-all';
