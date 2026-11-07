@@ -2,7 +2,7 @@
 'use strict';
 const $=id=>document.getElementById(id),T=window.TriangleMath,Assess=window.MathsAssessment;
 const kind=document.body.dataset.app,pyth=kind==='pythagoras';
-const cfg={mode:'instruction',ratio:'sin',route:'ratio',find:'num',bank:'triples',precision:1,angle:35,hyp:10,step:0,slide:0,reveal:false,question:0,showRays:false,sound:true,attempts:0,wrong:[],chosen:null,quizIndex:0,quizQuestions:[],testQuestions:[],testAnswers:[],submitted:false,testType:'hyp'};
+const cfg={mode:'instruction',ratio:'sin',route:'ratio',find:'num',bank:'triples',precision:1,angle:35,hyp:10,step:0,slide:0,reveal:false,question:0,showRays:false,sound:true,attempts:0,wrong:[],chosen:null,quizIndex:0,quizQuestions:[],testQuestions:[],testAnswers:[],submitted:false,testType:'any'};
 const ratioSides={sin:['opp','hyp'],cos:['adj','hyp'],tan:['opp','adj']},round=v=>T.round(v,cfg.precision),fmt=v=>String(round(v));
 const tripleList=T.bank();
 function makeQuestion(n=cfg.question){
@@ -11,13 +11,16 @@ function makeQuestion(n=cfg.question){
   let a=useTriple?legs[0]:4+n%6,b=useTriple?legs[1]:n%3===0?10:7+n%5,h=T.hyp(a,b);
   if(!useTriple&&Number.isInteger(h)){b+=1;h=T.hyp(a,b)}
   if(cfg.bank==='surds'){a=3+(n%4);b=4+(n%3);h=T.hyp(a,b)}
-  const find=n%3===0?'hyp':n%2===0?'adj':'opp';
+  if(n%12===11&&!useTriple){a=10;b=26;h=T.hyp(a,b)}
+  if(cfg.bank==='decimal'){a=3.2+n%5*.7;b=4.1+n%4*.8;h=T.hyp(a,b)}
+  if(cfg.bank==='near'){a=6+n%4+.04;b=8+n%3+.06;h=T.hyp(a,b)}
+  const find=cfg.testType==='any'?(n%3===0?'hyp':n%2===0?'adj':'opp'):cfg.testType;
   return {a,b,h,find,angle:Math.atan2(a,b)*180/Math.PI,exact:useTriple,triplet:entry};
  }
  const entry=tripleList[n%tripleList.length],useTriple=cfg.bank==='triples';
  const angle=useTriple?entry.angle:cfg.bank==='surds'?[30,45,60][n%3]:cfg.angle+(n%3-1)*4;
  const h=useTriple?entry.c:cfg.hyp;
- const s=T.sides(angle,h),find=['num','den','angle'][(n+['num','den','angle'].indexOf(cfg.find))%3];
+ const s=T.sides(angle,h),find=cfg.route==='unknown'?cfg.find:['num','den','angle'][n%3];
  const [num,den]=ratioSides[cfg.ratio],known=find==='angle'?{[num]:s[num],[den]:s[den]}:find==='num'?{[den]:s[den]}:{[num]:s[num]};
  const answer=find==='angle'?angle:find==='num'?s[num]:s[den];
  return {...s,angle,find,known,answer,ratio:cfg.ratio};
@@ -58,11 +61,13 @@ function renderToolbar(){
  document.querySelectorAll('[data-route]').forEach(b=>b.setAttribute('aria-pressed',String(cfg.route===b.dataset.route)));
  $('ratioControls').hidden=pyth;
  $('routeControls').hidden=pyth;
- $('bank').value=cfg.bank;$('find').value=pyth?cfg.testType:cfg.find;
+ $('bank').value=cfg.bank;$('find').value=cfg.find;
+ $('pythFind').value=cfg.testType;
  $('precision').value=String(cfg.precision);
 }
 function mode(mode){cfg.mode=mode;cfg.showRays=false;cfg.step=0;cfg.reveal=false;
  for(const m of ['instruction','practice','display','quiz','test','sheets'])$(m+'Panel').hidden=m!==mode;
+ $('assessmentPanel').hidden=mode!=='quiz'&&mode!=='test';
  renderToolbar();
  if(mode==='instruction')instruction();
  if(mode==='practice'||mode==='display')practice();
@@ -108,6 +113,11 @@ function instruction(){
 }
 function practice(){
  const q=makeQuestion(),display=cfg.mode==='display';
+ if(display){
+  $('displayTriangle').innerHTML=questionTriangle(q);
+  $('displayEquation').textContent=equation(q,cfg.step>0);
+  return;
+ }
  $('triangle').innerHTML=questionTriangle(q);
  $('questionTitle').textContent='Question '+(cfg.question+1);
  $('questionText').textContent=questionText(q);
@@ -123,7 +133,7 @@ function practice(){
  $('practiceExtra').textContent=cfg.step>0||display?'Prediction: '+prediction(q):'';
  $('worked').hidden=cfg.step<labels.length&&!display;
  $('worked').textContent=equation(q,true);
- $('drawn').hidden=cfg.mode!=='display';
+ 
 }
 function startAssessment(type){
  cfg.attempts=0;cfg.wrong=[];cfg.chosen=null;cfg.quizIndex=0;cfg.submitted=false;
@@ -187,7 +197,8 @@ document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>mode(b.dataset
 document.querySelectorAll('[data-ratio]').forEach(b=>b.onclick=()=>{cfg.ratio=b.dataset.ratio;cfg.question=0;renderToolbar();if(cfg.mode==='practice'||cfg.mode==='display')practice()});
 document.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>{cfg.route=b.dataset.route;renderToolbar();if(cfg.route==='unknown')$('optionsPanel').classList.add('open')});
 $('optionsToggle').onclick=()=>{$('optionsPanel').classList.toggle('open');$('optionsToggle').setAttribute('aria-expanded',String($('optionsPanel').classList.contains('open')))};
-$('find').onchange=v=>{if(pyth)cfg.testType=$('find').value;else cfg.find=$('find').value;cfg.question=0;if(cfg.mode==='practice'||cfg.mode==='display')practice()};
+$('find').onchange=()=>{cfg.find=$('find').value;cfg.question=0;if(cfg.mode==='practice'||cfg.mode==='display')practice()};
+$('pythFind').onchange=()=>{cfg.testType=$('pythFind').value;cfg.question=0;if(cfg.mode==='practice'||cfg.mode==='display')practice()};
 $('bank').onchange=()=>{cfg.bank=$('bank').value;cfg.question=0;if(cfg.mode==='practice'||cfg.mode==='display')practice()};
 $('precision').onchange=()=>{cfg.precision=Number($('precision').value);if(cfg.mode==='practice'||cfg.mode==='display')practice()};
 $('angle').oninput=()=>{cfg.angle=Number($('angle').value);$('angleOut').textContent=cfg.angle+'°';if(cfg.mode==='practice'||cfg.mode==='display')practice()};
