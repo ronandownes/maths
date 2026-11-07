@@ -319,7 +319,7 @@ function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomia
     cell.innerHTML=prefix+(p&&magnitude===1?'':magnitude)+(p?pow(p):'');
     started=true;
    }
-  }else cell.innerHTML=minus(v)+(showPowers&&v!==0&&p?pow(p):'');
+  }else cell.innerHTML=minus(v)+(showPowers&&p?pow(p):'');
   tr.append(cell);
  });
  table.append(tr);
