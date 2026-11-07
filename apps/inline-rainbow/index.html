@@ -167,7 +167,7 @@ const featured=[
  ['2x^2','-3y','4p','-q'],
  ['3x','2','5x','4']
 ];
-const state={bank:0,question:0,mode:'practice',direction:'expand',arcMode:'overunder',letters:'ABC',numbers:0,powers:0,step:0,worked:false,grouping:'presented',q:null,manual:false};
+const state={bank:0,question:0,mode:'instruction',direction:'expand',arcMode:'overunder',letters:'ABC',numbers:0,powers:0,step:0,worked:false,grouping:'presented',q:null,manual:false};
 const quizState={index:0,qs:[],choices:[],tries:[],selected:[],attempts:[],first:[],sound:true};
 const testState={qs:[],answers:[],submitted:false};
 const displayState={cols:1,rows:1,answers:false,offset:0};
@@ -271,7 +271,7 @@ function renderBanks(){
   btn.setAttribute('aria-pressed',String(state.bank===i));btn.onclick=()=>{
    state.bank=i;state.question=0;state.manual=false;state.step=0;state.worked=false;
    state.grouping='presented';state.q=teacherExample(i,0);renderBanks();
-   if(state.mode==='quiz'||state.mode==='test')setMode('practice');else setMode(state.mode);
+   setMode('practice');
   };host.append(btn);
  });
  const next=document.createElement('button');next.textContent='Random';next.title='Move to a new question within this bank';
@@ -375,6 +375,17 @@ function renderInstruction(){
  top.append(h,pos);host.append(top);
  const card=document.createElement('article');card.className='lesson-card';
  card.innerHTML='<h3>'+slides[slideIndex].title+'</h3>'+slides[slideIndex].body+(showReveal?'<div class="reveal">'+slides[slideIndex].reveal+'</div>':'');
+ if(slideIndex===1){
+  const diagram=document.createElement('div');diagram.className='arc-stage';
+  diagram.innerHTML=svgFor(featured[0].map(parseTerm),4,state.arcMode);
+  card.append(diagram);
+ }
+ if(slideIndex===2){
+  const p=document.createElement('div');p.className='partial-row';
+  const terms=partial(featured[0].map(parseTerm));
+  p.innerHTML=terms.map((t,i)=>'<div class="partial-cell"><em>'+format(t,i===0)+'</em></div>').join('');
+  card.append(p);
+ }
  host.append(card);
  const nav=document.createElement('div');nav.className='lesson-nav';
  for(const [text,fn] of [['← Previous',()=>{slideIndex--;showReveal=false;renderInstruction()}],['Reveal / hide',()=>{showReveal=!showReveal;renderInstruction()}],['Next →',()=>{slideIndex++;showReveal=false;renderInstruction()}],['Present ⛶',()=>{if(document.fullscreenElement===host)document.exitFullscreen();else host.requestFullscreen?.()}],['Practice',()=>setMode('practice')]]){
@@ -549,7 +560,7 @@ $('newQuestion').onclick=nextQuestion;
 $('naturalGroups').onclick=()=>{state.grouping='presented';state.step=0;renderPractice()};
 $('swapMiddles').onclick=()=>{state.grouping='swapped';state.step=0;renderPractice()};
 $('printSheets').onclick=openSheet;
-state.q=teacherExample(0,0);renderBanks();updateSettings();setMode('practice');
+state.q=teacherExample(0,0);renderBanks();updateSettings();setMode('instruction');
 })();
 </script>
 </body>
