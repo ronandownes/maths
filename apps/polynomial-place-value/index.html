@@ -341,6 +341,9 @@ main{margin:5px auto;padding:10px 19px 18px}
 .brand-link{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:0;flex:0 0 auto}
 .brand-link img{width:122px;max-width:100%}
 .brand-link .apps-name{display:block;font-size:.94rem;font-weight:700;line-height:1;margin:-3px 0 0;color:#202124;letter-spacing:.01em}
+.ws-preview-inline-grid{min-height:unset;gap:5px}
+.ws-preview-inline-grid .ws-preview-inline{min-height:unset;padding:5px 7px;display:flex;gap:6px;align-items:baseline;border:0}
+.ws-preview-inline-grid .ws-preview-question{margin:0;font-size:clamp(14px,1.3vw,19px);text-align:left}
 </style>
 </head>
 <body>
@@ -1313,25 +1316,54 @@ function worksheetQuestions(){
 function drawWorksheetPreview(){
  const host=$('wsLivePreview');if(!host)return;
  host.replaceChildren();
- const heading=el('strong','Live worksheet preview · A4 '+ws.orientation+' · '+ws.columns+' columns');
- const info=el('p','First page shown. The printable worksheet uses these same questions. '+(ws.answers==='key'?'Student answers follow at the end.':''));
+ const heading=el('strong',worksheetTitle()+' · A4 '+ws.orientation+' · '+ws.columns+' columns');
+ const info=el('p',ws.layout==='inline'?'Compact numbered tasks with lettered parts: students choose their method.':'First page shown. The printable worksheet uses these same questions. '+(ws.answers==='key'?'Student answers follow at the end.':''));
  const grid=el('div',undefined,'ws-preview-grid');grid.style.gridTemplateColumns='repeat('+ws.columns+',minmax(0,1fr))';
  (wsPreviewCache||[]).slice(0,ws.columns*2).forEach((item,i)=>{
   const cell=el('div',undefined,'ws-preview-cell');
   const factors=item.type==='ql'?[item.q.b,item.q.a]:[item.q.a,item.q.b];
-  cell.append(el('span',String(i+1)+'.'));
+  cell.append(el('span',ws.layout==='inline'?String(Math.floor(i/4)+1)+' ('+worksheetLetter(i%4)+')':String(i+1)+'.'));
   const formula=el('div',undefined,'ws-preview-question');formula.innerHTML='('+poly(factors[0])+')('+poly(factors[1])+')';cell.append(formula);
+  if(ws.layout==='inline')cell.className+=' ws-preview-inline';
   if(ws.answers==='integrated'){const ans=el('div',undefined,'ws-preview-answer');ans.innerHTML='= '+poly(product(item.q.a,item.q.b));cell.append(ans)}
   if((ws.support==='example'||ws.support==='gradual')&&i===0)cell.append(el('small','Worked example on printout'));
   grid.append(cell);
  });
+ if(ws.layout==='inline')grid.className+=' ws-preview-inline-grid';
  host.append(heading,info,grid);
  if(ws.answers==='key')host.append(el('p','Answers at the end: '+(wsPreviewCache||[]).length+' numbered solutions.','ws-answer-note'));
 }
+
+function worksheetTitle(){
+ const names={ll:'Linear × Linear',ql:'Linear × Quadratic',qq:'Quadratic × Quadratic'};
+ const types=Object.keys(names).filter(key=>ws.counts[key]>0).map(key=>names[key]).join(' · ');
+ const levels=ws.levels.includes('random')?'Levels 1–3':ws.levels.length===1?'Level '+ws.levels[0]:'Levels '+ws.levels.slice().sort().join(', ');
+ return 'Place-Value Expansions · '+(types||'Select a factor pattern')+' · '+levels;
+}
+function worksheetLetter(i){return String.fromCharCode(97+i%26)}
+function printInlineWorksheet(all){
+ const groups=[];for(let i=0;i<all.length;i+=4)groups.push(all.slice(i,i+4));
+ const title=worksheetTitle(),escape=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+ function groupHTML(group,i,answers=false){
+  return '<section class="task"><strong class="number">'+(i+1)+'.</strong><div class="parts">'+group.map((item,j)=>{
+   const q=item.q, factors=q.type==='ql'?[q.b,q.a]:[q.a,q.b];
+   const formula=answers?poly(product(q.a,q.b)):'('+poly(factors[0])+')('+poly(factors[1])+')';
+   const integrated=!answers&&ws.answers==='integrated'?'<span class="soft-answer">= '+poly(product(q.a,q.b))+'</span>':'';
+   return '<div class="part"><span class="letter">('+worksheetLetter(j)+')</span><span class="expression">'+formula+'</span>'+integrated+'</div>';
+  }).join('')+'</div></section>';
+ }
+ const intro=ws.steps?'<p class="instructions">Expand and simplify each expression. Choose any correct method.</p>':'';
+ const answerPage=ws.answers==='key'?'<section class="answers"><h2>Answers</h2>'+groups.map((g,i)=>groupHTML(g,i,true)).join('')+'</section>':'';
+ const css='@page{size:A4 '+ws.orientation+';margin:11mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#eef1f5;color:#1e293b;margin:0}.actions{position:sticky;top:0;background:white;padding:10px}.actions button{padding:9px}.paper,.answers{background:white;width:'+(ws.orientation==='portrait'?'210mm':'297mm')+';max-width:100%;min-height:'+(ws.orientation==='portrait'?'277mm':'190mm')+';margin:15px auto;padding:11mm}.paper header{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #aab6c5;padding-bottom:9px}.paper h1{font-size:15pt;line-height:1.3;margin:0}.name{white-space:nowrap;font-size:10pt}.instructions{font-size:10.5pt}.task{display:grid;grid-template-columns:26px minmax(0,1fr);gap:7px;margin:14px 0 19px;break-inside:avoid}.number{font-size:12pt}.parts{display:grid;grid-template-columns:repeat('+ws.columns+',minmax(0,1fr));gap:12px 9px}.part{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;min-width:0}.letter{font-size:11pt;flex:0 0 auto}.expression{font:14pt/1.35 Cambria,"Cambria Math",Georgia,serif;overflow-wrap:anywhere}.expression sup{font-size:.7em}.soft-answer{color:#a2aab4;font:11pt Cambria,Georgia,serif}.answers{break-before:page}.answers h2{font-size:16pt}.answers .expression{font-size:12pt}@media print{body{background:white}.actions{display:none}.paper,.answers{margin:0;padding:0;min-height:0;width:auto;max-width:none}}';
+ const questions=groups.map((g,i)=>groupHTML(g,i)).join('');
+ const html='<!doctype html><html lang="en-IE"><head><meta charset="utf-8"><title>'+escape(title)+'</title><style>'+css+'</style></head><body><div class="actions"><button onclick="window.print()">Print worksheet and answers</button></div><section class="paper"><header><h1>'+escape(title)+'</h1><span class="name">Name: ______________</span></header>'+intro+questions+'</section>'+answerPage+'</body></html>';
+ const popup=window.open('','_blank');if(!popup){alert('Allow pop-ups to view the worksheet.');return}popup.document.open();popup.document.write(html);popup.document.close();
+}
 function worksheetColumns(){return ws.columns}
 function printWorksheet(){
- const all=worksheetQuestions();
+ const all=wsPreviewCache||worksheetQuestions();
  if(!all.length){alert('Select at least one factor pattern.');return;}
+ if(ws.layout==='inline'){printInlineWorksheet(all);return;}
  const columns=worksheetColumns();
  // Use two full rows on landscape A4; centre incomplete rows while preserving exact columns.
  const perPage=columns*2, pages=[];
