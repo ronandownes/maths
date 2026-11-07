@@ -154,16 +154,18 @@ function assessment(){
   const choices=document.createElement('div');choices.className='cards';
   const spread=Math.max(.8,Math.abs(answer)*.16);
   const values=[answer,answer+spread,Math.max(.1,answer-spread),answer+2*spread];
-  values.forEach((value,j)=>{const b=document.createElement('button');b.textContent=fmt(value)+(pyth||q.find!=='angle'?'':'°');b.disabled=cfg.chosen!==null||cfg.wrong.includes(j);if(cfg.wrong.includes(j))b.className='wrong';
-   if(cfg.chosen!==null&&j===0)b.className='right';
+  const order=[[2,0,3,1],[1,3,0,2],[3,1,2,0],[0,2,1,3]][cfg.quizIndex];
+  const correctIndex=order.indexOf(0);
+  order.forEach((choice,j)=>{const value=values[choice],b=document.createElement('button');b.textContent=fmt(value)+(pyth||q.find!=='angle'?'':'°');b.disabled=cfg.chosen!==null||cfg.wrong.includes(j);if(cfg.wrong.includes(j))b.className='wrong';
+   if(cfg.chosen!==null&&j===correctIndex)b.className='right';
    b.onclick=()=>{if(cfg.chosen!==null||cfg.wrong.includes(j))return;
-    const ok=j===0;cfg.attempts++;if(!ok)cfg.wrong.push(j);
+    const ok=choice===0;cfg.attempts++;if(!ok)cfg.wrong.push(j);
     const finished=ok||cfg.attempts>=2;
     if(finished)cfg.chosen=j;
     Assess.playSound(ok?true:finished?'final-wrong':false,cfg.sound);assessment();
    };choices.append(b)});
   const feedback=document.createElement('p');feedback.className='feedback';
-  feedback.textContent=cfg.attempts===0?'Choose an answer. Sound is on by default.':cfg.chosen===null?'One more chance. Your next answer is final.':cfg.chosen===0?'Correct.':'Two incorrect attempts. Correct answer: '+fmt(answer);
+  feedback.textContent=cfg.attempts===0?'Choose an answer. Sound is on by default.':cfg.chosen===null?'One more chance. Your next answer is final.':cfg.chosen===correctIndex?'Correct.':'Two incorrect attempts. Correct answer: '+fmt(answer);
   const next=document.createElement('button');next.className='primary';next.textContent=cfg.quizIndex===3?'Finish quiz':'Next →';next.disabled=cfg.chosen===null;next.onclick=()=>{cfg.quizIndex++;cfg.attempts=0;cfg.chosen=null;cfg.wrong=[];assessment()};
   const sound=document.createElement('button');sound.textContent='Sound '+(cfg.sound?'On':'Off');sound.onclick=()=>{cfg.sound=!cfg.sound;assessment()};
   box.append(title,question,pic,choices,feedback,next,sound);host.append(box);return;
@@ -173,6 +175,7 @@ function assessment(){
  cfg.quizQuestions.forEach((q,i)=>{
   const row=document.createElement('div');row.className='test-question';
   const label=document.createElement('label');label.textContent=(i+1)+'. '+questionText(q)+' ';
+  const pic=document.createElement('div');pic.className='triangle';pic.style.maxWidth='320px';pic.innerHTML=questionTriangle(q);row.append(pic);
   const input=document.createElement('input');input.className='input-answer';input.type='number';input.step='any';input.value=cfg.testAnswers[i];input.disabled=cfg.submitted;
   input.setAttribute('aria-label','Answer for question '+(i+1));input.oninput=()=>{cfg.testAnswers[i]=input.value};label.append(input);row.append(label);
   if(cfg.submitted){
@@ -188,9 +191,9 @@ function assessment(){
 }
 function sheet(){
  const questions=Array.from({length:6},(_,i)=>makeQuestion(cfg.question+i)),title=(pyth?'Pythagoras':'Right-Angled Trigonometry')+' · Six questions';
- const body=questions.map((q,i)=>'<article><b>'+(i+1)+'.</b> '+questionText(q)+'<div class="space"></div></article>').join('');
+ const body=questions.map((q,i)=>'<article><b>'+(i+1)+'.</b> '+questionText(q)+'<div class="diagram">'+questionTriangle(q)+'</div><div class="space"></div></article>').join('');
  const answers=questions.map((q,i)=>'<p>'+(i+1)+'. '+fmt(correctAnswer(q))+'</p>').join('');
- const html='<!doctype html><html><head><title>'+title+'</title><style>@page{size:A4;margin:14mm}body{font:15px Arial}h1{font-size:22px}main{display:grid;grid-template-columns:1fr 1fr;gap:12px}article{border:1px solid #eee;padding:10px;min-height:100px;break-inside:avoid}.space{height:70px}.key{break-before:page}button{padding:10px}@media print{button{display:none}}</style></head><body><button onclick="print()">Print / Save PDF</button><h1>'+title+'</h1><p>Name: __________________________</p><main>'+body+'</main><div class="key"><h2>Answer key</h2>'+answers+'</div></body></html>';
+ const html='<!doctype html><html><head><title>'+title+'</title><style>@page{size:A4;margin:14mm}body{font:15px Arial}h1{font-size:22px}main{display:grid;grid-template-columns:1fr 1fr;gap:12px}article{border:1px solid #eee;padding:10px;min-height:240px;break-inside:avoid}.diagram svg{max-width:100%;height:135px}.space{height:55px}.key{break-before:page}button{padding:10px}@media print{button{display:none}}</style></head><body><button onclick="print()">Print / Save PDF</button><h1>'+title+'</h1><p>Name: __________________________</p><main>'+body+'</main><div class="key"><h2>Answer key</h2>'+answers+'</div></body></html>';
  const win=window.open('','_blank');if(!win){alert('Allow pop-ups to open Sheets.');return}win.document.write(html);win.document.close();
 }
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>mode(b.dataset.mode));
