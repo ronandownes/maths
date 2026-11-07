@@ -1476,16 +1476,16 @@ function printWorksheet(){
  '.worked-table .factor-bottom td{border-bottom:2px solid #8e9cad}'+
  '.worked-table .sum-row td{border-top:2px solid #8e9cad;font-weight:bold}'+
  '.worked-answer{display:table;font:clamp(14px,1.45vw,20px) Cambria,"Cambria Math",Georgia,serif;border:1.5px solid #63758a;border-radius:4px;padding:2mm 3mm;margin:4mm auto 0;text-align:center}'+
-  'footer{text-align:right;font-size:10px;color:#6a7686;margin-top:12px}.key{display:none;background:white;max-width:297mm;margin:12px auto;padding:12mm;break-after:page}'+
+  'footer{text-align:right;font-size:10px;color:#6a7686;margin-top:12px}.key{display:block;background:white;max-width:'+(ws.orientation==='portrait'?'210mm':'297mm')+';margin:12px auto;padding:12mm;break-before:page}'+
  '.key h2{font-size:17px}.answer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.solution{break-inside:avoid;border-bottom:1px solid #ddd;padding:10px 0}.solution div,.solution b{display:block;font:15px Cambria,Georgia,serif;margin-top:7px}'+
  'body.answers .sheet{display:none}body.answers .key{display:block}'+
  '@media print{body{background:white}.controls{display:none}.sheet{margin:0;padding:0;min-height:0;break-after:page}.sheet:last-of-type{break-after:auto}.problem{min-height:0}.key{padding:0;margin:0;max-width:none}}'+
  '</style></head><body><div class="controls">'+
- '<button onclick="document.body.className=\'\';window.print()">Print worksheet and answers</button'+
+ '<button onclick="document.body.className=\'\';window.print()">Print worksheet and answers</button>'+
  (ws.answers==='key'?'<button onclick="document.body.className=\'answers\';window.print()">Print teacher answers</button>':'')+
  '<button onclick="document.body.className=\'\';">View questions</button>'+
  (ws.answers==='key'?'<button onclick="document.body.className=\'answers\';">View answers</button>':'')+'</div>'+
- pages.join('')+(ws.answers==='key'?'<section class="key"><h2>Teacher answers · '+all.length+' questions</h2><div class="answer-grid">'+key+'</div></section>':'')+'</body></html>';
+ pages.join('')+(ws.answers==='key'?'<section class="key"><h2>Answers · '+all.length+' questions</h2><div class="answer-grid">'+key+'</div></section>':'')+'</body></html>';
  const popup=window.open('','_blank');if(!popup){alert('Allow pop-ups to view the worksheet.');return}
  popup.document.open();popup.document.write(html);popup.document.close();
 }
