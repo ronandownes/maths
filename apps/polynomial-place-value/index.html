@@ -71,8 +71,8 @@ button:disabled{opacity:.38;cursor:default}
 .factor-expression .bracket{display:inline-block;font-size:1.14em;line-height:1;vertical-align:-.035em}
 .factor-expression .factor{display:inline-block;white-space:nowrap}
 @media(max-width:680px){.factor-expression{font-size:1.55rem}}
-.strategy{font-size:.82rem;color:#5d6875;text-align:center;margin:1px 0 5px}
-.strategy strong{font-weight:700;color:#3b4958}
+.caption-action{border:0;border-radius:4px;background:transparent;padding:4px 3px;font-size:.81rem;min-width:0;color:#59636f;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
+.caption-action:hover,.caption-action:focus-visible{background:#e8f0fe;color:#174ea6}
 </style>
 </head>
 <body>
@@ -83,14 +83,14 @@ button:disabled{opacity:.38;cursor:default}
 <main>
 
 <div class="settings">
-<div class="setting"><span class="caption">Factors</span><div class="button-group" id="types" aria-label="Polynomial degrees"></div></div>
-<div class="setting"><span class="caption">Signs</span><div class="button-group" id="signs" aria-label="Coefficient signs"></div></div>
+<div class="setting"><button class="caption caption-action" id="randomFactors" type="button" title="Random factor type" aria-label="Randomly choose factor type and generate a question">Factors</button><div class="button-group" id="types" aria-label="Polynomial degrees"></div></div>
+<div class="setting"><button class="caption caption-action" id="randomSigns" type="button" title="Random signs" aria-label="Generate a question with random signs">Signs</button><div class="button-group" id="signs" aria-label="Coefficient signs"></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 </div>
 <div class="bankbar"><span id="bankLabel">Questions for these settings</span><nav class="top-questions" id="questions" aria-label="Questions for the selected factors, signs and level"></nav></div>
 <div class="modes" id="modes" aria-label="How to view the solution"></div>
 <div class="factor-expression" id="factorExpression" aria-label="Current multiplication question"></div>
-<p class="strategy" id="strategy"></p>
+
 
 <div class="coefficients" id="coefficients" aria-label="Edit factor coefficients"></div>
 <h2 id="heading"></h2>
@@ -181,7 +181,6 @@ function coefficientInputs(){
  const host=$('coefficients');host.replaceChildren();
  [['First factor','a'],['Second factor','b']].forEach(([title,key])=>{
   const group=document.createElement('div');group.className='factor-fields';
-  const h=document.createElement('div');h.className='group-label';h.textContent=title;group.append(h);
   state.question[key].forEach((v,i)=>{
    if(state.type==='ml'&&key==='a'&&i===1)return;
    const degree=state.question[key].length-i-1;
@@ -236,8 +235,6 @@ function draw(){
  $('help').textContent='';
  const pad=v=>Array(n-v.length).fill(null).concat(v);
  $('factorExpression').innerHTML='<span class="factor"><span class="bracket">(</span>'+poly(a)+'<span class="bracket">)</span></span> <span class="factor"><span class="bracket">(</span>'+poly(b)+'<span class="bracket">)</span></span>';
- const strategy=state.type==='ql'||state.type==='qq'?'Recommended: place-value multiplication is particularly useful here.':state.type==='ml'?'Direct distribution is usually simpler for a monomial.':'Direct expansion is usually quicker for two linear factors.';
- $('strategy').innerHTML='<strong>Strategy:</strong> '+strategy;
  if(mode!=='question'){
   const table=document.createElement('table');table.className='math-table';
   if(true){
@@ -265,6 +262,8 @@ function draw(){
 
 }
 function render(){renderSelectors();$('bankLabel').textContent='Bank · '+factorTypes.find(x=>x[0]===state.type)[1]+' · '+signTypes.find(x=>x[0]===state.sign)[1]+' · Level '+state.level;coefficientInputs();draw()}
+$('randomFactors').onclick=()=>{const options=factorTypes.map(v=>v[0]);state.type=options[Math.floor(Math.random()*options.length)];freshQuestion()};
+$('randomSigns').onclick=()=>{state.sign='random';freshQuestion()};
 selectQuestion(0);
 })();</script>
 </body>
