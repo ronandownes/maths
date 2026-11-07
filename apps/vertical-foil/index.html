@@ -701,7 +701,13 @@ function renderAssessment(){
     ?MathsAssessment.equivalentPolynomial(assessment.responses[i],solution(item.q))
     :MathsAssessment.equivalentFactorisation(assessment.responses[i],solution(item.q));
    const feedback=document.createElement('div');feedback.className='maths-assessment-feedback'+(ok?' correct':'');
-   feedback.textContent=ok?'Correct.':'Not correct. Expected: '+(state.direction==='expand'?solution(item.q):factored(item.q));
+   if(ok)feedback.textContent='Correct.';
+   else{
+    feedback.append(document.createTextNode('Not correct. Expected: '));
+    const expected=document.createElement('span');
+    expected.innerHTML=state.direction==='expand'?solution(item.q):factored(item.q);
+    feedback.append(expected);
+   }
    card.append(feedback);
   }
   panel.append(card);
