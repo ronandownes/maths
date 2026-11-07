@@ -967,7 +967,9 @@ function worksheetOptions(){
 function wsStatus(){
  const n=Object.values(ws.counts).reduce((sum,v)=>sum+v,0)+ws.extra;
  const cols=ws.columns==='auto'?(ws.counts.qq>0?3:4):Number(ws.columns);
- const actual=n>0?Math.max(cols*2,Math.ceil(n/(cols*2))*cols*2):0;
+ const signs=ws.signs.includes('random')?3:ws.signs.length;
+ const types=Object.values(ws.counts).filter(v=>v>0).length;
+ const actual=n>0?Math.max(cols*2,Math.ceil(Math.max(n,types*signs)/(cols*2))*cols*2):0;
  const e=$('wsStatus');if(e)e.textContent=n+' selected · '+actual+' printed ('+cols+' across) · '+ws.support+' support · levels: '+(ws.levels.includes('random')?'random':ws.levels.join(', '))+' · signs: '+(ws.signs.includes('random')?'random':ws.signs.join(', '))+' · answers: '+ws.answers;
 }
 function worksheetQuestions(){
@@ -1004,7 +1006,10 @@ function printWorksheet(){
  const perPage=columns*2, pages=[];
  // Add fresh questions to finish the last page, without changing chosen patterns.
  // The numbered homework questions remain unchanged and first in the sequence.
- const minimum=Math.max(perPage,Math.ceil(all.length/perPage)*perPage);
+ const selectedTypeCount=['ll','ql','qq'].filter(type=>ws.counts[type]>0).length;
+ const selectedSignCount=ws.signs.includes('random')?3:ws.signs.length;
+ const desired=Math.max(all.length,selectedTypeCount*selectedSignCount);
+ const minimum=Math.max(perPage,Math.ceil(desired/perPage)*perPage);
  if(all.length<minimum){
   const originals={type:state.type,level:state.level,sign:state.sign,factorRandom:state.factorRandom};
   const types=['ll','ql','qq'].filter(type=>ws.counts[type]>0);
@@ -1033,6 +1038,9 @@ function printWorksheet(){
    }
   }finally{state.type=originals.type;state.level=originals.level;state.sign=originals.sign;state.factorRandom=originals.factorRandom}
  }
+ // Present a graduated sequence separately for each selected factor type.
+ const typeRank={ll:0,ql:1,qq:2},signRank={positive:0,negative:1,mixed:2};
+ all.sort((a,b)=>typeRank[a.type]-typeRank[b.type]||signRank[a.q.sign]-signRank[b.q.sign]||a.level-b.level);
  const support=i=>ws.support==='independent'?'none':ws.support==='example'?(i===0?'full':'none'):(['full','guided','faded'][i]||'none');
  const names={ll:'Linear × Linear',ql:'Linear × Quadratic',qq:'Quadratic × Quadratic'};
  const signNames={positive:'Both positive',negative:'Both negative',mixed:'Mixed signs'};
