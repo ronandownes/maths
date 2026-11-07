@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Complex Numbers Explorer | Maths Apps</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f3f6f9;color:#1d2937}
+*{box-sizing:border-box}
+body{margin:0}
+header{background:white;border-bottom:1px solid #d1d9e2;display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:8px max(14px,calc((100vw - 1150px)/2))}
+header img{width:105px}header .brand{display:flex;align-items:center;gap:7px;font-weight:800;color:#124c79;text-decoration:none}
+header .trail{font-size:.82rem}header a{color:#174e83}
+main{max-width:1120px;margin:0 auto;padding:12px}
+h1{font-size:clamp(1.2rem,3.6vw,1.75rem);margin:7px 0}
+h2{font-size:1.16rem;margin:12px 0}
+p{line-height:1.55}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+button,input{font:inherit}
+button{border:1px solid #a4b8cc;border-radius:8px;padding:9px 13px;background:white;color:#183b59;cursor:pointer;min-height:42px}
+button[aria-pressed=true]{background:#174e83;color:white;font-weight:700}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #85baf9;outline-offset:2px}
+.layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(255px,.8fr);gap:12px}
+.panel{background:white;border:1px solid #dbe2e9;border-radius:12px;padding:12px}
+svg{display:block;width:100%;height:auto;max-height:73vh;touch-action:none;user-select:none;border:1px solid #edf0f3;border-radius:8px}
+.grid-line{stroke:#e5ebf2;stroke-width:1}.axis{stroke:#475569;stroke-width:2}
+.vector{fill:none;stroke-width:3.8}.vector-z{stroke:#206cb3}.vector-w{stroke:#bc6540}.vector-r{stroke:#16815b}
+.point{cursor:grab;stroke:white;stroke-width:2.5}.point:active{cursor:grabbing}
+.tiny{font-size:.83rem;color:#516175}
+.math{font-family:"Cambria Math",Cambria,Georgia,serif;font-size:1.17rem}
+.result{background:#edf7f3;border-left:4px solid #16815b;border-radius:7px;padding:14px;margin-top:12px}
+.working{font-size:1.07rem;line-height:1.6;min-height:80px}
+.stepper{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.stepper .progress{margin-right:auto;font-size:.86rem;color:#516175}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.field{display:flex;flex-direction:column;gap:4px;font-size:.85rem;font-weight:650}
+.field input{width:100%;min-width:0;padding:9px;border-radius:7px;border:1px solid #9fb1c3;font-size:1rem}
+details{border:1px solid #d6e1ea;border-radius:8px;padding:10px;margin-top:12px}
+details summary{cursor:pointer;font-weight:650}
+.note{background:#f3f7fd;padding:10px;border-radius:7px}
+.status{font-size:.81rem;font-weight:700;color:#287254}
+.warning{color:#a83b30}
+@media(max-width:730px){.layout{grid-template-columns:1fr}main{padding:8px}.panel{padding:9px}svg{max-height:59vh}header img{width:86px}.toolbar button{padding:7px 9px}.working{min-height:0}}
+@media print{button,details,header .trail{display:none}.layout{display:block}svg{max-height:16cm}.panel{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header><a class="brand" href="../../index.html"><img src="../../assets/maths-logo.svg" alt="Four-dot Maths logo"><span>Apps</span></a><span class="trail"><a href="../../number/index.html">Number</a> / Complex numbers · <a href="https://ronandownes.github.io/book/">Book</a></span></header>
+<main>
+<h1>Complex Numbers: Argand Diagram and Arithmetic</h1>
+<p class="tiny">Leaving Certificate · Ordinary Level foundations · Start with the worked example, then explore.</p>
+<nav class="toolbar" id="modes" aria-label="Choose an operation">
+<button type="button" data-mode="plot" aria-pressed="true">Plot</button>
+<button type="button" data-mode="add" aria-pressed="false">Add</button>
+<button type="button" data-mode="subtract" aria-pressed="false">Subtract</button>
+<button type="button" data-mode="scalar" aria-pressed="false">Scale</button>
+<button type="button" data-mode="multiply" aria-pressed="false">Multiply</button>
+<button type="button" data-mode="divide" aria-pressed="false">Divide</button>
+</nav>
+<div class="layout">
+<section class="panel" aria-label="Interactive Argand plane">
+<h2>Argand diagram</h2>
+<svg id="plane" viewBox="0 0 520 520" role="img" aria-label="Complex plane with real horizontal axis and imaginary vertical axis, showing z, w and the result. Drag points after choosing Explore.">
+<defs><marker id="arrow-z" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#206cb3"/></marker><marker id="arrow-w" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#bc6540"/></marker><marker id="arrow-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#16815b"/></marker></defs>
+<g id="grid"></g><g id="vectors"></g><g id="points"></g>
+</svg>
+<p class="tiny"><strong>Blue:</strong> z · <strong>Orange:</strong> w · <strong>Green:</strong> result. Horizontal coordinate = real part; vertical coordinate = coefficient of i.</p>
+</section>
+<section class="panel" aria-label="Calculation and explanations">
+<h2 id="modeTitle">Plot the numbers</h2>
+<p id="concept"></p>
+<div class="result"><div id="expression" class="math" aria-live="polite"></div><div id="result" class="math" aria-live="polite"></div></div>
+<div class="working" id="stepText" aria-live="polite"></div>
+<div class="stepper"><span class="progress" id="stepCount"></span><button id="prev" type="button">← Previous</button><button id="next" type="button">Next →</button></div>
+<p id="stageStatus" class="status">Worked example · values are fixed initially</p>
+<button id="unlock" type="button">Explore: change or drag the numbers</button>
+<details id="options"><summary>Values and options</summary>
+<div class="controls">
+<label class="field">Real part of z <input id="a" type="number" step="1" min="-9" max="9" value="2" disabled></label>
+<label class="field">Imaginary part of z <input id="b" type="number" step="1" min="-9" max="9" value="3" disabled></label>
+<label class="field">Real part of w <input id="c" type="number" step="1" min="-9" max="9" value="1" disabled></label>
+<label class="field">Imaginary part of w <input id="d" type="number" step="1" min="-9" max="9" value="-2" disabled></label>
+<label class="field">Real multiplier k <input id="k" type="number" step="1" min="-5" max="5" value="2" disabled></label>
+</div>
+<p class="tiny">Coordinates are integers from −9 to 9. The displayed result can contain decimals. Division by zero is not defined.</p>
+<button id="reset" type="button">Restore worked example</button>
+</details>
+<div class="note"><strong>Discuss:</strong> How can you check the result without relying on the diagram? Explain your reasoning to a partner, then listen to a different method.</div>
+</section>
+</div>
+</main>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const ns='http://www.w3.org/2000/svg', centre=260, unit=23;
+const state={mode:'plot',step:0,unlocked:false};
+const el=(tag,attrs,text)=>{const n=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs||{}))n.setAttribute(k,v);if(text!==undefined)n.textContent=text;return n;};
+const n=id=>Number($(id).value);
+const fmt=x=>{if(!Number.isFinite(x))return 'undefined';const v=Math.abs(x)<1e-10?0:Math.round(x*10000)/10000;return String(v);};
+const complex=(a,b)=>fmt(a)+(b<0?' − ':' + ')+fmt(Math.abs(b))+'i';
+const input=()=>({a:n('a'),b:n('b'),c:n('c'),d:n('d'),k:n('k')});
+const steps={
+plot:['A complex number has the form a + bi, with i² = −1.','The horizontal coordinate is a, the real part.','The vertical coordinate is b, the coefficient of i. Read each plotted point.'],
+add:['Add the real parts: (a + c).','Add the imaginary parts: (b + d)i.','The arrow to the sum is the resultant of the two arrows. Check algebraically.'],
+subtract:['Subtract real parts: (a − c).','Subtract imaginary parts: (b − d)i.','Subtracting w is the same as adding −w. Check both coordinates.'],
+scalar:['Multiply the real part by the real number k.','Multiply the imaginary coefficient by the same k.','Positive k stretches or shrinks; negative k also reverses direction.'],
+multiply:['Distribute all four partial products.','Replace i² with −1: ac + adi + bci − bd.','Collect real and imaginary parts: (ac − bd) + (ad + bc)i.'],
+divide:['The divisor must not be zero. Its conjugate is c − di.','Multiply numerator and denominator by c − di. The denominator becomes c² + d².','Real part = (ac + bd)/(c² + d²); imaginary part = (bc − ad)/(c² + d²).']
+};
+const introductions={
+plot:'A point (a, b) represents a + bi. A complex number is one number, not two unrelated numbers.',
+add:'Addition combines corresponding coordinates. You can also see this by placing arrows head to tail.',
+subtract:'Subtraction combines corresponding coordinates with the opposite signs.',
+scalar:'A real scalar multiplies both coordinates.',
+multiply:'Multiply in rectangular form using distribution and i² = −1.',
+divide:'Divide in rectangular form by multiplying by the conjugate of the denominator.'
+};
+const headings={plot:'Plot and read the Argand diagram',add:'Addition',subtract:'Subtraction',scalar:'Real scalar multiplication',multiply:'Multiplication in rectangular form',divide:'Division in rectangular form'};
+function calculate(){
+ const {a,b,c,d,k}=input(),m=state.mode;
+ if(m==='plot')return {a,b,formula:'z = '+complex(a,b)+'; w = '+complex(c,d),operation:'Plot z and w as points.'};
+ if(m==='add')return {a:a+c,b:b+d,formula:'z + w = ('+fmt(a)+' + '+fmt(c)+') + ('+fmt(b)+' + '+fmt(d)+')i'};
+ if(m==='subtract')return {a:a-c,b:b-d,formula:'z − w = ('+fmt(a)+' − '+fmt(c)+') + ('+fmt(b)+' − '+fmt(d)+')i'};
+ if(m==='scalar')return {a:k*a,b:k*b,formula:'kz = '+fmt(k)+'('+complex(a,b)+')'};
+ if(m==='multiply')return {a:a*c-b*d,b:a*d+b*c,formula:'zw = (ac − bd) + (ad + bc)i'};
+ const den=c*c+d*d;
+ if(den===0)return {undefined:true,formula:'Division by zero is undefined.'};
+ return {a:(a*c+b*d)/den,b:(b*c-a*d)/den,formula:'z / w = [(ac + bd) + (bc − ad)i] / (c² + d²)'};
+}
+const pos=(x,y)=>[centre+unit*x,centre-unit*y];
+function line(group,x1,y1,x2,y2,cl,marker){
+ const a=pos(x1,y1),b=pos(x2,y2);
+ group.appendChild(el('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],class:'vector '+cl,'marker-end':'url(#'+marker+')'}));
+}
+function drawGrid(){
+ const g=$('grid');g.replaceChildren();
+ for(let t=-10;t<=10;t++){
+  const x=centre+t*unit,y=centre-t*unit;
+  g.appendChild(el('line',{x1:x,y1:centre-10*unit,x2:x,y2:centre+10*unit,class:t===0?'axis':'grid-line'}));
+  g.appendChild(el('line',{x1:centre-10*unit,y1:y,x2:centre+10*unit,y2:y,class:t===0?'axis':'grid-line'}));
+  if(t!==0&&t%2===0){
+   g.appendChild(el('text',{x:x,y:centre+16,'text-anchor':'middle',fill:'#617084','font-size':12},String(t)));
+   g.appendChild(el('text',{x:centre-8,y:y+4,'text-anchor':'end',fill:'#617084','font-size':12},String(t)));
+  }
+ }
+ g.appendChild(el('text',{x:505,y:centre-9,'text-anchor':'end',fill:'#334155','font-size':14},'Real'));
+ g.appendChild(el('text',{x:centre+8,y:15,fill:'#334155','font-size':14},'Imaginary'));
+}
+function point(group,x,y,label,colour,role){
+ const [px,py]=pos(x,y);
+ if(!Number.isFinite(px)||!Number.isFinite(py))return;
+ const circle=el('circle',{cx:px,cy:py,r:role?8:6,fill:colour,class:'point'});
+ if(role){circle.dataset.role=role;circle.style.touchAction='none';}
+ group.appendChild(circle);
+ group.appendChild(el('text',{x:px+11,y:py-11,fill:colour,'font-size':15,'font-weight':700},label));
+}
+function draw(){
+ const {a,b,c,d}=input(),r=calculate(),m=state.mode;
+ const vectors=$('vectors'),points=$('points');
+ vectors.replaceChildren();points.replaceChildren();
+ line(vectors,0,0,a,b,'vector-z','arrow-z');point(points,a,b,'z','#206cb3','z');
+ if(m!=='scalar'){
+  line(vectors,0,0,c,d,'vector-w','arrow-w');point(points,c,d,'w','#bc6540','w');
+ }
+ if(m!=='plot'&&!r.undefined){
+  const dist=Math.max(Math.abs(r.a),Math.abs(r.b));
+  if(dist<=10){line(vectors,0,0,r.a,r.b,'vector-r','arrow-r');point(points,r.a,r.b,'result','#16815b',null);}
+ }
+ $('modeTitle').textContent=headings[m];
+ $('concept').textContent=introductions[m];
+ $('expression').textContent=r.formula;
+ $('result').textContent=m==='plot'?'Coordinates: z = ('+fmt(a)+', '+fmt(b)+'), w = ('+fmt(c)+', '+fmt(d)+')':r.undefined?'No result: w = 0.': 'Result = '+complex(r.a,r.b);
+ $('stepText').textContent=steps[m][state.step];
+ $('stepCount').textContent='Step '+(state.step+1)+' of '+steps[m].length;
+ $('prev').disabled=state.step===0;
+ $('next').textContent=state.step===steps[m].length-1?'Start again ↺':'Next →';
+ document.querySelectorAll('[data-mode]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.mode===m)));
+}
+function values(a,b,c,d,k){for(const [name,v] of Object.entries({a,b,c,d,k}))$(name).value=v;}
+document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{state.mode=btn.dataset.mode;state.step=0;draw();}));
+$('prev').addEventListener('click',()=>{state.step=Math.max(0,state.step-1);draw();});
+$('next').addEventListener('click',()=>{state.step=(state.step+1)%steps[state.mode].length;draw();});
+$('unlock').addEventListener('click',()=>{state.unlocked=true;document.querySelectorAll('.controls input').forEach(input=>input.disabled=false);$('options').open=true;$('stageStatus').textContent='Exploration enabled · drag z and w or change the values';$('unlock').hidden=true;});
+$('reset').addEventListener('click',()=>{values(2,3,1,-2,2);state.step=0;draw();});
+document.querySelectorAll('.controls input').forEach(input=>input.addEventListener('input',draw));
+let drag=null;
+$('plane').addEventListener('pointerdown',e=>{
+ if(!state.unlocked||!e.target.dataset.role)return;
+ drag=e.target.dataset.role;
+ $('plane').setPointerCapture(e.pointerId); e.preventDefault();
+});
+$('plane').addEventListener('pointermove',e=>{
+ if(!drag)return;
+ const p=$('plane').createSVGPoint();p.x=e.clientX;p.y=e.clientY;
+ const m=$('plane').getScreenCTM();if(!m)return;
+ const q=p.matrixTransform(m.inverse());
+ const x=Math.max(-9,Math.min(9,Math.round((q.x-centre)/unit)));
+ const y=Math.max(-9,Math.min(9,Math.round((centre-q.y)/unit)));
+ if(drag==='z'){values(x,y,n('c'),n('d'),n('k'));}
+ else {values(n('a'),n('b'),x,y,n('k'));}
+ draw();
+});
+$('plane').addEventListener('pointerup',()=>drag=null);
+$('plane').addEventListener('pointercancel',()=>drag=null);
+document.addEventListener('keydown',e=>{
+ if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
+ if(e.key==='ArrowRight'){state.step=(state.step+1)%steps[state.mode].length;draw();e.preventDefault();}
+ if(e.key==='ArrowLeft'){state.step=Math.max(0,state.step-1);draw();e.preventDefault();}
+});
+drawGrid();draw();
+})();
+</script>
+<script src="../shared/unifying-strand.js"></script>
+<script>MathsUnifying.mount({context:'expansions'});</script>
+</body></html>
