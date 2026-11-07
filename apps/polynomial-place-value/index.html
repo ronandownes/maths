@@ -911,7 +911,7 @@ function drawTest(){
  }
 }
 
-const ws={counts:{ll:3,ql:3,qq:0},levels:[1],signs:['positive'],support:'gradual',columns:'auto',answers:'key',extra:0,steps:false};
+const ws={counts:{ll:3,ql:3,qq:0},levels:[1],signs:['positive'],support:'independent',columns:'auto',answers:'key',extra:0,steps:false};
 function worksheetOptions(){
  const panel=$('worksheetPanel');panel.replaceChildren();
  const heading=el('h2','Printable worksheet · choose content and support');panel.append(heading);
@@ -948,9 +948,9 @@ function worksheetOptions(){
   items.forEach(([value,label])=>{const o=el('option',label);o.value=value;o.selected=ws[key]===value;ctrl.append(o)});
   ctrl.value=ws[key];ctrl.onchange=()=>{ws[key]=ctrl.value;wsStatus()};list.append(ctrl);area.append(list)
  }
- select('Support / differentiation','support',[['gradual','Gradual · worked example, then fading hints'],['example','Example · first worked, others independent'],['independent','Independent · questions only']]);
+ select('Support / differentiation','support',[['independent','Independent — no worked examples or hints'],['gradual','Graduated support — example, then fading hints'],['example','Worked example — one solved, others independent']]);
  select('Questions across the page','columns',[['auto','Auto-fit (3 or 4)'],['2','Exactly 2 columns'],['3','Exactly 3 columns'],['4','Exactly 4 columns']]);
- select('Answers','answers',[['key','Separate teacher answer key'],['grey','Faint grey answers on questions'],['none','No answers (except a selected worked example)']]);
+ select('Answers','answers',[['key','Separate teacher answer key'],['grey','Faint grey answers on questions'],['none','No answers']]);
  const extras=field('Additional random questions'),row=el('div',undefined,'worksheet-options'),number=el('input');number.type='number';number.min='0';number.max='24';number.value=String(ws.extra);
  number.onchange=()=>{ws.extra=Math.max(0,Math.min(24,Math.floor(Number(number.value)||0)));number.value=String(ws.extra);wsStatus()};
  row.append(el('span','Extra:'),number);extras.append(row);
@@ -1014,24 +1014,35 @@ function printWorksheet(){
   try{
    let attempts=0;
    while(all.length<minimum&&attempts<400){
-    const i=attempts++,type=types[i%types.length],level=levels[i%levels.length],sign=signs[i%signs.length];
-    state.type=type;state.level=level;state.sign=sign;state.factorRandom=false;
+    // Rotate through selected signs in pedagogical order, within each pattern.
+    // Rebalance from existing questions so page filling doesn't favour one sign.
+    const i=attempts++;
+    const patternCounts=types.map(type=>all.filter(item=>item.type===type).length);
+    const least=Math.min(...patternCounts);
+    const type=types[(i+types.length)%types.length];
+    const chosenType=patternCounts[types.indexOf(type)]===least?type:types[patternCounts.indexOf(least)];
+    const existing=all.filter(item=>item.type===chosenType);
+    const signCounts=signs.map(sign=>existing.filter(item=>item.q.sign===sign).length);
+    const sign=signs[signCounts.indexOf(Math.min(...signCounts))];
+    const level=levels[existing.length%levels.length];
+    state.type=chosenType;state.level=level;state.sign=sign;state.factorRandom=false;
     const q=makeQuestion(seeded((seedFor(101+i)*2654435761)>>>0));
-    const key=JSON.stringify([q.a,q.b,type]);
+    const key=JSON.stringify([q.a,q.b,chosenType]);
     if(used.has(key))continue;
-    used.add(key);all.push({q,type,level,number:null});
+    used.add(key);all.push({q,type:chosenType,level,number:null});
    }
   }finally{state.type=originals.type;state.level=originals.level;state.sign=originals.sign;state.factorRandom=originals.factorRandom}
  }
  const support=i=>ws.support==='independent'?'none':ws.support==='example'?(i===0?'full':'none'):(['full','guided','faded'][i]||'none');
  const names={ll:'Linear × Linear',ql:'Linear × Quadratic',qq:'Quadratic × Quadratic'};
+ const signNames={positive:'Both positive',negative:'Both negative',mixed:'Mixed signs'};
  function problem(item,index){
   const q=item.q,n=q.a.length+q.b.length-1,degree=n-1,mode=support(index);
   const factors=q.type==='ql'?[q.b,q.a]:[q.a,q.b],pad=values=>Array(n-values.length).fill(null).concat(values);
   const formula='('+poly(factors[0])+') × ('+poly(factors[1])+')';
-  const label='<div class="meta">'+(index+1)+'. '+names[item.type]+' · Level '+item.level+(item.number?' · HW '+item.number:' · Random')+'</div>';
+  const label='<div class="meta">'+(index+1)+'. '+names[item.type]+' · '+signNames[q.sign]+' · L'+item.level+'</div>';
   const greyAnswer=ws.answers==='grey'?'<div class="grey-answer">= '+poly(product(q.a,q.b))+'</div>':'';
-  const prompt=ws.steps&&mode!=='full'?'<div class="method-prompts">1. Set up columns &nbsp; 2. Place coefficients &nbsp; 3. Multiply &nbsp; 4. Group like terms &nbsp; 5. Write the answer</div>':'';
+  const prompt=ws.steps&&ws.support!=='independent'&&mode!=='full'?'<div class="method-prompts">1. Set up columns &nbsp; 2. Place coefficients &nbsp; 3. Multiply &nbsp; 4. Group like terms &nbsp; 5. Write the answer</div>':'';
   if(mode==='none'){
    return '<article class="problem independent">'+label+'<div class="formula">'+formula+'</div>'+prompt+greyAnswer+'</article>';
   }
