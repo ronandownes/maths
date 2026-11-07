@@ -550,7 +550,7 @@ function individualProducts(a,b){
 }
 function renderSelectors(){
  const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);
- chooseButtons('questions',q,state.slot,v=>{if(assessment.started)return;state.beyondOpen=false;state.type=state.coreType;state.factorRandom=false;state.constantOn=false;switchMode('practice');selectQuestion(v);assessmentConfigChanged()});
+ chooseButtons('questions',q,state.slot,v=>{if(assessment.started)return;state.beyondOpen=false;state.type=state.coreType;state.factorRandom=false;state.constantOn=false;ws.sheet=v+1;ws.use='classwork';switchMode('practice');selectQuestion(v);assessmentConfigChanged()});
  const homeworkDescription=['Positive coefficients','Negative non-leading coefficients','Mixed positive and negative coefficients','Mixed signs · extra practice'];
  for(let i=0;i<4;i++)$('questions').children[i].title='Exercise '+(i+1)+': '+homeworkDescription[i];
  function filter(key,value){if(assessment.started)return;state[key]=value;freshQuestion();assessmentConfigChanged()}
@@ -1464,7 +1464,7 @@ function drawWorksheetPreview(){
  (wsPreviewCache||[]).slice(0,ws.columns*2).forEach((item,i)=>{
   const cell=el('div',undefined,'ws-preview-cell');
   const factors=item.type==='ql'?[item.q.b,item.q.a]:[item.q.a,item.q.b];
-  const label=ws.labels==='none'?'':ws.layout==='inline'?(String(Math.floor(i/ws.columns)+1)+'.'+(ws.labels==='both'?' ('+worksheetLetter(i%ws.columns)+')':'')):(String(i+1)+'.');
+  const label=ws.labels==='none'?'':ws.labels==='both'?(String(Math.floor(i/ws.columns)+1)+'. ('+worksheetLetter(i%ws.columns)+')'):String(i+1)+'.';
   if(label)cell.append(el('span',label));
   const formula=el('div',undefined,'ws-preview-question');formula.innerHTML='('+poly(factors[0])+')('+poly(factors[1])+')';cell.append(formula);
   if(ws.layout==='inline')cell.className+=' ws-preview-inline';
@@ -1489,18 +1489,23 @@ function printInlineWorksheet(all){
  const groups=[];for(let i=0;i<all.length;i+=ws.columns)groups.push(all.slice(i,i+ws.columns));
  const title=worksheetTitle(),escape=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
  function groupHTML(group,i,answers=false){
-  return '<section class="task '+(ws.labels==='none'?'unlabelled':'')+'">'+(ws.labels==='none'?'':'<strong class="number">'+(i+1)+'.</strong>')+'<div class="parts">'+group.map((item,j)=>{
+  return '<section class="task '+(ws.labels!=='both'?'unlabelled':'')+'">'+(ws.labels==='both'?'<strong class="number">'+(i+1)+'.</strong>':'')+'<div class="parts">'+group.map((item,j)=>{
    const q=item.q, factors=q.type==='ql'?[q.b,q.a]:[q.a,q.b];
    const formula=answers?poly(product(q.a,q.b)):'('+poly(factors[0])+')('+poly(factors[1])+')';
    const integrated=!answers&&ws.answers==='integrated'?'<span class="soft-answer">= '+poly(product(q.a,q.b))+'</span>':'';
-   return '<div class="part">'+(ws.labels==='both'?'<span class="letter">('+worksheetLetter(j)+')</span>':'')+'<span class="expression">'+formula+'</span>'+integrated+'</div>';
+   const label=ws.labels==='both'?'('+worksheetLetter(j)+')':ws.labels==='question'?String(i*ws.columns+j+1)+'.':'';
+   return '<div class="part">'+(label?'<span class="letter">'+label+'</span>':'')+'<span class="expression">'+formula+'</span>'+integrated+'</div>';
   }).join('')+'</div></section>';
  }
  const intro=ws.steps?'<p class="instructions">Expand and simplify each expression. Choose any correct method.</p>':'';
  const answerPage=ws.answers==='key'?'<section class="answers"><h2>Answers</h2>'+groups.map((g,i)=>groupHTML(g,i,true)).join('')+'</section>':'';
- const css='@page{size:A4 '+ws.orientation+';margin:11mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#eef1f5;color:#1e293b;margin:0}.actions{position:sticky;top:0;background:white;padding:10px}.actions button{padding:9px}.paper,.answers{background:white;width:'+(ws.orientation==='portrait'?'210mm':'297mm')+';max-width:100%;min-height:'+(ws.orientation==='portrait'?'277mm':'190mm')+';margin:15px auto;padding:11mm}.paper header{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #aab6c5;padding-bottom:9px}.paper h1{font-size:15pt;line-height:1.3;margin:0}.name{white-space:nowrap;font-size:10pt}.instructions{font-size:10.5pt}.task{display:grid;grid-template-columns:22px minmax(0,1fr);gap:4px;margin:11px 0 15px;break-inside:avoid}.number{font-size:12pt;color:#6d7988}.task.unlabelled{grid-template-columns:minmax(0,1fr)}.parts{display:grid;grid-template-columns:repeat('+ws.columns+',minmax(0,1fr));gap:8px 5px}.part{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px;min-width:0}.letter{font-size:9pt;color:#9aa4af;flex:0 0 auto}.expression{font:clamp(14pt,1.35vw,19pt)/1.35 Cambria,"Cambria Math",Georgia,serif;overflow-wrap:anywhere}.expression sup{font-size:.7em}.soft-answer{color:#a2aab4;font:11pt Cambria,Georgia,serif}.answers{break-before:page}.answers h2{font-size:16pt}.answers .expression{font-size:12pt}@media print{body{background:white}.actions{display:none}.paper,.answers{margin:0;padding:0;min-height:0;width:auto;max-width:none}}';
- const questions=groups.map((g,i)=>groupHTML(g,i)).join('');
- const html='<!doctype html><html lang="en-IE"><head><meta charset="utf-8"><title>'+escape(title)+'</title><style>'+css+'</style></head><body><div class="actions"><button onclick="window.print()">Print worksheet and answers</button></div><section class="paper"><header><h1>'+escape(title)+'</h1><span class="name">Name: ______________</span></header>'+intro+questions+'</section>'+answerPage+'</body></html>';
+ const css='@page{size:A4 '+ws.orientation+';margin:11mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#eef1f5;color:#1e293b;margin:0}.actions{position:sticky;top:0;background:white;padding:10px}.actions button{padding:9px}.paper,.answers{background:white;width:'+(ws.orientation==='portrait'?'210mm':'297mm')+';max-width:100%;min-height:'+(ws.orientation==='portrait'?'277mm':'190mm')+';margin:15px auto;padding:11mm}.paper header{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #aab6c5;padding-bottom:9px}.paper h1{font-size:15pt;line-height:1.3;margin:0}.name{white-space:nowrap;font-size:10pt}.instructions{font-size:10.5pt}.task{display:grid;grid-template-columns:22px minmax(0,1fr);gap:4px;margin:11px 0 15px;break-inside:avoid}.number{font-size:12pt;color:#6d7988}.task.unlabelled{grid-template-columns:minmax(0,1fr)}.paper{break-after:page}.parts{display:grid;grid-template-columns:repeat('+ws.columns+',minmax(0,1fr));gap:8px 5px}.part{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px;min-width:0}.letter{font-size:9pt;color:#8f9aa9;flex:0 0 auto;min-width:1.5em}.expression{font:clamp(14pt,1.35vw,19pt)/1.35 Cambria,"Cambria Math",Georgia,serif;overflow-wrap:anywhere}.expression sup{font-size:.7em}.soft-answer{color:#a2aab4;font:11pt Cambria,Georgia,serif}.answers{break-before:page}.answers h2{font-size:16pt}.answers .expression{font-size:12pt}@media print{body{background:white}.actions{display:none}.paper,.answers{margin:0;padding:0;min-height:0;width:auto;max-width:none}}';
+ const perSide=worksheetRowsPerSide(),pages=[];
+ for(let p=0;p<groups.length;p+=perSide){
+  pages.push('<section class="paper"><header><h1>'+escape(title)+'</h1><span class="name">Name: ______________</span></header>'+(ws.steps&&p===0?intro:'')+groups.slice(p,p+perSide).map((g,i)=>groupHTML(g,p+i)).join('')+'</section>');
+ }
+ const questions=pages.join('');
+ const html='<!doctype html><html lang="en-IE"><head><meta charset="utf-8"><title>'+escape(title)+'</title><style>'+css+'</style></head><body><div class="actions"><button onclick="window.print()">Print worksheet and answers</button></div>'+questions+answerPage+'</body></html>';
  const popup=window.open('','_blank');if(!popup){alert('Allow pop-ups to view the worksheet.');return}popup.document.open();popup.document.write(html);popup.document.close();
 }
 function worksheetColumns(){return ws.columns}
