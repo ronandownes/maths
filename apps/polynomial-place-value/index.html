@@ -440,7 +440,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 </header>
 <main>
 <div class="settings settings-top common-settings">
-<div class="setting"><span class="caption">Factor pattern</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor pattern"></div><select id="challengeSelect" aria-label="Optional higher degree factor patterns"><option value="">Challenge…</option><option value="l5">Linear × Quintic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select></div></div>
+<div class="setting"><span class="caption">Factor pattern</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor pattern"></div><select id="challengeSelect" aria-label="Optional higher degree factor patterns"><option value="">Challenge…</option><option value="l3">Linear × Cubic</option><option value="l4">Linear × Quartic</option><option value="l5">Linear × Quintic</option><option value="q3">Quadratic × Cubic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 <div class="setting"><span class="caption">Sign pattern</span><div class="button-group" id="signs" aria-label="Choose signs"></div></div>
 <div class="setting setting--advanced"><span class="caption">Options</span><div class="advanced-buttons"><button type="button" id="constantBtn" aria-pressed="false" title="Optional: constant multiplier">Constant off</button><button type="button" id="monicBtn" aria-pressed="false" title="Optional support: leading coefficient 1">Monic off</button><button type="button" id="challengeBtn" hidden aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false">Challenge off</button></div></div>
@@ -487,7 +487,7 @@ const instructions=[
 ];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
 const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\nQuad'],['any','Rand']];
-const beyondChoices=[['l5','Linear × Quintic'],['q4','Quadratic × Quartic'],['44','Quartic × Quartic']];
+const beyondChoices=[['l3','Linear × Cubic'],['l4','Linear × Quartic'],['l5','Linear × Quintic'],['q3','Quadratic × Cubic'],['q4','Quadratic × Quartic'],['44','Quartic × Quartic']];
 const beyondTypes=beyondChoices.map(item=>item[0]);
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
 const signChoices=[['positive','Both\npositive'],['negative','Negative\nnon-leading'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
@@ -512,7 +512,7 @@ function seeded(seed){let x=seed>>>0;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<
 function chooseSign(next){return ['positive','negative','mixed'][next(0,2)]}
 function makeQuestion(next,signOverride=null){
  const type=state.factorRandom?factorTypes[next(0,factorTypes.length-1)][0]:state.type;
- const [na,nb]=({ll:[2,2],ql:[3,2],qq:[3,3],cl:[2,1],l5:[6,2],q4:[5,3],'44':[5,5]})[type]||[3,2];
+ const [na,nb]=({ll:[2,2],ql:[3,2],qq:[3,3],cl:[2,1],l3:[4,2],l4:[5,2],l5:[6,2],q3:[4,3],q4:[5,3],'44':[5,5]})[type]||[3,2];
  const level=state.level,sign=signOverride||(state.sign==='random'?chooseSign(next):state.sign);
  const pick=values=>values[next(0,values.length-1)];
  const fav=()=>pick([1,2,2,2,3,3,3,5,5,4,7,8,9]);
@@ -608,7 +608,7 @@ function renderSelectors(){
   state.beyondOpen=false;refreshSelectedQuestion();assessmentConfigChanged();
  });
  const beyondPanel=$('beyondPanel');beyondPanel.hidden=true;
- $('beyondNote').textContent=state.type==='l5'?'Quintic: highest power is x⁵ (degree 5).':state.type==='q4'||state.type==='44'?'Quartic: highest power is x⁴ (degree 4).':'Choose a challenge; numbered Classwork remains separate.';
+ $('beyondNote').textContent=beyondTypes.includes(state.type)?'The selected pattern is available in Classwork, Display, Quiz, Test and Worksheets.':'Choose a higher-degree factor pattern.';
  chooseButtons('beyondChoices',beyondChoices,state.type,v=>{if(assessment.started)return;state.type=v;state.beyondOpen=true;state.factorRandom=false;refreshSelectedQuestion();assessmentConfigChanged()});
  const challengeSelect=$('challengeSelect');
  challengeSelect.value=beyondTypes.includes(state.type)?state.type:'';
@@ -658,7 +658,7 @@ function renderSelectors(){
 }
 function coefficientInputs(){
  const host=$('coefficients');host.replaceChildren();
- (state.question.type==='ql'?[['First factor','b'],['Second factor','a']]:[['First factor','a'],['Second factor','b']]).forEach(([title,key])=>{
+ (state.question.a.length>state.question.b.length?[['First factor','b'],['Second factor','a']]:[['First factor','a'],['Second factor','b']]).forEach(([title,key])=>{
   const group=document.createElement('div');group.className='factor-fields';
   state.question[key].forEach((v,i)=>{
    const degree=state.question[key].length-i-1;
@@ -805,7 +805,7 @@ function draw(){
   });
  }
  const pad=v=>Array(n-v.length).fill(null).concat(v);
- const visibleFactors=['ql','cl','l5','q4'].includes(state.question.type)?[b,a]:[a,b];
+ const visibleFactors=a.length>b.length?[b,a]:[a,b];
  $('factorExpression').innerHTML=((state.question.scalar||1)!==1?'<span class="scalar-prefix">'+minus(state.question.scalar)+'</span>':'')+visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
  if(mode!=='question'&&(mode!=='step'||step>=1)){
   const table=document.createElement('table');table.className='math-table';
@@ -1008,7 +1008,7 @@ function playQuizSound(correct){
  }catch(_err){/* Sound is optional; marking always works without audio. */}
 }
 function testExpression(q){
- const factors=['ql','cl','l5','q4'].includes(q.type)?[q.b,q.a]:[q.a,q.b];
+ const factors=q.a.length>q.b.length?[q.b,q.a]:[q.a,q.b];
  return (q.scalar&&q.scalar!==1?minus(q.scalar)+'':'')+factors.map(f=>'('+poly(f)+')').join(' ');
 }
 function createChoices(q,index){
@@ -1444,7 +1444,7 @@ function worksheetOptions(){
 }
 const boardState={columns:1,rows:1,answers:false,offset:0};
 function boardFormula(q){
- const factors=['ql','l5','q4'].includes(q.type)?[q.b,q.a]:[q.a,q.b];
+ const factors=q.a.length>q.b.length?[q.b,q.a]:[q.a,q.b];
  const scalar=q.scalar&&q.scalar!==1?'<span class="board-factor">'+minus(q.scalar)+'</span>':'';
  return scalar+factors.map(f=>'<span class="board-factor">('+poly(f)+')</span>').join('');
 }
@@ -1597,7 +1597,7 @@ function drawWorksheetPreview(){
  const grid=el('div',undefined,'ws-preview-grid');grid.style.gridTemplateColumns='repeat('+ws.columns+',minmax(0,1fr))';
  (wsPreviewCache||[]).slice(0,ws.columns*2).forEach((item,i)=>{
   const cell=el('div',undefined,'ws-preview-cell');
-  const factors=item.type==='ql'?[item.q.b,item.q.a]:[item.q.a,item.q.b];
+  const factors=item.q.a.length>item.q.b.length?[item.q.b,item.q.a]:[item.q.a,item.q.b];
   const label=ws.labels==='none'?'':ws.labels==='both'?(String(Math.floor(i/ws.columns)+1)+'. ('+worksheetLetter(i%ws.columns)+')'):String(i+1)+'.';
   if(label)cell.append(el('span',label));
   const formula=el('div',undefined,'ws-preview-question');formula.innerHTML='('+poly(factors[0])+')('+poly(factors[1])+')';cell.append(formula);
@@ -1613,7 +1613,7 @@ function drawWorksheetPreview(){
 }
 
 function worksheetTitle(){
- const names={ll:'Linear × Linear',ql:'Linear × Quadratic',qq:'Quadratic × Quadratic',l5:'Linear × Quintic',q4:'Quadratic × Quartic','44':'Quartic × Quartic',any:'Mixed factors'};
+ const names={ll:'Linear × Linear',ql:'Linear × Quadratic',qq:'Quadratic × Quadratic',l3:'Linear × Cubic',l4:'Linear × Quartic',l5:'Linear × Quintic',q3:'Quadratic × Cubic',q4:'Quadratic × Quartic','44':'Quartic × Quartic',any:'Mixed factors'};
  const type=state.factorRandom?'any':state.type;
  const signs={positive:'Positive only',negative:'Negative non-leading',mixed:'Mixed signs',progressive:'Progressive mix'};
  return 'Expanding Brackets · Worksheet '+ws.sheet+' · '+(ws.use==='classwork'?'Classwork':'Homework')+' · '+signs[ws.category]+' · '+(names[type]||'Mixed factors')+' · Level '+state.level;
@@ -1624,7 +1624,7 @@ function printInlineWorksheet(all){
  const title=worksheetTitle(),escape=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
  function groupHTML(group,i,answers=false){
   return '<section class="task '+(ws.labels!=='both'?'unlabelled':'')+'">'+(ws.labels==='both'?'<strong class="number">'+(i+1)+'.</strong>':'')+'<div class="parts">'+group.map((item,j)=>{
-   const q=item.q, factors=q.type==='ql'?[q.b,q.a]:[q.a,q.b];
+   const q=item.q, factors=q.a.length>q.b.length?[q.b,q.a]:[q.a,q.b];
    const formula=answers?poly(product(q.a,q.b)):'('+poly(factors[0])+')('+poly(factors[1])+')';
    const integrated=!answers&&ws.answers==='integrated'?'<span class="soft-answer">= '+poly(product(q.a,q.b))+'</span>':'';
    const label=ws.labels==='both'?'('+worksheetLetter(j)+')':ws.labels==='question'?String(i*ws.columns+j+1)+'.':'';
@@ -1687,11 +1687,11 @@ function printWorksheet(){
  const typeRank={ll:0,ql:1,qq:2},signRank={positive:0,negative:1,mixed:2};
  all.sort((a,b)=>typeRank[a.type]-typeRank[b.type]||signRank[a.q.sign]-signRank[b.q.sign]||a.level-b.level);
  const support=i=>['none','independent'].includes(ws.support)?'none':ws.support==='minimum'?'guided':ws.support==='example'?(i===0?'full':'none'):(['full','guided','faded'][i]||'none');
- const names={ll:'Linear–Linear',ql:'Linear–Quadratic',qq:'Quadratic–Quadratic'};
+ const names={ll:'Linear–Linear',ql:'Linear–Quadratic',qq:'Quadratic–Quadratic',l3:'Linear–Cubic',l4:'Linear–Quartic',l5:'Linear–Quintic',q3:'Quadratic–Cubic',q4:'Quadratic–Quartic','44':'Quartic–Quartic'};
  const signNames={positive:'Both positive',negative:'Both negative',mixed:'Mixed signs'};
  function problem(item,index){
   const q=item.q,n=q.a.length+q.b.length-1,degree=n-1,mode=support(index);
-  const factors=q.type==='ql'?[q.b,q.a]:[q.a,q.b],pad=values=>Array(n-values.length).fill(null).concat(values);
+  const factors=q.a.length>q.b.length?[q.b,q.a]:[q.a,q.b],pad=values=>Array(n-values.length).fill(null).concat(values);
   const formula='('+poly(factors[0])+')('+poly(factors[1])+')';
   const vertical='<div class="vertical-question" aria-label="Factors set up for long multiplication">'+
     '<div class="vertical-factor">'+poly(q.a)+'</div>'+
@@ -1733,7 +1733,7 @@ function printWorksheet(){
    '<div class="questions">'+chunk+
    '</div><footer>'+(i+1)+'–'+Math.min(i+perPage,all.length)+' / '+all.length+'</footer></section>');
  }
- const key=ws.answers==='key'?all.map((item,i)=>{const q=item.q,fs=q.type==='ql'?[q.b,q.a]:[q.a,q.b];
+ const key=ws.answers==='key'?all.map((item,i)=>{const q=item.q,fs=q.a.length>q.b.length?[q.b,q.a]:[q.a,q.b];
   return '<div class="solution"><strong>'+(i+1)+'. '+names[item.type]+' · L'+item.level+'</strong>'+
    '<div>('+poly(fs[0])+')('+poly(fs[1])+')</div><b>= '+poly(product(q.a,q.b))+'</b></div>';
  }).join(''):'';
