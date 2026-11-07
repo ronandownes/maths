@@ -29,6 +29,9 @@ button:disabled{opacity:.38;cursor:default}
 .caption-wrapped span{display:block}
 .button-group button{font-size:.87rem;padding:8px 11px}
 #types button,#signs button{white-space:pre-line;text-align:center;line-height:1.2;min-height:46px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center}
+#signs button.random-sign-outcome{position:relative}
+#signs button.random-sign-outcome::after{content:"";position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#1a73e8;box-shadow:0 0 0 2px #fff}
+#signs button.random-sign-outcome[aria-pressed=false]{border-color:#92afe0}
 .modes{margin:8px 0 4px}
 .modes button{font-size:.94rem}
 .modes button[aria-pressed=true]{border-color:#174ea6}.modes button:first-child{font-weight:700}
@@ -273,9 +276,9 @@ function makeQuestion(next){
   if(!primitive(a)||!primitive(b))continue;
   if(level===2&&product(a,b).some(v=>Math.abs(v)>100))continue;
   if(level===1&&product(a,b).some(v=>Math.abs(v)>60))continue;
-  return {a,b,type};
+  return {a,b,type,sign};
  }
- return {a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)],type};
+ return {a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)],type,sign};
 }
 function chosenQuestion(){
  const rng=state.slot==='fresh'
@@ -311,13 +314,15 @@ function renderSelectors(){
   }
   else {state.factorRandom=false;filter('type',v)}
  });
- chooseButtons('signs',signChoices,state.sign,v=>{
-  if(v==='random'){
-   const available=['positive','negative','mixed'].filter(sign=>sign!==state.sign);
-   const picked=available[Math.floor(Math.random()*available.length)];
-   filter('sign',picked);
-  }else filter('sign',v);
- });
+ chooseButtons('signs',signChoices,state.sign,v=>filter('sign',v));
+ if(state.sign==='random'&&state.question){
+  const outcome=signChoices.findIndex(([value])=>value===state.question.sign);
+  if(outcome>=0&&outcome<3){
+   const actual=$('signs').children[outcome];
+   actual.className+=' random-sign-outcome';
+   actual.title='Chosen for this question: '+signChoices[outcome][1].replace(/\n/g,' ');
+  }
+ }
  chooseButtons('levels',levels,state.level,v=>filter('level',v));
  const randomFactor=$('types').children[factorTypes.length];randomFactor.className='level-random';randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
  const randomSign=$('signs').children[3];randomSign.className='level-random';randomSign.title='Randomly choose a sign pattern';randomSign.setAttribute('aria-label','Random signs');
