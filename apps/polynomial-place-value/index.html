@@ -2,7 +2,7 @@
 <html lang="en-IE">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Expanding Brackets · Place Value | Maths Apps</title>
+<title>Polynomial Expansion · Place Value | Maths Apps</title>
 <link rel="stylesheet" href="../shared/assessment.css">
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <style>
@@ -11,7 +11,7 @@
 body{margin:0}
 header{background:#fff;border-bottom:1px solid #dadce0;padding:4px max(16px,calc((100vw - 1150px)/2));display:flex;align-items:center;gap:8px;min-height:48px}
 header img{width:122px;display:block}.apps-name{font-size:1.05rem;font-weight:700;margin-left:-7px;margin-right:14px}header a{color:#174ea6;text-decoration:none;font-size:.88rem}
-header h1{font-weight:650;font-size:1.16rem;margin:0}
+header h1{font-weight:650;font-size:1.16rem;margin:0}header .app-heading{min-width:0}header .app-breadcrumb{display:flex;align-items:center;gap:7px;font-size:.72rem;line-height:1.3;color:#617083}header .app-breadcrumb a{font-size:inherit;color:#466c98}header .app-breadcrumb a:focus-visible{outline:2px solid #78aaff;outline-offset:2px}
 main{max-width:1100px;margin:8px auto;background:white;padding:14px 26px 28px;min-height:0;border:1px solid #e2e4e7}
 button,input{font:inherit;border-radius:6px;border:1px solid #b8c0c9;background:#fff;color:inherit}
 button{padding:9px 13px;cursor:pointer;white-space:nowrap}
@@ -642,7 +642,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 <body>
 <header>
 <a href="../../index.html" class="brand-link" aria-label="Maths Apps home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"><span class="apps-name">Apps</span></a>
-<div><a href="../../algebra/index.html">Algebra</a> · <a href="../../algebra/expansions/index.html">Expansions</a><h1 title="Distributive law: multiply every term in one bracket by every term in the other">Expanding Brackets · Place Value</h1></div>
+<div class="app-heading"><nav class="app-breadcrumb" aria-label="Mathematics location"><a href="../../algebra/index.html">Algebra</a><span aria-hidden="true">›</span><a href="../../algebra/expansions/index.html">Expansions</a></nav><h1 title="Expand polynomials by arranging coefficients in place-value columns">Polynomial Expansion · Place Value</h1></div>
 </header>
 <main>
 <button id="mobileSettingsToggle" class="mobile-settings-toggle" type="button" aria-expanded="false" aria-controls="mobileSettingsPanel" aria-label="Open question settings">⚙ Settings</button>
@@ -721,7 +721,7 @@ window.matchMedia('(min-width: 761px)').addEventListener('change',event=>{
 });
 
 const actions=[
- 'Count left from # using the factor degrees',
+ 'Set up the place-value columns',
  'Place coefficients in matching rows and columns',
  'Calculate partial products',
  'Combine like terms',
@@ -730,7 +730,7 @@ const actions=[
  'Deepen your learning'
 ];
 const everydayActions=[
- 'Count left from # to the top column',
+ 'Make the columns for # and powers of x',
  'Line up matching powers',
  'Multiply and put each result in its column',
  'Add numbers in the same column',
@@ -739,7 +739,7 @@ const everydayActions=[
  'Check what you have learned'
 ];
 const everydayInstructions=[
- 'Start at #. Count left by the degree of the higher-degree factor, then count left again for the other factor.',
+ 'Start with #, x, x² and so on. Add one extra column when multiplying by a linear factor, or two for a quadratic.',
  'Put the higher-degree factor on top. Put x terms below x terms and constants below constants.',
  'Multiply each bottom number by the top numbers. Shift your working to the right column for each power.',
  'Add numbers only when they belong to the same power of x.',
@@ -750,7 +750,7 @@ const everydayInstructions=[
 const stepWords=()=>state.language==='everyday'?everydayActions:actions;
 const stepTips=()=>state.language==='everyday'?everydayInstructions:instructions;
 const instructions=[
- 'Start at #. Use the degree of each factor to count left to the top column.',
+ 'Write #, x, x² and the higher powers across the top. Add one extra column for a linear multiplier, or two for a quadratic.',
  'Keep the higher-degree factor on top. Match constants, x terms and other like powers in the same columns.',
  'Multiply the bottom coefficients by those above. Each partial product belongs in its matching power-of-x column.',
  'Add each column. The coefficient sequence runs from the highest power to the constant.',
@@ -1090,33 +1090,7 @@ function draw(){
     checklist.append(explain);
     if(state.helpStage===i){
      const tip=el('div',stepTips()[i],'step-current-tip');tip.setAttribute('role','note');
-     if(i===0){
-      const degreeA=a.length-1,degreeB=b.length-1;
-      const [first,second]=degreeA>=degreeB?[a,b]:[b,a];
-      const firstDegree=first.length-1,secondDegree=second.length-1,totalDegree=firstDegree+secondDegree;
-      const countWords=['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
-      const countWord=n=>countWords[n]||String(n);
-      const degreeName=n=>({0:'constant',1:'linear',2:'quadratic',3:'cubic',4:'quartic',5:'quintic'}[n]||'degree '+n);
-      const powerLabel=n=>n===0?'#':pow(n);
-      const spokenPower=n=>n===0?'number column':n===1?'x':'x to the power '+n;
-      const route=(from,to)=>{
-       const labels=[];
-       for(let p=to;p>=from;p--)labels.push(powerLabel(p));
-       return labels.join(' <span aria-hidden="true">←</span> ');
-      };
-      const spokenRoute=(from,to)=>Array.from({length:to-from+1},(_,i)=>spokenPower(from+i)).join(', then ');
-      const plural=n=>n===1?'column':'columns';
-      const firstLabel=degreeA===degreeB?'First factor':'Higher-degree factor';
-      const secondLabel=degreeA===degreeB?'Second factor':'Other factor';
-      const countingStep=(heading,factor,degree,from,to,movement)=>
-       '<div class="degree-counting-step"><div class="degree-counting-label">'+heading+' · degree '+degree+' ('+degreeName(degree)+')</div>'+
-       '<p class="degree-counting-copy">In ('+poly(factor)+'), use the highest power '+powerLabel(degree)+'. '+movement+'</p>'+
-       '<div class="degree-counting-route" role="img" aria-label="'+spokenRoute(from,to)+'">'+route(from,to)+'</div></div>';
-      tip.innerHTML='<div class="degree-counting"><p class="degree-counting-intro">Start at <strong>#</strong> in the number column. Only the highest power in each factor decides how far to move.</p>'+
-       countingStep(firstLabel,first,firstDegree,0,firstDegree,'Start at # and move '+countWord(firstDegree)+' '+plural(firstDegree)+' left.')+
-       countingStep(secondLabel,second,secondDegree,firstDegree,totalDegree,'Then move '+countWord(secondDegree)+' more '+plural(secondDegree)+' left.')+
-       '<p class="degree-counting-conclusion">The highest-power column is '+powerLabel(totalDegree)+'.</p></div>';
-     }
+     // Only the short, optional rule above is needed; no degree-counting derivation.
      checklist.append(tip);
     }
    }
