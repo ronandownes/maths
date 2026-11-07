@@ -324,6 +324,12 @@ main{margin:5px auto;padding:10px 19px 18px}
 @media(max-width:800px){.settings-top .setting--advanced{margin-left:0}}
 .equation.worked-conclusion{display:block;width:100%;max-width:100%;overflow-wrap:anywhere;white-space:normal;line-height:1.6}
 .equation.worked-conclusion sup{white-space:nowrap}
+
+#constantBtn,#challengeBtn{font-size:.79rem;padding:6px 9px;white-space:nowrap}
+#constantBtn[aria-pressed=true]{background:#e4eefc;border-color:#6c97d9;color:#224f91}
+#challengeBtn[aria-pressed=true]{background:#f8dbe2;border-color:#bc536d;color:#77253e}
+.setting--advanced{gap:5px}
+.scalar-prefix{color:#24558e;font-weight:700;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -336,7 +342,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="setting"><span class="caption caption-wrapped">Factor<span>pattern</span></span><div class="button-group" id="types" aria-label="Standard factor types, optional beyond-curriculum challenges, or standard random"></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 <div class="setting"><span class="caption caption-wrapped">Sign<span>pattern</span></span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
-<div class="setting setting--advanced"><button type="button" id="monicBtn" aria-pressed="false" title="Optional support: leading coefficients 1. Numbered homework stays fixed.">Monic off</button></div>
+<div class="setting setting--advanced"><button type="button" id="constantBtn" aria-pressed="false" title="Optional: place a constant multiplier before the algebraic factors">Constant off</button><button type="button" id="monicBtn" aria-pressed="false" title="Optional support: leading coefficients 1. Numbered homework stays fixed.">Monic off</button><button type="button" id="challengeBtn" aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false" title="Optional higher-degree mathematics">Challenge off</button></div>
 <div class="beyond-choices" id="beyondPanel" hidden><strong>Beyond school maths · optional exploration</strong><div class="button-group" id="beyondChoices"></div><span>Not included in Random or the numbered homework. Quartic means degree 4; quintic means degree 5.</span></div>
 </div>
 <div class="activity-switch" aria-label="Homework and learning activities">
@@ -378,14 +384,14 @@ const instructions=[
  'Reflect on the efficiency of the method'
 ];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
-const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\nQuad'],['beyond','Beyond\ncurriculum'],['any','Rand']];
+const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\nQuad'],['any','Rand']];
 const beyondChoices=[['l5','Linear × Quintic'],['q4','Quadratic × Quartic'],['44','Quartic × Quartic']];
 const beyondTypes=beyondChoices.map(item=>item[0]);
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
 const signChoices=[['positive','Positive\nterms'],['negative','Negative\nnon-leading'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
-const state={type:'ql',factorRandom:false,coreType:'ql',beyondOpen:false,monic:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,reflectionUsed:0,reflectionNeed:0,question:null};
+const state={type:'ql',factorRandom:false,coreType:'ql',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,reflectionUsed:0,reflectionNeed:0,question:null};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -439,9 +445,9 @@ function makeQuestion(next,signOverride=null){
   if(type==='cl'&&Math.abs(b[0])===1)continue;
   if(!beyondTypes.includes(type)&&level===2&&product(a,b).some(v=>Math.abs(v)>100))continue;
   if(!beyondTypes.includes(type)&&level===1&&product(a,b).some(v=>Math.abs(v)>60))continue;
-  return {a,b,type,sign};
+  return {a,b,type,sign,scalar:state.slot==='fresh'&&state.constantOn?pick([2,3,4,5,-2,-3]):1};
  }
- return {a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)],type,sign};
+ return {a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)],type,sign,scalar:1};
 }
 function chosenQuestion(){
  const rng=state.slot==='fresh'
@@ -487,30 +493,24 @@ function individualProducts(a,b){
 }
 function renderSelectors(){
  const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);
- chooseButtons('questions',q,state.slot,v=>{switchMode('practice');if(beyondTypes.includes(state.type)){state.type=state.coreType;state.beyondOpen=false}selectQuestion(v)});
+ chooseButtons('questions',q,state.slot,v=>{switchMode('practice');if(beyondTypes.includes(state.type)){state.type=state.coreType;state.beyondOpen=false}state.constantOn=false;selectQuestion(v)});
  const homeworkDescription=['Positive coefficients','Negative non-leading coefficients','Mixed positive and negative coefficients','Mixed signs · extra practice'];
  for(let i=0;i<4;i++)$('questions').children[i].title='Homework '+(i+1)+': '+homeworkDescription[i];
  function filter(key,value){state[key]=value;freshQuestion();if(assessment.mode!=='practice')initialiseTest(assessment.source)}
- chooseButtons('types',factorChoices,beyondTypes.includes(state.type)?'beyond':state.type,v=>{
-  if(v==='beyond'){state.beyondOpen=!state.beyondOpen;renderSelectors();return}
+ chooseButtons('types',factorChoices,beyondTypes.includes(state.type)?state.coreType:state.type,v=>{
   if(v==='any'){
-   const possible=factorTypes.map(pair=>pair[0]).filter(type=>type!==state.type);
-   state.factorRandom=false;state.beyondOpen=false;
-   const core=possible[Math.floor(Math.random()*possible.length)];
-   state.coreType=core;filter('type',core);
-  }else{
-   state.factorRandom=false;state.beyondOpen=false;
-   state.coreType=v;filter('type',v);
-  }
+   const choices=factorTypes.map(item=>item[0]).filter(type=>type!==state.coreType);
+   state.coreType=choices[Math.floor(Math.random()*choices.length)];
+  }else state.coreType=v;
+  state.beyondOpen=false;state.type=state.coreType;state.factorRandom=false;freshQuestion();
  });
  const beyondPanel=$('beyondPanel');beyondPanel.hidden=!state.beyondOpen;
- chooseButtons('beyondChoices',beyondChoices,state.type,v=>{
-  state.factorRandom=false;state.beyondOpen=true;filter('type',v);
- });
- const beyondButton=$('types').children[3];
- beyondButton.setAttribute('aria-expanded',String(state.beyondOpen));
- beyondButton.className='beyond-button';
- beyondButton.title='Optional beyond-curriculum challenges, excluded from Random and homework';
+ chooseButtons('beyondChoices',beyondChoices,state.type,v=>{state.type=v;state.beyondOpen=true;state.factorRandom=false;freshQuestion()});
+ const challenge=$('challengeBtn');challenge.textContent=state.beyondOpen?'Challenge on':'Challenge off';
+ challenge.setAttribute('aria-pressed',String(state.beyondOpen));challenge.setAttribute('aria-expanded',String(state.beyondOpen));
+ challenge.onclick=()=>{state.beyondOpen=!state.beyondOpen;if(!state.beyondOpen&&beyondTypes.includes(state.type))state.type=state.coreType;freshQuestion()};
+ const constant=$('constantBtn');constant.textContent=state.constantOn?'Constant on':'Constant off';constant.setAttribute('aria-pressed',String(state.constantOn));
+ constant.onclick=()=>{state.constantOn=!state.constantOn;freshQuestion()};
  // Numbered homework questions follow fixed signs; the sign buttons must
  // describe the question currently on screen, not a stale selection.
  chooseButtons('signs',signChoices,state.slot==='fresh'?state.sign:state.question.sign,v=>filter('sign',v));
@@ -526,7 +526,7 @@ function renderSelectors(){
  const monicButton=$('monicBtn');monicButton.setAttribute('aria-pressed',String(state.monic));monicButton.textContent=state.monic?'Monic on':'Monic off';
  monicButton.title=state.monic?'Monic is on: both random factors have leading coefficient 1. Click to turn off.':'Click to practise with leading coefficient 1 in both random factors. Numbered homework remains unchanged.';
  monicButton.onclick=()=>{state.monic=!state.monic;freshQuestion();if(assessment.mode!=='practice')initialiseTest(assessment.source)};
- const randomFactor=$('types').children[factorTypes.length+1];randomFactor.className='level-random';randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
+ const randomFactor=$('types').children[factorTypes.length];randomFactor.className='level-random';randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
  const randomSign=$('signs').children[3];randomSign.className='level-random';randomSign.title='Randomly choose a sign pattern';randomSign.setAttribute('aria-label','Random signs');
  const practiceButton=$('practiceMode');practiceButton.setAttribute('aria-pressed',String(assessment.mode==='practice'&&state.slot==='fresh'));
  const host=$('modes');host.replaceChildren();
@@ -599,7 +599,7 @@ function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomia
  table.append(tr);
 }
 function draw(){
- const {a,b}=state.question,final=product(a,b),n=final.length,degree=n-1;
+ const {a,b}=state.question,final=product(a,b).map(v=>v*(state.question.scalar||1)),n=final.length,degree=n-1;
  const mode=state.mode,step=mode==='worked'?7:mode==='question'?0:state.step;
  const root=$('canvas');root.replaceChildren();
  $('heading').textContent='';
@@ -692,7 +692,7 @@ function draw(){
  }
  const pad=v=>Array(n-v.length).fill(null).concat(v);
  const visibleFactors=['ql','cl','l5','q4'].includes(state.question.type)?[b,a]:[a,b];
- $('factorExpression').innerHTML=visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
+ $('factorExpression').innerHTML=((state.question.scalar||1)!==1?'<span class="scalar-prefix">'+minus(state.question.scalar)+' × </span>':'')+visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
  if(mode!=='question'&&(mode!=='step'||step>=1)){
   const table=document.createElement('table');table.className='math-table';
   if(true){
@@ -900,7 +900,7 @@ function playQuizSound(correct){
 }
 function testExpression(q){
  const factors=['ql','cl','l5','q4'].includes(q.type)?[q.b,q.a]:[q.a,q.b];
- return factors.map(f=>'('+poly(f)+')').join(' ');
+ return (q.scalar&&q.scalar!==1?minus(q.scalar)+' × ':'')+factors.map(f=>'('+poly(f)+')').join(' ');
 }
 function createChoices(q,index){
  const correct=product(q.a,q.b),length=correct.length;
