@@ -90,6 +90,18 @@ button:disabled{opacity:.38;cursor:default}
 .math-table td.table-product-result .partial-ring{border-width:3px}
 .partial-buttons button.partial-done{background:#eaf1fe;border-color:#8caee3;color:#174ea6}
 .partial-buttons button[aria-pressed=true]{background:#174ea6;color:#fff;border-color:#174ea6}
+.stage-controls{padding:5px 3px 12px 45px;border-bottom:1px solid #e6eaf0}
+.stage-control-title{font-size:.82rem;color:#5d6f81;margin:0 0 7px}
+.stage-mode-buttons,.stage-jump-buttons{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.stage-mode-buttons button{font-size:.83rem;padding:7px 9px;white-space:normal}
+.stage-jump-buttons button{min-width:33px;min-height:33px;padding:3px 6px;font-size:.94rem;font-weight:650}
+.stage-jump-buttons .stage-next{padding:5px 9px;font-size:.85rem}
+.stage-controls button[aria-pressed=true]{background:#174ea6;color:#fff;border-color:#174ea6}
+.math-table.group-focus td.group-muted{opacity:.14;transition:opacity .2s ease}
+.math-table.group-focus td.group-selected{font-weight:750;color:#1e5386;background:#eaf2fc;border-radius:4px}
+.math-table.group-focus td.group-result{box-shadow:inset 0 -3px #376ea5;background:#e0edfc}
+.math-table th.group-heading{background:#e9f1fb;color:#174ea6}
+.group-explanation{font:700 clamp(1.12rem,2.2vw,1.55rem)/1.3 "Cambria Math",Cambria,Georgia,serif;text-align:center;color:#315b87;margin-top:12px}
 
 .partial-explanation{margin:14px auto 0;text-align:center;font:700 clamp(1.2rem,2.4vw,1.7rem)/1.3 "Cambria Math",Cambria,Georgia,serif;color:#1d4e89}
 .partial-explanation span{font:500 .66em Arial,Helvetica,sans-serif;color:#52667c}
@@ -277,7 +289,7 @@ const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed
 const signChoices=[['positive','Both\npositive'],['negative','Both\nnegative'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
-const state={type:'ql',factorRandom:false,sign:'positive',level:1,levelRandom:false,mode:'worked',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,question:null};
+const state={type:'ql',factorRandom:false,sign:'positive',level:1,levelRandom:false,mode:'worked',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,question:null};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -341,15 +353,15 @@ function chosenQuestion(){
  return makeQuestion(rng);
 }
 function selectQuestion(slot){
- state.slot=slot;state.question=chosenQuestion();state.partialCount=0;state.partialAll=false;render();
+ state.slot=slot;state.question=chosenQuestion();state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
 }
 function freshQuestion(){
  const previous=state.question;
  for(let attempt=0;attempt<16;attempt++){
   state.freshCount++;const next=(()=>{state.slot='fresh';return chosenQuestion()})();
-  if(!previous||JSON.stringify(next)!==JSON.stringify(previous)){state.question=next;state.partialCount=0;state.partialAll=false;render();return}
+  if(!previous||JSON.stringify(next)!==JSON.stringify(previous)){state.question=next;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();return}
  }
- state.question=chosenQuestion();state.partialCount=0;render();
+ state.question=chosenQuestion();state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
 }
 
 function chooseButtons(id,entries,current,change){
@@ -401,7 +413,7 @@ function renderSelectors(){
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
  toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
  const steps=document.createElement('button');steps.type='button';steps.textContent='Step by step';steps.setAttribute('aria-pressed',String(state.mode==='step'));
- steps.onclick=()=>{state.mode='step';state.step=0;state.partialCount=0;state.partialAll=false;render()};host.append(steps);
+ steps.onclick=()=>{state.mode='step';state.step=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render()};host.append(steps);
  if(state.mode==='step'){
   const reset=document.createElement('button');reset.type='button';reset.textContent='Reset steps';
   reset.setAttribute('aria-label','Reset step-by-step working');
@@ -486,26 +498,74 @@ function draw(){
    const marker=document.createElement('span');marker.className='checklist-marker';marker.textContent=i<step?'✓':String(i+1);
    const label=document.createElement('span');label.textContent=action;
    entry.append(marker,label);
-   entry.onclick=()=>{state.step=i+1;if(i===2){state.partialCount=1;state.partialAll=false;}render()};
+   entry.onclick=()=>{
+    state.step=i+1;
+    if(i===2){state.partialCount=1;state.partialAll=false;}
+    if(i===3){state.groupCount=1;state.groupAll=false;}
+    render();
+   };
    checklist.append(entry);
    if(i===2&&step===3){
-    const sub=document.createElement('div');sub.className='partial-buttons';
-    sub.setAttribute('aria-label','Individual partial products');
     const items=individualProducts(a,b);
-    items.forEach((item,index)=>{
-     const btn=document.createElement('button');btn.type='button';
-     btn.textContent=String(index+1);
-     btn.setAttribute('aria-label','Show partial product '+(index+1)+' of '+items.length);
-     btn.setAttribute('aria-pressed',String(state.partialCount===index+1));
-     btn.className=index<state.partialCount?'partial-done':'';
-     btn.onclick=()=>{state.partialCount=index+1;state.partialAll=index===items.length-1;render()};
-     sub.append(btn);
-    });
-    const all=document.createElement('button');all.type='button';all.className='partial-all';
-    all.textContent='All';all.setAttribute('aria-label','Show all partial products');
+    const sub=document.createElement('div');sub.className='stage-controls';
+    sub.setAttribute('aria-label','Calculate partial products');
+    const description=document.createElement('div');description.className='stage-control-title';
+    description.textContent=items.length+' partial products';
+    sub.append(description);
+    const modes=document.createElement('div');modes.className='stage-mode-buttons';
+    const individually=document.createElement('button');individually.type='button';
+    individually.textContent='One by one';
+    individually.setAttribute('aria-pressed',String(!state.partialAll));
+    individually.onclick=()=>{state.partialAll=false;state.partialCount=Math.max(1,Math.min(state.partialCount,items.length-1));render()};
+    const all=document.createElement('button');all.type='button';all.textContent='Show all';
     all.setAttribute('aria-pressed',String(state.partialAll));
     all.onclick=()=>{state.partialCount=items.length;state.partialAll=true;render()};
-    sub.append(all);
+    modes.append(individually,all);sub.append(modes);
+    if(!state.partialAll){
+     const chooser=document.createElement('div');chooser.className='stage-jump-buttons';
+     items.forEach((item,index)=>{
+      const btn=document.createElement('button');btn.type='button';btn.textContent=String(index+1);
+      btn.setAttribute('aria-label','Partial product '+(index+1)+' of '+items.length);
+      btn.setAttribute('aria-pressed',String(state.partialCount===index+1));
+      btn.onclick=()=>{state.partialCount=index+1;state.partialAll=index===items.length-1;render()};
+      chooser.append(btn);
+     });
+     const next=document.createElement('button');next.type='button';next.textContent='Next →';next.className='stage-next';
+     next.disabled=state.partialCount>=items.length;
+     next.onclick=()=>{state.partialCount=Math.min(items.length,state.partialCount+1);state.partialAll=state.partialCount===items.length;render()};
+     chooser.append(next);sub.append(chooser);
+    }
+    checklist.append(sub);
+   }
+   if(i===3&&step===4){
+    const sub=document.createElement('div');sub.className='stage-controls';
+    sub.setAttribute('aria-label','Group like terms');
+    const description=document.createElement('div');description.className='stage-control-title';
+    description.textContent='Add coefficients by column';
+    sub.append(description);
+    const modes=document.createElement('div');modes.className='stage-mode-buttons';
+    const individually=document.createElement('button');individually.type='button';individually.textContent='One by one';
+    individually.setAttribute('aria-pressed',String(!state.groupAll));
+    individually.onclick=()=>{state.groupAll=false;state.groupCount=Math.max(1,Math.min(state.groupCount,n-1));render()};
+    const all=document.createElement('button');all.type='button';all.textContent='Show all';
+    all.setAttribute('aria-pressed',String(state.groupAll));
+    all.onclick=()=>{state.groupCount=n;state.groupAll=true;render()};
+    modes.append(individually,all);sub.append(modes);
+    if(!state.groupAll){
+     const chooser=document.createElement('div');chooser.className='stage-jump-buttons';
+     for(let j=0;j<n;j++){
+      const power=degree-j,btn=document.createElement('button');btn.type='button';
+      btn.innerHTML=power?pow(power):'#';
+      btn.setAttribute('aria-label','Group '+(power?('x to the power '+power):'constant')+' column');
+      btn.setAttribute('aria-pressed',String(state.groupCount===j+1));
+      btn.onclick=()=>{state.groupCount=j+1;state.groupAll=j===n-1;render()};
+      chooser.append(btn);
+     }
+     const next=document.createElement('button');next.type='button';next.textContent='Next →';next.className='stage-next';
+     next.disabled=state.groupCount>=n;
+     next.onclick=()=>{state.groupCount=Math.min(n,state.groupCount+1);state.groupAll=state.groupCount===n;render()};
+     chooser.append(next);sub.append(chooser);
+    }
     checklist.append(sub);
    }
   });
@@ -556,7 +616,29 @@ function draw(){
     }
    }
   }
-  if(step>=4)row(table,final,'sum','+',degree,step>=5);
+  if(step>=4){
+   const sums=mode==='step'&&step===4&&!state.groupAll
+    ?final.map((v,j)=>j<state.groupCount?v:null):final;
+   row(table,sums,'sum','+',degree,step>=5);
+  }
+  if(mode==='step'&&step===4&&!state.groupAll&&state.groupCount>0){
+   const selectedColumn=state.groupCount-1;
+   table.className+=' group-focus';
+   for(let ri=3;ri<table.children.length;ri++){
+    const cells=table.children[ri].children;
+    for(let j=1;j<cells.length;j++){
+     const cell=cells[j];
+     if(j===selectedColumn+1){
+      if(cell.textContent.trim()){
+       cell.className+=' group-selected';
+       if(ri===table.children.length-1)cell.className+=' group-result';
+      }
+     }else cell.className+=' group-muted';
+    }
+   }
+   const heading=table.children[0]?.children[selectedColumn+1];
+   if(heading)heading.className+=' group-heading';
+  }
   root.append(table);
   if(mode==='step'&&step===3&&state.partialCount>0&&!state.partialAll){
    const items=individualProducts(a,b);
@@ -567,6 +649,12 @@ function draw(){
    location.textContent=' · '+(item.power===0?'constant column':item.power===1?'x column':'x'+String.fromCharCode(0x00b2+0)+' column');
    if(item.power>1)location.textContent=' · x^'+item.power+' column';
    note.append(location);root.append(note);
+  }
+  if(mode==='step'&&step===4&&!state.groupAll&&state.groupCount>0){
+   const values=workRows(state.question).map(r=>r[state.groupCount-1]).filter(v=>v!==null);
+   const explain=document.createElement('div');explain.className='group-explanation';
+   explain.textContent=values.map(minus).join(' + ').replace(/\+ −/g,'− ')+' = '+minus(final[state.groupCount-1]);
+   root.append(explain);
   }
   if(step>=6){
    const eq=document.createElement('div');eq.className='equation worked-conclusion';
