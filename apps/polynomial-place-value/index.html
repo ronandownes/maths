@@ -931,8 +931,8 @@ function renderSelectors(){
  const challenge=$('challengeBtn');challenge.textContent=state.beyondOpen?'Challenge on':'Challenge off';
  challenge.setAttribute('aria-pressed',String(state.beyondOpen));challenge.setAttribute('aria-expanded',String(state.beyondOpen));
  challenge.onclick=()=>{if(assessment.started)return;state.beyondOpen=!state.beyondOpen;if(!state.beyondOpen&&beyondTypes.includes(state.type))state.type=state.coreType;refreshSelectedQuestion();assessmentConfigChanged()};
- const constant=$('constantBtn');constant.textContent=state.constantOn?'HCF On':'HCF Off';constant.setAttribute('aria-pressed',String(state.constantOn));
- constant.onclick=()=>{if(assessment.started)return;state.constantOn=!state.constantOn;refreshSelectedQuestion();assessmentConfigChanged()};
+ const constant=$('constantBtn');constant.textContent=state.constantOn?'HCF On':'HCF Off';constant.setAttribute('aria-pressed',String(state.constantOn));constant.title='HCF On: every coefficient of the product shares a factor greater than 1. Monic will be switched off.';
+ constant.onclick=()=>{if(assessment.started)return;state.constantOn=!state.constantOn;if(state.constantOn)state.monic=false;refreshSelectedQuestion();assessmentConfigChanged()};
  // Numbered homework questions follow fixed signs; the sign buttons must
  // describe the question currently on screen, not a stale selection.
  chooseButtons('signs',signChoices,state.slot==='fresh'?state.sign:state.question.sign,v=>filter('sign',v));
@@ -968,7 +968,7 @@ function renderSelectors(){
  chooseButtons('levels',levels,state.level,v=>filter('level',v));
  const monicButton=$('monicBtn');monicButton.setAttribute('aria-pressed',String(state.monic));monicButton.textContent=state.monic?'Monic on':'Monic off';
  monicButton.title=state.monic?'Both factors have leading coefficient 1 (where applicable). Click to switch off.':'Require leading coefficients of 1, including numbered banks and Challenge.';
- monicButton.onclick=()=>{if(assessment.started)return;state.monic=!state.monic;refreshSelectedQuestion();assessmentConfigChanged()};
+ monicButton.onclick=()=>{if(assessment.started)return;state.monic=!state.monic;if(state.monic)state.constantOn=false;refreshSelectedQuestion();assessmentConfigChanged()};
  const randomFactor=$('types').children[factorTypes.length];randomFactor.className='level-random';randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
  const randomSign=$('signs').children[3];randomSign.className='level-random';randomSign.title='Randomly choose a sign pattern';randomSign.setAttribute('aria-label','Random signs');
  setAssessmentControlsLocked();
