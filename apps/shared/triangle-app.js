@@ -2,7 +2,7 @@
 'use strict';
 const $=id=>document.getElementById(id),T=window.TriangleMath,Assess=window.MathsAssessment;
 const kind=document.body.dataset.app,pyth=kind==='pythagoras';
-const cfg={mode:'instruction',ratio:'sin',route:'ratio',find:'num',bank:'triples',precision:1,angle:35,hyp:10,step:0,slide:0,reveal:false,question:0,showRays:false,sound:true,attempts:0,wrong:[],chosen:null,quizIndex:0,quizQuestions:[],testQuestions:[],testAnswers:[],submitted:false,testType:'any'};
+const cfg={mode:'instruction',ratio:'sin',route:'ratio',find:'num',bank:pyth?'triples':'decimal',precision:1,angle:35,hyp:10,step:0,slide:0,reveal:false,question:0,showRays:false,sound:true,attempts:0,wrong:[],chosen:null,quizIndex:0,quizQuestions:[],testQuestions:[],testAnswers:[],submitted:false,testType:'any'};
 const ratioSides={sin:['opp','hyp'],cos:['adj','hyp'],tan:['opp','adj']},round=v=>T.round(v,cfg.precision),fmt=v=>String(round(v));
 const tripleList=T.bank();
 function makeQuestion(n=cfg.question){
@@ -10,7 +10,7 @@ function makeQuestion(n=cfg.question){
   const entry=tripleList[n%tripleList.length],useTriple=cfg.bank==='triples'||cfg.bank==='mixed'&&n%2===0;
   let a=useTriple?entry.a:4+n%6,b=useTriple?entry.b:n%3===0?10:7+n%5;
   if(!useTriple&&Number.isInteger(T.hyp(a,b)))b+=1;
-  if(cfg.bank==='surds'){a=3+n%4;b=4+n%3}
+  if(cfg.bank==='surds'){a=3+n%4;b=5+n%3}
   if(n%12===11&&!useTriple){a=10;b=26}
   if(cfg.bank==='decimal'){a=3.2+n%5*.7;b=4.1+n%4*.8}
   if(cfg.bank==='near'){a=6+n%4+.04;b=8+n%3+.06}
@@ -87,7 +87,7 @@ function mode(mode){cfg.mode=mode;cfg.showRays=false;cfg.step=0;cfg.reveal=false
  if(mode==='instruction')instruction();
  if(mode==='practice'||mode==='display')practice();
  if(mode==='quiz'||mode==='test')startAssessment(mode);
- if(mode==='sheets')$('sheetPanel').hidden=false;
+ if(mode==='sheets')$('sheetsPanel').hidden=false;
 }
 const slides=pyth?[
 ['What makes a right triangle?','Identify the right angle, then find the hypotenuse: it is opposite the right angle. The shorter sides meet at 90°.','The hypotenuse is the longest side.'],
@@ -235,5 +235,6 @@ $('displayNew').onclick=()=>{cfg.question++;cfg.step=0;practice()};
 $('sheetOpen').onclick=sheet;
 $('questionRoute').textContent=pyth?'Identify the hypotenuse and choose squares':'Find two marked sides and their included angle';
 $('pythBank').hidden=!pyth;$('trigFind').hidden=pyth;
+ $('angleControl').hidden=pyth;$('hypControl').hidden=pyth;
 mode('instruction');
 })();
