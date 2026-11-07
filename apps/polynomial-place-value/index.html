@@ -153,6 +153,10 @@ button:disabled{opacity:.38;cursor:default}
 .reflection{max-width:760px;margin:13px auto 3px;padding:12px 14px;border-top:1px solid #d8dee6;color:#344054;font-size:clamp(1.12rem,1.75vw,1.32rem);line-height:1.45}
 .reflection strong{font-size:1.12em}
 .reflection p{margin:5px 0 0}
+.investigation{max-width:760px;margin:11px auto 0;padding:12px 14px;border:1px solid #d7e3ec;border-radius:8px;color:#263e55;font-size:clamp(1.1rem,1.7vw,1.3rem);line-height:1.43}
+.investigation strong{font-size:1.08em}
+.investigation p{margin:7px 0}
+.investigation button{font:600 .78em Arial,sans-serif;padding:7px 10px;margin-top:4px}
 [hidden]{display:none!important}
 .activity-switch{display:flex;gap:6px;margin-bottom:9px;border-bottom:1px solid #e2e6ea;padding-bottom:8px}
 .activity-switch button{font-weight:700;font-size:.9rem;padding:8px 16px}
@@ -335,7 +339,7 @@ const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed
 const signChoices=[['positive','Both\npositive'],['negative','Both\nnegative'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
-const state={type:'ql',factorRandom:false,sign:'random',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,question:null};
+const state={type:'ql',factorRandom:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,question:null};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -359,7 +363,7 @@ function makeQuestion(next){
  const pick=values=>values[next(0,values.length-1)];
  const fav=()=>pick([1,2,2,2,3,3,3,5,5,4,7,8,9]);
  const easy=()=>pick([1,1,1,2,2,2,3,3,3,4,5,5,7]);
- const moderate=()=>pick([1,2,2,3,3,3,4,4,5,5,7,8,9]);
+ const moderate=()=>pick([2,2,2,3,3,3,4,4,5,5,6,7,8,9]);
  const challenge=()=>pick([10,11,11,11,20,21,30,31]);
  for(let trial=0;trial<3500;trial++){
   let a,b;
@@ -370,7 +374,6 @@ function makeQuestion(next){
   }else if(level===2){
    a=Array.from({length:na},moderate);
    b=Array.from({length:nb},moderate);
-   if(next(0,5)===0){const target=next(0,1)===0?a:b;target[next(0,target.length-1)]=11;}
   }else{
    a=Array.from({length:na},fav);
    b=Array.from({length:nb},fav);
@@ -713,10 +716,29 @@ function draw(){
    const reflection=document.createElement('div');reflection.className='reflection';
    const heading=document.createElement('strong');heading.textContent='Reflection';
    const paragraph=document.createElement('p');
-   paragraph.textContent=state.question.type==='ll'
+   paragraph.textContent=state.question.type='ll'
     ?'Overkill! This method is overkill for linear × linear. FOIL or the cross-product method is quicker. But hey, it was fun!'
     :'For linear × quadratic and quadratic × quadratic, place-value multiplication is an especially effective method. It keeps like powers aligned and the partial products organised. Expanding brackets term by term can become laborious, tedious and prone to errors; the place-value method makes the calculation clearer and more systematic.';
    reflection.append(heading,paragraph);root.append(reflection);
+   const investigations=[
+    {question:'What changes if the linear factor is 4x + 8?',detail:'Find the highest common factor of its coefficients. Rewrite the factor, then predict what happens when it is multiplied by a quadratic.'},
+    {question:'Investigate 3x² + 9x + 30.',detail:'What do all three coefficients have in common? Factor it out. How could you use this before expanding a product?'},
+    {question:'Compare (2x + 3)(3x² + 4x + 5) with (4x + 6)(3x² + 4x + 5).',detail:'Predict how their expansions are related before calculating. Explain why.'},
+    {question:'Can every coefficient of a product share a factor?',detail:'Start with two polynomials whose coefficients have no common factor greater than 1. Investigate whether their product can have one.'},
+    {question:'Explore (5x + 10)(2x² + 3x + 7).',detail:'Factor out the common number first. Compare two methods of expanding and decide which is more efficient.'},
+    {question:'Investigate 6x² + 9x + 15 and 6x² + 9x + 14.',detail:'Which polynomial has a numerical factor common to all its terms? How does changing one coefficient affect factorising?'}
+   ];
+   const hash=state.question.a.concat(state.question.b).reduce((acc,v)=>((acc*31+v+1024)>>>0),17);
+   const selected=(hash+state.investigationOffset)%investigations.length;
+   const investigation=investigations[selected];
+   const panel=document.createElement('div');panel.className='investigation';
+   const title=document.createElement('strong');title.textContent='Investigate';
+   const question=document.createElement('p');question.textContent=investigation.question;
+   const detail=document.createElement('p');detail.textContent=investigation.detail;
+   const next=document.createElement('button');next.type='button';next.textContent='Another investigation';
+   next.setAttribute('aria-label','Show another investigation');
+   next.onclick=()=>{state.investigationOffset++;render()};
+   panel.append(title,question,detail,next);root.append(panel);
   }
  }
 
