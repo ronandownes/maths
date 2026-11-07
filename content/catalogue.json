@@ -8,6 +8,16 @@
         "ready": true
       },
       {
+        "slug": "sequences",
+        "title": "Sequences",
+        "ready": true
+      },
+      {
+        "slug": "complex-numbers",
+        "title": "Complex numbers",
+        "ready": true
+      },
+      {
         "slug": "number-systems",
         "title": "Number systems",
         "ready": false
@@ -43,11 +53,6 @@
     "introduction": "Expressions, equations, patterns, generalisation and algebraic reasoning.",
     "topics": [
       {
-        "slug": "sequences",
-        "title": "Sequences",
-        "ready": true
-      },
-      {
         "slug": "factorising",
         "title": "Factorising",
         "ready": true
@@ -70,116 +75,6 @@
       {
         "slug": "inequalities",
         "title": "Inequalities",
-        "ready": false
-      }
-    ]
-  },
-  "Geometry": {
-    "introduction": "Shapes, measurement, constructions, proof and trigonometric relationships.",
-    "topics": [
-      {
-        "slug": "rectangle-variables",
-        "title": "Rectangle dimensions, perimeter and area",
-        "ready": true
-      },
-      {
-        "slug": "triangle-rules",
-        "title": "Triangle Rules",
-        "ready": true
-      },
-      {
-        "slug": "angles",
-        "title": "Angles and lines",
-        "ready": false
-      },
-      {
-        "slug": "triangles",
-        "title": "Triangles and similarity",
-        "ready": false
-      },
-      {
-        "slug": "circles",
-        "title": "Circles",
-        "ready": false
-      },
-      {
-        "slug": "coordinate-geometry",
-        "title": "Coordinate geometry",
-        "ready": false
-      },
-      {
-        "slug": "transformations",
-        "title": "Transformations",
-        "ready": false
-      },
-      {
-        "slug": "area-volume",
-        "title": "Area and volume",
-        "ready": false
-      }
-    ]
-  },
-  "Probability": {
-    "introduction": "Chance, outcomes, events, conditional reasoning and random processes.",
-    "topics": [
-      {
-        "slug": "theoretical-experimental",
-        "title": "Theoretical and experimental probability",
-        "ready": true
-      },
-      {
-        "slug": "tree-diagrams",
-        "title": "Tree diagrams",
-        "ready": true
-      },
-      {
-        "slug": "sample-spaces",
-        "title": "Sample spaces",
-        "ready": false
-      },
-      {
-        "slug": "probability-rules",
-        "title": "Probability rules",
-        "ready": false
-      },
-      {
-        "slug": "conditional-probability",
-        "title": "Conditional probability",
-        "ready": false
-      },
-      {
-        "slug": "distributions",
-        "title": "Distributions",
-        "ready": false
-      }
-    ]
-  },
-  "Statistics": {
-    "introduction": "Collecting, describing, representing and interpreting data.",
-    "topics": [
-      {
-        "slug": "describing-data",
-        "title": "Describing data",
-        "ready": true
-      },
-      {
-        "slug": "charts",
-        "title": "Charts and displays",
-        "ready": false
-      },
-      {
-        "slug": "sampling",
-        "title": "Sampling and bias",
-        "ready": false
-      },
-      {
-        "slug": "spread",
-        "title": "Measures of spread",
-        "ready": false
-      },
-      {
-        "slug": "correlation",
-        "title": "Correlation and regression",
         "ready": false
       }
     ]
@@ -219,32 +114,137 @@
       }
     ]
   },
-  "Combinatorics": {
-    "introduction": "Counting systematically, arrangements, selections and patterns.",
+  "Geometry": {
+    "introduction": "Shapes, measurement, constructions, proof and trigonometric relationships.",
     "topics": [
+      {
+        "slug": "rectangle-variables",
+        "title": "Rectangle dimensions, perimeter and area",
+        "ready": true
+      },
+      {
+        "slug": "angles",
+        "title": "Angles and lines",
+        "ready": false
+      },
+      {
+        "slug": "triangles",
+        "title": "Triangles and similarity",
+        "ready": false
+      },
+      {
+        "slug": "circles",
+        "title": "Circles",
+        "ready": false
+      },
+      {
+        "slug": "coordinate-geometry",
+        "title": "Coordinate geometry",
+        "ready": false
+      },
+      {
+        "slug": "transformations",
+        "title": "Transformations",
+        "ready": false
+      },
+      {
+        "slug": "area-volume",
+        "title": "Area and volume",
+        "ready": false
+      }
+    ]
+  },
+  "Trigonometry": {
+    "introduction": "Angles, right-angled triangle ratios, sine and cosine rules, and mathematical relationships in triangles.",
+    "topics": [
+      {
+        "slug": "triangle-rules",
+        "title": "Sine and cosine rules",
+        "ready": true
+      },
+      {
+        "slug": "right-angle-ratios",
+        "title": "Sine, cosine and tangent",
+        "ready": false
+      },
+      {
+        "slug": "right-triangle-applications",
+        "title": "Right-angled triangle applications",
+        "ready": false
+      },
+      {
+        "slug": "unit-circle",
+        "title": "The unit circle",
+        "ready": false
+      }
+    ]
+  },
+  "Statistics": {
+    "introduction": "Collecting, describing, representing and interpreting data.",
+    "topics": [
+      {
+        "slug": "describing-data",
+        "title": "Describing data",
+        "ready": true
+      },
+      {
+        "slug": "charts",
+        "title": "Charts and displays",
+        "ready": false
+      },
+      {
+        "slug": "sampling",
+        "title": "Sampling and bias",
+        "ready": false
+      },
+      {
+        "slug": "spread",
+        "title": "Measures of spread",
+        "ready": false
+      },
+      {
+        "slug": "correlation",
+        "title": "Correlation and regression",
+        "ready": false
+      }
+    ]
+  },
+  "Probability": {
+    "introduction": "Chance, outcomes, events, conditional reasoning and random processes.",
+    "topics": [
+      {
+        "slug": "theoretical-experimental",
+        "title": "Theoretical and experimental probability",
+        "ready": true
+      },
+      {
+        "slug": "tree-diagrams",
+        "title": "Tree diagrams",
+        "ready": true
+      },
       {
         "slug": "counting",
         "title": "Counting principles",
         "ready": true
       },
       {
-        "slug": "factorials",
-        "title": "Factorials",
+        "slug": "sample-spaces",
+        "title": "Sample spaces",
         "ready": false
       },
       {
-        "slug": "permutations",
-        "title": "Permutations",
+        "slug": "probability-rules",
+        "title": "Probability rules",
         "ready": false
       },
       {
-        "slug": "combinations",
-        "title": "Combinations",
+        "slug": "conditional-probability",
+        "title": "Conditional probability",
         "ready": false
       },
       {
-        "slug": "pascals-triangle",
-        "title": "Pascal's triangle",
+        "slug": "distributions",
+        "title": "Distributions",
         "ready": false
       }
     ]
