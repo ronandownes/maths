@@ -140,6 +140,17 @@ button:disabled{opacity:.38;cursor:default}
 .test-feedback.test-incorrect{border-left:4px solid #c45151;background:#fff5f5;color:#803332}
 .test-random-label{color:#596474;font-size:.88rem;font-weight:700}
 .quiz-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.quiz-working-choices{grid-template-columns:repeat(2,minmax(0,1fr))}
+.quiz-working-choices .quiz-choice{overflow-x:auto;padding:10px 6px}
+.quiz-work-table{width:100%;border-collapse:collapse;table-layout:fixed;margin:6px auto;font-family:"Cambria Math",Cambria,Georgia,serif}
+.quiz-work-table th,.quiz-work-table td{text-align:center;font-size:clamp(.86rem,1.4vw,1.2rem);padding:4px 2px;white-space:nowrap}
+.quiz-work-table th{border-bottom:2px solid #b6c2d0;color:#334155;font-weight:700}
+.quiz-work-table sup{font-size:.62em}
+.quiz-work-table .factor-divider td{border-bottom:2px solid #8290a0}
+.quiz-work-table .work-total td{border-top:2px solid #8290a0;font-weight:700}
+.quiz-footer-score{border-top:2px solid #cbd5e1;padding:17px 12px;display:flex;gap:15px;align-items:baseline;justify-content:center;margin-top:16px}
+.quiz-footer-score strong{font-size:clamp(1.75rem,4vw,2.4rem);color:#25364b}
+.quiz-footer-score span{font-size:.92rem;color:#5c6979}
 .quiz-choice:disabled{opacity:1;cursor:default}
 .quiz-choice:disabled:not(.answer-correct){opacity:.64}
 .quiz-choice{text-align:left;font:clamp(1.12rem,2.1vw,1.55rem)/1.35 "Cambria Math",Cambria,Georgia,serif;padding:12px;white-space:normal;overflow-wrap:anywhere}
@@ -439,7 +450,7 @@ function draw(){
 
 }
 
-const assessment={mode:'practice',questions:[],responses:[],submitted:false,checked:[],choices:[],selected:[],firstAttempts:[],run:0,source:'bank',sound:true};
+const assessment={mode:'practice',questions:[],responses:[],submitted:false,checked:[],choices:[],selected:[],firstAttempts:[],run:0,source:'bank',sound:true,quizType:'answer',workChoices:[]};
 function el(tag,textValue,className){
  const e=document.createElement(tag);if(textValue!==undefined)e.textContent=textValue;
  if(className)e.className=className;return e;
@@ -451,17 +462,17 @@ function playQuizSound(correct){
   if(!AudioCtor)return;
   const ctx=new AudioCtor();
   const now=ctx.currentTime;
-  const notes=correct?[[660,0,.16],[880,.18,.25]]:[[350,0,.23],[245,.29,.31]];
+  const notes=correct===true?[[660,0,.16],[880,.18,.25]]:correct==='fanfare'?[[523,0,.16],[659,.18,.16],[784,.36,.18],[1047,.56,.48]]:[[350,0,.23],[245,.29,.31]];
   notes.forEach(([frequency,offset,duration])=>{
    const osc=ctx.createOscillator(),gain=ctx.createGain();
-   osc.type=correct?'sine':'triangle';osc.frequency.value=frequency;
+   osc.type=correct===false?'triangle':'sine';osc.frequency.value=frequency;
    gain.gain.setValueAtTime(0,now+offset);
-   gain.gain.linearRampToValueAtTime(correct?.12:.105,now+offset+.02);
+   gain.gain.linearRampToValueAtTime(correct===false?.105:.13,now+offset+.02);
    gain.gain.exponentialRampToValueAtTime(.001,now+offset+duration);
    osc.connect(gain);gain.connect(ctx.destination);
    osc.start(now+offset);osc.stop(now+offset+duration+.01);
   });
-  if(ctx.close) setTimeout(()=>{Promise.resolve(ctx.close()).catch(()=>{})},1100);
+  if(ctx.close) setTimeout(()=>{Promise.resolve(ctx.close()).catch(()=>{})},1700);
  }catch(_err){/* Sound is optional; marking always works without audio. */}
 }
 function testExpression(q){
@@ -484,6 +495,51 @@ function createChoices(q,index){
  return choices;
 }
 
+function workRows(q){
+ const a=q.a,b=q.b,n=a.length+b.length-1;
+ const rows=[];
+ for(let j=b.length-1;j>=0;j--){
+  if(b[j]===0)continue;
+  const shift=b.length-1-j,values=Array(n).fill(null);
+  for(let i=0;i<a.length;i++)values[n-a.length+i-shift]=a[i]*b[j];
+  rows.push(values);
+ }
+ return rows;
+}
+function createWorkChoices(q,index){
+ const base=workRows(q),correct=product(q.a,q.b);
+ const variants=[{rows:base.map(r=>r.slice()),sum:correct.slice(),valid:true,error:'none'}];
+ // Two authentic multiplication errors, each carried through into its column sum.
+ const spots=[];
+ base.forEach((r,i)=>r.forEach((v,j)=>{if(v!==null)spots.push([i,j])}));
+ const rng=seeded(seedFor(index+assessment.run*17+277));
+ const start=rng(0,spots.length-1);
+ for(let k=0;k<2;k++){
+  const [ri,ci]=spots[(start+k*Math.max(1,Math.floor(spots.length/2)))%spots.length];
+  const rows=base.map(r=>r.slice());
+  rows[ri][ci]+=k===0?1:-1;
+  const sum=correct.slice();sum[ci]+=k===0?1:-1;
+  variants.push({rows,sum,valid:false,error:'multiplication'});
+ }
+ // Correct products, but one incorrect column addition.
+ const column=rng(0,correct.length-1);
+ const sum=correct.slice();sum[column]+=(correct[column]>=0?1:-1);
+ variants.push({rows:base.map(r=>r.slice()),sum,valid:false,error:'addition'});
+ for(let i=variants.length-1;i>0;i--){
+  const j=rng(0,i);[variants[i],variants[j]]=[variants[j],variants[i]];
+ }
+ return variants;
+}
+function workingTable(q,work){
+ const n=product(q.a,q.b).length,power=n-1;
+ const rowHtml=(values,kind='')=>'<tr class="'+kind+'"><td></td>'+values.map(v=>'<td>'+(v===null?'':minus(v))+'</td>').join('')+'</tr>';
+ const pad=v=>Array(n-v.length).fill(null).concat(v);
+ const head='<tr><th></th>'+Array.from({length:n},(_,i)=>'<th>'+(power-i?pow(power-i):'#')+'</th>').join('')+'</tr>';
+ const cells=work.sum.map((v,i)=>'<td>'+minus(v)+(v!==0&&power-i?pow(power-i):'')+'</td>').join('');
+ return '<table class="quiz-work-table">'+head+rowHtml(pad(q.a))+rowHtml(pad(q.b),'factor-divider')+
+ work.rows.map(r=>rowHtml(r)).join('')+'<tr class="work-total"><td>+</td>'+cells+'</tr></table>';
+}
+
 function initialiseTest(source){
  assessment.source=source;assessment.run++;
  assessment.questions=Array.from({length:4},(_,i)=>{
@@ -494,6 +550,7 @@ function initialiseTest(source){
  assessment.submitted=false;assessment.checked=Array(4).fill(false);
  assessment.selected=Array(4).fill(-1);assessment.firstAttempts=Array(4).fill(null);
  assessment.choices=assessment.questions.map((q,i)=>createChoices(q,i));
+ assessment.workChoices=assessment.questions.map((q,i)=>createWorkChoices(q,i));
  drawTest();
 }
 function drawTest(){
@@ -516,6 +573,12 @@ function drawTest(){
   opt.append(sound);
  }
  if(quiz){
+  const kind=el('select');kind.setAttribute('aria-label','Quiz type');
+  [['answer','Pick the correct answer'],['working','Pick the correct working']].forEach(([value,label])=>{
+   const item=el('option',label);item.value=value;item.selected=assessment.quizType===value;kind.append(item);
+  });
+  kind.onchange=()=>{assessment.quizType=kind.value;initialiseTest(assessment.source)};
+  opt.append(kind);
   const choose=el('select');choose.setAttribute('aria-label','Quiz question selection');
   [['bank','Homework questions 1–4'],['random','Four fresh random questions']].forEach(([value,label])=>{
    const item=el('option',label);item.value=value;item.selected=assessment.source===value;choose.append(item);
@@ -534,29 +597,36 @@ function drawTest(){
   const p=product(q.a,q.b);
   if(quiz){
    const answers=el('div',undefined,'quiz-choices');
-   assessment.choices[index].forEach((option,j)=>{
+   const working=assessment.quizType==='working';
+   const options=working?assessment.workChoices[index]:assessment.choices[index];
+   if(working)answers.className+=' quiz-working-choices';
+   options.forEach((option,j)=>{
     const choice=el('button',undefined,'quiz-choice');
     choice.type='button';
     choice.setAttribute('aria-pressed',String(assessment.selected[index]===j));
-    const alreadyCorrect=assessment.selected[index]>=0&&assessment.choices[index][assessment.selected[index]].every((v,k)=>v===p[k]);
+    const isCorrect=answer=>working?answer.valid:answer.every((v,k)=>v===p[k]);
+    const alreadyCorrect=assessment.selected[index]>=0&&isCorrect(options[assessment.selected[index]]);
     choice.disabled=alreadyCorrect;
     const selected=assessment.selected[index]===j;
-    if(selected){choice.className+=' '+(option.every((v,k)=>v===p[k])?'answer-correct':'answer-incorrect')}
+    if(selected){choice.className+=' '+(isCorrect(option)?'answer-correct':'answer-incorrect')}
     choice.setAttribute('aria-label','Answer '+String.fromCharCode(65+j));
-    choice.innerHTML='<span class="choice-letter">'+String.fromCharCode(65+j)+'.</span> '+poly(option);
+    choice.innerHTML='<span class="choice-letter">'+String.fromCharCode(65+j)+'.</span> '+(working?workingTable(q,option):poly(option));
     choice.onclick=()=>{
      if(alreadyCorrect)return;
-     const correct=option.every((v,k)=>v===p[k]);
+     const correct=isCorrect(option);
      if(assessment.firstAttempts[index]===null)assessment.firstAttempts[index]=correct;
      assessment.selected[index]=j;assessment.checked[index]=true;
-     drawTest();playQuizSound(correct);
+     const allComplete=assessment.selected.every((v,i)=>v>=0&&
+      (assessment.quizType==='working'?assessment.workChoices[i][v].valid:
+       assessment.choices[i][v].every((c,j)=>c===product(assessment.questions[i].a,assessment.questions[i].b)[j])));
+     drawTest();playQuizSound(allComplete?'fanfare':correct);
     };
     answers.append(choice);
    });
    section.append(answers);
    if(assessment.checked[index]){
-    const selected=assessment.choices[index][assessment.selected[index]];
-    const correct=selected.every((v,j)=>v===p[j]);
+    const selected=options[assessment.selected[index]];
+    const correct=working?selected.valid:selected.every((v,j)=>v===p[j]);
     const feedback=el('div',correct?'Correct!':'Not quite — try again.','test-feedback');
     feedback.setAttribute('role','status');section.append(feedback);
    }
@@ -588,6 +658,12 @@ function drawTest(){
   }
   host.append(section);
  });
+ if(quiz){
+  const marks=assessment.firstAttempts.filter(v=>v===true).length;
+  const footer=el('div',undefined,'quiz-footer-score');
+  footer.append(el('strong',marks+' out of 4'),el('span','First-attempt marks'));
+  footer.setAttribute('role','status');host.append(footer);
+ }
  const actions=el('div',undefined,'test-controls');
  if(!quiz&&!assessment.submitted){
   const submit=el('button','Submit all answers');submit.type='button';
