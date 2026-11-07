@@ -743,6 +743,8 @@ function draw(){
    }
    reflection.append(heading,paragraph,followup);root.append(reflection);
    const investigations=[
+    {question:'Trick of the trade: take out a common factor first.',detail:'For (10x + 15)(2x² + 3x + 4), rewrite 10x + 15 as 5(2x + 3). Expand the simpler brackets first, then multiply every coefficient of the answer by 5. Why does this work?'},
+    {question:'Trick of the trade: factor out a negative sign.',detail:'Rewrite 7 − 3x as −(3x − 7). You can multiply using a positive leading coefficient, then change the sign of every term in the final answer. Verify that both methods agree.'},
     {question:'Predict the first and last coefficients.',detail:'Without multiplying out, calculate '+minus(a[0])+' × '+minus(b[0])+' and '+minus(a[a.length-1])+' × '+minus(b[b.length-1])+'. Explain why these determine the leading and constant coefficients.'},
     {question:'Where do the middle coefficients come from?',detail:'Choose one middle power of x in your answer. Identify every pair of terms that contributes to its coefficient.'},
     {question:'Investigate the signs in this expansion.',detail:'Which partial products are positive and which are negative? Predict whether the answer contains positive, negative or zero coefficients.'},
