@@ -1223,7 +1223,7 @@ function drawTest(){
  }
 }
 
-const ws={counts:{ll:0,ql:1,qq:0},levels:[2],signs:['random'],support:'independent',layout:'inline',answers:'key',extra:0,steps:true,orientation:'portrait',columns:3,rows:1,labels:'question',progression:'guided',stages:['monic-positive','general-positive','general-negative','general-mixed']};
+const ws={counts:{ll:0,ql:1,qq:0},levels:[2],signs:['random'],support:'independent',layout:'inline',answers:'key',extra:0,steps:true,orientation:'portrait',columns:3,rows:8,sides:1,density:'balanced',labels:'question',progression:'guided',stages:['monic-positive','general-positive','general-negative','general-mixed']};
 let wsPreviewCache=null;
 function worksheetOptions(){
  const panel=$('worksheetPanel');panel.replaceChildren();
@@ -1273,12 +1273,18 @@ function worksheetOptions(){
  const paper=field('Paper and columns'),format=el('div',undefined,'worksheet-options');
  const orientation=el('select');[['portrait','A4 portrait'],['landscape','A4 landscape']].forEach(([v,label])=>{const o=el('option',label);o.value=v;orientation.append(o)});orientation.value=ws.orientation;orientation.onchange=()=>{ws.orientation=orientation.value;wsStatus()};
  const cols=el('select');[[2,'2 columns'],[3,'3 columns'],[4,'4 columns']].forEach(([v,label])=>{const o=el('option',label);o.value=v;cols.append(o)});cols.value=String(ws.columns);cols.onchange=()=>{ws.columns=Number(cols.value);wsStatus()};format.append(orientation,cols);paper.append(format);
- const rowsField=field('Complete rows of questions'),choices=el('div',undefined,'worksheet-options');
- [1,2,3].forEach(count=>{
-  const button=el('button',count+' row'+(count===1?'':'s')+' · '+(count*ws.columns)+' questions');
-  button.type='button';button.setAttribute('aria-pressed',String(ws.rows===count));
-  button.onclick=()=>{ws.rows=count;worksheetOptions()};choices.append(button);
- });rowsField.append(choices);
+ const pages=field('Print layout · fill the paper'),pageChoices=el('div',undefined,'worksheet-options');
+ [['1','One-sided · one A4 page'],['2','Two-sided · two A4 pages']].forEach(([value,label])=>{
+  const button=el('button',label);button.type='button';button.setAttribute('aria-pressed',String(ws.sides===Number(value)));
+  button.onclick=()=>{ws.sides=Number(value);wsStatus()};pageChoices.append(button);
+ });pages.append(pageChoices);
+ const densityField=field('Writing space'),densityChoices=el('div',undefined,'worksheet-options');
+ [['spacious','Spacious'],['balanced','Balanced'],['compact','Compact']].forEach(([value,label])=>{
+  const button=el('button',label);button.type='button';button.setAttribute('aria-pressed',String(ws.density===value));
+  button.onclick=()=>{ws.density=value;wsStatus()};densityChoices.append(button);
+ });densityField.append(densityChoices);
+ const countHint=el('small','Questions are added automatically to fill complete rows, without a straggler.');
+ densityField.append(countHint);
  const progress=field('Progression · each question gets harder');
  const pchoices=el('div',undefined,'worksheet-options');
  [['guided','Progressive (recommended)'],['custom','Choose the stages'],['uniform','Same settings throughout']].forEach(([value,label])=>{
@@ -1314,33 +1320,53 @@ function worksheetOptions(){
  const status=el('span');status.id='wsStatus';go.onclick=printWorksheet;close.onclick=()=>switchMode('practice');
  actions.append(go,close,status);panel.append(actions);wsStatus();
 }
+function worksheetRowsPerSide(){
+ return ({spacious:5,balanced:8,compact:10})[ws.density]||8;
+}
+function worksheetTotal(){return ws.columns*worksheetRowsPerSide()*ws.sides}
 function wsStatus(){
- const n=Object.values(ws.counts).reduce((sum,v)=>sum+v,0)+ws.extra;
- const cols=worksheetColumns();
- const signs=ws.signs.includes('random')?3:ws.signs.length;
- const types=Object.values(ws.counts).filter(v=>v>0).length;
- const actual=n>0?Math.max(4,n):0;
- const e=$('wsStatus');if(e)e.textContent=(ws.rows*ws.columns)+' questions · '+ws.rows+' complete rows · '+cols+' columns · A4 '+ws.orientation+' · '+ws.support+' · '+ws.layout+' · answers: '+(ws.answers==='key'?'at the end':ws.answers);
+ ws.rows=worksheetRowsPerSide()*ws.sides;
+ const total=worksheetTotal(),e=$('wsStatus');
+ if(e)e.textContent=total+' questions · '+ws.sides+' side'+(ws.sides===1?'':'s')+' · '+ws.columns+' columns · '+ws.density+' · A4 '+ws.orientation+' · answers '+(ws.answers==='key'?'at the end':ws.answers);
  wsPreviewCache=worksheetQuestions();drawWorksheetPreview();
 }
 function worksheetQuestions(){
  const old={type:state.type,level:state.level,sign:state.sign,slot:state.slot,random:state.factorRandom,constant:state.constantOn,monic:state.monic};
  const out=[],types=['ll','ql','qq'].filter(type=>ws.counts[type]>0);
- const count=ws.rows*ws.columns;
- const levels=ws.levels.includes('random')?[1,2,3]:ws.levels.slice().sort();
+ const count=worksheetTotal();
+ const levels=ws.levels.includes('random')?[1,2,3]:ws.levels.slice().sort((a,b)=>a-b);
  const signs=ws.signs.includes('random')?['positive','negative','mixed']:['positive','negative','mixed'].filter(sign=>ws.signs.includes(sign));
- const stages=ws.progression==='custom'?ws.stages:['monic-positive','general-positive','general-negative','general-mixed'];
+ const stages=ws.progression==='custom'?['monic-positive','general-positive','general-negative','general-mixed'].filter(k=>ws.stages.includes(k)):['monic-positive','general-positive','general-negative','general-mixed'];
+ const preferredLarge=[21,31,41];
+ const putLarge=(q,i)=>{
+  // Only introduce friendly two-digit coefficients late in the sequence.
+  const arr=i%2===0?q.a:q.b;
+  const at=arr.length-1;
+  arr[at]=(arr[at]<0?-1:1)*preferredLarge[(i+Math.floor(i/3))%preferredLarge.length];
+ };
  try{
   state.constantOn=false;state.factorRandom=false;state.slot='fresh';
   for(let i=0;i<count;i++){
-   const type=types[Math.min(types.length-1,Math.floor(i*types.length/count))];
-   const stage=ws.progression==='uniform'?null:stages[Math.min(stages.length-1,Math.floor(i*stages.length/count))];
-   const sign=stage?(stage.endsWith('positive')?'positive':stage.endsWith('negative')?'negative':'mixed'):signs[Math.min(signs.length-1,Math.floor(i*signs.length/count))];
-   const level=levels[Math.min(levels.length-1,Math.floor(i*levels.length/count))];
+   const fraction=count===1?0:i/(count-1);
+   const type=types[Math.min(types.length-1,Math.floor(fraction*types.length))];
+   const stage=ws.progression==='uniform'?null:stages[Math.min(stages.length-1,Math.floor(fraction*stages.length))];
+   const sign=stage?(stage.endsWith('positive')?'positive':stage.endsWith('negative')?'negative':'mixed'):signs[Math.min(signs.length-1,Math.floor(fraction*signs.length))];
+   const level=levels[Math.min(levels.length-1,Math.floor(fraction*levels.length))];
    state.type=type;state.level=level;state.sign=sign;
    state.monic=stage?stage.startsWith('monic'):false;
    const seed=(seedFor(i+309)^((i+1)*104729))>>>0;
    const q=makeQuestion(seeded(seed),sign);
+   if(ws.progression!=='uniform'&&fraction>.72&&i%3===1){
+    putLarge(q,i);
+   }
+   // Finish with a consolidation mix: revisit earlier sign patterns and factor types.
+   if(ws.progression!=='uniform'&&fraction>.86){
+    const reviewSign=['positive','mixed','negative'][i%3];
+    if(reviewSign==='positive'){q.a=q.a.map(Math.abs);q.b=q.b.map(Math.abs)}
+    else if(reviewSign==='negative'){q.a=q.a.map((v,j)=>j?-Math.abs(v):Math.abs(v));q.b=q.b.map((v,j)=>j?-Math.abs(v):Math.abs(v))}
+    else {q.a=q.a.map((v,j)=>j%2===0?Math.abs(v):-Math.abs(v));q.b=q.b.map((v,j)=>j%2===0?Math.abs(v):-Math.abs(v))}
+    q.sign=reviewSign;
+   }
    out.push({q,type,level,number:i+1,stage:stage||'uniform'});
   }
  }finally{
