@@ -336,7 +336,7 @@ const instructions=[
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
 const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\nQuad'],['any','Rand']];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
-const signChoices=[['positive','Both\npositive'],['negative','Both\nnegative'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
+const signChoices=[['positive','Positive\nterms'],['negative','Negative\nnon-leading'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
 const state={type:'ql',factorRandom:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,question:null};
@@ -439,6 +439,8 @@ function individualProducts(a,b){
 function renderSelectors(){
  const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);q.push(['fresh','Random']);
  chooseButtons('questions',q,state.slot,v=>v==='fresh'?freshQuestion():selectQuestion(v));
+ const homeworkDescription=['Positive coefficients','Negative non-leading coefficients','Mixed positive and negative coefficients','Mixed signs · extra practice'];
+ for(let i=0;i<4;i++)$('questions').children[i].title='Homework '+(i+1)+': '+homeworkDescription[i];
  function filter(key,value){state[key]=value;freshQuestion();if(assessment.mode!=='practice')initialiseTest(assessment.source)}
  chooseButtons('types',factorChoices,state.factorRandom?'any':state.type,v=>{
   if(v==='any'){
@@ -448,7 +450,9 @@ function renderSelectors(){
   }
   else {state.factorRandom=false;filter('type',v)}
  });
- chooseButtons('signs',signChoices,state.sign,v=>filter('sign',v));
+ // Numbered homework questions follow fixed signs; the sign buttons must
+ // describe the question currently on screen, not a stale selection.
+ chooseButtons('signs',signChoices,state.slot==='fresh'?state.sign:state.question.sign,v=>filter('sign',v));
  if(state.sign==='random'&&state.question){
   const outcome=signChoices.findIndex(([value])=>value===state.question.sign);
   if(outcome>=0&&outcome<3){
@@ -729,7 +733,7 @@ function draw(){
    if(factorGcds.some(v=>v>1)){
     followup.textContent='There is a common numerical factor in '+(factorGcds[0]>1?'the top':'the bottom')+' polynomial. Can you factor it out before multiplying?';
    }else if(signChanges){
-    followup.textContent='Your answer contains both positive and negative coefficients. Which partial products determined those signs, and where did terms cancel?';
+    followup.textContent='Your answer contains positive and negative coefficients. Which products determine their signs? Did any terms partially or completely cancel?';
    }else if(final.every(v=>v>0)){
     followup.textContent='All the answer coefficients are positive. Could you have predicted that from the signs of the two factors?';
    }else if(final.every(v=>v>=0)){
