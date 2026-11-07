@@ -113,6 +113,7 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 .diagram .route-result{font:36px "Cambria Math",Cambria,Georgia,serif;fill:#aebbc8}
 .diagram .route-result.revealed{fill:#183d63}
 .diagram .stack-term{font:58px "Cambria Math",Cambria,Georgia,serif;fill:#183b5d;text-anchor:middle}
+.diagram .stack-sign{font:52px "Cambria Math",Cambria,Georgia,serif;fill:#183b5d;text-anchor:middle}
 .diagram .row-label{font:700 16px Arial,sans-serif;fill:#6d7f90;text-anchor:middle}
 
 /* Four paths + two complexity controls + a step checklist on the right. */
@@ -465,16 +466,19 @@ function renderToolbar(){
 function diagramHTML(q,forceAll=false){
  const terms=fourTerms(q),ids=[0,2,1,3];
  const [m1,m2]=qMonos(q);
- const top=plainMono(q.a,m1,true),topRight=plainMono(q.b,{},false);
- const bottom=plainMono(q.c,m2,true),bottomRight=plainMono(q.d,{},false);
+ const top=plainMono(q.a,m1,true),topRight=String(Math.abs(q.b));
+ const bottom=plainMono(q.c,m2,true),bottomRight=String(Math.abs(q.d));
+ const topSign=q.b<0?'−':'+',bottomSign=q.d<0?'−':'+';
  // At Reset, pupils see only the two aligned positions: first/second,
  // not polynomial place-value columns or faded routes and answers.
  const blankStart=!forceAll&&state.direction==='expand'&&state.view!=='worked'&&state.step<=1;
  if(blankStart){
   return '<svg class="stack-only" viewBox="0 0 1000 245" role="img" aria-label="Two binomials stacked vertically: first terms aligned, second terms aligned. No routes are revealed.">'+
    '<text class="stack-term" x="300" y="85">'+safeText(top)+'</text>'+
+   '<text class="stack-sign" x="500" y="85">'+topSign+'</text>'+
    '<text class="stack-term" x="700" y="85">'+safeText(topRight)+'</text>'+
    '<text class="stack-term" x="300" y="195">'+safeText(bottom)+'</text>'+
+   '<text class="stack-sign" x="500" y="195">'+bottomSign+'</text>'+
    '<text class="stack-term" x="700" y="195">'+safeText(bottomRight)+'</text></svg>';
  }
  // Four clean routes from the teacher's diagram: two vertical goalposts
@@ -494,8 +498,8 @@ function diagramHTML(q,forceAll=false){
  return '<svg viewBox="0 0 1000 485" role="img" aria-label="Two vertically stacked binomials with '+count+' of four multiplication routes revealed.">'+
  '<defs><marker id="arrowTip" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="none" stroke="#235f9a" stroke-width="1.6"/></marker></defs>'+
  arrows+circles+
- '<text class="stack-term" x="300" y="68">'+safeText(top)+'</text><text class="stack-term" x="700" y="68">'+safeText(topRight)+'</text>'+
- '<text class="stack-term" x="300" y="271">'+safeText(bottom)+'</text><text class="stack-term" x="700" y="271">'+safeText(bottomRight)+'</text>'+
+ '<text class="stack-term" x="300" y="68">'+safeText(top)+'</text><text class="stack-sign" x="500" y="68">'+topSign+'</text><text class="stack-term" x="700" y="68">'+safeText(topRight)+'</text>'+
+ '<text class="stack-term" x="300" y="271">'+safeText(bottom)+'</text><text class="stack-sign" x="500" y="271">'+bottomSign+'</text><text class="stack-term" x="700" y="271">'+safeText(bottomRight)+'</text>'+
  '<path d="M90 397 H916" stroke="#bfcedd" stroke-width="2"/>'+result+'</svg>';
 }
 function plainMono(n,v,first=false){
@@ -507,7 +511,7 @@ function renderChecklist(){
  host.hidden=state.view!=='step'||state.mode!=='practice';
  if(host.hidden)return;
  const titles=state.direction==='expand'?
- [state.language==='everyday'?'Drop brackets · stack':'Rewrite as vertically stacked binomials',...routeNames[state.language],new Set(fourTerms(state.q).map(term=>monoKey(term.vars))).size===4?'Observe unlike terms':'Collect like terms']:
+ [state.language==='everyday'?'Drop brackets · stack':'Rewrite as vertically stacked binomials',...routeNames[state.language],new Set(fourTerms(state.q).map(term=>monoKey(term.vars))).size===4?'Observe unlike terms as expected':'Collect like terms; present answer']:
  ['Identify four products','Group adjacent terms','Take common factors','Find repeated bracket','Restore both factors'];
  const current=Math.min(Math.max(0,state.step-1),titles.length-1);
  host.innerHTML='<h2>Steps</h2>';
@@ -539,13 +543,11 @@ function renderPractice(){
  $('partials').replaceChildren();
  const limit=state.direction==='expand'?6:4,step=state.view==='worked'?limit:state.step,work=[];
  if(state.direction==='expand'){
-  $('status').textContent=step===0?'First, drop the brackets and stack the two binomials.':step===1?'First term above first; second term above second. Now multiply down each route.':step<=5?(state.language==='everyday'?routeLabel(step-2)+': multiply the connected terms.':routeLabel(step-2)+': distribute one term from each factor.'):new Set(fourTerms(q).map(t=>monoKey(t.vars))).size===4?'Four unlike terms: no collecting required.':'Collect only the terms with matching variable parts.';
-  if(step>=5)work.push('<div class="mathline">'+expanded(q)+'</div>');
-  if(step>=6){
-   const list=fourTerms(q),distinct=new Set(list.map(t=>monoKey(t.vars))).size===4;
-   if(!distinct)work.push('<div class="mathline final">= '+solution(q)+'</div><div class="explain">Only terms with exactly matching letters and powers can be combined.</div>');
-   else work.push('<div class="explain">Observe four unlike terms, as expected. They have distinct variable parts, so no combining is necessary.</div>');
-  }
+  const distinct=new Set(fourTerms(q).map(t=>monoKey(t.vars))).size===4;
+  $('status').textContent=step===0?'First, drop the brackets and stack the two binomials.':step===1?'First term above first; second term above second. Now multiply down each route.':step<=5?(state.language==='everyday'?routeLabel(step-2)+': multiply the connected terms.':routeLabel(step-2)+': distribute one term from each factor.'):distinct?'Observe four unlike terms, as expected. Present your answer.':'Collect like terms and present your answer.';
+  // The route products already appear below their arrows. Hold back the
+  // complete equation until the final step, then connect factors to answer.
+  if(step>=6)work.push('<div class="mathline final">'+factored(q)+' = '+solution(q)+'</div>');
  }else{
   const swapped=state.group==='swapped';
   const stage=['Start with the four products.','Form pairs'+(swapped?' by swapping the middle two products.':'; they are already adjacent.'),'Extract the common factor from each pair.','Notice the shared binomial factor.','Write the factorised expression.'];
