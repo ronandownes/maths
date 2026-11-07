@@ -948,7 +948,7 @@ function worksheetOptions(){
   items.forEach(([value,label])=>{const o=el('option',label);o.value=value;o.selected=ws[key]===value;ctrl.append(o)});
   ctrl.value=ws[key];ctrl.onchange=()=>{ws[key]=ctrl.value;wsStatus()};list.append(ctrl);area.append(list)
  }
- select('Support / differentiation','support',[['gradual','Gradual · worked → guided → faded → independent'],['example','Example · first worked, others blank'],['independent','Independent · questions only']]);
+ select('Support / differentiation','support',[['gradual','Gradual · worked example, then fading hints'],['example','Example · first worked, others independent'],['independent','Independent · questions only']]);
  select('Questions across the page','columns',[['auto','Auto-fit (3 or 4)'],['2','Exactly 2 columns'],['3','Exactly 3 columns'],['4','Exactly 4 columns']]);
  const extras=field('Additional random questions'),row=el('div',undefined,'worksheet-options'),number=el('input');number.type='number';number.min='0';number.max='24';number.value=String(ws.extra);
  number.onchange=()=>{ws.extra=Math.max(0,Math.min(24,Math.floor(Number(number.value)||0)));number.value=String(ws.extra);wsStatus()};
@@ -996,20 +996,30 @@ function printWorksheet(){
  const perPage=columns*2, pages=[];
  const support=i=>ws.support==='independent'?'none':ws.support==='example'?(i===0?'full':'none'):['full','guided','faded','none'][i%4];
  const names={ll:'Linear × Linear',ql:'Linear × Quadratic',qq:'Quadratic × Quadratic'};
- const row=(values,reveal,cls='')=>'<tr class="'+cls+'">'+values.map(v=>'<td>'+(reveal&&v!==null?minus(v):'&nbsp;')+'</td>').join('')+'</tr>';
  function problem(item,index){
-  const q=item.q,n=q.a.length+q.b.length-1,mode=support(index),degree=n-1,pad=a=>Array(n-a.length).fill(null).concat(a);
-  const factors=q.type==='ql'?[q.b,q.a]:[q.a,q.b];
-  const headings=Array.from({length:n},(_,i)=>'<th>'+(degree-i?pow(degree-i):'#')+'</th>').join('');
-  const parts=workRows(q);
-  const showFactor=mode!=='none',showPart=mode==='full'||mode==='guided';
-  const rows=row(pad(q.a),showFactor)+row(pad(q.b),showFactor,'factor-second')+
-   parts.map((values,i)=>row(values,mode==='full'||(showPart&&i===0))).join('')+
-   row(product(q.a,q.b),mode==='full','sum-row');
-  return '<article class="problem '+mode+'"><div class="meta">'+(index+1)+'. '+names[item.type]+' · L'+item.level+(item.number?' · HW '+item.number:' · Random')+'</div>'+
-   '<div class="formula">('+poly(factors[0])+') × ('+poly(factors[1])+')</div>'+
-   '<table><thead><tr>'+headings+'</tr></thead><tbody>'+rows+'</tbody></table>'+
-   '<div class="answer">Answer: <span>'+(mode==='full'?poly(product(q.a,q.b)):'_______________________')+'</span></div></article>';
+  const q=item.q,n=q.a.length+q.b.length-1,degree=n-1,mode=support(index);
+  const factors=q.type==='ql'?[q.b,q.a]:[q.a,q.b],pad=values=>Array(n-values.length).fill(null).concat(values);
+  const formula='('+poly(factors[0])+') × ('+poly(factors[1])+')';
+  const label='<div class="meta">'+(index+1)+'. '+names[item.type]+' · Level '+item.level+(item.number?' · HW '+item.number:' · Random')+'</div>';
+  if(mode==='none'){
+   return '<article class="problem independent">'+label+'<div class="formula">'+formula+'</div></article>';
+  }
+  if(mode==='guided'||mode==='faded'){
+   const hint=mode==='guided'?'Align coefficients by place value.':'Group like terms.';
+   return '<article class="problem independent">'+label+'<div class="formula">'+formula+'</div>'+
+    '<div class="gentle-hint">'+hint+'</div></article>';
+  }
+  const headers=Array.from({length:n},(_,i)=>'<th>'+(degree-i?pow(degree-i):'#')+'</th>').join('');
+  function tableRow(values,cls='',mark=''){
+   return '<tr class="'+cls+'"><td class="operator">'+mark+'</td>'+
+    values.map(v=>'<td>'+(v===null?'':minus(v))+'</td>').join('')+'</tr>';
+  }
+  const rows=tableRow(pad(q.a),'factor-top')+tableRow(pad(q.b),'factor-bottom')+
+   workRows(q).map(values=>tableRow(values,'partial-row')).join('')+
+   tableRow(product(q.a,q.b),'sum-row','+');
+  return '<article class="problem worked">'+label+'<div class="formula">'+formula+'</div>'+
+   '<table class="worked-table"><thead><tr><th></th>'+headers+'</tr></thead><tbody>'+rows+'</tbody></table>'+
+   '<div class="worked-answer">= '+poly(product(q.a,q.b))+'</div></article>';
  }
  for(let i=0;i<all.length;i+=perPage){
   const chunk=all.slice(i,i+perPage).map((x,k)=>problem(x,i+k)).join('');
@@ -1025,15 +1035,22 @@ function printWorksheet(){
  '@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;background:#f1f3f6;color:#26364a;font-family:Arial,sans-serif}'+
  '.controls{background:#fff;padding:10px;position:sticky;top:0;z-index:9}button{padding:9px;margin-right:8px}'+
  '.sheet{background:#fff;max-width:297mm;min-height:190mm;margin:12px auto;padding:10mm;break-after:page}header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #9eafc2;padding-bottom:8px;font-size:13px}'+
- '.questions{display:grid;grid-template-columns:repeat('+columns+',minmax(0,1fr));gap:9px;justify-content:center;margin:13px auto 0}'+
- '.problem{min-width:0;border:1px solid #d4deea;border-radius:5px;padding:9px 6px;min-height:79mm;break-inside:avoid}'+
- '.meta{font-size:10px;font-weight:700;color:#446482;min-height:26px}.formula{font:clamp(14px,1.65vw,21px) Cambria,Georgia,serif;text-align:center;min-height:42px;overflow-wrap:anywhere}'+
- 'table{width:100%;table-layout:fixed;border-collapse:collapse;text-align:center;font:clamp(15px,1.4vw,20px) Cambria,Georgia,serif}th{height:29px;border-bottom:2px solid #9eafc2}td{height:25px;border-bottom:1px solid #e3e9f0}'+
- '.factor-second td{border-bottom:2px solid #8699ac}.sum-row td{border-top:2px solid #8699ac;font-weight:bold}.answer{margin-top:13px;font:11px Arial,sans-serif}.answer span{font:14px Cambria,Georgia,serif}'+
- 'footer{text-align:right;font-size:10px;color:#6a7686;margin-top:12px}.key{display:none;background:white;max-width:297mm;margin:12px auto;padding:12mm;break-after:page}'+
+ '.questions{display:grid;grid-template-columns:repeat('+columns+',minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:6mm;justify-content:center;margin:11mm auto 0;min-height:158mm}'+
+ '.problem{min-width:0;padding:3mm 2mm;break-inside:avoid;min-height:70mm}'+
+ '.meta{font-size:11px;font-weight:650;color:#455770;min-height:9mm}.formula{font:clamp(17px,1.9vw,26px)/1.3 Cambria,"Cambria Math",Georgia,serif;text-align:center;overflow-wrap:anywhere}'+
+ '.problem.independent .formula{margin-top:4mm}.gentle-hint{margin-top:5mm;font-size:10px;color:#808b98;text-align:center}'+
+ '.problem.worked{padding:2.5mm;border:1px solid #bfcbd8;border-radius:5px;background:#fff}'+
+ '.problem.worked .formula{margin:1mm 0 4mm;font-size:clamp(16px,1.65vw,23px)}'+
+ '.worked-table{width:100%;table-layout:fixed;border-collapse:collapse;text-align:center;font:clamp(14px,1.4vw,20px)/1.3 Cambria,"Cambria Math",Georgia,serif}'+
+ '.worked-table th{height:8mm;border-bottom:2px solid #a8b6c5;font-weight:600;color:#334155}'+
+ '.worked-table td{height:6.6mm;padding:0 1px}.worked-table .operator{width:12px;text-align:left;color:#687589}'+
+ '.worked-table .factor-bottom td{border-bottom:2px solid #8e9cad}'+
+ '.worked-table .sum-row td{border-top:2px solid #8e9cad;font-weight:bold}'+
+ '.worked-answer{display:table;font:clamp(14px,1.45vw,20px) Cambria,"Cambria Math",Georgia,serif;border:1.5px solid #63758a;border-radius:4px;padding:2mm 3mm;margin:4mm auto 0;text-align:center}'+
+  'footer{text-align:right;font-size:10px;color:#6a7686;margin-top:12px}.key{display:none;background:white;max-width:297mm;margin:12px auto;padding:12mm;break-after:page}'+
  '.key h2{font-size:17px}.answer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.solution{break-inside:avoid;border-bottom:1px solid #ddd;padding:10px 0}.solution div,.solution b{display:block;font:15px Cambria,Georgia,serif;margin-top:7px}'+
  'body.answers .sheet{display:none}body.answers .key{display:block}'+
- '@media print{body{background:white}.controls{display:none}.sheet{margin:0;padding:0;min-height:0;break-after:page}.sheet:last-of-type{break-after:auto}.problem{min-height:79mm}.key{padding:0;margin:0;max-width:none}}'+
+ '@media print{body{background:white}.controls{display:none}.sheet{margin:0;padding:0;min-height:0;break-after:page}.sheet:last-of-type{break-after:auto}.problem{min-height:0}.key{padding:0;margin:0;max-width:none}}'+
  '</style></head><body><div class="controls">'+
  '<button onclick="document.body.className=\'\';window.print()">Print student worksheet</button>'+
  '<button onclick="document.body.className=\'answers\';window.print()">Print teacher answers</button>'+
