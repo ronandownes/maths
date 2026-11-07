@@ -224,15 +224,30 @@ function groupText(q,method){
  const left='('+format(common[0],true)+format(common[1])+')';
  return format(coefficients[0],true)+left+format(coefficients[1])+left;
 }
-function groupingSteps(q,method){
- const p=partial(q),indices=method==='swapped'?[0,2,1,3]:[0,1,2,3],ordered=indices.map(i=>p[i]);
- const first='('+format(ordered[0],true)+format(ordered[1])+') + ('+format(ordered[2],true)+format(ordered[3])+')';
- const a=method==='swapped'?[q[2],q[3]]:[q[0],q[1]];
+function groupingSteps(q,method,bank=state.bank){
+ const products=partial(q);
+ // Bank 4 starts deliberately with ac + bd + bc + ad. Swapping only the
+ // middle two terms produces ac + bc + bd + ad.
+ const ids=bank===3?(method==='swapped'?[0,2,3,1]:[0,3,2,1]):
+ method==='swapped'?[0,2,1,3]:[0,1,2,3];
+ const arranged=ids.map(i=>products[i]);
+ const ordered=arranged.map((t,i)=>format(t,i===0)).join('');
+ const first='('+format(arranged[0],true)+format(arranged[1])+') + ('+
+  format(arranged[2],true)+format(arranged[3])+')';
+ if(bank===3&&method!=='swapped')
+  return {ordered,first,extracted:null,final:null,
+   note:'The neighbouring pairs have no useful common factor. Swap the middle two terms.'};
+ if(bank===3){
+  const left='('+format(q[0],true)+format(q[1])+')';
+  const reversed='('+format(q[1],true)+format(q[0])+')';
+  return {ordered,first,extracted:format(q[2],true)+left+format(q[3])+reversed,
+   final:brackets(q),note:'The second bracket is reversed: b + a = a + b.'};
+ }
+ const coefficients=method==='swapped'?[q[2],q[3]]:[q[0],q[1]];
  const common=method==='swapped'?[q[0],q[1]]:[q[2],q[3]];
  const bracket='('+format(common[0],true)+format(common[1])+')';
- return {ordered:expanded(q,false,method==='swapped'?'grouped':'foil'),first,
- extracted:format(a[0],true)+bracket+format(a[1])+bracket,
- final:brackets(q)};
+ return {ordered,first,extracted:format(coefficients[0],true)+bracket+
+  format(coefficients[1])+bracket,final:brackets(q),note:''};
 }
 function setMode(mode){
  state.mode=mode;
@@ -298,7 +313,8 @@ function renderPractice(){
  $('naturalGroups').setAttribute('aria-pressed',String(state.grouping==='presented'));
  $('swapMiddles').setAttribute('aria-pressed',String(state.grouping==='swapped'));
  const count=factor?4:Math.min(4,step);
- $('arcStage').innerHTML=factor?'<div class="assessment-question" style="text-align:center">'+expanded(q,false,state.grouping==='swapped'?'grouped':'foil')+'</div>':svgFor(q,count,state.arcMode);
+ const chosenGrouping=groupingSteps(q,state.grouping);
+ $('arcStage').innerHTML=factor?'<div class="assessment-question" style="text-align:center">'+chosenGrouping.ordered+'</div>':svgFor(q,count,state.arcMode);
  $('productArea').hidden=factor||count===0;
  if(!factor){
   const p=partial(q);$('partialRow').innerHTML=p.map((term,i)=>{
@@ -312,15 +328,18 @@ function renderPractice(){
   distinctTerms(partial(q)).length===4?'Four unlike partial products; present your answer.':'Collect identical variable parts and present your answer.';
   if(step===5)work.innerHTML='<span class="line">'+brackets(q)+' = '+expanded(q,true)+'</span>';
  }else{
-  const g=groupingSteps(q,state.grouping);
-  status.textContent=step===0?'Look for two pairs that reveal the same bracket.':step===1?'Check the neighbouring pairs.':'Factor carefully, particularly when a common factor is negative.';
+  const g=chosenGrouping;
+  status.textContent=g.extracted===null?'These neighbours do not form useful pairs. Swap the middle terms.':
+   step===0?'Look for useful neighbouring pairs.':step===1?'Compare the two groups.':
+   'Extract the common factor, including a minus sign when needed.';
   if(step>=1)work.innerHTML+='<span class="line">'+g.ordered+'</span>';
   if(step>=2)work.innerHTML+='<span class="line">'+g.first+'</span>';
-  if(step>=3)work.innerHTML+='<span class="line">'+g.extracted+'</span>';
-  if(step>=4)work.innerHTML+='<span class="line">'+g.final+'</span><span class="note">Check by expanding the two brackets again.</span>';
+  if(g.extracted===null&&step>=2)work.innerHTML+='<span class="note">'+g.note+'</span>';
+  if(g.extracted!==null&&step>=3)work.innerHTML+='<span class="line">'+g.extracted+'</span>'+(g.note?'<span class="note">'+g.note+'</span>':'');
+  if(g.final!==null&&step>=4)work.innerHTML+='<span class="line">'+g.final+'</span><span class="note">Check by expanding the brackets.</span>';
  }
  $('previous').disabled=state.worked||step===0;
- $('next').disabled=state.worked||step>=limit;
+ $('next').disabled=state.worked||step>=limit||(factor&&state.bank===3&&state.grouping==='presented'&&step>=2);
  $('next').textContent=step>=limit?'Complete':'Next →';
  renderStepPanel(q,step,factor);
 }
@@ -334,7 +353,7 @@ function renderStepPanel(q,step,factor){
  titles.forEach((label,i)=>{
   const b=document.createElement('button');b.className='step-entry'+(i===step?' current':i<step?' complete':'');
   b.innerHTML='<span class="number">'+(i+1)+'</span><span>'+label+'</span>';
-  b.onclick=()=>{state.step=Math.min(factor?4:5,i);state.worked=false;renderPractice()};host.append(b);
+  b.onclick=()=>{state.step=Math.min(factor&&state.bank===3&&state.grouping==='presented'?2:factor?4:5,i);state.worked=false;renderPractice()};host.append(b);
  });
 }
 const slides=[
@@ -521,11 +540,11 @@ $('quiz').onclick=startQuiz;
 $('test').onclick=startTest;
 $('sheets').onclick=()=>setMode('sheets');
 $('steps').onclick=()=>{state.worked=false;setMode('practice')};
-$('worked').onclick=()=>{state.worked=true;setMode('practice')};
+$('worked').onclick=()=>{if(state.direction==='factor'&&state.bank===3)state.grouping='swapped';state.worked=true;setMode('practice')};
 $('reset').onclick=reset;
 $('previous').onclick=()=>{state.worked=false;state.step=Math.max(0,state.step-1);renderPractice()};
 $('next').onclick=()=>{state.worked=false;state.step=Math.min(state.direction==='factor'?4:5,state.step+1);renderPractice()};
-$('showAll').onclick=()=>{state.worked=true;renderPractice()};
+$('showAll').onclick=()=>{if(state.direction==='factor'&&state.bank===3)state.grouping='swapped';state.worked=true;renderPractice()};
 $('newQuestion').onclick=nextQuestion;
 $('naturalGroups').onclick=()=>{state.grouping='presented';state.step=0;renderPractice()};
 $('swapMiddles').onclick=()=>{state.grouping='swapped';state.step=0;renderPractice()};
