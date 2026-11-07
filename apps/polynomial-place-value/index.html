@@ -82,6 +82,7 @@ button:disabled{opacity:.38;cursor:default}
 .toolbar-bottom .top-questions{margin:0}
 .toolbar-bottom .modes{margin:0 0 0 auto}
 .settings-top{justify-content:flex-start;border-top:0;padding-top:1px}
+.common-settings{margin-bottom:8px;padding-bottom:10px}
 .settings-top .setting{padding:4px 8px}
 .level-random{font-size:.78rem!important;padding:7px 8px!important;color:#6b7280!important;background:#f8fafc!important;border-style:dashed!important}
 .level-random[aria-pressed=true]{background:#e8f0fe!important;border-color:#1a73e8!important;color:#174ea6!important}
@@ -128,19 +129,19 @@ button:disabled{opacity:.38;cursor:default}
 <div><a href="../../algebra/index.html">Algebra</a><h1>Place-Value Expansion in One Variable</h1></div>
 </header>
 <main>
+<div class="settings settings-top common-settings">
+<div class="setting"><span class="caption caption-wrapped">Factor<span>pattern</span></span><div class="button-group" id="types" aria-label="Factors: choose a degree combination or random factors"></div></div>
+<div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
+<div class="setting"><span class="caption caption-wrapped">Sign<span>pattern</span></span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
+</div>
 <div class="activity-switch" aria-label="Choose learning activity">
  <button id="practiceMode" type="button" aria-pressed="true">Practice</button>
  <button id="quizMode" type="button" aria-pressed="false">Quiz</button>
  <button id="testMode" type="button" aria-pressed="false">Test</button>
 </div>
 <div id="practiceArea">
-<div class="settings settings-top">
-<div class="setting"><span class="caption caption-wrapped">Factor<span>pattern</span></span><div class="button-group" id="types" aria-label="Factors: choose a degree combination or random factors"></div></div>
-<div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
-</div>
 <div class="toolbar-bottom">
-<div class="setting bank-setting"><span class="caption caption-wrapped">Question bank<span>(Homework)</span></span><nav class="top-questions" id="questions" aria-label="Four reproducible questions for the selected settings"></nav></div>
-<div class="setting"><span class="caption caption-wrapped">Sign<span>pattern</span></span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
+<div class="setting bank-setting"><span class="caption caption-wrapped">Question bank<span>(Homework)</span></span><nav class="top-questions" id="questions" aria-label="Four reproducible homework questions for the selected settings"></nav></div>
 <div class="modes" id="modes" aria-label="How to view the solution"></div>
 </div>
 <div class="factor-expression" id="factorExpression" aria-label="Current multiplication question"></div>
@@ -160,7 +161,7 @@ const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad'
 const factorChoices=[...factorTypes,['any','Rand']];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
 const signChoices=[['positive','Positives'],['negative','Negatives'],['mixed','Mixed'],['random','Rand']];
-const levels=[[1,'1'],[2,'2'],[3,'3']];
+const levels=[[1,'1'],[2,'2'],[3,'3'],['any','Rand']];
 
 const state={type:'ql',factorRandom:false,sign:'positive',level:1,levelRandom:false,mode:'worked',step:0,slot:0,freshCount:0,question:null};
 
@@ -176,13 +177,13 @@ function poly(a){let result='',degree=a.length-1;
 }
 function product(a,b){const out=Array(a.length+b.length-1).fill(0);a.forEach((x,i)=>b.forEach((y,j)=>{out[i+j]+=x*y}));return out}
 function seedFor(slot){const typeIndex=state.factorRandom?3:factorTypes.findIndex(x=>x[0]===state.type),signIndex=signTypes.findIndex(x=>x[0]===state.sign);
- return ((slot+1)*209759+(state.level+13)*17539+(typeIndex+1)*9151+(signIndex+2)*1877)>>>0}
+ return ((slot+1)*209759+(state.levelRandom?17:state.level+13)*17539+(typeIndex+1)*9151+(signIndex+2)*1877)>>>0}
 function seeded(seed){let x=seed>>>0;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))}}
 function chooseSign(next){return ['positive','negative','mixed'][next(0,2)]}
 function makeQuestion(next){
  const type=state.factorRandom?factorTypes[next(0,factorTypes.length-1)][0]:state.type;
  const [na,nb]=type==='ll'?[2,2]:type==='ql'?[3,2]:[3,3];
- const level=state.level,sign=state.sign==='random'?chooseSign(next):state.sign;
+ const level=state.levelRandom?next(1,3):state.level,sign=state.sign==='random'?chooseSign(next):state.sign;
  const pick=values=>values[next(0,values.length-1)];
  const fav=()=>pick([1,2,2,2,3,3,3,5,5,4,7,8,9]);
  const easy=()=>pick([1,1,1,2,2,2,3,3,3,4,5,5,7]);
@@ -244,13 +245,17 @@ function chooseButtons(id,entries,current,change){
 function renderSelectors(){
  const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);q.push(['fresh','Random']);
  chooseButtons('questions',q,state.slot,v=>v==='fresh'?freshQuestion():selectQuestion(v));
- function filter(key,value){state[key]=value;freshQuestion()}
+ function filter(key,value){state[key]=value;freshQuestion();if(assessment.mode!=='practice')initialiseTest(assessment.source)}
  chooseButtons('types',factorChoices,state.factorRandom?'any':state.type,v=>{
-  if(v==='any'){state.factorRandom=true;freshQuestion()}
+  if(v==='any'){state.factorRandom=true;freshQuestion();if(assessment.mode!=='practice')initialiseTest(assessment.source)}
   else {state.factorRandom=false;filter('type',v)}
  });
  chooseButtons('signs',signChoices,state.sign,v=>filter('sign',v));
- chooseButtons('levels',levels,state.level,v=>filter('level',v));
+ chooseButtons('levels',levels,state.levelRandom?'any':state.level,v=>{
+  if(v==='any'){state.levelRandom=true;freshQuestion();if(assessment.mode!=='practice')initialiseTest(assessment.source)}
+  else{state.levelRandom=false;filter('level',v)}
+ });
+ const randLevel=$('levels').children[3];randLevel.className='level-random';randLevel.title='Randomly choose Level 1, 2 or 3';randLevel.setAttribute('aria-label','Random level');
  const randomFactor=$('types').children[factorTypes.length];randomFactor.className='level-random';randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
  const randomSign=$('signs').children[3];randomSign.className='level-random';randomSign.title='Randomly choose a sign pattern';randomSign.setAttribute('aria-label','Random signs');
  const host=$('modes');host.replaceChildren();
@@ -414,7 +419,7 @@ function drawTest(){
  summary.append(el('h2',quiz?'Expansion quiz':'Expansion test'),el('p',quiz?'Four questions · check each answer when ready':'Four questions · 1 mark per complete correct expansion · results after submission'));
  const opt=el('div',undefined,'test-options');
  const choose=el('select');choose.setAttribute('aria-label','Test question selection');
- [['bank','Questions 1–4'],['random','Four random questions']].forEach(([value,label])=>{
+ [['bank','Homework questions 1–4'],['random','Four fresh random questions']].forEach(([value,label])=>{
   const item=el('option',label);item.value=value;item.selected=assessment.source===value;choose.append(item);
  });
  choose.onchange=()=>initialiseTest(choose.value);
@@ -511,7 +516,7 @@ function switchMode(mode){
  for(const [key,value] of [['practiceMode','practice'],['quizMode','quiz'],['testMode','test']]){
   $(key).setAttribute('aria-pressed',String(mode===value));
  }
- if(active){if(assessment.questions.length===0)initialiseTest('bank');else drawTest()}
+ if(active){initialiseTest(assessment.source)}
 }
 $('practiceMode').onclick=()=>switchMode('practice');
 $('quizMode').onclick=()=>switchMode('quiz');
