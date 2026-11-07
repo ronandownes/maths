@@ -170,7 +170,8 @@ function draw(){
  $('modeTitle').textContent=headings[m];
  $('concept').textContent=introductions[m];
  $('expression').textContent=r.formula;
- $('result').textContent=m==='plot'?'Coordinates: z = ('+fmt(a)+', '+fmt(b)+'), w = ('+fmt(c)+', '+fmt(d)+')':r.undefined?'No result: w = 0.': 'Result = '+complex(r.a,r.b);
+ const outside=m!=='plot'&&!r.undefined&&(Math.abs(r.a)>10||Math.abs(r.b)>10);
+ $('result').textContent=m==='plot'?'Coordinates: z = ('+fmt(a)+', '+fmt(b)+'), w = ('+fmt(c)+', '+fmt(d)+')':r.undefined?'No result: w = 0.':'Result = '+complex(r.a,r.b)+(outside?' (outside the displayed grid)':'');
  $('stepText').textContent=steps[m][state.step];
  $('stepCount').textContent='Step '+(state.step+1)+' of '+steps[m].length;
  $('prev').disabled=state.step===0;
