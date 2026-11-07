@@ -294,10 +294,10 @@ function seedFor(slot){const typeIndex=state.factorRandom?3:factorTypes.findInde
  return ((slot+1)*209759+(state.level+13)*17539+(typeIndex+1)*9151+(signIndex+2)*1877)>>>0}
 function seeded(seed){let x=seed>>>0;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))}}
 function chooseSign(next){return ['positive','negative','mixed'][next(0,2)]}
-function makeQuestion(next,quizRandom=false){
- const type=quizRandom||state.factorRandom?factorTypes[next(0,factorTypes.length-1)][0]:state.type;
+function makeQuestion(next){
+ const type=state.factorRandom?factorTypes[next(0,factorTypes.length-1)][0]:state.type;
  const [na,nb]=type==='ll'?[2,2]:type==='ql'?[3,2]:[3,3];
- const level=state.level,sign=quizRandom||state.sign==='random'?chooseSign(next):state.sign;
+ const level=state.level,sign=state.sign==='random'?chooseSign(next):state.sign;
  const pick=values=>values[next(0,values.length-1)];
  const fav=()=>pick([1,2,2,2,3,3,3,5,5,4,7,8,9]);
  const easy=()=>pick([1,1,1,2,2,2,3,3,3,4,5,5,7]);
@@ -701,7 +701,7 @@ function initialiseTest(source){
  assessment.source=source;assessment.run++;
  assessment.questions=Array.from({length:4},(_,i)=>{
   const rng=seeded(seedFor(100000+assessment.run*37+i*1009)^((Math.random()*0xffffffff)>>>0));
-  return makeQuestion(rng,assessment.mode==='quiz');
+  return makeQuestion(rng);
  });
  assessment.responses=assessment.questions.map(q=>Array(product(q.a,q.b).length).fill(''));
  assessment.submitted=false;assessment.checked=Array(4).fill(false);
