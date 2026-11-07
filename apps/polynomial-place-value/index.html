@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Expanding Brackets · Place Value | Maths Apps</title>
+<link rel="stylesheet" href="../shared/assessment.css">
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <style>
 :root{font-family:Arial,Helvetica,sans-serif;color:#202124;background:#f1f3f4}
@@ -587,6 +588,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 </div>
 <section id="testArea" hidden aria-label="Polynomial expansion test"></section>
 </main>
+<script src="../shared/assessment.js"></script>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
 const actions=[
@@ -1115,30 +1117,13 @@ function draw(){
 
 }
 
-const assessment={configureRequested:false,started:false,signScope:'only',typeScope:'only',mode:'practice',questions:[],responses:[],submitted:false,checked:[],choices:[],selected:[],firstAttempts:[],run:0,source:'bank',sound:true,quizType:'answer',workChoices:[],attempts:[],tried:[]};
+const assessment={configureRequested:false,started:false,signScope:'only',typeScope:'only',mode:'practice',questions:[],responses:[],submitted:false,checked:[],choices:[],selected:[],firstAttempts:[],run:0,source:'bank',sound:true,quizType:'answer',workChoices:[],attempts:[],tried:[],quizIndex:0,quizVerified:[]};
 function el(tag,textValue,className){
  const e=document.createElement(tag);if(textValue!==undefined)e.textContent=textValue;
  if(className)e.className=className;return e;
 }
 function playQuizSound(correct){
- if(!assessment.sound)return;
- try{
-  const AudioCtor=window.AudioContext||window.webkitAudioContext;
-  if(!AudioCtor)return;
-  const ctx=new AudioCtor();
-  const now=ctx.currentTime;
-  const notes=correct===true?[[660,0,.16],[880,.18,.25]]:correct==='fanfare'?[[523,0,.16],[659,.18,.16],[784,.36,.18],[1047,.56,.48]]:correct==='final-wrong'?[[410,0,.20],[300,.25,.22],[195,.53,.42]]:[[350,0,.23],[245,.29,.31]];
-  notes.forEach(([frequency,offset,duration])=>{
-   const osc=ctx.createOscillator(),gain=ctx.createGain();
-   osc.type=correct==='final-wrong'?'sawtooth':correct===false?'triangle':'sine';osc.frequency.value=frequency;
-   gain.gain.setValueAtTime(0,now+offset);
-   gain.gain.linearRampToValueAtTime(correct==='final-wrong'?.17:correct===false?.085:.13,now+offset+.02);
-   gain.gain.exponentialRampToValueAtTime(.001,now+offset+duration);
-   osc.connect(gain);gain.connect(ctx.destination);
-   osc.start(now+offset);osc.stop(now+offset+duration+.01);
-  });
-  if(ctx.close) setTimeout(()=>{Promise.resolve(ctx.close()).catch(()=>{})},1700);
- }catch(_err){/* Sound is optional; marking always works without audio. */}
+ MathsAssessment.playSound(correct,assessment.sound);
 }
 function testExpression(q){
  const factors=q.a.length>q.b.length?[q.b,q.a]:[q.a,q.b];
@@ -1261,6 +1246,7 @@ function initialiseTest(source){
  assessment.submitted=false;assessment.checked=Array(4).fill(false);
  assessment.selected=Array(4).fill(-1);assessment.firstAttempts=Array(4).fill(null);
  assessment.attempts=Array(4).fill(0);assessment.tried=Array.from({length:4},()=>[]);
+ assessment.quizIndex=0;assessment.quizVerified=Array(4).fill(false);
  assessment.choices=assessment.questions.map((q,i)=>createChoices(q,i));
  assessment.workChoices=assessment.questions.map((q,i)=>createWorkChoices(q,i));
  setAssessmentControlsLocked();drawTest();
@@ -1299,7 +1285,7 @@ function drawTest(){
   const start=el('button',quiz?'Start quiz':'Start test','primary');start.type='button';start.onclick=()=>{assessment.configureRequested=false;initialiseTest('random')};cfg.append(start);
   host.append(cfg);setAssessmentControlsLocked();return;
  }
- summary.append(el('h2',quiz?'Expansion quiz':'Expansion test'),el('p',quiz?'Four questions · immediate feedback. For multiple choice, only ONE option is correct: select it. Check the leading and constant coefficients first to eliminate unlikely answers.':'Four questions · 1 mark per complete correct expansion · results only after submission'));
+ summary.append(el('h2',quiz?'Expansion quiz':'Expansion test'),el('p',quiz?'One question per screen · two attempts · sound on by default. You must finish the current question before continuing.':'Four questions · enter the coefficients independently · results only after submission'));
  const configure=el('button',quiz?'Configure quiz':'Configure test');configure.type='button';configure.onclick=()=>{assessment.started=false;assessment.configureRequested=true;assessment.questions=[];setAssessmentControlsLocked();drawTest()};opt.append(configure);
  if(quiz){
   const marks=assessment.firstAttempts.filter(value=>value===true).length;
@@ -1329,6 +1315,7 @@ function drawTest(){
  }
  h.append(summary,opt);host.append(h);
  assessment.questions.forEach((q,index)=>{
+  if(quiz&&index!==assessment.quizIndex)return;
   const section=el('div',undefined,'test-question');
   section.append(el('h3','Question '+(index+1)));
   const formula=el('div',undefined,'test-expression');
@@ -1357,6 +1344,7 @@ function drawTest(){
      assessment.attempts[index]++;
      assessment.tried[index].push(j);
      assessment.selected[index]=j;assessment.checked[index]=true;
+     assessment.quizVerified[index]=correct;
      const allComplete=assessment.selected.every((v,i)=>v>=0&&
       (assessment.quizType==='working'?assessment.workChoices[i][v].valid:
        assessment.choices[i][v].every((c,j)=>c===product(assessment.questions[i].a,assessment.questions[i].b)[j])));
@@ -1431,6 +1419,7 @@ function drawTest(){
      if(locked||!ready)return;
      if(assessment.firstAttempts[index]===null)assessment.firstAttempts[index]=correctNow;
      assessment.attempts[index]++;assessment.checked[index]=true;
+     assessment.quizVerified[index]=correctNow;
      drawTest();
      const complete=assessment.questions.every((question,k)=>{
       const values=product(question.a,question.b);
@@ -1459,6 +1448,20 @@ function drawTest(){
   host.append(section);
  });
  if(quiz){
+  if(assessment.quizIndex>=assessment.questions.length){
+   const correct=assessment.firstAttempts.filter(v=>v===true).length;
+   host.append(el('h3','Quiz complete · '+correct+' / '+assessment.questions.length+' correct on the first attempt','maths-assessment-score'));
+  }else{
+   const i=assessment.quizIndex;
+   const enabled=assessment.quizVerified[i]||assessment.attempts[i]>=MathsAssessment.maxAttempts;
+   host.append(MathsAssessment.pager(document,{index:i,total:assessment.questions.length,enabled,
+    onNext:()=>{
+     if(!(assessment.quizVerified[i]||assessment.attempts[i]>=MathsAssessment.maxAttempts))return;
+     assessment.quizIndex++;
+     drawTest();
+     if(assessment.quizIndex>=assessment.questions.length&&assessment.firstAttempts.every(v=>v===true))playQuizSound('fanfare');
+    }}));
+  }
   const marks=assessment.firstAttempts.filter(v=>v===true).length;
   const footer=el('div',undefined,'quiz-footer-score');
   footer.append(el('strong',marks+' out of 4'),el('span','First-attempt marks'));
