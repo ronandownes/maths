@@ -2,8 +2,10 @@
 'use strict';
 const $=id=>document.getElementById(id),T=window.TriangleMath,Assess=window.MathsAssessment;
 const kind=document.body.dataset.app,pyth=kind==='pythagoras';
-const cfg={mode:'instruction',ratio:'sin',route:'ratio',find:'num',bank:pyth?'triples':'decimal',precision:1,angle:35,hyp:10,step:0,slide:0,reveal:false,question:0,showRays:false,sound:true,attempts:0,wrong:[],chosen:null,quizIndex:0,quizQuestions:[],testQuestions:[],testAnswers:[],submitted:false,testType:'any'};
+const fixedRatio=['sin','cos','tan'].includes(document.body.dataset.ratio)?document.body.dataset.ratio:null;
+const cfg={mode:'instruction',ratio:fixedRatio||'sin',route:'ratio',find:'num',bank:pyth?'triples':'decimal',precision:1,angle:35,hyp:10,step:0,slide:0,reveal:false,question:0,showRays:false,sound:true,attempts:0,wrong:[],chosen:null,quizIndex:0,quizQuestions:[],testQuestions:[],testAnswers:[],submitted:false,testType:'any'};
 const ratioSides={sin:['opp','hyp'],cos:['adj','hyp'],tan:['opp','adj']},round=v=>T.round(v,cfg.precision),fmt=v=>String(round(v));
+const sideNames={opp:'opposite',adj:'adjacent',hyp:'hypotenuse'};
 const tripleList=T.bank();
 function makeQuestion(n=cfg.question){
  if(pyth){
@@ -38,7 +40,7 @@ function makeQuestion(n=cfg.question){
 function correctAnswer(q){return q.answer}
 function questionText(q){
  if(pyth)return q.find==='hyp'?'Find the hypotenuse.':q.find==='adj'?'Find the missing horizontal side.':'Find the missing vertical side.';
- const [num,den]=ratioSides[q.ratio];return q.find==='angle'?'Find θ using the two marked sides.':q.find==='num'?'Find the '+num+' side.':'Find the '+den+' side.';
+ const [num,den]=ratioSides[q.ratio];return q.find==='angle'?'Find θ using the two marked sides.':q.find==='num'?'Find the '+sideNames[num]+' side.':'Find the '+sideNames[den]+' side.';
 }
 function questionTriangle(q,answers=false){
  if(pyth){const marks={adj:q.find==='adj'?'?':fmt(q.given.adj),opp:q.find==='opp'?'?':fmt(q.given.opp),hyp:q.find==='hyp'?'?':fmt(q.given.hyp)};
@@ -74,13 +76,20 @@ function renderToolbar(){
  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(cfg.mode===b.dataset.mode)));
  document.querySelectorAll('[data-ratio]').forEach(b=>b.setAttribute('aria-pressed',String(cfg.ratio===b.dataset.ratio)));
  document.querySelectorAll('[data-route]').forEach(b=>b.setAttribute('aria-pressed',String(cfg.route===b.dataset.route)));
- $('ratioControls').hidden=pyth;
+ $('ratioControls').hidden=pyth||Boolean(fixedRatio);
  $('routeControls').hidden=pyth;
  $('bank').value=cfg.bank;$('find').value=cfg.find;
  $('pythFind').value=cfg.testType;
  $('precision').value=String(cfg.precision);
 }
+function setOptionsOpen(open){
+ const panel=$('optionsPanel'),toggle=$('optionsToggle'),backdrop=$('optionsBackdrop');
+ panel.classList.toggle('open',open);
+ toggle.setAttribute('aria-expanded',String(open));
+ if(backdrop)backdrop.hidden=!open;
+}
 function mode(mode){cfg.mode=mode;cfg.showRays=false;cfg.step=0;cfg.reveal=false;
+ setOptionsOpen(false);
  for(const m of ['instruction','practice','display','quiz','test','sheets'])$(m+'Panel').hidden=m!==mode;
  $('assessmentPanel').hidden=mode!=='quiz'&&mode!=='test';
  renderToolbar();
@@ -89,7 +98,7 @@ function mode(mode){cfg.mode=mode;cfg.showRays=false;cfg.step=0;cfg.reveal=false
  if(mode==='quiz'||mode==='test')startAssessment(mode);
  if(mode==='sheets')$('sheetsPanel').hidden=false;
 }
-const slides=pyth?[
+const generalSlides=pyth?[
 ['What makes a right triangle?','Identify the right angle, then find the hypotenuse: it is opposite the right angle. The shorter sides meet at 90°.','The hypotenuse is the longest side.'],
 ['Predict before calculating','If the two shorter sides are marked, the hypotenuse must be longer than either one. If the hypotenuse is marked, the missing shorter side must be smaller.','Use the diagram to rule out an impossible answer.'],
 ['Squares and the theorem','The square on the longest side has the same area as the sum of the squares on the two shorter sides.','a² + b² = c²'],
@@ -107,6 +116,42 @@ const slides=pyth?[
 ['How the ratio changes','As θ increases with hypotenuse fixed, sine rises and cosine falls. Tangent increases and passes 1 at 45°.','For θ from 0° to 90°, sin rises from 0 to 1, cos falls from 1 to 0 and tan grows without bound.'],
 ['Proportionality needs a constant','At fixed θ, O is directly proportional to H. At fixed O, H is inversely proportional to sine. At fixed H, adjacent is directly proportional to cosine.','Do not call adjacent inversely proportional to cos; A = H cos θ.']
 ];
+const ratioInfo={
+ sin:{title:'Sine',numerator:'opposite',denominator:'hypotenuse',formula:'sin θ = O ÷ H',findNumerator:'O = H × sin θ',findDenominator:'H = O ÷ sin θ',findAngle:'θ = sin⁻¹(O ÷ H)',trend:'As the acute angle θ increases, sine increases.',limits:'As θ approaches 0°, sin θ approaches 0. As θ approaches 90°, sin θ approaches 1. Therefore 0 < sin θ < 1.',
+  valueText:(a,v)=>'sin '+a+'° = '+v.toPrecision(3)+'; the value stays below 1 for every acute angle.'},
+ cos:{title:'Cosine',numerator:'adjacent',denominator:'hypotenuse',formula:'cos θ = A ÷ H',findNumerator:'A = H × cos θ',findDenominator:'H = A ÷ cos θ',findAngle:'θ = cos⁻¹(A ÷ H)',trend:'As the acute angle θ increases, cosine decreases.',limits:'As θ approaches 0°, cos θ approaches 1. As θ approaches 90°, cos θ approaches 0. Therefore 0 < cos θ < 1.',
+  valueText:(a,v)=>'cos '+a+'° = '+v.toPrecision(3)+'; the value stays between 0 and 1 for every acute angle.'},
+ tan:{title:'Tangent',numerator:'opposite',denominator:'adjacent',formula:'tan θ = O ÷ A',findNumerator:'O = A × tan θ',findDenominator:'A = O ÷ tan θ',findAngle:'θ = tan⁻¹(O ÷ A)',trend:'As the acute angle θ increases, tangent increases. At 45°, opposite and adjacent are equal, so tan θ = 1.',limits:'As θ approaches 0°, tan θ approaches 0. As θ approaches 90° from below, tan θ grows without bound. Tangent has no upper limit.',
+  valueText:(a,v)=>'tan '+a+'° = '+v.toPrecision(3)+'; tangent has no upper bound as θ approaches 90°.'}
+};
+function focusedRatioSlides(ratio){
+ const info=ratioInfo[ratio];
+ return [
+  ['Fix the reference angle','Choose the acute angle θ first. Opposite and adjacent are named from that angle; the hypotenuse is always opposite the right angle.',info.formula],
+  ['The ratio is a proportion','Draw right triangles with the same angle but different sizes. They are similar, so corresponding sides scale together and this ratio stays constant.',info.formula+' has the same value in every similar triangle with this θ.'],
+  ['Find the numerator side','When θ and the denominator side are known, multiply the denominator by the ratio to find the numerator side.',info.findNumerator],
+  ['Find the denominator side','When θ and the numerator side are known, divide the numerator by the ratio to find the denominator side.',info.findDenominator],
+  ['Find the angle','When both relevant sides are known, use the inverse ratio. Check that the answer is an acute angle in this right-triangle setting.',info.findAngle],
+  ['Watch the ratio change',info.trend+' Move the slider to see the triangle and ratio value change. '+info.limits+' The endpoints are limits; a non-degenerate right triangle has 0° < θ < 90°.',info.limits]
+ ];
+}
+const slides=fixedRatio?focusedRatioSlides(fixedRatio):generalSlides;
+function ratioExplorer(ratio){
+ const info=ratioInfo[ratio],area=document.createElement('div');area.className='ratio-explorer';
+ const controls=document.createElement('div');controls.className='ratio-explorer-controls';
+ const label=document.createElement('label');label.textContent='Acute reference angle θ';
+ const slider=document.createElement('input');slider.type='range';slider.min='1';slider.max='89';slider.step='1';slider.value='35';slider.setAttribute('aria-label','Acute reference angle in degrees');
+ const angle=document.createElement('output');angle.textContent='35°';label.append(angle);controls.append(label,slider);
+ const readout=document.createElement('p');readout.className='ratio-readout';readout.setAttribute('aria-live','polite');controls.append(readout);
+ const diagram=document.createElement('div');diagram.className='ratio-explorer-diagram';
+ function update(){
+  const degrees=Number(slider.value),value=T.trig(ratio,degrees);
+  angle.textContent=degrees+'°';
+  readout.textContent=info.valueText(degrees,value);
+  diagram.innerHTML=T.triangle({angle:degrees,hypotenuse:10,marks:{adj:'A',opp:'O',hyp:'H'}});
+ }
+ slider.addEventListener('input',update);update();area.append(controls,diagram);return area;
+}
 function instruction(){
  const host=$('instructionPanel');host.replaceChildren();
  const [title,body,answer]=slides[cfg.slide];
@@ -118,6 +163,7 @@ function instruction(){
   const drawing=document.createElement('div');drawing.style.maxWidth='410px';drawing.style.margin='auto';
   drawing.innerHTML=T.triangle({angle:35,hypotenuse:10,marks:{adj:'A',opp:'O',hyp:'H'},highlight:[]});slide.append(drawing)
  }
+ if(fixedRatio&&cfg.slide===slides.length-1)slide.append(ratioExplorer(fixedRatio));
  if(cfg.reveal){const reveal=document.createElement('div');reveal.className='notice math';reveal.textContent=answer;slide.append(reveal)}
  const nav=document.createElement('div');nav.className='slide-nav';
  const previous=document.createElement('button');previous.textContent='← Previous';previous.disabled=cfg.slide===0;previous.onclick=()=>{cfg.slide--;cfg.reveal=false;instruction()};
@@ -210,7 +256,7 @@ function assessment(){
  host.append(box)
 }
 function sheet(){
- const questions=Array.from({length:6},(_,i)=>makeQuestion(cfg.question+i)),title=(pyth?'Pythagoras':'Right-Angled Trigonometry')+' · Six questions';
+ const questions=Array.from({length:6},(_,i)=>makeQuestion(cfg.question+i)),title=(pyth?'Pythagoras':fixedRatio?ratioInfo[fixedRatio].title+' Ratio':'Right-Angled Trigonometry')+' · Six questions';
  const body=questions.map((q,i)=>'<article><b>'+(i+1)+'.</b> '+questionText(q)+'<div class="diagram">'+questionTriangle(q)+'</div><div class="space"></div></article>').join('');
  const answers=questions.map((q,i)=>'<p>'+(i+1)+'. '+fmt(correctAnswer(q))+'</p>').join('');
  const html='<!doctype html><html><head><title>'+title+'</title><style>@page{size:A4;margin:14mm}body{font:15px Arial}h1{font-size:22px}main{display:grid;grid-template-columns:1fr 1fr;gap:12px}article{border:1px solid #eee;padding:10px;min-height:240px;break-inside:avoid}.diagram svg{max-width:100%;height:135px}.space{height:55px}.key{break-before:page}button{padding:10px}@media print{button{display:none}}</style></head><body><button onclick="print()">Print / Save PDF</button><h1>'+title+'</h1><p>Name: __________________________</p><main>'+body+'</main><div class="key"><h2>Answer key</h2>'+answers+'</div></body></html>';
@@ -218,8 +264,11 @@ function sheet(){
 }
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>mode(b.dataset.mode));
 document.querySelectorAll('[data-ratio]').forEach(b=>b.onclick=()=>{cfg.ratio=b.dataset.ratio;cfg.question=0;renderToolbar();if(cfg.mode==='practice'||cfg.mode==='display')practice()});
-document.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>{cfg.route=b.dataset.route;renderToolbar();if(cfg.route==='unknown')$('optionsPanel').classList.add('open')});
-$('optionsToggle').onclick=()=>{$('optionsPanel').classList.toggle('open');$('optionsToggle').setAttribute('aria-expanded',String($('optionsPanel').classList.contains('open')))};
+document.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>{cfg.route=b.dataset.route;renderToolbar();if(cfg.route==='unknown')setOptionsOpen(true)});
+$('optionsToggle').onclick=()=>setOptionsOpen(!$('optionsPanel').classList.contains('open'));
+if($('optionsClose'))$('optionsClose').onclick=()=>setOptionsOpen(false);
+if($('optionsBackdrop'))$('optionsBackdrop').onclick=()=>setOptionsOpen(false);
+document.addEventListener('keydown',event=>{if(event.key==='Escape')setOptionsOpen(false)});
 $('find').onchange=()=>{cfg.find=$('find').value;cfg.question=0;if(cfg.mode==='practice'||cfg.mode==='display')practice()};
 $('pythFind').onchange=()=>{cfg.testType=$('pythFind').value;cfg.question=0;if(cfg.mode==='practice'||cfg.mode==='display')practice()};
 $('bank').onchange=()=>{cfg.bank=$('bank').value;cfg.question=0;if(cfg.mode==='practice'||cfg.mode==='display')practice()};
@@ -233,7 +282,7 @@ $('newQuestion').onclick=()=>{cfg.question++;cfg.step=0;practice()};
 $('displayAnswer').onclick=()=>{cfg.step=cfg.step?0:5;practice()};
 $('displayNew').onclick=()=>{cfg.question++;cfg.step=0;practice()};
 $('sheetOpen').onclick=sheet;
-$('questionRoute').textContent=pyth?'Identify the hypotenuse and choose squares':'Find two marked sides and their included angle';
+$('questionRoute').textContent=pyth?'Identify the hypotenuse and choose squares':fixedRatio?ratioInfo[fixedRatio].formula+' · calculate either side or the angle':'Find two marked sides and their included angle';
 $('pythBank').hidden=!pyth;$('trigFind').hidden=pyth;
  $('angleControl').hidden=pyth;$('hypControl').hidden=pyth;
 mode('instruction');

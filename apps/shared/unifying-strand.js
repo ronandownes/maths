@@ -29,6 +29,14 @@
       'Explain why (a+bi)(a−bi)=a²+b². What follows when a+bi is not zero?',
       'Work in pairs: one gives a graphical explanation, the other an algebraic one. Swap and challenge one another using correct mathematical language.'
     ],
+    'trigonometry': [
+      'Name the reference angle. From that angle, identify the opposite side, the adjacent side and the hypotenuse.',
+      'Represent sine, cosine and tangent as ratios of side lengths. Label a right triangle and write the ratio using words and symbols.',
+      'Connect similar right triangles: scaling both corresponding sides by the same factor leaves the ratio unchanged.',
+      'Choose a ratio from the sides you know. Calculate a missing side or angle, estimate first, and check whether the result is possible.',
+      'For acute angles, sine increases from a limit of 0 to a limit of 1, cosine decreases from 1 to 0, and tangent increases without bound as the angle approaches 90° from below.',
+      'Explain why the endpoints are limits rather than angles in a non-degenerate right triangle. Use the diagram, ratio and correct side names to justify your reasoning.'
+    ],
     'expansions': [
       'Name the factors and terms; multiply every term in the first bracket by every term in the second.',
       'Compare a two-by-two area model, partial products, crossed pairings and vertical working.',
@@ -88,7 +96,7 @@
     const prev=node('button',null,'← Previous');
     const next=node('button',null,'Next →');
     const book=node('a',null,'Read in the Book');
-    book.href='https://ronandownes.github.io/book/';
+    book.href=(options||{}).bookHref||'https://ronandownes.github.io/book/';
     book.target='_blank';
     book.rel='noopener';
     actions.append(prev,book,next);

@@ -155,17 +155,40 @@
     ]
   },
   "Trigonometry": {
-    "introduction": "Angles, right-angled triangle ratios, sine and cosine rules, and mathematical relationships in triangles.",
+    "introduction": "Explore the sine, cosine and tangent ratios in right-angled triangles, calculate missing values, and see how each ratio changes with the angle.",
     "topics": [
       {
-        "slug": "triangle-rules",
-        "title": "Sine and cosine rules",
-        "ready": true
+        "slug": "sine",
+        "title": "Sine ratio",
+        "ready": true,
+        "app": "apps/trigonometry/sine/index.html",
+        "description": "Explore opposite ÷ hypotenuse, calculate a side or angle, and see sine increase towards 1."
+      },
+      {
+        "slug": "cosine",
+        "title": "Cosine ratio",
+        "ready": true,
+        "app": "apps/trigonometry/cosine/index.html",
+        "description": "Explore adjacent ÷ hypotenuse, calculate a side or angle, and see cosine decrease towards 0."
+      },
+      {
+        "slug": "tangent",
+        "title": "Tangent ratio",
+        "ready": true,
+        "app": "apps/trigonometry/tangent/index.html",
+        "description": "Explore opposite ÷ adjacent, calculate a side or angle, and see tangent grow without bound."
       },
       {
         "slug": "right-angle-ratios",
         "title": "Sine, cosine and tangent",
-        "ready": false
+        "ready": true,
+        "app": "apps/right-angle-ratios/index.html",
+        "description": "Compare all three ratios and practise choosing the right one."
+      },
+      {
+        "slug": "triangle-rules",
+        "title": "Sine and cosine rules",
+        "ready": true
       },
       {
         "slug": "right-triangle-applications",

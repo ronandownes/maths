@@ -1,12 +1,13 @@
 # Maths — Ronan Downes
 
-**One mathematics site.** Number, Algebra, Geometry, Probability, Statistics, Functions and Combinatorics are the main menus. Every mathematical topic is in its relevant section, regardless of school year or exam level. This is not divided into separate JC, TY and LC books.
+**One mathematics site.** Number, Algebra, Functions, Geometry, Trigonometry, Statistics, Probability and Combinatorics are the main menus. Every mathematical topic is in its relevant section, regardless of school year or exam level. This is not divided into separate JC, TY and LC books.
 
 ## Classroom-ready content included
 
 - **Number:** Sets and subsets.
 - **Algebra:** Sequences; Factorising.
-- **Geometry:** Rectangle dimensions, perimeter and area (scale-model app); Triangle Rules (full draggable Cosine Rule and Sine Rule app).
+- **Geometry:** Rectangle dimensions, perimeter and area (scale-model app).
+- **Trigonometry:** Separate Sine, Cosine and Tangent apps, a mixed-ratio app, and the draggable Triangle Rules app.
 - **Probability:** Tree diagrams.
 - **Statistics:** Describing data.
 - **Functions:** Quadratic functions.
@@ -14,7 +15,7 @@
 
 The Rectangle Explorer is paired with the Book section on variables and geometric models: the Maths lesson embeds the app, and the app links back to the matching Book section.
 
-Other sidebar labels are **planned** and deliberately not live links; no empty lesson is represented as finished.
+The Trigonometry apps link directly to their matching Book section. Other sidebar labels are **planned** and deliberately not live links; no empty lesson is represented as finished.
 
 ## Publishing
 

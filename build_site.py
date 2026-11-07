@@ -25,18 +25,25 @@ def output(path, document):
 def e(value): return html.escape(str(value), quote=True)
 
 
+def topic_href(category, topic, depth=0):
+    prefix='../'*depth
+    if topic.get('app'):
+        return prefix+topic['app']
+    return prefix+SLUGS[category]+'/'+topic['slug']+'/index.html'
+
+
 def frame(title, category, heading, intro, body, depth=0, section=None, current=None):
     prefix='../'*depth
     nav=''.join(f'<a href="{prefix}{SLUGS[n]}/index.html" class="{"active" if n==category else ""}">{e(n)}</a>' for n in NAV)
     if category:
         data=DATA[category]
-        ready=''.join(f'<a href="{prefix}{SLUGS[category]}/{t["slug"]}/index.html" class="{"active" if t["slug"]==current else ""}">{e(t["title"])}</a>' for t in data['topics'] if t['ready'])
+        ready=''.join(f'<a href="{topic_href(category,t,depth)}" class="{"active" if t["slug"]==current else ""}">{e(t["title"])}</a>' for t in data['topics'] if t['ready'])
         if category == 'Number':
             ready += f'<a href="{prefix}number/sets/explorer.html" class="{"active" if current == "sets-explorer" else ""} submenu-link">↳ Explore two sets</a>'
         future=''.join(f'<span class="pending">{e(t["title"])}</span>' for t in data['topics'] if not t['ready'])
         aside=f'<h2>{e(category)} topics</h2><a href="{prefix}{SLUGS[category]}/index.html" class="{"active" if current is None else ""}">Overview</a>{ready}<span class="aside-caption">Later topics</span>{future}'
     else:
-        aside='<h2>Ready lessons</h2>'+''.join(f'<a href="{prefix}{SLUGS[n]}/{t["slug"]}/index.html">{e(t["title"])}</a>' for n,d in DATA.items() for t in d['topics'] if t['ready'])
+        aside='<h2>Ready lessons</h2>'+''.join(f'<a href="{topic_href(n,t,depth)}">{e(t["title"])}</a>' for n,d in DATA.items() for t in d['topics'] if t['ready'])
     aside = '<a href="'+prefix+'unifying/index.html" class="submenu-link">Unifying Strand: six ways of thinking</a>' + aside
     crumb='<span class="breadcrumb"><a href="'+prefix+'index.html">Maths</a>'+((' / <a href="'+prefix+SLUGS[category]+'/index.html">'+e(category)+'</a>') if category else '')+'</span>'
     extra_css = f'<link rel="stylesheet" href="{prefix}assets/sets-explorer.css">' if current == 'sets-explorer' else (f'<link rel="stylesheet" href="{prefix}assets/sets-learning.css">' if current == 'sets' else '')
@@ -62,7 +69,7 @@ def frame(title, category, heading, intro, body, depth=0, section=None, current=
 
 def home():
     tiles=''.join(f'<a class="tile" href="{SLUGS[n]}/index.html"><strong>{e(n)}</strong><small>{e(DATA[n]["introduction"])}</small></a>' for n in NAV)
-    ready=''.join(f'<li><a href="{SLUGS[n]}/{t["slug"]}/index.html">{e(t["title"])}</a> <span class="small-note">({e(n)})</span></li>' for n,d in DATA.items() for t in d['topics'] if t['ready'])
+    ready=''.join(f'<li><a href="{topic_href(n,t)}">{e(t["title"])}</a> <span class="small-note">({e(n)})</span></li>' for n,d in DATA.items() for t in d['topics'] if t['ready'])
     body=f'<p class="lead">One mathematics collection, from foundational ideas to advanced topics. Select a mathematical strand, then a lesson. Different year groups and levels belong within the same topic rather than in separate books.</p><div class="tile-grid">{tiles}</div><h2>Unifying Strand</h2><p><a href="unifying/index.html">Six ways of thinking: understand, represent, connect, solve, prove and communicate.</a></p><h2>Teaching tools</h2><div class="tile-grid"><a class="tile" href="tools/teaching-studio/index.html"><strong>Teaching Studio</strong><small>Open webpages beside a document camera or writing surface; annotate and record lessons.</small></a></div><h2>Ready for classroom use</h2><ul>{ready}</ul><p class="note">Additional topics appear in side menus as future sections, clearly distinguished from completed lessons. Nothing is presented as ready until it contains real content.</p>'
     output(ROOT/'index.html',frame('Home',None,'Maths','Explore, teach and practise mathematics in one place.',body,depth=0))
 
@@ -75,14 +82,13 @@ def build():
         unifying_body,depth=1))
     for category,data in DATA.items():
         slug=SLUGS[category]
-        tiles=''.join(f'<a class="tile" href="{t["slug"]}/index.html"><strong>{e(t["title"])}</strong><small>Open the complete teaching page</small></a>' for t in data['topics'] if t['ready'])
+        tiles=''.join(f'<a class="tile" href="{('../'+t["app"]) if t.get("app") else t["slug"]+"/index.html"}"><strong>{e(t["title"])}</strong><small>{e(t.get("description","Open the complete teaching page"))}</small></a>' for t in data['topics'] if t['ready'])
         if category == 'Number':
             tiles += '<a class="tile" href="sets/explorer.html"><strong>Explore two sets</strong><small>Interactive Venn diagram: move, overlap and compare sets.</small></a>'
             tiles += '<a class="tile" href="../apps/complex-numbers/index.html"><strong>Complex Numbers Explorer</strong><small>Argand diagram and arithmetic in rectangular form.</small></a>'
         if category == 'Geometry':
             tiles += '<a class="tile" href="../apps/pythagoras/index.html"><strong>Pythagoras</strong><small>Exact triples, non-triples, surds and missing-side reasoning.</small></a>'
         if category == 'Trigonometry':
-            tiles += '<a class="tile" href="../apps/right-angle-ratios/index.html"><strong>Right-Angled Trigonometry</strong><small>Sine, cosine and tangent: visual ratios, prediction and practice.</small></a>'
             tiles += '<a class="tile" href="../apps/triangle-rules/index.html"><strong>Triangle Rules App</strong><small>Sine and cosine rules in a draggable triangle.</small></a>'
         if category == 'Algebra':
             tiles += '<a class="tile" href="expansions/index.html"><strong>Expansions</strong><small>Compare the representations and see why each is useful.</small></a>'
@@ -90,10 +96,11 @@ def build():
             tiles += '<a class="tile" href="../apps/vertical-foil/index.html"><strong>Vertical FOIL</strong><small>Four multiplication routes through stacked binomials.</small></a>'
             tiles += '<a class="tile" href="../apps/polynomial-place-value/index.html"><strong>Place-Value Multiplication</strong><small>Align by powers for larger expansions.</small></a>'
         planned=''.join(f'<li>{e(t["title"])}</li>' for t in data['topics'] if not t['ready'])
-        overview=f'<p class="lead">{e(data["introduction"])}</p><h2>Ready lessons</h2><div class="tile-grid">{tiles}</div><h2>Other topics in this section</h2><p>These have a place in the structure but have not yet been written:</p><ul>{planned}</ul>'
+        book_link='<p class="note"><a href="https://ronandownes.github.io/book/chapter-trigonometry.html#trig-intro">Book section: Right-angled triangles</a></p>' if category == 'Trigonometry' else ''
+        overview=f'<p class="lead">{e(data["introduction"])}</p>{book_link}<h2>Ready lessons and apps</h2><div class="tile-grid">{tiles}</div><h2>Other topics in this section</h2><p>These have a place in the structure but have not yet been written:</p><ul>{planned}</ul>'
         output(ROOT/slug/'index.html',frame(category,category,category,data['introduction'],overview,depth=1))
         for t in data['topics']:
-            if not t['ready']:continue
+            if not t['ready'] or t.get('app'):continue
             source=ROOT/'content'/'pages'/(t['slug']+'.html')
             if not source.exists():raise FileNotFoundError(source)
             lesson=source.read_text(encoding='utf-8')
@@ -103,7 +110,7 @@ def build():
                 output(ROOT/'number'/'sets'/'explorer.html',frame('Explore two sets','Number','Explore two sets',
                     'An interactive Venn diagram for union, intersection, subsets and complements.',
                     explorer,depth=2,current='sets-explorer'))
-    lesson_count = sum(1 for data in DATA.values() for topic in data['topics'] if topic['ready'])
+    lesson_count = sum(1 for data in DATA.values() for topic in data['topics'] if topic['ready'] and not topic.get('app'))
     page_count = 2 + len(DATA) + lesson_count + 1
     print(f'Built {page_count} static HTML pages (home, {len(DATA)} sections, {lesson_count} lessons and the sets explorer).')
 
