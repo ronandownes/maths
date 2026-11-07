@@ -371,6 +371,9 @@ main{margin:5px auto;padding:10px 19px 18px}
 .assessment-setup .quiz-toggle{display:flex;flex-wrap:wrap;gap:7px}
 .assessment-setup>button.primary{justify-self:start;padding:10px 20px;font-weight:700}
 .settings-top button:disabled{opacity:.55;cursor:not-allowed}
+.worksheet-quick{display:grid;gap:10px;padding:12px;margin:8px 0 12px;border:1px solid #cfdeec;background:#f7fbff;border-radius:10px}
+.worksheet-quick-group{display:grid;gap:6px}.worksheet-quick-group>strong{font-size:.85rem;color:#4e6179}
+.worksheet-quick .worksheet-options button{min-height:36px}.worksheet-quick button[aria-pressed=true]{background:#dcecff;border-color:#4e83c5;font-weight:700}
 </style>
 </head>
 <body>
@@ -392,7 +395,7 @@ main{margin:5px auto;padding:10px 19px 18px}
   <button id="practiceMode" type="button" aria-pressed="false" title="Generate another random expansion question">More practice</button>
   <button id="quizMode" type="button" aria-pressed="false">Quiz</button>
   <button id="testMode" type="button" aria-pressed="false">Test</button>
-  <button id="worksheetMode" type="button" aria-pressed="false">Worksheet</button>
+  <button id="worksheetMode" type="button" aria-pressed="false">Worksheets</button>
  </div>
  <div class="practice-quick-controls" id="practiceQuickControls"><div class="modes" id="modes" aria-label="How to view the solution"></div></div>
 </div>
@@ -1284,19 +1287,26 @@ function drawTest(){
  }
 }
 
-const ws={counts:{ll:0,ql:1,qq:0},levels:[2],signs:['random'],support:'independent',layout:'inline',answers:'key',extra:0,steps:true,orientation:'portrait',columns:3,rows:8,sides:1,density:'balanced',labels:'question',progression:'guided',stages:['monic-positive','general-positive','general-negative','general-mixed']};
+const ws={sheet:1,category:'positive',use:'classwork',counts:{ll:0,ql:1,qq:0},levels:[2],signs:['random'],support:'independent',layout:'inline',answers:'key',extra:0,steps:true,orientation:'portrait',columns:3,rows:8,sides:1,density:'balanced',labels:'question',progression:'guided',stages:['monic-positive','general-positive','general-negative','general-mixed']};
 let wsPreviewCache=null;
 function worksheetOptions(){
  const panel=$('worksheetPanel');panel.replaceChildren();
- const heading=el('h2','Worksheet settings');panel.append(heading);
+ const heading=el('h2','Worksheets');panel.append(heading);
+ const top=el('div',undefined,'worksheet-quick');
+ const pickRow=(headingText,choices,current,onChange)=>{
+  const field=el('div',undefined,'worksheet-quick-group'),label=el('strong',headingText),buttons=el('div',undefined,'worksheet-options');
+  choices.forEach(([v,name])=>{const button=el('button',name);button.type='button';button.setAttribute('aria-pressed',String(v===current));
+   button.onclick=()=>{onChange(v);worksheetOptions()};buttons.append(button)});
+  field.append(label,buttons);top.append(field);
+ };
+ pickRow('Category',[['positive','Positive only'],['negative','Negative non-leading'],['mixed','Mixed signs'],['progressive','Progressive mix']],ws.category,v=>{ws.category=v});
+ pickRow('Worksheet',[[1,'1'],[2,'2'],[3,'3'],[4,'4']],ws.sheet,v=>{ws.sheet=v});
+ pickRow('Use',[['classwork','Classwork · exit ticket'],['homework','Homework · matching practice']],ws.use,v=>{ws.use=v});
+ panel.append(top);
  const grid=el('div',undefined,'worksheet-config');
  function field(name){const area=el('div',undefined,'worksheet-field');area.append(el('strong',name));grid.append(area);return area}
- const factors=field('Factor patterns · progress from simpler to harder'),frow=el('div',undefined,'worksheet-options');
- [['ll','Linear × Linear'],['ql','Linear × Quadratic'],['qq','Quadratic × Quadratic']].forEach(([key,name])=>{
- const label=el('label'),cb=el('input');cb.type='checkbox';cb.checked=ws.counts[key]>0;
- cb.onchange=()=>{ws.counts[key]=cb.checked?1:0;if(!Object.values(ws.counts).some(Boolean)){ws.counts[key]=1;cb.checked=true}wsStatus()};
- label.append(cb,el('span',name));frow.append(label);
- });factors.append(frow);
+ const summary=field('Chosen mathematics');
+ summary.append(el('small','Uses Factor pattern and Level chosen above. The worksheet category determines the signs; matching classwork and homework have the same target difficulty.'));
  function multi(name,key,entries){
   const area=field(name),list=el('div',undefined,'worksheet-options');
   entries.forEach(([value,title])=>{const label=el('label'),cb=el('input');
@@ -1314,8 +1324,6 @@ function worksheetOptions(){
    label.append(cb,el('span',title));list.append(label);
   });area.append(list);
  }
- multi('Levels','levels',[[1,'1'],[2,'2'],[3,'3'],['random','Random · all levels']]);
- multi('Sign patterns','signs',[['positive','Both positive'],['negative','Both negative'],['mixed','Mixed signs'],['random','Random · all signs']]);
  function select(name,key,items){const area=field(name),list=el('div',undefined,'worksheet-options'),ctrl=el('select');
   items.forEach(([value,label])=>{const o=el('option',label);o.value=value;o.selected=ws[key]===value;ctrl.append(o)});
   ctrl.value=ws[key];ctrl.onchange=()=>{ws[key]=ctrl.value;wsStatus()};list.append(ctrl);area.append(list)
@@ -1346,30 +1354,6 @@ function worksheetOptions(){
  });densityField.append(densityChoices);
  const countHint=el('small','Questions are added automatically to fill complete rows, without a straggler.');
  densityField.append(countHint);
- const progress=field('Progression · each question gets harder');
- const pchoices=el('div',undefined,'worksheet-options');
- [['guided','Progressive (recommended)'],['custom','Choose the stages'],['uniform','Same settings throughout']].forEach(([value,label])=>{
-  const btn=el('button',label);btn.type='button';btn.setAttribute('aria-pressed',String(ws.progression===value));
-  btn.onclick=()=>{ws.progression=value;worksheetOptions()};pchoices.append(btn);
- });progress.append(pchoices);
- const stageNames=[['monic-positive','Monic + positive'],['general-positive','General + positive'],['general-negative','General + negative'],['general-mixed','General + mixed signs']];
- if(ws.progression!=='uniform'){
-  const stages=el('div',undefined,'worksheet-stage-list');
-  stageNames.forEach(([key,label],idx)=>{
-   const row=el('label',undefined,'worksheet-stage');
-   const check=el('input');check.type='checkbox';check.checked=ws.stages.includes(key);
-   check.disabled=ws.progression==='guided';
-   check.onchange=()=>{
-    if(check.checked)ws.stages.push(key);
-    else if(ws.stages.length>1)ws.stages=ws.stages.filter(x=>x!==key);
-    worksheetOptions();
-   };
-   const title=el('span',(idx+1)+'. '+label);
-   row.append(check,title);stages.append(row);
-  });
-  const note=el('small','The stages are used in order. Each is a question style, not another task or a compulsory extra row.');
-  progress.append(stages,note);
- }
  const stepsField=field('Written method steps'),stepsLabel=el('label'),stepsCheck=el('input');
  stepsCheck.type='checkbox';stepsCheck.checked=ws.steps;
  stepsCheck.onchange=()=>{ws.steps=stepsCheck.checked;wsStatus()};
@@ -1382,64 +1366,50 @@ function worksheetOptions(){
  actions.append(go,close,status);panel.append(actions);wsStatus();
 }
 function worksheetRowsPerSide(){
+ if(ws.use==='classwork')return 2;
  return ({spacious:5,balanced:8,compact:10})[ws.density]||8;
 }
-function worksheetTotal(){return ws.columns*worksheetRowsPerSide()*ws.sides}
+function worksheetTotal(){return ws.columns*worksheetRowsPerSide()*(ws.use==='classwork'?1:ws.sides)}
 function wsStatus(){
- ws.rows=worksheetRowsPerSide()*ws.sides;
  const total=worksheetTotal(),e=$('wsStatus');
- if(e)e.textContent=total+' questions · '+ws.sides+' side'+(ws.sides===1?'':'s')+' · '+ws.columns+' columns · '+ws.density+' · A4 '+ws.orientation+' · answers '+(ws.answers==='key'?'at the end':ws.answers);
+ if(e)e.textContent=total+' questions · '+(ws.use==='classwork'?'Short classwork / exit ticket':'Matching homework')+' · '+ws.columns+' columns · '+ws.category+' · Worksheet '+ws.sheet;
  wsPreviewCache=worksheetQuestions();drawWorksheetPreview();
 }
 function worksheetQuestions(){
  const old={type:state.type,level:state.level,sign:state.sign,slot:state.slot,random:state.factorRandom,constant:state.constantOn,monic:state.monic};
- const out=[],types=['ll','ql','qq'].filter(type=>ws.counts[type]>0);
- const count=worksheetTotal();
- const levels=ws.levels.includes('random')?[1,2,3]:ws.levels.slice().sort((a,b)=>a-b);
- const signs=ws.signs.includes('random')?['positive','negative','mixed']:['positive','negative','mixed'].filter(sign=>ws.signs.includes(sign));
- const stages=ws.progression==='custom'?['monic-positive','general-positive','general-negative','general-mixed'].filter(k=>ws.stages.includes(k)):['monic-positive','general-positive','general-negative','general-mixed'];
- const preferredLarge=[21,31,41];
- const putLarge=(q,i)=>{
-  // Only introduce friendly two-digit coefficients late in the sequence.
-  const arr=i%2===0?q.a:q.b;
-  const at=arr.length-1;
-  arr[at]=(arr[at]<0?-1:1)*preferredLarge[(i+Math.floor(i/3))%preferredLarge.length];
- };
+ const out=[],count=worksheetTotal(),selected=state.type;
+ const types=beyondTypes.includes(selected)?[state.coreType]:selected==='any'?['ll','ql','qq']:[selected];
+ const levelBase=Math.max(1,Math.min(3,state.level));
+ const signFor=i=>ws.category==='progressive'?['positive','positive','negative','mixed'][Math.min(3,Math.floor(4*i/count))]:ws.category;
  try{
-  state.constantOn=false;state.factorRandom=false;state.slot='fresh';
+  state.slot='fresh';state.constantOn=false;state.factorRandom=false;
   for(let i=0;i<count;i++){
-   const fraction=count===1?0:i/(count-1);
-   const type=types[Math.min(types.length-1,Math.floor(fraction*types.length))];
-   const stage=ws.progression==='uniform'?null:stages[Math.min(stages.length-1,Math.floor(fraction*stages.length))];
-   const sign=stage?(stage.endsWith('positive')?'positive':stage.endsWith('negative')?'negative':'mixed'):signs[Math.min(signs.length-1,Math.floor(fraction*signs.length))];
-   const level=levels[Math.min(levels.length-1,Math.floor(fraction*levels.length))];
-   state.type=type;state.level=level;state.sign=sign;
-   state.monic=stage?stage.startsWith('monic'):false;
-   const seed=(seedFor(i+309)^((i+1)*104729))>>>0;
+   const progress=count<=1?0:i/(count-1);
+   const type=types[Math.min(types.length-1,Math.floor(progress*types.length))],sign=signFor(i);
+   const level=ws.sheet===1?Math.min(levelBase,2):ws.sheet===2?levelBase:Math.max(levelBase,2);
+   state.type=type;state.sign=sign;state.level=level;
+   state.monic=(ws.sheet===1&&i%4===0)||(ws.sheet===2&&i%6===0);
+   const seed=seedFor(50000+ws.sheet*1103+i*97+(ws.use==='homework'?10007:0));
    const q=makeQuestion(seeded(seed),sign);
-   if(ws.progression!=='uniform'&&fraction>.72&&i%3===1){
-    putLarge(q,i);
+   if(ws.sheet>=3&&progress>.6&&i%4===1){
+    const arr=i%2?q.a:q.b;
+    arr[arr.length-1]=(arr[arr.length-1]<0?-1:1)*[21,31,41][i%3];
    }
-   // Finish with a consolidation mix: revisit earlier sign patterns and factor types.
-   if(ws.progression!=='uniform'&&fraction>.86){
-    const reviewSign=['positive','mixed','negative'][i%3];
-    if(reviewSign==='positive'){q.a=q.a.map(Math.abs);q.b=q.b.map(Math.abs)}
-    else if(reviewSign==='negative'){q.a=q.a.map((v,j)=>j?-Math.abs(v):Math.abs(v));q.b=q.b.map((v,j)=>j?-Math.abs(v):Math.abs(v))}
-    else {q.a=q.a.map((v,j)=>j%2===0?Math.abs(v):-Math.abs(v));q.b=q.b.map((v,j)=>j%2===0?Math.abs(v):-Math.abs(v))}
-    q.sign=reviewSign;
+   if(ws.sheet===4&&progress>.75&&ws.category==='progressive'){
+    const review=['positive','negative','mixed'][i%3];
+    if(review==='positive'){q.a=q.a.map(Math.abs);q.b=q.b.map(Math.abs)}
+    else if(review==='negative'){q.a=q.a.map((v,j)=>j?-Math.abs(v):Math.abs(v));q.b=q.b.map((v,j)=>j?-Math.abs(v):Math.abs(v))}
+    q.sign=review;
    }
-   out.push({q,type,level,number:i+1,stage:stage||'uniform'});
+   out.push({q,type,level,number:i+1,stage:ws.category});
   }
- }finally{
-  state.type=old.type;state.level=old.level;state.sign=old.sign;state.slot=old.slot;
-  state.factorRandom=old.random;state.constantOn=old.constant;state.monic=old.monic;
- }
+ }finally{state.type=old.type;state.level=old.level;state.sign=old.sign;state.slot=old.slot;state.factorRandom=old.random;state.constantOn=old.constant;state.monic=old.monic}
  return out;
 }
 function drawWorksheetPreview(){
  const host=$('wsLivePreview');if(!host)return;
  host.replaceChildren();
- const heading=el('strong',worksheetTitle()+' · A4 '+ws.orientation+' · '+ws.columns+' columns');
+ const heading=el('strong',worksheetTitle()+' · '+ws.columns+' columns');
  const info=el('p',ws.layout==='inline'?'Compact rows of questions. Labels are optional; students choose their working method.':'First page shown. The printable worksheet uses these same questions. '+(ws.answers==='key'?'Student answers follow at the end.':''));
  const grid=el('div',undefined,'ws-preview-grid');grid.style.gridTemplateColumns='repeat('+ws.columns+',minmax(0,1fr))';
  (wsPreviewCache||[]).slice(0,ws.columns*2).forEach((item,i)=>{
@@ -1456,14 +1426,14 @@ function drawWorksheetPreview(){
  if(ws.layout==='inline')grid.className+=' ws-preview-inline-grid';
  host.append(heading,info,grid);
  if(ws.answers==='key')host.append(el('p','Answers at the end: '+(wsPreviewCache||[]).length+' numbered solutions.','ws-answer-note'));
- if(ws.progression!=='uniform'){const description=el('p','Order: '+(ws.progression==='guided'?['Monic + positive','General + positive','General + negative','General + mixed signs']:ws.stages.map(stage=>stage.replace('-', ' + ').replace('general','General').replace('monic','Monic'))).join(' → '));description.className='ws-progression-note';host.append(description)}
+ host.append(el('p','Matching '+(ws.use==='classwork'?'homework':'classwork')+' uses the same category and difficulty, with different questions.','ws-progression-note'));
 }
 
 function worksheetTitle(){
  const names={ll:'Linear × Linear',ql:'Linear × Quadratic',qq:'Quadratic × Quadratic'};
- const types=Object.keys(names).filter(key=>ws.counts[key]>0).map(key=>names[key]).join(' · ');
- const levels=ws.levels.includes('random')?'Levels 1–3':ws.levels.length===1?'Level '+ws.levels[0]:'Levels '+ws.levels.slice().sort().join(', ');
- return 'Place-Value Expansions · '+(types||'Select a factor pattern')+' · '+levels;
+ const type=beyondTypes.includes(state.type)?state.coreType:state.type;
+ const signs={positive:'Positive only',negative:'Negative non-leading',mixed:'Mixed signs',progressive:'Progressive mix'};
+ return 'Expanding Brackets · Worksheet '+ws.sheet+' · '+(ws.use==='classwork'?'Classwork':'Homework')+' · '+signs[ws.category]+' · '+(names[type]||'Mixed factors')+' · Level '+state.level;
 }
 function worksheetLetter(i){return String.fromCharCode(97+i%26)}
 function printInlineWorksheet(all){
