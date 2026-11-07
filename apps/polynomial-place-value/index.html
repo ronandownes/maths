@@ -121,6 +121,7 @@ button:disabled{opacity:.38;cursor:default}
 <main>
 <div class="activity-switch" aria-label="Choose learning activity">
  <button id="practiceMode" type="button" aria-pressed="true">Practice</button>
+ <button id="quizMode" type="button" aria-pressed="false">Quiz</button>
  <button id="testMode" type="button" aria-pressed="false">Test</button>
 </div>
 <div id="practiceArea">
@@ -350,7 +351,7 @@ function draw(){
 
 }
 
-const assessment={active:false,questions:[],responses:[],submitted:false,run:0,source:'bank'};
+const assessment={mode:'practice',questions:[],responses:[],submitted:false,checked:[],run:0,source:'bank'};
 function el(tag,textValue,className){
  const e=document.createElement(tag);if(textValue!==undefined)e.textContent=textValue;
  if(className)e.className=className;return e;
@@ -366,13 +367,14 @@ function initialiseTest(source){
   return makeQuestion(rng);
  });
  assessment.responses=assessment.questions.map(q=>Array(product(q.a,q.b).length).fill(''));
- assessment.submitted=false;drawTest();
+ assessment.submitted=false;assessment.checked=Array(4).fill(false);drawTest();
 }
 function drawTest(){
  const host=$('testArea');host.replaceChildren();
  const h=el('div',undefined,'test-header');
  const summary=el('div');
- summary.append(el('h2','Expansion test'),el('p','Four questions · 1 mark per complete correct expansion · results after submission'));
+ const quiz=assessment.mode==='quiz';
+ summary.append(el('h2',quiz?'Expansion quiz':'Expansion test'),el('p',quiz?'Four questions · check each answer when ready':'Four questions · 1 mark per complete correct expansion · results after submission'));
  const opt=el('div',undefined,'test-options');
  const choose=el('select');choose.setAttribute('aria-label','Test question selection');
  [['bank','Questions 1–4'],['random','Four random questions']].forEach(([value,label])=>{
@@ -395,19 +397,32 @@ function drawTest(){
    input.oninput=()=>{assessment.responses[index][i]=input.value};
    group.append(symbol,input);answer.append(group);
   });
-  section.append(answer);host.append(section);
+  section.append(answer);
+  if(quiz){
+   const check=el('button','Check');check.type='button';
+   check.onclick=()=>{assessment.checked[index]=true;drawTest()};
+   section.append(check);
+   if(assessment.checked[index]){
+    const expected=product(q.a,q.b);
+    const correct=expected.every((v,j)=>/^-?\d+$/.test(assessment.responses[index][j].trim())&&Number(assessment.responses[index][j])===v);
+    const feedback=el('div',correct?'Correct!':'Not quite — try again.','test-feedback');
+    feedback.setAttribute('role','status');
+    section.append(feedback);
+   }
+  }
+  host.append(section);
  });
  const actions=el('div',undefined,'test-controls');
- if(!assessment.submitted){
+ if(!quiz&&!assessment.submitted){
   const submit=el('button','Submit all answers');submit.type='button';
   submit.onclick=()=>{assessment.submitted=true;drawTest()};actions.append(submit);
   actions.append(el('span','No scores or worked solutions appear until submission.'));
  }else{
-  const restart=el('button','Retake test');restart.type='button';
+  const restart=el('button',quiz?'New quiz':'Retake test');restart.type='button';
   restart.onclick=()=>initialiseTest(assessment.source);actions.append(restart);
  }
  host.append(actions);
- if(assessment.submitted){
+ if(!quiz&&assessment.submitted){
   const result=el('section',undefined,'test-result');
   let correct=0;
   const details=assessment.questions.map((q,i)=>{
@@ -426,15 +441,18 @@ function drawTest(){
   host.append(result);
  }
 }
-function switchMode(test){
- assessment.active=test;
- $('practiceArea').hidden=test;$('testArea').hidden=!test;
- $('practiceMode').setAttribute('aria-pressed',String(!test));
- $('testMode').setAttribute('aria-pressed',String(test));
- if(test){if(assessment.questions.length===0)initialiseTest('bank');else drawTest()}
+function switchMode(mode){
+ assessment.mode=mode;
+ const active=mode!=='practice';
+ $('practiceArea').hidden=active;$('testArea').hidden=!active;
+ for(const [key,value] of [['practiceMode','practice'],['quizMode','quiz'],['testMode','test']]){
+  $(key).setAttribute('aria-pressed',String(mode===value));
+ }
+ if(active){if(assessment.questions.length===0)initialiseTest('bank');else drawTest()}
 }
-$('practiceMode').onclick=()=>switchMode(false);
-$('testMode').onclick=()=>switchMode(true);
+$('practiceMode').onclick=()=>switchMode('practice');
+$('quizMode').onclick=()=>switchMode('quiz');
+$('testMode').onclick=()=>switchMode('test');
 function render(){renderSelectors();coefficientInputs();draw()}
 selectQuestion(0);
 })();</script>
