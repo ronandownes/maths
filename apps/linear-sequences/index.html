@@ -8,7 +8,8 @@
 <button type="button" id="optionsBtn" class="options" aria-controls="settings" aria-expanded="false">⚙ Options</button>
 </nav>
 <aside id="settings" class="settings" hidden aria-label="App settings">
-<h3>Settings</h3><label>Difficulty <select id="difficulty"><option value="foundation">Foundation</option><option value="standard" selected>Standard</option><option value="challenge">Challenge</option></select></label>
+<h3>Settings</h3><label>Question bank <select id="bank"><option value="mixed" selected>Mixed skills</option><option value="terms">Term rules</option><option value="series">Arithmetic series</option><option value="exam">LC 2026 Paper 1 Q5</option></select></label>
+<label>Difficulty <select id="difficulty"><option value="foundation">Foundation</option><option value="standard" selected>Standard</option><option value="challenge">Challenge</option></select></label>
 <label>Example <select id="example"><option value="0">Example 1</option><option value="1">Example 2</option></select></label>
 <label>Sound effects <input id="sound" type="checkbox" checked></label>
 <label>Spoken instruction <input id="spoken" type="checkbox"></label>
@@ -16,6 +17,14 @@
 <button id="closeSettings" type="button" class="primary">Close</button>
 </aside>
 <section id="learn"><p class="lead">Draw under-arcs, subtract, box term zero, and develop the general term. Then solve missing-term problems and investigate sums. Click Next, use keyboard arrows, or select a teaching stage.</p>
+<details style="margin:10px 0;border:1px solid #c5d7e8;border-radius:8px;padding:8px 12px;background:#f9fcff">
+<summary style="cursor:pointer;color:#185c9b;font-weight:700">Starter puzzle: Why did two cicada broods emerge together in 2024?</summary>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px">
+<figure style="margin:0"><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Riley%27s_13-Year_Cicada_Magicicada_tredecim_JG.jpg" alt="A 13-year cicada with red eyes resting on a branch" style="width:100%;height:auto;border-radius:6px"><figcaption class="small"><strong>13 years</strong> · <em>Magicicada tredecim</em>. Jeffrey Gammon, CC BY 4.0.</figcaption></figure>
+<figure style="margin:0"><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Magicicada_septendecim-mating.jpg" alt="Two 17-year cicadas with red eyes on a twig" style="width:100%;height:auto;border-radius:6px"><figcaption class="small"><strong>17 years</strong> · <em>Magicicada septendecim</em>. peterwchen, CC BY 4.0.</figcaption></figure>
+</div>
+<p class="small">Broods XIX and XIII both emerged in 2024. The same two broods last emerged together in 1803. In which year will they next coincide? <a href="https://ronandownes.github.io/book/sequences-cicadas.html">Explore the full 1803–2245 investigation in the Book.</a></p>
+</details>
 <div class="diagram" id="lessonDiagram"></div><div class="speech" id="lessonText" role="status" aria-live="polite"></div>
 <div class="formula" id="lessonFormula"></div>
 <div class="actions"><button type="button" id="prev">← Previous</button><span id="progress" class="progress"></span><button type="button" id="read">🔊 Read</button><button type="button" id="next" class="primary">Next →</button></div>
