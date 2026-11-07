@@ -18,19 +18,19 @@ button:hover{background:#f1f5fb}button:focus-visible,input:focus-visible{outline
 button[aria-pressed=true]{background:#e8f0fe;border-color:#1a73e8;color:#174ea6;font-weight:750}
 button:disabled{opacity:.38;cursor:default}
 .top-questions,.modes,.stepper,.control-line,.button-group{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
-.top-questions{margin:5px 0 8px}.bankbar{padding-top:9px}.bankbar>span{font-size:.84rem;color:#576270;font-weight:650}.edit-hint{font-size:.81rem;color:#647080;margin:10px 0 0}
+.top-questions{margin:3px 0 6px}.bankbar{padding-top:9px}.bankbar>span{font-size:.84rem;color:#576270;font-weight:650}.edit-hint{font-size:.81rem;color:#647080;margin:10px 0 0}
 .top-questions button{flex:1 1 98px;padding:11px 8px;font-weight:700}
 .top-questions #random{flex:1.2 1 130px}
-.settings{display:flex;flex-wrap:wrap;gap:8px 12px;padding:10px 0 12px;border-top:1px solid #e2e6ea;border-bottom:1px solid #e2e6ea}
+.settings{display:flex;flex-wrap:wrap;gap:8px 12px;padding:7px 0 8px;border-top:1px solid #e2e6ea;border-bottom:1px solid #e2e6ea}
 .setting{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:6px 12px;border:1px solid #dce2e9;border-radius:8px;background:#fbfcfe}
 .setting .caption{font-size:.81rem;font-weight:700;color:#59636f;min-width:0}
 .button-group button{font-size:.87rem;padding:8px 11px}
-.modes{margin:10px 0 7px}
+.modes{margin:8px 0 4px}
 .modes button{font-size:.94rem}
 .modes button[aria-pressed=true]{border-color:#174ea6}.modes button:first-child{font-weight:700}
-.coefficients{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin:10px 0 12px}
-.factor-fields{display:flex;flex-wrap:wrap;gap:9px}
-.factor-fields .group-label{width:100%;color:#586575;font-size:.84rem;font-weight:650}
+.coefficients{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;justify-content:center;margin:5px 0 9px}
+.factor-fields{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}
+.factor-fields .group-label{width:100%;color:#586575;font-size:.84rem;font-weight:650;text-align:center}
 .coefficient{display:flex;flex-direction:column;gap:3px;font-size:.83rem;color:#536170}
 .coefficient input{width:96px;min-width:96px;padding:8px 5px 8px 10px;font-size:1.2rem;font-variant-numeric:tabular-nums;line-height:1.3}
 .coefficient input::-webkit-inner-spin-button{opacity:1}
@@ -60,7 +60,7 @@ button:disabled{opacity:.38;cursor:default}
  .math-table .row-label{width:38px;font-size:.76rem}
  .canvas{padding:12px 3px}
 }
-.factor-expression{font:clamp(1.65rem,3.2vw,2.25rem)/1.45 "Cambria Math",Cambria,Georgia,serif;text-align:center;padding:8px 8px 2px;color:#202124}
+.factor-expression{font:clamp(1.65rem,3.2vw,2.25rem)/1.35 "Cambria Math",Cambria,Georgia,serif;text-align:center;padding:5px 8px 1px;color:#202124}
 .factor-expression sup{font-size:.62em;vertical-align:super}
 .factor-expression .bracket{display:inline-block;font-size:1.14em;line-height:1;vertical-align:-.035em}
 .factor-expression .factor{display:inline-block;white-space:nowrap}
@@ -82,12 +82,12 @@ button:disabled{opacity:.38;cursor:default}
 <div class="bankbar"><span id="bankLabel">Questions for these settings</span><nav class="top-questions" id="questions" aria-label="Questions for the selected factors, signs and level"></nav></div>
 <div class="modes" id="modes" aria-label="How to view the solution"></div>
 <div class="factor-expression" id="factorExpression" aria-label="Current multiplication question"></div>
-<p class="edit-hint">Change any coefficient using the arrows or by typing a number. The working updates immediately.</p>
+
 <div class="coefficients" id="coefficients" aria-label="Edit factor coefficients"></div>
 <h2 id="heading"></h2>
 <p id="help"></p>
 <section class="canvas" id="canvas" aria-live="polite"></section>
-<div class="stepper"><button id="back">← Previous</button><span id="stepProgress"></span><button id="forward">Next →</button></div>
+
 </main>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
@@ -164,8 +164,8 @@ function renderSelectors(){
  const host=$('modes');host.replaceChildren();
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
  toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
- const steps=document.createElement('button');steps.type='button';steps.textContent='Step by step';steps.setAttribute('aria-pressed',String(state.mode==='step'));
- steps.onclick=()=>{state.mode='step';state.step=0;render()};host.append(steps);
+ const steps=document.createElement('button');steps.type='button';steps.textContent=state.mode!=='step'?'Step by step':state.step===3?'Restart steps':'Next: '+actions[state.step+1]+' →';steps.setAttribute('aria-pressed',String(state.mode==='step'));
+ steps.onclick=()=>{if(state.mode!=='step'){state.mode='step';state.step=0;}else{state.step=state.step===3?0:state.step+1;}render()};host.append(steps);
 }
 function coefficientInputs(){
  const host=$('coefficients');host.replaceChildren();
@@ -230,14 +230,9 @@ function draw(){
    root.append(eq);
   }
  }
- $('back').hidden=mode!=='step';$('forward').hidden=mode!=='step';
- $('stepProgress').textContent=mode==='step'?(step+1)+' / 4':'';
- $('back').disabled=step===0;$('forward').disabled=step===3;
- $('forward').textContent=step===3?'Complete':'Next: '+actions[step+1]+' →';
+
 }
 function render(){renderSelectors();$('bankLabel').textContent='Questions: '+factorTypes.find(x=>x[0]===state.type)[1]+' · '+signTypes.find(x=>x[0]===state.sign)[1]+' · Level '+state.level;coefficientInputs();draw()}
-$('back').onclick=()=>{state.step=Math.max(0,state.step-1);draw()};
-$('forward').onclick=()=>{state.step=Math.min(3,state.step+1);draw()};
 selectQuestion(0);
 })();</script>
 </body>
