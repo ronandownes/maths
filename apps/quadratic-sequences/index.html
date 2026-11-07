@@ -23,10 +23,25 @@
 <p class="small">For classroom projection: the arrow keys and Page Up/Page Down move between steps. On iPhone, use the touch buttons and collapse the settings.</p>
 </section>
 <section id="assessment" class="assessment" hidden>
-<p class="lead">Work out the answer on paper or mentally. Two guesses maximum per question; the next question appears after the final attempt.</p>
-<div id="questionPanel"><p class="small" id="questionCount"></p><div class="question" id="questionText"></div><div class="numbers" id="numbers"></div><label for="answer">Your answer</label><input id="answer" name="answer" autocomplete="off" spellcheck="false" placeholder="Enter a number or expression">
-<div class="actions"><button type="button" id="check" class="primary">Check answer</button><button type="button" id="advance" hidden>Next question →</button><span id="tries" class="small"></span></div><div class="feedback" role="status" aria-live="polite" id="feedback" hidden></div></div>
-<div id="results" hidden></div>
+<p class="lead" id="assessmentIntro">Choose one of four worked solutions in Quiz, or type your own solution in Test. Only two attempts per question.</p>
+<div class="quiz-header"><strong id="questionCount" aria-live="polite"></strong><div class="quiz-running"><span id="scoreLive" aria-live="polite">Score 0</span><span id="answeredLive">0 completed</span></div></div>
+<div class="quiz-progress" aria-hidden="true"><span id="progressFill"></span></div>
+<div id="questionPanel">
+<div class="question" id="questionText"></div><div class="numbers" id="numbers"></div>
+<div id="choices" class="choices" role="group" aria-label="Choose one worked solution" hidden></div>
+<div id="entryArea"><label for="answer">Your answer</label><input id="answer" name="answer" autocomplete="off" spellcheck="false" placeholder="Enter a number or expression"></div>
+<div class="actions">
+<button type="button" id="check" class="primary">Check answer</button>
+<span id="tries" class="small" aria-live="polite"></span>
+<button type="button" id="advance" class="primary" hidden>Next question →</button>
+</div>
+<div class="feedback" role="status" aria-live="polite" id="feedback" hidden></div>
+<div class="review-actions" id="reviewActions" hidden>
+<button type="button" id="showCorrect">Show correct working</button>
+<button type="button" id="showMistake">Explain a mistake</button>
+</div>
+<div id="reviewPanel" class="explanation-panel" hidden></div>
+</div><div id="results" hidden></div>
 </section>
 <nav class="quicknav" aria-label="Related sequence apps">
 <a href="../linear-sequences/index.html">Linear</a><a href="../quadratic-sequences/index.html">Quadratic</a><a href="../geometric-sequences/index.html">Geometric</a><a href="../../number/sequences/index.html">Maths lessons</a>
