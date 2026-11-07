@@ -294,6 +294,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="settings settings-top common-settings">
 <div class="setting"><span class="caption caption-wrapped">Factor<span>pattern</span></span><div class="button-group" id="types" aria-label="Factors: choose a degree combination or random factors"></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
+<div class="setting"><button type="button" id="monicBtn" aria-pressed="false" title="Optional practice: both polynomials have leading coefficient 1. Numbered homework remains unchanged.">Monic</button></div>
 <div class="setting"><span class="caption caption-wrapped">Sign<span>pattern</span></span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
 </div>
 <div class="activity-switch" aria-label="Choose learning activity">
@@ -339,7 +340,7 @@ const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed
 const signChoices=[['positive','Positive\nterms'],['negative','Negative\nnon-leading'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
-const state={type:'ql',factorRandom:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,question:null};
+const state={type:'ql',factorRandom:false,monic:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,question:null};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -380,6 +381,7 @@ function makeQuestion(next,signOverride=null){
    const target=next(0,1)===0?a:b;
    target[next(0,target.length-1)]=challenge();
   }
+  if(state.monic){a[0]=1;b[0]=1;}
   for(const arr of [a,b])for(let i=1;i<arr.length;i++){
    if(sign==='negative'||(sign==='mixed'&&next(0,1)===1))arr[i]=-Math.abs(arr[i]);
   }
@@ -402,6 +404,7 @@ function chosenQuestion(){
  // Fixed homework questions develop sign fluency progressively.
  // Fresh/random questions continue to honour the selected sign control.
  const homeworkSigns=['positive','negative','mixed','mixed'];
+ // Monic is an optional random-practice mode; fixed homework is never modified.
  return makeQuestion(rng,state.slot==='fresh'?null:homeworkSigns[state.slot]);
 }
 function selectQuestion(slot){
@@ -462,6 +465,8 @@ function renderSelectors(){
   }
  }
  chooseButtons('levels',levels,state.level,v=>filter('level',v));
+ const monicButton=$('monicBtn');monicButton.setAttribute('aria-pressed',String(state.monic));
+ monicButton.onclick=()=>{state.monic=!state.monic;freshQuestion();if(assessment.mode!=='practice')initialiseTest(assessment.source)};
  const randomFactor=$('types').children[factorTypes.length];randomFactor.className='level-random';randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
  const randomSign=$('signs').children[3];randomSign.className='level-random';randomSign.title='Randomly choose a sign pattern';randomSign.setAttribute('aria-label','Random signs');
  const host=$('modes');host.replaceChildren();
@@ -746,6 +751,7 @@ function draw(){
     {question:'Trick of the trade: take out a common factor first.',detail:'For (10x + 15)(2x² + 3x + 4), rewrite 10x + 15 as 5(2x + 3). Expand the simpler brackets first, then multiply every coefficient of the answer by 5. Why does this work?'},
     {question:'Investigation: Changing the signs of a factor changes the signs of the answer.',detail:'Take the factor (7x − 1) and change both signs to (−7x + 1) = −(7x − 1). Multiply each by the same second factor. Can you predict the entire new answer without expanding? Why is this scaling by −1?'},
     {question:'Predict the first and last coefficients.',detail:'Without multiplying out, calculate '+minus(a[0])+' × '+minus(b[0])+' and '+minus(a[a.length-1])+' × '+minus(b[b.length-1])+'. Explain why these determine the leading and constant coefficients.'},
+    {question:'Hidden Maths: What happens when you multiply by x + 1?',detail:'First predict the answer to (2x² + 3x + 4)(x + 1). What happens to neighbouring coefficients? Compare with multiplying by x − 1. Can you explain the pattern using place-value columns?'},
     {question:'Where do the middle coefficients come from?',detail:'Choose one middle power of x in your answer. Identify every pair of terms that contributes to its coefficient.'},
     {question:'Investigate the signs in this expansion.',detail:'Which partial products are positive and which are negative? Predict whether the answer contains positive, negative or zero coefficients.'},
     {question:'Change one coefficient of the second factor.',detail:'Predict which coefficients in the expanded answer will change and which will stay the same. Then check.'},
