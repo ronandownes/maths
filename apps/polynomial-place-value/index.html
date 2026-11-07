@@ -172,6 +172,7 @@ button:disabled{opacity:.38;cursor:default}
 .test-feedback{border-radius:5px;padding:10px 12px;margin:4px 0}
 .test-feedback.test-correct{border-left:4px solid #27834d;background:#f2faf4;color:#225e38}
 .test-feedback.test-incorrect{border-left:4px solid #c45151;background:#fff5f5;color:#803332}
+.test-feedback.quiz-last-chance{border-left:5px solid #b64040;background:#fff1f1;color:#8f2020;font-weight:800;font-size:1.08rem}
 .test-random-label{color:#596474;font-size:.88rem;font-weight:700}
 .quiz-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
 .quiz-working-choices{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -580,12 +581,12 @@ function playQuizSound(correct){
   if(!AudioCtor)return;
   const ctx=new AudioCtor();
   const now=ctx.currentTime;
-  const notes=correct===true?[[660,0,.16],[880,.18,.25]]:correct==='fanfare'?[[523,0,.16],[659,.18,.16],[784,.36,.18],[1047,.56,.48]]:correct==='final-wrong'?[[390,0,.17],[305,.21,.19],[225,.46,.32]]:[[350,0,.23],[245,.29,.31]];
+  const notes=correct===true?[[660,0,.16],[880,.18,.25]]:correct==='fanfare'?[[523,0,.16],[659,.18,.16],[784,.36,.18],[1047,.56,.48]]:correct==='final-wrong'?[[410,0,.20],[300,.25,.22],[195,.53,.42]]:[[350,0,.23],[245,.29,.31]];
   notes.forEach(([frequency,offset,duration])=>{
    const osc=ctx.createOscillator(),gain=ctx.createGain();
-   osc.type=(correct===false||correct==='final-wrong')?'triangle':'sine';osc.frequency.value=frequency;
+   osc.type=correct==='final-wrong'?'sawtooth':correct===false?'triangle':'sine';osc.frequency.value=frequency;
    gain.gain.setValueAtTime(0,now+offset);
-   gain.gain.linearRampToValueAtTime(correct===false||correct==='final-wrong'?.105:.13,now+offset+.02);
+   gain.gain.linearRampToValueAtTime(correct==='final-wrong'?.17:correct===false?.085:.13,now+offset+.02);
    gain.gain.exponentialRampToValueAtTime(.001,now+offset+duration);
    osc.connect(gain);gain.connect(ctx.destination);
    osc.start(now+offset);osc.stop(now+offset+duration+.01);
@@ -772,8 +773,8 @@ function drawTest(){
     const correctIndex=options.findIndex(x=>working?x.valid:x.every((v,k)=>v===p[k]));
     const message=correct?'Correct!':remaining>=2
       ?'No more attempts. Correct '+(working?'working':'answer')+': '+String.fromCharCode(65+correctIndex)+'.'
-      :'Not quite — last chance.';
-    const feedback=el('div',message,'test-feedback');
+      :'ONE MORE CHANCE — your next answer is final.';
+    const feedback=el('div',message,'test-feedback '+(correct?'test-correct':remaining===1?'quiz-last-chance':'test-incorrect'));
     feedback.setAttribute('role','status');section.append(feedback);
    }
   }else{
@@ -840,7 +841,7 @@ function drawTest(){
     if(attempts>0){
      const note=el('div',isCorrect?'Correct!':attempts>=2?
       'No more attempts. Correct answer: '+p.join(', '):
-      'Not quite — last chance.','test-feedback '+(isCorrect?'test-correct':'test-incorrect'));
+      'ONE MORE CHANCE — your next answer is final.','test-feedback '+(isCorrect?'test-correct':attempts===1?'quiz-last-chance':'test-incorrect'));
      note.setAttribute('role','status');section.append(note);
      if(!isCorrect){
       const fields=answer.children;
