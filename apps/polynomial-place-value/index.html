@@ -512,7 +512,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="settings settings-top common-settings">
 <div class="setting"><span class="caption">Factor pattern</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor pattern"></div><select id="challengeSelect" aria-label="Optional higher degree factor patterns"><option value="">Challenge…</option><option value="l3">Linear × Cubic</option><option value="l4">Linear × Quartic</option><option value="l5">Linear × Quintic</option><option value="q3">Quadratic × Cubic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
-<div class="setting"><span class="caption">Sign pattern</span><div class="button-group" id="signs" aria-label="Choose signs"></div></div>
+<div class="setting"><span class="caption">Signs within factors</span><div class="button-group" id="signs" aria-label="Choose signs"></div></div>
 <div class="setting setting--advanced"><span class="caption">Options</span><div class="advanced-buttons"><button type="button" id="constantBtn" aria-pressed="false" title="HCF Off gives a primitive expansion (coefficient HCF 1); HCF On gives a common numerical factor.">HCF Off</button><button type="button" id="monicBtn" hidden aria-pressed="false" title="Advanced: leading coefficient 1">Monic off</button><button type="button" id="challengeBtn" hidden aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false">Challenge off</button></div></div>
 <div class="beyond-choices" id="beyondPanel" hidden><div class="button-group" id="beyondChoices"></div><span id="beyondNote"></span></div>
 </div>
@@ -570,8 +570,18 @@ const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\n
 const beyondChoices=[['l3','Linear × Cubic'],['l4','Linear × Quartic'],['l5','Linear × Quintic'],['q3','Quadratic × Cubic'],['q4','Quadratic × Quartic'],['44','Quartic × Quartic']];
 const beyondTypes=beyondChoices.map(item=>item[0]);
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
-const signChoices=[['positive','Both\npositive'],['negative','Negative\nnon-leading'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
+const signChoices=[['positive','All +'],['negative','Non-leading −'],['mixed','Mixed + / −'],['random','Random']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
+// A bank introduces ONE deliberate change at a time: internal signs, arithmetic, then degree.
+// Selecting a bank applies its teaching defaults; the settings above remain teacher overrides.
+const bankProfiles=[
+ {type:'ll',level:1,sign:'positive',name:'Lin × Lin · sums · small coefficients'},
+ {type:'ll',level:1,sign:'mixed',name:'Lin × Lin · sum × difference'},
+ {type:'ll',level:1,sign:'negative',name:'Lin × Lin · two differences'},
+ {type:'ll',level:2,sign:'mixed',name:'Lin × Lin · larger coefficients'},
+ {type:'ql',level:2,sign:'mixed',name:'Lin × Quad · mixed signs'},
+ {type:'qq',level:3,sign:'mixed',name:'Quad × Quad · double-digit prime challenge'}
+];
 
 const state={type:'ll',factorRandom:false,coreType:'ll',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:1,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
 
@@ -598,7 +608,7 @@ function makeQuestion(next,signOverride=null){
  const fav=()=>pick([1,2,2,2,3,3,3,5,5,4,7,8,9]);
  const easy=()=>pick([1,1,1,2,2,2,3,3,3,4,5,5,7]);
  const moderate=()=>pick([2,2,2,3,3,3,4,4,5,5,6,7,8,9]);
- const challenge=()=>pick([10,11,11,11,20,21,30,31]);
+ const challenge=()=>pick(state.slot===5&&state.level===3?[11,13,17,19,23,29,31]:[10,11,11,11,20,21,30,31]);
  for(let trial=0;trial<3500;trial++){
   let a,b;
   if(level===1){
@@ -638,12 +648,12 @@ function chosenQuestion(){
  const rng=state.slot==='fresh'
   ?seeded(seedFor(state.freshCount+1000)^((Math.random()*0xffffffff)>>>0))
   :seeded(seedFor(17+state.slot*123+state.bankQuestion*891));
- // Six reproducible questions in each of six banks.
- const bankSigns=['positive','negative','mixed','positive','negative','mixed'];
- if(state.slot===0&&state.bankQuestion===0&&state.type==='ll'&&state.level===1&&!state.factorRandom){
+ // Six reproducible questions in each of six ordered banks.
+ // Respect the teacher's current factor/sign/level overrides after bank selection.
+ if(state.slot===0&&state.bankQuestion===0&&state.type==='ll'&&state.level===1&&state.sign==='positive'&&!state.factorRandom){
   return {a:state.constantOn?[2,2]:[1,1],b:[2,1],type:'ll',sign:'positive',scalar:1};
  }
- return makeQuestion(rng,state.slot==='fresh'?null:bankSigns[state.slot]);
+ return makeQuestion(rng);
 }
 function selectQuestion(slot){
  state.slot=slot;state.question=chosenQuestion();state.helpStage=-1;state.showInvestigation=false;state.investigationOffset=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
@@ -683,6 +693,11 @@ function renderSelectors(){
  const q=[];for(let i=0;i<6;i++)q.push([i,String(i+1)]);
  function openBankQuestion(bank,index){
   if(assessment.started)return;
+  if(bank!==state.slot){
+   const profile=bankProfiles[bank];
+   state.type=profile.type;state.coreType=profile.type;state.level=profile.level;
+   state.sign=profile.sign;state.factorRandom=false;state.beyondOpen=false;
+  }
   state.bankQuestion=(index+6)%6;
   const stayOnBoard=assessment.mode==='board';
   if(!stayOnBoard)switchMode('practice');
@@ -691,8 +706,7 @@ function renderSelectors(){
  chooseButtons('questions',q,state.slot,v=>{
   openBankQuestion(v,v===state.slot?state.bankQuestion+1:0);
  });
- const bankDescriptions=['Positive foundations','Negative signs','Mixed signs','Positive extension','Negative extension','Mixed-sign challenge'];
- for(let i=0;i<6;i++)$('questions').children[i].title='Question bank '+(i+1)+' · '+bankDescriptions[i]+'. Click again for the next question.';
+ for(let i=0;i<6;i++)$('questions').children[i].title='Bank '+(i+1)+' · '+bankProfiles[i].name+'. Six questions; click again for the next one. You can override the settings above.';
  const nav=$('bankQuestionNav');nav.replaceChildren();
  const chosen=Number.isInteger(state.slot);
  const previous=el('button','‹','bank-question-arrow');previous.type='button';previous.title='Previous question in this bank';previous.disabled=!chosen||assessment.started;
@@ -701,7 +715,7 @@ function renderSelectors(){
  previous.onclick=()=>openBankQuestion(state.slot,state.bankQuestion-1);
  next.onclick=()=>openBankQuestion(state.slot,state.bankQuestion+1);
  nav.append(previous,position,next);
- function filter(key,value){if(assessment.started)return;state[key]=value;if(key==='sign')freshQuestion();else refreshSelectedQuestion();assessmentConfigChanged()}
+ function filter(key,value){if(assessment.started)return;state[key]=value;refreshSelectedQuestion();assessmentConfigChanged()}
  chooseButtons('types',factorChoices,state.factorRandom?'any':(beyondTypes.includes(state.type)?state.coreType:state.type),v=>{
   if(assessment.started)return;
   if(v==='any'){state.factorRandom=true;state.type=state.coreType;state.freshCount++}
@@ -1561,7 +1575,7 @@ function boardAnswerHTML(q){
  return '<span class="board-answer-first"><span class="board-answer-equals">=</span>'+first+'</span>'+terms.join('');
 }
 function boardQuestions(count){
- const signOverride=Number.isInteger(state.slot)?['positive','negative','mixed','mixed','positive','negative','mixed','mixed'][state.slot]:null;
+ const signOverride=null; // Display follows the current bank's selected sign or teacher override.
  return Array.from({length:count},(_,i)=>{
   if(i===0&&boardState.offset===0&&state.question)return {q:state.question,type:state.question.type};
   const seed=seedFor(900000+boardState.offset*13007+i*991+(Number.isInteger(state.slot)?state.slot*113+state.bankQuestion*379:state.freshCount*123));
@@ -1604,7 +1618,7 @@ function drawBoard(){
  const controls=el('div',undefined,'board-controls');
  const heading=el('strong',Number.isInteger(state.slot)?'Bank '+(state.slot+1)+' · Q '+(state.bankQuestion+1)+'/12':'New questions');
  controls.append(heading);
- [[1,1],[1,2],[1,3],[3,2],[5,3]].forEach(([columns,rows])=>{
+ [[1,1],[1,2],[1,3],[3,2],[2,4],[5,3]].forEach(([columns,rows])=>{
   const btn=el('button',columns+' × '+rows);btn.type='button';
   btn.setAttribute('aria-label',columns+' across, '+rows+' down');
   btn.setAttribute('aria-pressed',String(boardState.columns===columns&&boardState.rows===rows));
