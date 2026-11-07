@@ -115,6 +115,13 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 .diagram .stack-term{font:58px "Cambria Math",Cambria,Georgia,serif;fill:#183b5d;text-anchor:middle}
 .diagram .stack-sign{font:52px "Cambria Math",Cambria,Georgia,serif;fill:#183b5d;text-anchor:middle}
 .diagram .row-label{font:700 16px Arial,sans-serif;fill:#6d7f90;text-anchor:middle}
+/* A single stack of partial products: no repeated pathway captions. */
+.partials.partial-products-stack{display:grid;grid-template-columns:1fr;gap:1px;width:min(330px,96%);margin:5px auto 14px;padding:5px 12px;border:1px solid #dbe5ef;border-radius:9px;background:#fbfdff}
+.partial-products-stack h3{font-size:.91rem;color:#435f7b;text-align:center;margin:3px 0 4px;font-weight:750}
+.partial-product-line{display:grid;grid-template-columns:44px minmax(0,1fr);align-items:center;gap:5px;border-top:1px solid #e9eff5;padding:3px 7px;min-height:42px}
+.partial-product-number{font:700 .9rem Arial,sans-serif;color:#71869a}
+.partial-product-value{font:clamp(1.5rem,2.7vw,2.2rem)/1.35 "Cambria Math",Cambria,Georgia,serif;color:#163d64}
+@media(max-width:550px){.partials.partial-products-stack{width:min(310px,100%)}.partial-product-value{font-size:1.65rem}}
 
 /* Four paths + two complexity controls + a step checklist on the right. */
 .setting select{border:1px solid #b8c7d9;background:white;padding:7px 8px;border-radius:6px}
@@ -301,7 +308,7 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 <p class="status" id="status" aria-live="polite"></p>
 <div class="method-options" id="groupOptions" hidden><button data-group="intact">Groups intact</button><button data-group="swapped">Swap middle terms</button></div>
 <div class="working" id="working" aria-live="polite"></div>
-<div class="transport"><button id="backStep">← Previous</button><button id="nextStep" class="primary">Next →</button><button id="allSteps">Show all</button><button id="newQuestion">New question</button></div>
+<div class="transport"><button id="backStep">← Previous</button><button id="nextStep" class="primary">Next →</button><button id="allSteps">Show all</button><button id="productsLayout" type="button" title="Switch partial products between a stacked list and positions beneath the arrows" aria-pressed="true">Products: stacked</button><button id="newQuestion">New question</button></div>
 <p class="pedagogy" id="pedagogy">Multiply across the two factors, never terms within the same factor.</p>
 </div><aside id="stepChecklist" class="step-checklist" hidden aria-label="Procedural steps"></aside></div></section>
 <section id="lessonPanel" hidden aria-label="Six-minute teacher-led instruction slides"></section>
@@ -323,12 +330,12 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id);
-const state={numbers:1,powers:0,preset:'XYZ',manual1:null,manual2:null,sign:'positive',slot:0,seq:0,direction:'expand',mode:'practice',language:'everyday',view:'step',step:0,group:'intact',q:null};
+const state={numbers:1,powers:0,preset:'XYZ',manual1:null,manual2:null,sign:'positive',slot:0,seq:0,direction:'expand',mode:'practice',language:'everyday',view:'step',step:0,group:'intact',productsLayout:'stacked',q:null};
 const board={cols:1,rows:1,offset:0,answers:false,cache:[]};
 const assessment={mode:null,questions:[],selected:[],attempts:[],tried:[],firstAttempts:[],responses:[],completed:false,quizIndex:0,sound:true};
 const routeNames={
  everyday:['Left straight down','Diagonal down-left','Diagonal down-right','Right straight down'],
- mathematical:['Left vertical partial product','Left diagonal partial product','Right diagonal partial product','Right vertical partial product']
+ mathematical:['Left vertical','Down-left diagonal','Down-right diagonal','Right vertical']
 };
 function routeLabel(index){return routeNames[state.language][index]}
 function rand(seed){let x=(seed>>>0)||1234567;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))};}
@@ -494,8 +501,9 @@ function diagramHTML(q,forceAll=false){
  const arrows=routes.slice(0,count).map((d,i)=>'<path class="route revealed'+(state.direction==='expand'&&state.view==='step'&&state.step===i+2?' current':'')+'" d="'+d+'" marker-end="url(#arrowTip)"/>').join('');
  const circlePositions=[[179,224],[528,218],[479,300],[823,224]];
  const circles=circlePositions.slice(0,count).map(([x,y],i)=>'<circle class="route-number revealed" cx="'+x+'" cy="'+y+'" r="20"/><text class="route-index" x="'+x+'" y="'+(y+7)+'">'+(i+1)+'</text>').join('');
- const result=ids.slice(0,count).map((j,i)=>'<text class="route-result revealed" text-anchor="middle" x="'+[200,370,630,800][i]+'" y="454">'+safeText(plainMono(terms[j].n,terms[j].vars,true))+'</text>').join('');
- return '<svg viewBox="0 0 1000 485" role="img" aria-label="Two vertically stacked binomials with '+count+' of four multiplication routes revealed.">'+
+ const stacked=!forceAll&&state.direction==='expand'&&state.productsLayout==='stacked';
+ const result=stacked?'':ids.slice(0,count).map((j,i)=>'<text class="route-result revealed" text-anchor="middle" x="'+[200,370,630,800][i]+'" y="454">'+safeText(plainMono(terms[j].n,terms[j].vars,true))+'</text>').join('');
+ return '<svg viewBox="0 0 1000 '+(stacked?'412':'485')+'" role="img" aria-label="Two vertically stacked binomials with '+count+' of four multiplication routes revealed.'+(stacked?' Partial products appear in a numbered list below.':' Products appear beneath their arrow endpoints.')+'">'+
  '<defs><marker id="arrowTip" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="none" stroke="#235f9a" stroke-width="1.6"/></marker></defs>'+
  arrows+circles+
  '<text class="stack-term" x="300" y="68">'+safeText(top)+'</text><text class="stack-sign" x="500" y="68">'+topSign+'</text><text class="stack-term" x="700" y="68">'+safeText(topRight)+'</text>'+
@@ -538,9 +546,20 @@ function renderPractice(){
  $('diagram').innerHTML=diagramHTML(q);
  const visible=state.direction==='expand'?(state.view==='worked'?4:Math.max(0,Math.min(4,state.step-1))):4;
  const terms=fourTerms(q),ids=[0,2,1,3];
- // Products are already displayed beneath their arrows. Do not repeat four cards.
- $('partials').hidden=true;
- $('partials').replaceChildren();
+ // Each route is shown once: a numbered vertical list, or its answer
+ // directly under the corresponding arrow. Never duplicate both.
+ const stackProducts=state.direction==='expand'&&state.productsLayout==='stacked';
+ $('productsLayout').hidden=state.direction!=='expand';
+ $('productsLayout').textContent=stackProducts?'Products: stacked':'Products: under arrows';
+ $('productsLayout').setAttribute('aria-pressed',String(stackProducts));
+ $('partials').hidden=!stackProducts||visible===0;
+ if(stackProducts&&visible>0){
+  $('partials').className='partials partial-products-stack';
+  const lines=ids.slice(0,visible).map((j,i)=>'<div class="partial-product-line"><span class="partial-product-number">'+(i+1)+'.</span><span class="partial-product-value">'+fmtMono(terms[j].n,terms[j].vars,i===0)+'</span></div>').join('');
+  $('partials').innerHTML='<h3>Partial products</h3>'+lines;
+ }else{
+  $('partials').replaceChildren();
+ }
  const limit=state.direction==='expand'?6:4,step=state.view==='worked'?limit:state.step,work=[];
  if(state.direction==='expand'){
   const distinct=new Set(fourTerms(q).map(t=>monoKey(t.vars))).size===4;
@@ -886,6 +905,10 @@ $('resetBtn').onclick=()=>{state.view='step';state.step=0;setMode('practice')};
 $('backStep').onclick=()=>{state.view='step';state.step=Math.max(0,state.step-1);renderPractice()};
 $('nextStep').onclick=()=>{state.view='step';state.step=Math.min(state.direction==='expand'?6:4,state.step+1);renderPractice()};
 $('allSteps').onclick=()=>{state.view='worked';renderPractice()};
+$('productsLayout').onclick=()=>{
+ state.productsLayout=state.productsLayout==='stacked'?'arrows':'stacked';
+ if(state.mode!=='practice')setMode('practice');else renderPractice();
+};
 $('newQuestion').onclick=newQuestion;
 for(const btn of document.querySelectorAll('[data-group]'))btn.onclick=()=>{state.group=btn.dataset.group;state.step=0;state.view='step';renderPractice()};
 for(const [id,key] of [['coefA','a'],['coefB','b'],['coefC','c'],['coefD','d']]){
