@@ -581,6 +581,10 @@ main{margin:5px auto;padding:10px 19px 18px}
 @media(max-width:390px){#mobileSettingsPanel #types button{font-size:.72rem;padding:6px 7px}}
 @media print{.mobile-settings-toggle,.mobile-settings-close,.mobile-settings-backdrop{display:none!important}#mobileSettingsPanel{position:static!important}}
 
+.language-choice{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;font-size:.76rem;color:#687a90;margin-top:4px}
+.language-choice button{font-size:.75rem;padding:5px 8px;border-radius:7px}
+.language-choice button[aria-pressed="true"]{background:#eaf3ff;border-color:#377abc;color:#1a5590;font-weight:750}
+@media(max-width:700px){.language-choice{margin:4px auto;gap:4px}.language-choice button{font-size:.76rem;min-height:32px}}
 </style>
 </head>
 <body>
@@ -609,7 +613,7 @@ main{margin:5px auto;padding:10px 19px 18px}
   <button id="testMode" type="button" aria-pressed="false">Test</button>
   <button id="worksheetMode" type="button" aria-pressed="false">Sheets</button>
  </div></div>
- <div class="activity-section procedural-section"><span class="activity-title">Procedural fluency</span><div class="practice-quick-controls" id="practiceQuickControls"><div class="modes" id="modes" aria-label="Procedural fluency"></div></div></div>
+ <div class="activity-section procedural-section"><span class="activity-title">Procedural fluency</span><div class="practice-quick-controls" id="practiceQuickControls"><div class="modes" id="modes" aria-label="Procedural fluency"></div><div class="language-choice" role="group" aria-label="Explanation language"><span>Language</span><button id="basicLanguageBtn" type="button">Everyday</button><button id="mathsLanguageBtn" type="button">Mathematical</button></div></div></div>
 </div>
 <section id="worksheetPanel" class="worksheet-panel" hidden aria-label="Sheet settings for classwork and assignments"></section>
 <section id="instructionPanel" class="instruction-panel" hidden aria-label="Six-minute teacher-led place-value instruction" role="region"></section>
@@ -631,6 +635,14 @@ main{margin:5px auto;padding:10px 19px 18px}
 <script src="../shared/assessment.js"></script>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
+function setStepLanguage(language){
+ state.language=language;
+ $('basicLanguageBtn').setAttribute('aria-pressed',String(language==='everyday'));
+ $('mathsLanguageBtn').setAttribute('aria-pressed',String(language==='mathematical'));
+ render();
+}
+$('basicLanguageBtn').onclick=()=>setStepLanguage('everyday');
+$('mathsLanguageBtn').onclick=()=>setStepLanguage('mathematical');
 
 const mobileSettingsPanel=$('mobileSettingsPanel'),mobileSettingsToggle=$('mobileSettingsToggle');
 const mobileSettingsBackdrop=$('mobileSettingsBackdrop'),mobileSettingsClose=$('mobileSettingsClose');
@@ -663,6 +675,26 @@ const actions=[
  'Box the answer with the correct signs',
  'Deepen your learning'
 ];
+const everydayActions=[
+ 'Make a column for each power of x',
+ 'Line up matching powers',
+ 'Multiply and put each result in its column',
+ 'Add numbers in the same column',
+ 'Put x powers back beside the answers',
+ 'Write and box the final answer',
+ 'Check what you have learned'
+];
+const everydayInstructions=[
+ 'Start with the largest power needed, then make columns all the way down to the constant.',
+ 'Put the higher-degree factor on top. Put x terms below x terms and constants below constants.',
+ 'Multiply each bottom number by the top numbers. Shift your working to the right column for each power.',
+ 'Add numbers only when they belong to the same power of x.',
+ 'Write x, x² and the other powers next to the column totals.',
+ 'Check the plus and minus signs, then box the result.',
+ 'Try to explain why the columns work or solve another question independently.'
+];
+const stepWords=()=>state.language==='everyday'?everydayActions:actions;
+const stepTips=()=>state.language==='everyday'?everydayInstructions:instructions;
 const instructions=[
  'Find the highest powers of the two factors and add them to find the top column.',
  'Keep the higher-degree factor on top. Match constants, x terms and other like powers in the same columns.',
@@ -690,7 +722,7 @@ const bankProfiles=[
  {type:'qq',level:3,sign:'mixed',name:'Quad × Quad · double-digit prime challenge'}
 ];
 
-const state={type:'ll',factorRandom:false,coreType:'ll',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:1,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
+const state={type:'ll',factorRandom:false,coreType:'ll',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:1,levelRandom:false,mode:'step',language:'everyday',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -955,7 +987,7 @@ function draw(){
  if(mode==='step'){
   checklist.replaceChildren();
   const caption=document.createElement('div');caption.className='step-checklist-title';caption.textContent='Steps';checklist.append(caption);
-  actions.forEach((action,i)=>{
+  stepWords().forEach((action,i)=>{
    const entry=document.createElement('button');entry.type='button';
    entry.className='checklist-item '+(i<step?'step-complete':i===step?'step-current':'step-upcoming');
    entry.setAttribute('aria-current',i===step?'step':'false');
@@ -980,7 +1012,7 @@ function draw(){
     explain.onclick=()=>{state.helpStage=state.helpStage===i?-1:i;render()};
     checklist.append(explain);
     if(state.helpStage===i){
-     const tip=el('p',instructions[i],'step-current-tip');tip.setAttribute('role','note');
+     const tip=el('p',stepTips()[i],'step-current-tip');tip.setAttribute('role','note');
      if(i===0){
       const largest=Math.max(a.length,b.length)-1,extra=Math.min(a.length,b.length)-1;
       const label=k=>k===0?'constant':pow(k);
@@ -2218,7 +2250,11 @@ function connectTableOperands(){
  line.style.transform='rotate('+Math.atan2(y2-y1,x2-x1)+'rad)';
  host.append(line);
 }
-function render(){renderSelectors();coefficientInputs();draw();connectTableOperands();if(assessment.mode==='board')drawBoard();else if(assessment.mode==='worksheet')wsStatus()}
+function render(){
+ $('basicLanguageBtn').setAttribute('aria-pressed',String(state.language==='everyday'));
+ $('mathsLanguageBtn').setAttribute('aria-pressed',String(state.language==='mathematical'));
+ renderSelectors();coefficientInputs();draw();connectTableOperands();if(assessment.mode==='board')drawBoard();else if(assessment.mode==='worksheet')wsStatus()
+}
 window.addEventListener('resize',connectTableOperands);
 selectQuestion(0);
 })();</script>
