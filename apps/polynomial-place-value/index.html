@@ -18,7 +18,7 @@ button:hover{background:#f1f5fb}button:focus-visible,input:focus-visible{outline
 button[aria-pressed=true]{background:#e8f0fe;border-color:#1a73e8;color:#174ea6;font-weight:750}
 button:disabled{opacity:.38;cursor:default}
 .top-questions,.modes,.stepper,.control-line,.button-group{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
-.top-questions{margin-bottom:12px}
+.top-questions{margin:5px 0 8px}.bankbar{padding-top:9px}.bankbar>span{font-size:.84rem;color:#576270;font-weight:650}.edit-hint{font-size:.81rem;color:#647080;margin:10px 0 0}
 .top-questions button{flex:1 1 98px;padding:11px 8px;font-weight:700}
 .top-questions #random{flex:1.2 1 130px}
 .settings{display:flex;flex-wrap:wrap;gap:8px 12px;padding:10px 0 12px;border-top:1px solid #e2e6ea;border-bottom:1px solid #e2e6ea}
@@ -44,7 +44,7 @@ button:disabled{opacity:.38;cursor:default}
 .math-table .sum td{border-top:2px solid #8d99a5;font-weight:700}
 .math-table sup{font-size:.62em;vertical-align:super}.math-table .final-power td{font-weight:700;border-top:1px solid #b3bdc7}.math-table .final-power td:not(.row-label){font-family:"Cambria Math",Cambria,Georgia,serif}
 .equation{font:clamp(1.4rem,3vw,2.2rem)/1.4 "Cambria Math",Cambria,Georgia,serif;text-align:center;margin:18px 0 3px;overflow-wrap:anywhere}
-.equation sup{font-size:.62em;vertical-align:super}.equation.worked-conclusion{font-size:clamp(1.35rem,2.6vw,1.85rem);margin:8px auto 0;max-width:100%;text-align:center}.math-table .final-power td{padding-top:4px;padding-bottom:3px}.math-table .sum td{padding-bottom:3px}
+.equation sup{font-size:.62em;vertical-align:super}.question-formula{margin:3px auto 10px;font-size:clamp(1.4rem,2.7vw,1.95rem)}.equation.worked-conclusion{font-size:clamp(1.35rem,2.6vw,1.85rem);margin:8px auto 0;max-width:100%;text-align:center}.math-table .final-power td{padding-top:4px;padding-bottom:3px}.math-table .sum td{padding-bottom:3px}
 .stepper{justify-content:space-between;gap:12px;margin-top:12px}
 .stepper button:last-child{margin-left:auto;font-weight:650}
 #stepProgress{font-size:.86rem;color:#647080}
@@ -68,13 +68,15 @@ button:disabled{opacity:.38;cursor:default}
 <div><a href="../../algebra/index.html">Algebra</a><h1>Place-Value Expansion in One Variable</h1></div>
 </header>
 <main>
-<nav class="top-questions" id="questions" aria-label="Questions"></nav>
+
 <div class="settings">
 <div class="setting"><span class="caption">Factors</span><div class="button-group" id="types" aria-label="Polynomial degrees"></div></div>
 <div class="setting"><span class="caption">Signs</span><div class="button-group" id="signs" aria-label="Coefficient signs"></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 </div>
+<div class="bankbar"><span id="bankLabel">Questions for these settings</span><nav class="top-questions" id="questions" aria-label="Questions for the selected factors, signs and level"></nav></div>
 <div class="modes" id="modes" aria-label="How to view the solution"></div>
+<p class="edit-hint">Change any coefficient using the arrows or by typing a number. The working updates immediately.</p>
 <div class="coefficients" id="coefficients" aria-label="Edit factor coefficients"></div>
 <h2 id="heading"></h2>
 <p id="help"></p>
@@ -83,7 +85,7 @@ button:disabled{opacity:.38;cursor:default}
 </main>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
-const actions=['Stack the factors vertically','Strip the powers of x','Calculate the partial products','Group like terms','Bring back the powers of x'];
+const actions=['Set up the place-value columns','Calculate the partial products','Group like terms','Bring back the powers of x'];
 const factorTypes=[['ll','Linear × linear'],['ql','Quadratic × linear'],['qq','Quadratic × quadratic']];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
@@ -187,50 +189,50 @@ function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomia
 }
 function draw(){
  const {a,b}=state.question,final=product(a,b),n=final.length,degree=n-1;
- const mode=state.mode,step=mode==='worked'?4:mode==='answer'||mode==='question'?0:state.step;
+ const mode=state.mode,step=mode==='worked'?3:mode==='answer'||mode==='question'?0:state.step;
  const root=$('canvas');root.replaceChildren();
  $('heading').textContent=mode==='step'?actions[step]:mode==='worked'?'Fully worked':'';
  $('help').textContent='';
  const pad=v=>Array(n-v.length).fill(null).concat(v);
+ const question=document.createElement('div');question.className='equation question-formula';
+ question.innerHTML='('+poly(a)+')('+poly(b)+')';
+ if(mode!=='answer')root.append(question);
  if(mode==='answer'){
   const eq=document.createElement('div');eq.className='equation';
   eq.innerHTML='('+poly(a)+')('+poly(b)+') = '+poly(final);
   root.append(eq);
- }else{
+ }else if(mode!=='question'){
   const table=document.createElement('table');table.className='math-table';
-  if(step>0){
+  if(true){
    const headings=document.createElement('tr');headings.append(document.createElement('th'));
    for(let p=degree;p>=0;p--){const th=document.createElement('th');th.innerHTML=p?pow(p):'#';headings.append(th)}table.append(headings);
   }
-  row(table,pad(a),'','',degree,false,step===0);
-  row(table,pad(b),'underline','',degree,false,step===0);
+  row(table,pad(a),'','',degree,false,false);
+  row(table,pad(b),'underline','',degree,false,false);
   if(step>=1){
-   // Keep the higher-degree placeholders empty; only actual coefficients are shown.
-  }
-  if(step>=2){
    for(let j=b.length-1;j>=0;j--){
     const shift=b.length-1-j,values=Array(n).fill(null);
     for(let i=0;i<a.length;i++)values[n-a.length+i-shift]=a[i]*b[j];
     row(table,values,'','',degree);
    }
   }
-  if(step>=3)row(table,final,'sum','+',degree);
-  if(step>=4)row(table,final,'final-power','',degree,true);
+  if(step>=2)row(table,final,'sum','+',degree);
+  if(step>=3)row(table,final,'final-power','',degree,true);
   root.append(table);
-  if(step>=4){
+  if(step>=3){
    const eq=document.createElement('div');eq.className='equation worked-conclusion';
    eq.innerHTML='('+poly(a)+')('+poly(b)+') = '+poly(final);
    root.append(eq);
   }
  }
  $('back').hidden=mode!=='step';$('forward').hidden=mode!=='step';
- $('stepProgress').textContent=mode==='step'?(step+1)+' / 5':'';
- $('back').disabled=step===0;$('forward').disabled=step===4;
- $('forward').textContent=step===4?'Complete':'Next: '+actions[step+1]+' →';
+ $('stepProgress').textContent=mode==='step'?(step+1)+' / 4':'';
+ $('back').disabled=step===0;$('forward').disabled=step===3;
+ $('forward').textContent=step===3?'Complete':'Next: '+actions[step+1]+' →';
 }
-function render(){renderSelectors();coefficientInputs();draw()}
+function render(){renderSelectors();$('bankLabel').textContent='Questions: '+factorTypes.find(x=>x[0]===state.type)[1]+' · '+signTypes.find(x=>x[0]===state.sign)[1]+' · Level '+state.level;coefficientInputs();draw()}
 $('back').onclick=()=>{state.step=Math.max(0,state.step-1);draw()};
-$('forward').onclick=()=>{state.step=Math.min(4,state.step+1);draw()};
+$('forward').onclick=()=>{state.step=Math.min(3,state.step+1);draw()};
 selectQuestion(0);
 })();</script>
 </body>
