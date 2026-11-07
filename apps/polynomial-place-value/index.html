@@ -381,7 +381,7 @@ function makeQuestion(next,signOverride=null){
    const target=next(0,1)===0?a:b;
    target[next(0,target.length-1)]=challenge();
   }
-  if(state.monic){a[0]=1;b[0]=1;}
+  if(state.monic&&state.slot==='fresh'){a[0]=1;b[0]=1;}
   for(const arr of [a,b])for(let i=1;i<arr.length;i++){
    if(sign==='negative'||(sign==='mixed'&&next(0,1)===1))arr[i]=-Math.abs(arr[i]);
   }
