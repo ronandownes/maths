@@ -28,3 +28,8 @@
 .lab-result h3{font-size:clamp(1.3rem,2.5vw,1.7rem)!important;margin:0 0 10px!important}.lab-result .lab-step{font-size:clamp(1.13rem,2vw,1.44rem);line-height:1.5;padding:13px 4px}.lab-result .lab-step b{color:var(--blue-logo)}.lab-result .lab-equation{font-size:clamp(1.5rem,3vw,2.3rem)}.lab-toggle{font-size:1.15rem;padding:11px 16px}
 .lab-table-scroll{max-width:100%;overflow-x:auto;margin:10px 0}.lab-power-table{font:700 clamp(.95rem,1.7vw,1.15rem)/1.2 Arial,sans-serif;min-width:360px;margin:10px 0!important}.lab-power-table th,.lab-power-table td{padding:9px!important;min-width:52px}.lab-power-table .absent{color:#a13a35;background:#fff4f1}.lab-power-table .retained{color:#1e772e;background:#eafaeb}
 @media(max-width:700px){.casio-guide{grid-template-columns:1fr}.hcf-fraction-equation{font-size:clamp(1.8rem,8vw,3rem)}.factor-lab .lab-tabs{grid-template-columns:1fr 1fr}.factor-lab .lab-tabs button{padding:9px 7px}}
+
+
+/* Give the embedded Rectangle Explorer room for its prediction, scale diagram and reflection. */
+.apps-panel.rectangle-explorer-panel iframe{height:900px}
+@media(max-width:700px){.apps-panel.rectangle-explorer-panel iframe{height:820px}}

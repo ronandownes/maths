@@ -78,6 +78,11 @@
     "introduction": "Shapes, measurement, constructions, proof and trigonometric relationships.",
     "topics": [
       {
+        "slug": "rectangle-variables",
+        "title": "Rectangle dimensions, perimeter and area",
+        "ready": true
+      },
+      {
         "slug": "triangle-rules",
         "title": "Triangle Rules",
         "ready": true

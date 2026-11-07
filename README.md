@@ -6,11 +6,13 @@
 
 - **Number:** Sets and subsets.
 - **Algebra:** Sequences; Factorising.
-- **Geometry:** Triangle Rules (full draggable Cosine Rule and Sine Rule app).
+- **Geometry:** Rectangle dimensions, perimeter and area (scale-model app); Triangle Rules (full draggable Cosine Rule and Sine Rule app).
 - **Probability:** Tree diagrams.
 - **Statistics:** Describing data.
 - **Functions:** Quadratic functions.
 - **Combinatorics:** Counting principles.
+
+The Rectangle Explorer is paired with the Book section on variables and geometric models: the Maths lesson embeds the app, and the app links back to the matching Book section.
 
 Other sidebar labels are **planned** and deliberately not live links; no empty lesson is represented as finished.
 
@@ -24,7 +26,7 @@ The generated HTML pages are included in the repository. To edit:
 2. Run `python build_site.py`. It uses only the Python standard library and refuses to overwrite unrelated HTML files.
 3. Review the resulting pages, then commit and push when you choose.
 
-Do not edit the generated topic `index.html` files directly; they are rebuilt from the content files. The included `apps/triangle-rules/index.html` is independent of the site generator and remains a standalone interactive app.
+Do not edit the generated topic `index.html` files directly; they are rebuilt from the content files. The included `apps/triangle-rules/index.html` and `geometry/rectangle-variables/app.html` are independent of the site generator and remain standalone interactive apps.
 
 ## Design
 

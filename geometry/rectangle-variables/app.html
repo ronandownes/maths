@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Rectangle Explorer | Maths</title>
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#182536;background:#f4f7fa;font-size:16px}
+*{box-sizing:border-box}
+body{margin:0;background:#f4f7fa}
+.app-shell{max-width:980px;margin:auto;padding:18px}
+.app-head{padding:2px 2px 10px}
+.brandline{display:flex;align-items:center;gap:10px;color:#466078;font-size:.9rem;font-weight:700}
+.dots{display:inline-flex;gap:4px}
+.dots i{width:10px;height:10px;border-radius:50%;display:block}
+.dots i:nth-child(1){background:#e63329}.dots i:nth-child(2){background:#3fae49}.dots i:nth-child(3){background:#2d7dd2}.dots i:nth-child(4){background:#1a1a1a}
+h1{font-size:clamp(1.45rem,3vw,2rem);margin:7px 0 4px;color:#164b80}
+.app-head p{margin:0;color:#40546a;line-height:1.45}
+.card{background:#fff;border:1px solid #d6e0ea;border-radius:12px;padding:14px 16px;margin:11px 0;box-shadow:0 2px 8px #163d5a0d}
+h2{font-size:1.08rem;margin:0 0 8px}
+p{line-height:1.45}
+.question-card p{margin:4px 0 8px}
+.choice-row{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit}
+.choice,.mode-button,.confidence button{border:1px solid #9eb2c8;background:#fff;border-radius:8px;padding:10px 14px;min-height:44px;color:#183f68;font-weight:750;cursor:pointer}
+.choice:hover,.mode-button:hover,.confidence button:hover{background:#edf5fc}
+.choice[aria-pressed="true"],.mode-button[aria-pressed="true"],.confidence button[aria-pressed="true"]{background:#174f83;border-color:#174f83;color:#fff}
+#prediction-feedback{min-height:1.35em;margin:8px 0 0;color:#3e5368}
+#prediction-feedback.correct{color:#17652b;font-weight:750}
+.mode-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.controls{padding-bottom:10px}
+.slider-row{display:grid;grid-template-columns:minmax(110px,180px) 1fr 76px;align-items:center;gap:12px;margin:7px 0}
+.slider-row label{font-weight:700}
+.slider-row output{text-align:right;font-weight:800;color:#174f83}
+input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
+.diagram-card{background:#fff;border:1px solid #d6e0ea;border-radius:12px;padding:8px 10px 5px;margin:11px 0}
+#shape{display:block;width:100%;height:auto;max-height:410px;touch-action:none}
+#shape .shape-body{fill:url(#unit-grid);stroke:#17548a;stroke-width:3}
+#shape .dimension{stroke:#435b70;stroke-width:2}
+#shape .dimension-tick{stroke:#435b70;stroke-width:2}
+#shape .handle{fill:#e63329;stroke:#fff;stroke-width:3;cursor:ew-resize;touch-action:none}
+#shape .handle-height{cursor:ns-resize}
+#shape text{font-family:Arial,Helvetica,sans-serif;fill:#1b3348;font-size:20px;font-weight:700}
+#shape .small-label{font-size:16px;font-weight:500;fill:#526b7d}
+.scale-key{font-size:.88rem;text-align:center;color:#576c7f;margin:2px 0 7px}
+.result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.result-card{background:#fff;border:1px solid #d6e0ea;border-radius:12px;padding:12px 15px}
+.result-card h2{color:#164b80}
+.result-value{font:800 clamp(1.4rem,3vw,2rem)/1.2 Cambria,Georgia,serif;margin:5px 0;color:#17283a}
+.result-work{font:1rem/1.45 Cambria,Georgia,serif;margin:5px 0;color:#3c5368;overflow-wrap:anywhere}
+.change-note{border-left:4px solid #3fae49;padding:9px 12px;background:#eef8f0;border-radius:0 8px 8px 0;color:#294b31;margin:11px 0}
+.confidence{display:flex;flex-wrap:wrap;gap:7px}
+.confidence button{font-size:.92rem}
+.book-link{display:inline-block;margin:6px 2px 18px;color:#164b80;font-weight:750}
+:focus-visible{outline:3px solid #e39218;outline-offset:2px}
+[hidden]{display:none!important}
+@media(max-width:620px){
+ .app-shell{padding:11px}
+ .card{padding:12px}
+ .slider-row{grid-template-columns:1fr 62px;gap:6px 10px}
+ .slider-row label{grid-column:1/3}
+ .slider-row input{grid-column:1/2;grid-row:2}
+ .slider-row output{grid-column:2/3;grid-row:2}
+ .result-grid{grid-template-columns:1fr}
+ .choice,.mode-button{flex:1 1 110px}
+ #shape{max-height:300px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="app-shell">
+<header class="app-head">
+<div class="brandline"><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Maths · Geometry</span></div>
+<h1>Rectangle Explorer</h1>
+<p>Start with the shape and its measured sides. Then notice the expressions that describe its perimeter and area.</p>
+</header>
+
+<section class="card question-card" aria-labelledby="prediction-title">
+<h2 id="prediction-title">Predict before you move a side</h2>
+<p id="prediction-question">A square has side length 5 cm. What is its perimeter?</p>
+<div class="choice-row" id="prediction-choices" role="group" aria-label="Choose a predicted perimeter"></div>
+<p id="prediction-feedback" aria-live="polite">Choose an answer first. This is a starting point, not a mark.</p>
+</section>
+
+<section class="card controls" aria-label="Choose and change the shape">
+<div class="mode-row" role="group" aria-label="Choose a shape">
+<button class="mode-button" id="square-mode" type="button" aria-pressed="true">Square</button>
+<button class="mode-button" id="rectangle-mode" type="button" aria-pressed="false">Rectangle</button>
+</div>
+<div id="measurement-controls" hidden>
+<div id="square-control" class="slider-row">
+<label for="side-slider">Side length s</label>
+<input id="side-slider" type="range" min="2" max="12" step="1" value="5">
+<output id="side-value" for="side-slider">5 cm</output>
+</div>
+<div id="rectangle-controls" hidden>
+<div class="slider-row">
+<label for="width-slider">Width w</label>
+<input id="width-slider" type="range" min="2" max="12" step="1" value="8">
+<output id="width-value" for="width-slider">8 cm</output>
+</div>
+<div class="slider-row">
+<label for="height-slider">Height h</label>
+<input id="height-slider" type="range" min="2" max="12" step="1" value="5">
+<output id="height-value" for="height-slider">5 cm</output>
+</div>
+</div>
+</div>
+</section>
+
+<section class="diagram-card" aria-label="Scale diagram">
+<svg id="shape" viewBox="0 0 600 390" role="img" aria-labelledby="diagram-title diagram-description">
+<title id="diagram-title">A square measuring 5 centimetres by 5 centimetres</title>
+<desc id="diagram-description">Each grid square represents one square centimetre. Drag the red handles or use the sliders to change the side lengths.</desc>
+<defs>
+<pattern id="unit-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+<path d="M 24 0 L 0 0 0 24" fill="none" stroke="#a8c1d7" stroke-width="1"/>
+</pattern>
+</defs>
+<rect id="shape-body" class="shape-body" x="160" y="45" width="120" height="120" rx="1"/>
+<line id="width-line" class="dimension" x1="160" y1="28" x2="280" y2="28"/>
+<line id="width-tick-left" class="dimension-tick" x1="160" y1="20" x2="160" y2="36"/>
+<line id="width-tick-right" class="dimension-tick" x1="280" y1="20" x2="280" y2="36"/>
+<line id="height-line" class="dimension" x1="141" y1="45" x2="141" y2="165"/>
+<line id="height-tick-top" class="dimension-tick" x1="133" y1="45" x2="149" y2="45"/>
+<line id="height-tick-bottom" class="dimension-tick" x1="133" y1="165" x2="149" y2="165"/>
+<text id="width-label" x="220" y="19" text-anchor="middle">s = 5 cm</text>
+<text id="height-label" x="117" y="105" text-anchor="middle" transform="rotate(-90 117 105)">s = 5 cm</text>
+<text id="diagram-note" class="small-label" x="454" y="116" text-anchor="middle">Each grid square</text>
+<text id="diagram-note-2" class="small-label" x="454" y="139" text-anchor="middle">is 1 cm²</text>
+<circle id="width-handle" class="handle" data-handle="width" cx="280" cy="105" r="11" tabindex="0" role="slider" aria-label="Change width with arrow keys or drag" aria-valuemin="2" aria-valuemax="12" aria-valuenow="5" visibility="hidden" tabindex="-1" aria-hidden="true"/>
+<circle id="height-handle" class="handle handle-height" data-handle="height" cx="220" cy="165" r="11" tabindex="0" role="slider" aria-label="Change height with arrow keys or drag" aria-valuemin="2" aria-valuemax="12" aria-valuenow="5" visibility="hidden" tabindex="-1" aria-hidden="true"/>
+</svg>
+<p class="scale-key">One grid square represents 1 cm². The drawing preserves the side-length proportions as it resizes.</p>
+</section>
+
+<section class="result-grid" id="result-grid" aria-live="polite" hidden>
+<article class="result-card">
+<h2>Perimeter</h2>
+<p class="result-value" id="perimeter-value">20 cm</p>
+<p class="result-work" id="perimeter-work">P = 4s = 4 × 5 = 20 cm</p>
+</article>
+<article class="result-card">
+<h2>Area</h2>
+<p class="result-value" id="area-value">25 cm²</p>
+<p class="result-work" id="area-work">A = s² = 5² = 25 cm²</p>
+</article>
+</section>
+<p class="change-note" id="change-note" hidden>All four sides of the square have the same length. Try changing s and compare the perimeter with the area.</p>
+
+<section class="card" id="reflection-panel" aria-labelledby="reflection-title" hidden>
+<h2 id="reflection-title">Check your understanding</h2>
+<p>Can you explain why a rectangle's perimeter uses each side pair twice, while its area multiplies width by height?</p>
+<div class="confidence" role="group" aria-label="Choose how confident you feel">
+<button type="button" data-confidence="hint" aria-pressed="false">I need a hint</button>
+<button type="button" data-confidence="practice" aria-pressed="false">I can do it with practice</button>
+<button type="button" data-confidence="independent" aria-pressed="false">I can explain it</button>
+</div>
+<p id="confidence-feedback" aria-live="polite">Choose the statement that best matches your thinking.</p>
+</section>
+
+<a class="book-link" href="https://ronandownes.github.io/book/algebra-words.html#variables-geometric-models" target="_blank" rel="noopener">Read the matching Book section: Variables represent measurements</a>
+</main>
+
+<script>
+(function(){
+  var squareMode = true;
+  var width = 5;
+  var height = 5;
+  var dragging = null;
+  var svg = document.getElementById('shape');
+  var body = document.getElementById('shape-body');
+  var widthLine = document.getElementById('width-line');
+  var heightLine = document.getElementById('height-line');
+  var widthTickLeft = document.getElementById('width-tick-left');
+  var widthTickRight = document.getElementById('width-tick-right');
+  var heightTickTop = document.getElementById('height-tick-top');
+  var heightTickBottom = document.getElementById('height-tick-bottom');
+  var widthLabel = document.getElementById('width-label');
+  var heightLabel = document.getElementById('height-label');
+  var widthHandle = document.getElementById('width-handle');
+  var heightHandle = document.getElementById('height-handle');
+  var predictionQuestion = document.getElementById('prediction-question');
+  var choicesBox = document.getElementById('prediction-choices');
+  var feedback = document.getElementById('prediction-feedback');
+  var sideSlider = document.getElementById('side-slider');
+  var widthSlider = document.getElementById('width-slider');
+  var heightSlider = document.getElementById('height-slider');
+  var x0 = 160;
+  var y0 = 45;
+  var unit = 24;
+
+  function clamp(value){ return Math.max(2, Math.min(12, Math.round(value))); }
+
+  function setQuestion(){
+    var options = squareMode ? [15,20,25] : [13,26,40];
+    predictionQuestion.textContent = squareMode
+      ? 'A square has side length ' + width + ' cm. What is its perimeter?'
+      : 'A rectangle has width ' + width + ' cm and height ' + height + ' cm. What is its perimeter?';
+    choicesBox.innerHTML = '';
+    options.forEach(function(value){
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'choice';
+      button.textContent = value + ' cm';
+      button.setAttribute('data-answer', String(value));
+      button.setAttribute('aria-pressed', 'false');
+      choicesBox.appendChild(button);
+    });
+    feedback.className = '';
+    feedback.textContent = 'Choose an answer first. This is a starting point, not a mark.';
+    document.getElementById('measurement-controls').hidden = true;
+    document.getElementById('result-grid').hidden = true;
+    document.getElementById('change-note').hidden = true;
+    document.getElementById('reflection-panel').hidden = true;
+    [widthHandle,heightHandle].forEach(function(handle){ handle.setAttribute('visibility','hidden'); handle.setAttribute('tabindex','-1'); handle.setAttribute('aria-hidden','true'); });
+  }
+
+  function render(){
+    var w = width;
+    var h = height;
+    var pxw = w * unit;
+    var pxh = h * unit;
+    var right = x0 + pxw;
+    var bottom = y0 + pxh;
+    body.setAttribute('x', x0);
+    body.setAttribute('y', y0);
+    body.setAttribute('width', pxw);
+    body.setAttribute('height', pxh);
+    widthLine.setAttribute('x1', x0);
+    widthLine.setAttribute('x2', right);
+    widthTickLeft.setAttribute('x1', x0);
+    widthTickLeft.setAttribute('x2', x0);
+    widthTickRight.setAttribute('x1', right);
+    widthTickRight.setAttribute('x2', right);
+    heightLine.setAttribute('y1', y0);
+    heightLine.setAttribute('y2', bottom);
+    heightTickTop.setAttribute('y1', y0);
+    heightTickTop.setAttribute('y2', y0);
+    heightTickBottom.setAttribute('y1', bottom);
+    heightTickBottom.setAttribute('y2', bottom);
+    widthLabel.setAttribute('x', x0 + pxw/2);
+    heightLabel.setAttribute('y', y0 + pxh/2);
+    heightLabel.setAttribute('transform', 'rotate(-90 117 ' + (y0 + pxh/2) + ')');
+    widthHandle.setAttribute('cx', right);
+    widthHandle.setAttribute('cy', y0 + pxh/2);
+    heightHandle.setAttribute('cx', x0 + pxw/2);
+    heightHandle.setAttribute('cy', bottom);
+    widthHandle.setAttribute('aria-valuenow', String(w));
+    widthHandle.setAttribute('aria-valuetext', w + ' centimetres');
+    heightHandle.setAttribute('aria-valuenow', String(h));
+    heightHandle.setAttribute('aria-valuetext', h + ' centimetres');
+    if(squareMode){
+      widthLabel.textContent = 's = ' + w + ' cm';
+      heightLabel.textContent = 's = ' + h + ' cm';
+      document.getElementById('diagram-title').textContent = 'A square measuring ' + w + ' centimetres by ' + h + ' centimetres';
+      document.getElementById('diagram-description').textContent = 'Each grid square represents one square centimetre. The side length is ' + w + ' centimetres.';
+      sideSlider.value = String(w);
+      document.getElementById('side-value').textContent = w + ' cm';
+      document.getElementById('square-control').hidden = false;
+      document.getElementById('rectangle-controls').hidden = true;
+      var perimeter = 4*w;
+      var area = w*w;
+      document.getElementById('perimeter-value').textContent = perimeter + ' cm';
+      document.getElementById('perimeter-work').textContent = 'P = 4s = 4 × ' + w + ' = ' + perimeter + ' cm';
+      document.getElementById('area-value').textContent = area + ' cm²';
+      document.getElementById('area-work').textContent = 'A = s² = ' + w + '² = ' + area + ' cm²';
+      document.getElementById('change-note').textContent = 'All four sides of the square have the same length. Try changing s and compare the perimeter with the area.';
+    } else {
+      widthLabel.textContent = 'w = ' + w + ' cm';
+      heightLabel.textContent = 'h = ' + h + ' cm';
+      document.getElementById('diagram-title').textContent = 'A rectangle measuring ' + w + ' centimetres by ' + h + ' centimetres';
+      document.getElementById('diagram-description').textContent = 'Each grid square represents one square centimetre. The width is ' + w + ' centimetres and the height is ' + h + ' centimetres.';
+      widthSlider.value = String(w);
+      heightSlider.value = String(h);
+      document.getElementById('width-value').textContent = w + ' cm';
+      document.getElementById('height-value').textContent = h + ' cm';
+      document.getElementById('square-control').hidden = true;
+      document.getElementById('rectangle-controls').hidden = false;
+      var perimeterRect = 2*w + 2*h;
+      var areaRect = w*h;
+      document.getElementById('perimeter-value').textContent = perimeterRect + ' cm';
+      document.getElementById('perimeter-work').textContent = 'P = 2(w + h) = 2(' + w + ' + ' + h + ') = ' + perimeterRect + ' cm; also 2w + 2h';
+      document.getElementById('area-value').textContent = areaRect + ' cm²';
+      document.getElementById('area-work').textContent = 'A = wh = ' + w + ' × ' + h + ' = ' + areaRect + ' cm²';
+      document.getElementById('change-note').textContent = 'With h fixed at ' + h + ' cm, each extra 1 cm of width adds 2 cm to the perimeter and ' + h + ' cm² to the area. Reducing a positive side length diminishes the area.';
+    }
+  }
+
+  document.getElementById('square-mode').addEventListener('click', function(){
+    squareMode = true;
+    width = 5;
+    height = 5;
+    document.getElementById('square-mode').setAttribute('aria-pressed','true');
+    document.getElementById('rectangle-mode').setAttribute('aria-pressed','false');
+    render();
+    setQuestion();
+  });
+  document.getElementById('rectangle-mode').addEventListener('click', function(){
+    squareMode = false;
+    width = 8;
+    height = 5;
+    document.getElementById('square-mode').setAttribute('aria-pressed','false');
+    document.getElementById('rectangle-mode').setAttribute('aria-pressed','true');
+    render();
+    setQuestion();
+  });
+  sideSlider.addEventListener('input', function(){
+    width = clamp(Number(sideSlider.value));
+    height = width;
+    render();
+  });
+  widthSlider.addEventListener('input', function(){ width = clamp(Number(widthSlider.value)); render(); });
+  heightSlider.addEventListener('input', function(){ height = clamp(Number(heightSlider.value)); render(); });
+
+  [widthHandle,heightHandle].forEach(function(handle){
+    handle.addEventListener('keydown', function(event){
+      var delta = 0;
+      if(event.key==='ArrowRight' || event.key==='ArrowUp'){ delta = 1; }
+      else if(event.key==='ArrowLeft' || event.key==='ArrowDown'){ delta = -1; }
+      else if(event.key==='Home'){ delta = 2-width; }
+      else if(event.key==='End'){ delta = 12-width; }
+      else { return; }
+      event.preventDefault();
+      if(handle===widthHandle){
+        width = clamp(width + delta);
+        if(squareMode){ height = width; }
+      } else {
+        height = clamp(height + delta);
+        if(squareMode){ width = height; }
+      }
+      render();
+    });
+  });
+
+  choicesBox.addEventListener('click', function(event){
+    var button = event.target.closest('button[data-answer]');
+    if(!button){ return; }
+    var chosen = Number(button.getAttribute('data-answer'));
+    var correct = squareMode ? 4*width : 2*width+2*height;
+    Array.from(choicesBox.querySelectorAll('button')).forEach(function(item){
+      item.setAttribute('aria-pressed', item===button ? 'true' : 'false');
+    });
+    document.getElementById('measurement-controls').hidden = false;
+    document.getElementById('result-grid').hidden = false;
+    document.getElementById('change-note').hidden = false;
+    document.getElementById('reflection-panel').hidden = false;
+    [widthHandle,heightHandle].forEach(function(handle){ handle.setAttribute('visibility','visible'); handle.setAttribute('tabindex','0'); handle.setAttribute('aria-hidden','false'); });
+    if(chosen===correct){
+      feedback.className = 'correct';
+      feedback.textContent = 'Correct. Now compare your prediction with the changing diagram and formula.';
+    } else if(chosen===(squareMode ? width*width : width*height)){
+      feedback.className = '';
+      feedback.textContent = 'That number is the area in square centimetres. Perimeter counts the outside boundary in centimetres.';
+    } else {
+      feedback.className = '';
+      feedback.textContent = 'Not yet. Trace all the way around the outside and count every side.';
+    }
+  });
+
+  svg.addEventListener('pointerdown', function(event){
+    var target = event.target;
+    if(!target || !target.getAttribute){ return; }
+    var handle = target.getAttribute('data-handle');
+    if(!handle){ return; }
+    dragging = handle;
+    svg.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  });
+  svg.addEventListener('pointermove', function(event){
+    if(!dragging){ return; }
+    var point = svg.createSVGPoint();
+    point.x = event.clientX;
+    point.y = event.clientY;
+    var location = point.matrixTransform(svg.getScreenCTM().inverse());
+    if(dragging==='width'){
+      width = clamp((location.x - x0)/unit);
+      if(squareMode){ height = width; }
+    } else {
+      height = clamp((location.y - y0)/unit);
+      if(squareMode){ width = height; }
+    }
+    render();
+  });
+  svg.addEventListener('pointerup', function(event){
+    dragging = null;
+    if(svg.hasPointerCapture(event.pointerId)){ svg.releasePointerCapture(event.pointerId); }
+  });
+  svg.addEventListener('pointercancel', function(){ dragging = null; });
+
+  document.querySelectorAll('.confidence button').forEach(function(button){
+    button.addEventListener('click', function(){
+      document.querySelectorAll('.confidence button').forEach(function(item){
+        item.setAttribute('aria-pressed', item===button ? 'true' : 'false');
+      });
+      var messages = {
+        hint:'Good information. Return to the diagram and count the outside edges, then the square units inside.',
+        practice:'Good. Change one measurement at a time and explain how both answers change.',
+        independent:'Good. Try the exit question in the matching Book section without the app.'
+      };
+      document.getElementById('confidence-feedback').textContent = messages[button.getAttribute('data-confidence')];
+    });
+  });
+
+  render();
+  setQuestion();
+})();
+</script>
+</body>
+</html>

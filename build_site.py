@@ -95,6 +95,8 @@ def build():
                 output(ROOT/'number'/'sets'/'explorer.html',frame('Explore two sets','Number','Explore two sets',
                     'An interactive Venn diagram for union, intersection, subsets and complements.',
                     explorer,depth=2,current='sets-explorer'))
-    print('Built 17 static HTML pages (home, 7 sections, 8 lessons and the sets explorer).')
+    lesson_count = sum(1 for data in DATA.values() for topic in data['topics'] if topic['ready'])
+    page_count = 1 + len(DATA) + lesson_count + 1
+    print(f'Built {page_count} static HTML pages (home, {len(DATA)} sections, {lesson_count} lessons and the sets explorer).')
 
 if __name__=='__main__':build()
