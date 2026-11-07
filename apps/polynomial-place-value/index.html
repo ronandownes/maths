@@ -669,7 +669,7 @@ function workingTable(q,work,showMistakes=false){
  const pad=v=>Array(n-v.length).fill(null).concat(v);
  const tr=(values,expected,kind='')=>'<tr class="'+kind+'"><td></td>'+values.map((v,j)=>
    '<td>'+(v===null?'':display(v,expected&&v!==expected[j]))+'</td>').join('')+'</tr>';
- const head='<tr><th>'+(showMistakes?'':work.valid?'<span class="work-correct-tick" aria-label="All working correct">✓</span>':'')+'</th>'+Array.from({length:n},(_,i)=>'<th>'+(power-i?pow(power-i):'#')+'</th>').join('')+'</tr>';
+ const head='<tr><th>'+(showMistakes&&work.valid?'<span class="work-correct-tick" aria-label="All working correct">✓</span>':'')+'</th>'+Array.from({length:n},(_,i)=>'<th>'+(power-i?pow(power-i):'#')+'</th>').join('')+'</tr>';
  const totals='<tr class="work-total"><td>+</td>'+work.sum.map((v,j)=>'<td>'+
    (showMistakes&&v!==actualTotals[j]
     ?'<span class="work-error-cell"><span>'+minus(v)+(v!==0&&power-j?pow(power-j):'')+'</span><span class="work-error-cross" aria-label="Incorrect total">✕</span></span>'
