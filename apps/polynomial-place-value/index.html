@@ -356,10 +356,10 @@ function seedFor(slot){const typeIndex=state.factorRandom?3:factorTypes.findInde
  return ((slot+1)*209759+(state.level+13)*17539+(typeIndex+1)*9151+(signIndex+2)*1877)>>>0}
 function seeded(seed){let x=seed>>>0;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))}}
 function chooseSign(next){return ['positive','negative','mixed'][next(0,2)]}
-function makeQuestion(next){
+function makeQuestion(next,signOverride=null){
  const type=state.factorRandom?factorTypes[next(0,factorTypes.length-1)][0]:state.type;
  const [na,nb]=type==='ll'?[2,2]:type==='ql'?[3,2]:[3,3];
- const level=state.level,sign=state.sign==='random'?chooseSign(next):state.sign;
+ const level=state.level,sign=signOverride||(state.sign==='random'?chooseSign(next):state.sign);
  const pick=values=>values[next(0,values.length-1)];
  const fav=()=>pick([1,2,2,2,3,3,3,5,5,4,7,8,9]);
  const easy=()=>pick([1,1,1,2,2,2,3,3,3,4,5,5,7]);
@@ -399,7 +399,10 @@ function chosenQuestion(){
  const rng=state.slot==='fresh'
   ?seeded(seedFor(state.freshCount+1000)^((Math.random()*0xffffffff)>>>0))
   :seeded(seedFor(state.slot));
- return makeQuestion(rng);
+ // Fixed homework questions develop sign fluency progressively.
+ // Fresh/random questions continue to honour the selected sign control.
+ const homeworkSigns=['positive','negative','mixed','mixed'];
+ return makeQuestion(rng,state.slot==='fresh'?null:homeworkSigns[state.slot]);
 }
 function selectQuestion(slot){
  state.slot=slot;state.question=chosenQuestion();state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
@@ -716,11 +719,32 @@ function draw(){
    const reflection=document.createElement('div');reflection.className='reflection';
    const heading=document.createElement('strong');heading.textContent='Reflection';
    const paragraph=document.createElement('p');
-   paragraph.textContent=state.question.type='ll'
-    ?'Overkill! This method is overkill for linear × linear. FOIL or the cross-product method is quicker. But hey, it was fun!'
-    :'For linear × quadratic and quadratic × quadratic, place-value multiplication is an especially effective method. It keeps like powers aligned and the partial products organised. Expanding brackets term by term can become laborious, tedious and prone to errors; the place-value method makes the calculation clearer and more systematic.';
-   reflection.append(heading,paragraph);root.append(reflection);
+   const leading=a[0]*b[0],constant=a[a.length-1]*b[b.length-1];
+   const signWord=v=>v<0?'negative':v>0?'positive':'zero';
+   const leftCoefficients=a.map(Math.abs),rightCoefficients=b.map(Math.abs);
+   const factorGcds=[a,b].map(terms=>terms.reduce((g,v)=>gcd(g,v),0));
+   const signChanges=final.some(v=>v<0)&&final.some(v=>v>0);
+   paragraph.textContent='Could you predict the leading coefficient ('+minus(leading)+') and the constant term ('+minus(constant)+') mentally? They are the products of the first coefficients and the last coefficients.';
+   const followup=document.createElement('p');
+   if(factorGcds.some(v=>v>1)){
+    followup.textContent='There is a common numerical factor in '+(factorGcds[0]>1?'the top':'the bottom')+' polynomial. Can you factor it out before multiplying?';
+   }else if(signChanges){
+    followup.textContent='Your answer contains both positive and negative coefficients. Which partial products determined those signs, and where did terms cancel?';
+   }else if(final.every(v=>v>0)){
+    followup.textContent='All the answer coefficients are positive. Could you have predicted that from the signs of the two factors?';
+   }else if(final.every(v=>v>=0)){
+    followup.textContent='Some coefficients are zero. Which positive and negative partial products cancelled?';
+   }else{
+    followup.textContent='Look at the signs of your answer. Which signs could you have predicted before doing the calculation?';
+   }
+   reflection.append(heading,paragraph,followup);root.append(reflection);
    const investigations=[
+    {question:'Predict the first and last coefficients.',detail:'Without multiplying out, calculate '+minus(a[0])+' × '+minus(b[0])+' and '+minus(a[a.length-1])+' × '+minus(b[b.length-1])+'. Explain why these determine the leading and constant coefficients.'},
+    {question:'Where do the middle coefficients come from?',detail:'Choose one middle power of x in your answer. Identify every pair of terms that contributes to its coefficient.'},
+    {question:'Investigate the signs in this expansion.',detail:'Which partial products are positive and which are negative? Predict whether the answer contains positive, negative or zero coefficients.'},
+    {question:'Change one coefficient of the second factor.',detail:'Predict which coefficients in the expanded answer will change and which will stay the same. Then check.'},
+    {question:'Reverse the order of the brackets.',detail:'Will the expansion change? Explain using the arrangement of partial products.'},
+    {question:'Try scaling one of the factors by 2.',detail:'Predict what happens to every coefficient of the answer without multiplying out again.'},
     {question:'What changes if the linear factor is 4x + 8?',detail:'Find the highest common factor of its coefficients. Rewrite the factor, then predict what happens when it is multiplied by a quadratic.'},
     {question:'Investigate 3x² + 9x + 30.',detail:'What do all three coefficients have in common? Factor it out. How could you use this before expanding a product?'},
     {question:'Compare (2x + 3)(3x² + 4x + 5) with (4x + 6)(3x² + 4x + 5).',detail:'Predict how their expansions are related before calculating. Explain why.'},
