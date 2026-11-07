@@ -914,7 +914,7 @@ function drawTest(){
 const ws={counts:{ll:3,ql:3,qq:0},levels:[1],signs:['positive'],support:'independent',columns:'auto',layout:'inline',answers:'integrated',extra:0,steps:false};
 function worksheetOptions(){
  const panel=$('worksheetPanel');panel.replaceChildren();
- const heading=el('h2','Printable worksheet · choose content and support');panel.append(heading);
+ const heading=el('h2','Worksheet settings');panel.append(heading);
  const grid=el('div',undefined,'worksheet-config');
  function field(name){const area=el('div',undefined,'worksheet-field');area.append(el('strong',name));grid.append(area);return area}
  const factors=field('Factor patterns · questions of each type'),frow=el('div',undefined,'worksheet-options');
@@ -965,7 +965,7 @@ function worksheetOptions(){
  const stepsField=field('Written method steps'),stepsLabel=el('label'),stepsCheck=el('input');
  stepsCheck.type='checkbox';stepsCheck.checked=ws.steps;
  stepsCheck.onchange=()=>{ws.steps=stepsCheck.checked;wsStatus()};
- stepsLabel.append(stepsCheck,el('span','Show short method prompts'));
+ stepsLabel.append(stepsCheck,el('span','Brief method reminder (once)'));
  stepsField.append(stepsLabel);
  panel.append(grid);
  const actions=el('div',undefined,'worksheet-actions'),go=el('button','Open printable worksheet','primary'),close=el('button','Close');
@@ -1059,7 +1059,7 @@ function printWorksheet(){
     '<div class="vertical-factor">'+poly(q.a)+'</div>'+
     '<div class="vertical-factor vertical-bottom"><span class="vertical-times">×</span>'+poly(q.b)+'</div></div>';
   const questionView=ws.layout==='vertical'?vertical:'<div class="formula">'+formula+'</div>';
-  const label='<div class="meta">'+(index+1)+'. '+names[item.type]+' · '+signNames[q.sign]+' · L'+item.level+'</div>';
+  const label='<div class="meta">'+(index+1)+'.</div>';
   const greyAnswer=ws.answers==='integrated'?'<div class="grey-answer">= '+poly(product(q.a,q.b))+'</div>':'';
   const prompt='';
   if(mode==='none'){
@@ -1084,9 +1084,9 @@ function printWorksheet(){
  }
  for(let i=0;i<all.length;i+=perPage){
   const chunk=all.slice(i,i+perPage).map((x,k)=>problem(x,i+k)).join('');
-  pages.push('<section class="sheet"><header><strong>Polynomial multiplication · Place-value method</strong>'+
+  pages.push('<section class="sheet"><header><strong>Expand</strong>'+
    '<span>Name: _______________________ &nbsp; Date: __________</span></header>'+
-   (ws.steps&&i===0?'<div class="page-method">Method: 1. Set up place-value columns &nbsp; 2. Place the coefficients &nbsp; 3. Calculate partial products &nbsp; 4. Group like terms &nbsp; 5. Write the answer</div>':'')+
+   (ws.steps&&i===0?'<div class="page-method">Align coefficients · Multiply · Add like terms</div>':'')+
    '<div class="questions">'+chunk+
    '</div><footer>'+(i+1)+'–'+Math.min(i+perPage,all.length)+' / '+all.length+'</footer></section>');
  }
