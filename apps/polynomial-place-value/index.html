@@ -463,6 +463,13 @@ main{margin:5px auto;padding:10px 19px 18px}
 .board-question--single .board-math-line .board-answer{flex:0 0 auto;width:auto;margin:0;padding:0;flex-wrap:nowrap;justify-content:flex-start}
 .board-question--single.board-inline-wrap .board-math-line{width:100%;max-width:100%;flex-wrap:wrap;align-items:center}
 .board-question--single.board-inline-wrap .board-math-line .board-answer{width:100%;flex:1 1 100%;justify-content:center;flex-wrap:wrap}
+/* Stable question-bank controls and concise stage guidance */
+.homework-controls{gap:7px;flex-wrap:wrap}
+.bank-question-nav{display:flex;align-items:center;gap:3px;white-space:nowrap}
+.bank-question-nav .bank-question-arrow{font-size:1.2rem;padding:0 6px;min-width:25px;height:29px}
+.bank-question-nav .bank-question-position{font-size:.79rem;min-width:54px;text-align:center;font-variant-numeric:tabular-nums;color:#42546b}
+.step-current-tip{font-size:.81rem;line-height:1.35;color:#506578;background:transparent;margin:2px 0 8px 36px}
+@media(max-width:1230px){.activity-switch{grid-template-columns:1fr 1fr}.activity-switch>.homework-controls{grid-column:1/-1}}
 </style>
 </head>
 <body>
@@ -479,7 +486,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="beyond-choices" id="beyondPanel" hidden><div class="button-group" id="beyondChoices"></div><span id="beyondNote"></span></div>
 </div>
 <div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
- <div class="homework-controls"><span class="homework-label">Classwork</span><nav class="top-questions" id="questions" aria-label="Four classwork sets"></nav></div>
+ <div class="homework-controls"><span class="homework-label">Question banks</span><nav class="top-questions" id="questions" aria-label="Eight question banks"></nav><div id="bankQuestionNav" class="bank-question-nav" aria-label="Browse questions within the selected bank"></div></div>
  <div class="activity-section activities-section"><span class="activity-title">Activities</span><div class="activity-actions" aria-label="Choose activity">
   <button id="boardMode" type="button" aria-pressed="false">Display</button>
   <button id="practiceMode" type="button" hidden aria-pressed="false">Practice</button>
@@ -507,15 +514,23 @@ main{margin:5px auto;padding:10px 19px 18px}
 </main>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
-const actions=['Align factors by powers of x','Place coefficients in matching columns','Calculate partial products','Combine terms by powers of x','Interpret and populate the powers of x','Box the answer','Reflect'];
+const actions=[
+ 'Set up place-value column headers',
+ 'Place coefficients in matching rows and columns',
+ 'Calculate partial products',
+ 'Combine like terms',
+ 'Attach the powers of x',
+ 'Box the final answer',
+ 'Reflect and deepen your learning'
+];
 const instructions=[
- 'Put the higher-degree polynomial on top. Brackets are unnecessary in the vertical multiplication layout.',
- 'Right-align the factors by powers of x: constants under constants, x under x, x² under x². Leave unmatched higher-degree columns blank.',
- 'Multiply each term of the lower factor by the upper factor, preserving its place value.',
- 'Combine products only when they contribute to the same power of x.',
- 'Restore the correct power of x to each column total.',
- 'Box the final simplified polynomial.',
- 'Reflect: matching powers align as matching place values do in numerical multiplication.'
+ 'The degree of the product is the sum of the factor degrees. Label the columns from the highest power down to x and # (the constant column).',
+ 'Place the higher-degree factor in the top row. Right-align the coefficients: constant beneath constant, x beneath x, and so on.',
+ 'Multiply each coefficient in the bottom row by the coefficients in the top row, shifting into the correct place-value columns. Use One by one to examine a single product.',
+ 'Add down each column. The resulting coefficient sequence is ordered from the highest power of x to the constant term.',
+ 'Read the column totals from left to right, attaching x powers to the coefficients. Omit zero terms and retain the correct signs.',
+ 'Write the simplified polynomial in descending powers, with the correct signs, and box the answer.',
+ 'Check the leading coefficient and constant term. Consider which terms combined and what you would do independently next time.'
 ];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
 const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\nQuad'],['any','Rand']];
@@ -525,7 +540,7 @@ const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed
 const signChoices=[['positive','Both\npositive'],['negative','Negative\nnon-leading'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
-const state={type:'ql',factorRandom:false,coreType:'ql',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,reflectionUsed:0,reflectionNeed:0,question:null};
+const state={type:'ql',factorRandom:false,coreType:'ql',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,reflectionUsed:0,reflectionNeed:0,question:null,bankQuestion:0};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -586,12 +601,11 @@ function makeQuestion(next,signOverride=null){
 function chosenQuestion(){
  const rng=state.slot==='fresh'
   ?seeded(seedFor(state.freshCount+1000)^((Math.random()*0xffffffff)>>>0))
-  :seeded(seedFor(state.slot));
- // Fixed exercises develop sign fluency progressively.
- // Fresh/random questions continue to honour the selected sign control.
- const homeworkSigns=['positive','negative','mixed','mixed'];
- // Monic and Challenge are optional modes; fixed exercises remain independent.
- return makeQuestion(rng,state.slot==='fresh'?null:homeworkSigns[state.slot]);
+  :seeded(seedFor(17+state.slot*123+state.bankQuestion*891));
+ // Each bank has twelve reproducible questions. Banks vary sign fluency;
+ // the factor pattern and level remain controlled by the teacher above.
+ const bankSigns=['positive','negative','mixed','mixed','positive','negative','mixed','mixed'];
+ return makeQuestion(rng,state.slot==='fresh'?null:bankSigns[state.slot]);
 }
 function selectQuestion(slot){
  state.slot=slot;state.question=chosenQuestion();state.reflectionUsed=0;state.reflectionNeed=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
@@ -628,10 +642,28 @@ function individualProducts(a,b){
  return products;
 }
 function renderSelectors(){
- const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);
- chooseButtons('questions',q,state.slot,v=>{if(assessment.started)return;const remainOnBoard=assessment.mode==='board';ws.sheet=v+1;ws.use='classwork';if(!remainOnBoard)switchMode('practice');boardState.offset=0;selectQuestion(v);assessmentConfigChanged()});
- const homeworkDescription=['Positive coefficients','Negative non-leading coefficients','Mixed positive and negative coefficients','Mixed signs · extra practice'];
- for(let i=0;i<4;i++)$('questions').children[i].title='Exercise '+(i+1)+': '+homeworkDescription[i];
+ const q=[];for(let i=0;i<8;i++)q.push([i,String(i+1)]);
+ function openBankQuestion(bank,index){
+  if(assessment.started)return;
+  state.bankQuestion=(index+12)%12;
+  const stayOnBoard=assessment.mode==='board';
+  if(!stayOnBoard)switchMode('practice');
+  boardState.offset=0;selectQuestion(bank);assessmentConfigChanged();
+ }
+ chooseButtons('questions',q,state.slot,v=>{
+  openBankQuestion(v,v===state.slot?state.bankQuestion+1:0);
+ });
+ const bankDescriptions=['Positive foundations','Negative non-leading terms','Mixed signs','Mixed-sign practice',
+  'Positive extension','Negative extension','Mixed-sign extension','Mixed-sign challenge'];
+ for(let i=0;i<8;i++)$('questions').children[i].title='Question bank '+(i+1)+' · '+bankDescriptions[i]+'. Click again for the next question.';
+ const nav=$('bankQuestionNav');nav.replaceChildren();
+ const chosen=Number.isInteger(state.slot);
+ const previous=el('button','‹','bank-question-arrow');previous.type='button';previous.title='Previous question in this bank';previous.disabled=!chosen||assessment.started;
+ const position=el('span',chosen?'Q '+(state.bankQuestion+1)+' / 12':'New question','bank-question-position');
+ const next=el('button','›','bank-question-arrow');next.type='button';next.title='Next question in this bank';next.disabled=!chosen||assessment.started;
+ previous.onclick=()=>openBankQuestion(state.slot,state.bankQuestion-1);
+ next.onclick=()=>openBankQuestion(state.slot,state.bankQuestion+1);
+ nav.append(previous,position,next);
  function filter(key,value){if(assessment.started)return;state[key]=value;if(key==='sign')freshQuestion();else refreshSelectedQuestion();assessmentConfigChanged()}
  chooseButtons('types',factorChoices,state.factorRandom?'any':(beyondTypes.includes(state.type)?state.coreType:state.type),v=>{
   if(assessment.started)return;
@@ -772,6 +804,9 @@ function draw(){
     render();
    };
    checklist.append(entry);
+   if(i===step){
+    const tip=el('p',instructions[i],'step-current-tip');tip.setAttribute('role','note');checklist.append(tip);
+   }
    if(i===2&&step===3){
     const items=individualProducts(a,b);
     const sub=document.createElement('div');sub.className='stage-controls';
@@ -1507,10 +1542,10 @@ function boardAnswerHTML(q){
  return '<span class="board-answer-first"><span class="board-answer-equals">=</span>'+first+'</span>'+terms.join('');
 }
 function boardQuestions(count){
- const signOverride=Number.isInteger(state.slot)?['positive','negative','mixed','mixed'][state.slot]:null;
+ const signOverride=Number.isInteger(state.slot)?['positive','negative','mixed','mixed','positive','negative','mixed','mixed'][state.slot]:null;
  return Array.from({length:count},(_,i)=>{
   if(i===0&&boardState.offset===0&&state.question)return {q:state.question,type:state.question.type};
-  const seed=seedFor(900000+boardState.offset*13007+i*991+(Number.isInteger(state.slot)?state.slot*113:state.freshCount*123));
+  const seed=seedFor(900000+boardState.offset*13007+i*991+(Number.isInteger(state.slot)?state.slot*113+state.bankQuestion*379:state.freshCount*123));
   const q=makeQuestion(seeded(seed),signOverride);
   return {q,type:q.type};
  });
@@ -1548,7 +1583,7 @@ function fitBoardQuestions(){
 function drawBoard(){
  const host=$('boardPanel');host.replaceChildren();
  const controls=el('div',undefined,'board-controls');
- const heading=el('strong',Number.isInteger(state.slot)?'Classwork '+(state.slot+1):'New questions');
+ const heading=el('strong',Number.isInteger(state.slot)?'Bank '+(state.slot+1)+' · Q '+(state.bankQuestion+1)+'/12':'New questions');
  controls.append(heading);
  [[1,1],[1,2],[1,3],[3,2],[5,3]].forEach(([columns,rows])=>{
   const btn=el('button',columns+' × '+rows);btn.type='button';
