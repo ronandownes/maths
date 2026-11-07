@@ -165,7 +165,7 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 </div>
 <div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
 <div class="cluster classwork"><h2>Classwork</h2><div class="buttons"><button data-slot="0">1</button><button data-slot="1">2</button><button data-slot="2">3</button><button data-slot="3">4</button><button data-slot="random">Random</button></div></div>
-<div class="cluster activities"><h2>Activities</h2><div class="buttons"><button id="practiceBtn">Practice</button><button id="lessonBtn">Lesson</button><button id="displayBtn">Display</button><button id="quizBtn">Quiz</button><button id="testBtn">Test</button><button id="worksheetsBtn">Worksheets</button></div></div>
+<div class="cluster activities"><h2>Activities</h2><div class="buttons"><button id="practiceBtn">Practice</button><button id="lessonBtn">Instruction</button><button id="displayBtn">Display</button><button id="quizBtn">Quiz</button><button id="testBtn">Test</button><button id="worksheetsBtn">Sheets</button></div></div>
 <div class="cluster procedure"><h2>Procedural fluency</h2><div class="buttons"><button id="stepsBtn">Step by step</button><button id="workedBtn">Worked</button><button id="resetBtn">Reset steps</button></div></div>
 </div>
 <section id="practicePanel" aria-label="Four-route practice"><div class="practice-layout"><div class="practice-main">
@@ -187,11 +187,11 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 <div class="transport"><button id="backStep">← Previous</button><button id="nextStep" class="primary">Next →</button><button id="allSteps">Show all</button><button id="newQuestion">New question</button></div>
 <p class="pedagogy" id="pedagogy">Follow four routes: left goalpost (firsts), left diagonal (inners), right diagonal (outers), right goalpost (lasts). Combine products only when their letters and powers match.</p>
 </div><aside id="stepChecklist" class="step-checklist" hidden aria-label="Procedural steps"></aside></div></section>
-<section id="lessonPanel" hidden aria-label="Interactive lesson slides"></section>
+<section id="lessonPanel" hidden aria-label="Six-minute teacher-led instruction slides"></section>
 <section id="boardPanel" hidden aria-label="Classroom display"></section>
 <section id="assessmentPanel" hidden aria-label="Quiz and test"></section>
 <section id="worksheetPanel" hidden aria-label="Worksheet settings">
-<h2>Printable Vertical FOIL worksheet</h2>
+<h2>Vertical FOIL · Sheets</h2>
 <p>Generates questions from the chosen letters, numbers, powers and signs, with generous working space.</p>
 <div class="ws-options">
 <label>Questions <select id="wsCount"><option value="6">6</option><option value="8" selected>8</option><option value="12">12</option></select></label>
@@ -435,7 +435,7 @@ function renderLesson(){
  if(state.mode!=='lesson')return;
  const host=$('lessonPanel'),slide=lessonSlides[lessonIndex];
  const head=document.createElement('div');head.className='lesson-head';
- const heading=document.createElement('h2');heading.textContent='Vertical FOIL · Lesson';
+ const heading=document.createElement('h2');heading.textContent='Vertical FOIL · Instruction (about 6 minutes)';
  const controls=document.createElement('div');controls.className='lesson-controls';
  const info=document.createElement('strong');info.textContent=(lessonIndex+1)+' / '+lessonSlides.length;controls.append(info);
  const make=(label,fn,disabled=false)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=disabled;b.onclick=fn;controls.append(b)};
