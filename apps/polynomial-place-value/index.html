@@ -1972,7 +1972,9 @@ function printInlineWorksheet(all){
   pages.push('<section class="paper"><header><h1>'+escape(title)+'</h1><span class="name">Name: ______________</span></header>'+(ws.steps&&p===0?intro:'')+groups.slice(p,p+perSide).map((g,i)=>groupHTML(g,p+i)).join('')+'</section>');
  }
  const questions=pages.join('');
- const html='<!doctype html><html lang="en-IE"><head><meta charset="utf-8"><title>'+escape(title)+'</title><style>'+css+'</style></head><body><div class="actions"><button onclick="window.print()">Print worksheet and answers</button></div>'+questions+answerPage+'</body></html>';
+ const html='<!doctype html><html lang="en-IE"><head><meta charset="utf-8"><title>'+escape(title)+'</title><style>'+css+'</style></head><body><div class="actions"><button onclick="window.print()">Print worksheet and answers</button></div>'+questions+answerPage+'<script src="../shared/unifying-strand.js"></script>
+<script>MathsUnifying.mount({context:"place-value"});</script>
+</body></html>';
  const popup=window.open('','_blank');if(!popup){alert('Allow pop-ups to view the worksheet.');return}popup.document.open();popup.document.write(html);popup.document.close();
 }
 function worksheetColumns(){return ws.columns}
