@@ -116,10 +116,15 @@
     next.addEventListener('click',()=>{step=(step+1)%names.length;draw();});
     document.addEventListener('keydown',(ev)=>{
       if(panel.hidden || ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) return;
-      if(ev.key==='Escape'){open(false);ev.preventDefault();}
-      else if(ev.key==='ArrowRight'){step=(step+1)%names.length;draw();ev.preventDefault();}
-      else if(ev.key==='ArrowLeft'){step=Math.max(0,step-1);draw();ev.preventDefault();}
-    });
+      if(['Escape','ArrowRight','ArrowLeft','PageDown','PageUp'].includes(ev.key)){
+        ev.preventDefault();
+        ev.stopImmediatePropagation();
+        if(ev.key==='Escape') open(false);
+        else if(ev.key==='ArrowRight'||ev.key==='PageDown') step=(step+1)%names.length;
+        else step=Math.max(0,step-1);
+        if(ev.key!=='Escape') draw();
+      }
+    },true);
     draw();
   }
   window.MathsUnifying = Object.freeze({names:Object.freeze(names.slice()),meanings:Object.freeze(meanings.slice()),mount});
