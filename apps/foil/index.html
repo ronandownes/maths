@@ -219,7 +219,7 @@ function setMode(mode){
 function renderToolbar(){
  for(const button of document.querySelectorAll('[data-slot]'))button.setAttribute('aria-pressed',String(String(state.slot)===button.dataset.slot));
  for(const button of document.querySelectorAll('[data-level]'))button.setAttribute('aria-pressed',String(state.level===Number(button.dataset.level)));
- for(const button of document.querySelectorAll('[data-sign]'))button.setAttribute('aria-pressed',String(state.sign===button.dataset.sign));
+ for(const button of document.querySelectorAll('[data-sign]'))button.setAttribute('aria-pressed',String(getSign()===button.dataset.sign));
  $('expandBtn').setAttribute('aria-pressed',String(state.direction==='expand'));
  $('factorBtn').setAttribute('aria-pressed',String(state.direction==='factor'));
  for(const [id,mode] of [['practiceBtn','practice'],['displayBtn','display'],['quizBtn','quiz'],['testBtn','test'],['worksheetsBtn','worksheets']])$(id).setAttribute('aria-pressed',String(state.mode===mode));
