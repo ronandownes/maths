@@ -33,3 +33,35 @@ button:disabled{opacity:.45;cursor:default}.modes,.toolbar,.actions,.quicknav{di
 .small{font-size:.86rem;color:#596b7c}.steps{margin:12px 0}
 @media(max-width:650px){header{min-height:48px;gap:6px}header img{width:72px}header h1{font-size:.86rem;padding-left:6px}header b{font-size:.85rem}header .booklink{font-size:.73rem}main{margin:0;border:0;padding:12px 9px}.options{margin-left:0}.settings{top:53px}.actions{gap:5px}.actions button{padding:9px}.diagram{padding:2px}}
 @media print{.modes,.settings,.actions,.quicknav{display:none!important}body,main{background:#fff}main{border:0}}
+
+
+/* Full-size display fractions: clear vertical numerator/denominator and horizontal bar. */
+.dfrac{display:inline-grid;grid-template-rows:auto auto;vertical-align:middle;text-align:center;line-height:1.05;min-width:1.25em;margin:0 .12em;font-family:"Cambria Math",Cambria,Georgia,serif;font-size:1.03em;white-space:nowrap}
+.dfrac .dfrac-top{display:block;padding:.08em .24em .12em;border-bottom:2px solid currentColor}
+.dfrac .dfrac-bottom{display:block;padding:.12em .24em .06em}
+.display-equation{font:600 clamp(1.35rem,2.8vw,2rem)/1.5 "Cambria Math",Cambria,Georgia,serif;text-align:center;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:.08em;padding:11px 6px}
+.display-equation .dfrac{font-size:1.12em}
+.pairing-proof{max-width:730px;margin:4px auto 12px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.pairing-column{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 5px;background:#f0f6fc;border:1px solid #c7d8e9;border-radius:8px;font:600 clamp(1.25rem,2.8vw,1.8rem) "Cambria Math",Cambria,Georgia,serif}
+.pairing-column .sumline{width:72%;border-top:2px solid #2c6596;text-align:center;color:#175c91;padding-top:5px}
+.quiz-header{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.quiz-running{font-weight:750;color:#174f80;display:flex;gap:14px;flex-wrap:wrap}
+.quiz-progress{height:8px;background:#e7edf5;border-radius:10px;overflow:hidden;margin:10px 0 18px}
+.quiz-progress>span{display:block;background:#185c9b;height:100%;width:0%;transition:width .2s ease}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.choice-card{white-space:normal;display:flex;align-items:flex-start;text-align:left;min-height:119px;gap:12px;padding:14px;border:2px solid #c7d5e4;border-radius:12px;background:#fff;font-size:1.08rem;line-height:1.45}
+.choice-card .choice-letter{flex:0 0 31px;width:31px;height:31px;background:#e9f0fa;color:#1e5b92;font-weight:800;border-radius:50%;display:flex;justify-content:center;align-items:center}
+.choice-card .choice-content{display:flex;flex-direction:column;gap:7px;min-width:0}
+.choice-card .choice-work{font-size:clamp(.92rem,1.5vw,1.05rem);line-height:1.45}
+.choice-card .choice-value{font:650 clamp(1.17rem,2vw,1.45rem)/1.3 "Cambria Math",Cambria,Georgia,serif}
+.choice-card.correct-choice,.choice-card.correct-choice:disabled{background:#e8f8ec;border-color:#228342;color:#14572c;opacity:1}
+.choice-card.correct-choice .choice-letter{color:#fff;background:#228342}
+.choice-card.wrong-choice,.choice-card.wrong-choice:disabled{background:#fff0f0;border-color:#c54444;color:#842121;opacity:1}
+.choice-card.wrong-choice .choice-letter{color:#fff;background:#c54444}
+.choice-card:disabled:not(.wrong-choice):not(.correct-choice){opacity:.55}
+.choice-card:focus-visible{outline:3px solid #80b1e9;outline-offset:2px}
+.review-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.explanation-panel{padding:14px 16px;border-left:4px solid #3674af;background:#f1f7ff;border-radius:4px;font-size:1.05rem;line-height:1.5;margin-top:8px}
+.explanation-panel.error{border-color:#b74141;background:#fff3f1}
+.exam-options-note{font-size:.93rem;line-height:1.4;color:#536879;margin:8px 0}
+@media(max-width:680px){.choices{grid-template-columns:1fr}.choice-card{min-height:94px}.pairing-proof{gap:3px}.pairing-column{padding:7px 2px}}
