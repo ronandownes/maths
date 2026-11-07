@@ -512,6 +512,8 @@ main{margin:5px auto;padding:10px 19px 18px}
 .instruction-carry-line,.instruction-carry-result{font-size:1.1em}
 .instruction-carry-equality{font-size:.85em;color:#40546b}
 .instruction-carry-result{color:#1e5a9d}
+.instruction-analogue{flex-direction:column;gap:.2em;max-width:100%;font-size:clamp(2rem,5vw,6rem)}
+.instruction-analogue>div{text-align:center;max-width:100%}
 .instruction-algebra-result{color:#174ea6}
 .instruction-contrast{width:min(100%,1080px);display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,2vw,30px)}
 .instruction-contrast-side{border:2px solid #cad7e7;border-radius:12px;padding:clamp(12px,2vw,25px);display:flex;flex-direction:column;gap:clamp(10px,2vh,20px);align-items:center;justify-content:center;min-width:0;text-align:center}
@@ -1985,6 +1987,7 @@ function drawInstruction(){
     '<div class="instruction-carry-result">= <strong>306</strong></div>';
   stage.append(carry);
  }else if(slide.kind==='analogue'){
+  big.classList.add('instruction-analogue');
   big.innerHTML='<div>(x + 8)(x + 7)</div><div class="instruction-algebra-result">= x<sup>2</sup> + 15x + 56</div>';
   stage.append(big);
  }else if(slide.kind==='contrast'){
@@ -1998,7 +2001,8 @@ function drawInstruction(){
   stage.append(insight);
   if(instructionInsightVisible){
    const note=el('div',undefined,'instruction-insight');
-   note.innerHTML='<div>91 = 90 + 1 = 100 − 10 + 1</div>'+
+   note.innerHTML='<div>99 = 100 − 1 · 96 = 100 − 4</div>'+
+    '<div>91 = 90 + 1 = 100 − 10 + 1</div>'+
     '<div>At x = 10: x<sup>2</sup> − x + 1 = 91</div>'+
     '<small>Signed place-value coefficients are possible. Ordinary base-ten numerals normally use digits 0–9.</small>';
    stage.append(note);
