@@ -48,6 +48,9 @@ button:disabled{opacity:.38;cursor:default}
 .coefficient-arrows button:hover{background:#e8edf5;color:#26364d}
 .coefficient-arrows button+button{border-top:1px solid #e5e8ed}
 .canvas{border:1px solid #d9dfe6;border-radius:9px;padding:18px 14px;min-height:250px;overflow-x:auto}
+.step-introduction{min-height:210px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font:700 clamp(1.55rem,3.3vw,2.4rem)/1.35 Arial,Helvetica,sans-serif;color:#25364b;padding:18px}
+.step-introduction span{font-weight:500;font-size:.9em}
+.step-introduction em{font-family:"Cambria Math",Cambria,Georgia,serif;font-style:italic}
 #heading{font-size:1.12rem;margin:0 0 9px;font-weight:650}
 .math-table{margin:0 auto;border-collapse:collapse;table-layout:fixed;width:min(100%,760px)}
 .math-table td,.math-table th{font:clamp(1.25rem,2.5vw,2rem)/1.35 "Cambria Math",Cambria,Georgia,serif;text-align:center;padding:8px 5px;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -278,7 +281,7 @@ function renderSelectors(){
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
  toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
  const steps=document.createElement('button');steps.type='button';steps.textContent=state.mode!=='step'?'Step by step':state.step===6?'Restart steps':'Next: '+actions[state.step+1]+' →';steps.setAttribute('aria-pressed',String(state.mode==='step'));
- steps.onclick=()=>{if(state.mode!=='step'){state.mode='step';state.step=0;}else{state.step=state.step===6?0:state.step+1;}render()};host.append(steps);
+ steps.onclick=()=>{if(state.mode!=='step'){state.mode='step';state.step=-1;}else{state.step=state.step===6?-1:state.step+1;}render()};host.append(steps);
 }
 function coefficientInputs(){
  const host=$('coefficients');host.replaceChildren();
@@ -338,11 +341,17 @@ function draw(){
  const {a,b}=state.question,final=product(a,b),n=final.length,degree=n-1;
  const mode=state.mode,step=mode==='worked'?5:mode==='question'?0:state.step;
  const root=$('canvas');root.replaceChildren();
- $('heading').textContent=mode==='step'?actions[step]:'';
+ $('heading').textContent=mode==='step'&&step>=0?actions[step]:'';
  $('help').textContent='';
  const pad=v=>Array(n-v.length).fill(null).concat(v);
  const visibleFactors=state.question.type==='ql'?[b,a]:[a,b];
  $('factorExpression').innerHTML=visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
+ if(mode==='step'&&step===-1){
+  const introduction=document.createElement('div');
+  introduction.className='step-introduction';
+  introduction.innerHTML='Set up the place-value columns<br><span>with powers of <em>x</em></span>';
+  root.append(introduction);return;
+ }
  if(mode!=='question'){
   const table=document.createElement('table');table.className='math-table';
   if(true){
