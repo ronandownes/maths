@@ -330,6 +330,14 @@ main{margin:5px auto;padding:10px 19px 18px}
 #challengeBtn[aria-pressed=true]{background:#f8dbe2;border-color:#bc536d;color:#77253e}
 .setting--advanced{gap:5px}
 .scalar-prefix{color:#24558e;font-weight:700;white-space:nowrap}
+.ws-live-preview{margin:14px 0 4px;padding:14px;background:#f8fafc;border:1px solid #d7e1ee;border-radius:10px}
+.ws-live-preview>strong{font-size:1rem}.ws-live-preview>p{font-size:.83rem;color:#4c6179;margin:7px 0}
+.ws-preview-grid{display:grid;gap:8px;padding:10px;background:#fff;border:1px solid #ccd6e4;min-height:240px}
+.ws-preview-cell{padding:7px;min-height:105px;border:1px solid #e9edf3;overflow-wrap:anywhere}
+.ws-preview-cell>span{font-size:.78rem;color:#5d6b7d}
+.ws-preview-question{font:clamp(14px,1.35vw,21px)/1.4 Cambria,"Cambria Math",Georgia,serif;margin:12px 0;text-align:center}
+.ws-preview-answer{color:#a2aab6;font:15px Cambria,Georgia,serif;text-align:center}
+.ws-answer-note{font-weight:650}
 </style>
 </head>
 <body>
@@ -1198,7 +1206,8 @@ function drawTest(){
  }
 }
 
-const ws={counts:{ll:3,ql:3,qq:0},levels:[1],signs:['positive'],support:'independent',layout:'mixed',answers:'integrated',extra:0,steps:false};
+const ws={counts:{ll:0,ql:12,qq:0},levels:[2],signs:['random'],support:'independent',layout:'mixed',answers:'key',extra:0,steps:true,orientation:'portrait',columns:3};
+let wsPreviewCache=null;
 function worksheetOptions(){
  const panel=$('worksheetPanel');panel.replaceChildren();
  const heading=el('h2','Worksheet settings');panel.append(heading);
@@ -1235,7 +1244,7 @@ function worksheetOptions(){
   items.forEach(([value,label])=>{const o=el('option',label);o.value=value;o.selected=ws[key]===value;ctrl.append(o)});
   ctrl.value=ws[key];ctrl.onchange=()=>{ws[key]=ctrl.value;wsStatus()};list.append(ctrl);area.append(list)
  }
- select('Support / differentiation','support',[['independent','Independent — no worked examples or hints'],['gradual','Graduated support — example, then fading hints'],['example','Worked example — one solved, others independent']]);
+ select('Level of support','support',[['none','None — questions only'],['independent','Independent — generous workspace'],['minimum','Minimum support — brief hint'],['example','One worked example'],['gradual','Graduated support — fading hints']]);
  const layoutArea=field('Question layout · choose how questions are displayed');
  const layoutChoices=el('div',undefined,'worksheet-options');
  [['inline','Inline'],['vertical','Stacked'],['mixed','Mixed (automatic)']].forEach(([value,label])=>{
@@ -1244,7 +1253,10 @@ function worksheetOptions(){
   option.append(radio,el('span',label));layoutChoices.append(option);
  });
  layoutArea.append(layoutChoices);
- select('Answers','answers',[['none','None'],['key','At the end'],['integrated','Integrated — faint grey']]);
+ select('Answers','answers',[['key','Student answers at the end'],['none','No answers'],['integrated','Integrated — faint grey']]);
+ const paper=field('Paper and columns'),format=el('div',undefined,'worksheet-options');
+ const orientation=el('select');[['portrait','A4 portrait'],['landscape','A4 landscape']].forEach(([v,label])=>{const o=el('option',label);o.value=v;orientation.append(o)});orientation.value=ws.orientation;orientation.onchange=()=>{ws.orientation=orientation.value;wsStatus()};
+ const cols=el('select');[[2,'2 columns'],[3,'3 columns'],[4,'4 columns']].forEach(([v,label])=>{const o=el('option',label);o.value=v;cols.append(o)});cols.value=String(ws.columns);cols.onchange=()=>{ws.columns=Number(cols.value);wsStatus()};format.append(orientation,cols);paper.append(format);
  const extras=field('Additional random questions'),row=el('div',undefined,'worksheet-options'),number=el('input');number.type='number';number.min='0';number.max='24';number.value=String(ws.extra);
  number.onchange=()=>{ws.extra=Math.max(0,Math.min(24,Math.floor(Number(number.value)||0)));number.value=String(ws.extra);wsStatus()};
  row.append(el('span','Extra:'),number);extras.append(row);
@@ -1254,6 +1266,7 @@ function worksheetOptions(){
  stepsLabel.append(stepsCheck,el('span','Brief method reminder (once)'));
  stepsField.append(stepsLabel);
  panel.append(grid);
+ const preview=el('section',undefined,'ws-live-preview');preview.id='wsLivePreview';panel.append(preview);
  const actions=el('div',undefined,'worksheet-actions'),go=el('button','Open printable worksheet','primary'),close=el('button','Close');
  const status=el('span');status.id='wsStatus';go.onclick=printWorksheet;close.onclick=()=>switchMode('practice');
  actions.append(go,close,status);panel.append(actions);wsStatus();
@@ -1264,10 +1277,12 @@ function wsStatus(){
  const signs=ws.signs.includes('random')?3:ws.signs.length;
  const types=Object.values(ws.counts).filter(v=>v>0).length;
  const actual=n>0?Math.max(4,n):0;
- const e=$('wsStatus');if(e)e.textContent=n+' selected · '+actual+' printed ('+cols+' across) · '+ws.support+' support · levels: '+(ws.levels.includes('random')?'random':ws.levels.join(', '))+' · signs: '+(ws.signs.includes('random')?'random':ws.signs.join(', '))+' · answers: '+ws.answers+' · '+({inline:'inline',vertical:'stacked',mixed:'mixed'}[ws.layout])+' · auto-sized';
+ const e=$('wsStatus');if(e)e.textContent=n+' questions · '+cols+' columns · A4 '+ws.orientation+' · '+ws.support+' · '+ws.layout+' · answers: '+(ws.answers==='key'?'at the end':ws.answers);
+ wsPreviewCache=worksheetQuestions();drawWorksheetPreview();
 }
 function worksheetQuestions(){
- const old={type:state.type,level:state.level,sign:state.sign,random:state.factorRandom},out=[];
+ const old={type:state.type,level:state.level,sign:state.sign,random:state.factorRandom,constant:state.constantOn,monic:state.monic},out=[];
+ state.constantOn=false;state.monic=false;
  try{
   for(const type of ['ll','ql','qq']){
    const count=ws.counts[type];if(!count)continue;
@@ -1289,16 +1304,28 @@ function worksheetQuestions(){
    const seed=((Math.random()*0xffffffff)>>>0);
    out.push({q:makeQuestion(seeded(seed)),type:state.type,level:state.level,number:null});
   }
- }finally{state.type=old.type;state.level=old.level;state.sign=old.sign;state.factorRandom=old.random}
+ }finally{state.type=old.type;state.level=old.level;state.sign=old.sign;state.factorRandom=old.random;state.constantOn=old.constant;state.monic=old.monic}
  return out;
 }
-function worksheetColumns(){
- const types=['ll','ql','qq'].filter(type=>ws.counts[type]>0);
- if(ws.support!=='independent')return 2;
- if(ws.layout==='vertical')return types.includes('qq')?2:3;
- if(ws.layout==='mixed')return types.includes('qq')?2:3;
- return types.length===1&&types[0]==='ll'?4:3;
+function drawWorksheetPreview(){
+ const host=$('wsLivePreview');if(!host)return;
+ host.replaceChildren();
+ const heading=el('strong','Live worksheet preview · A4 '+ws.orientation+' · '+ws.columns+' columns');
+ const info=el('p','First page shown. The printable worksheet uses these same questions. '+(ws.answers==='key'?'Student answers follow at the end.':''));
+ const grid=el('div',undefined,'ws-preview-grid');grid.style.gridTemplateColumns='repeat('+ws.columns+',minmax(0,1fr))';
+ (wsPreviewCache||[]).slice(0,ws.columns*2).forEach((item,i)=>{
+  const cell=el('div',undefined,'ws-preview-cell');
+  const factors=item.type==='ql'?[item.q.b,item.q.a]:[item.q.a,item.q.b];
+  cell.append(el('span',String(i+1)+'.'));
+  const formula=el('div',undefined,'ws-preview-question');formula.innerHTML='('+poly(factors[0])+')('+poly(factors[1])+')';cell.append(formula);
+  if(ws.answers==='integrated'){const ans=el('div',undefined,'ws-preview-answer');ans.innerHTML='= '+poly(product(item.q.a,item.q.b));cell.append(ans)}
+  if((ws.support==='example'||ws.support==='gradual')&&i===0)cell.append(el('small','Worked example on printout'));
+  grid.append(cell);
+ });
+ host.append(heading,info,grid);
+ if(ws.answers==='key')host.append(el('p','Answers at the end: '+(wsPreviewCache||[]).length+' numbered solutions.','ws-answer-note'));
 }
+function worksheetColumns(){return ws.columns}
 function printWorksheet(){
  const all=worksheetQuestions();
  if(!all.length){alert('Select at least one factor pattern.');return;}
