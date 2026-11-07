@@ -526,12 +526,12 @@ function draw(){
       const btn=document.createElement('button');btn.type='button';btn.textContent=String(index+1);
       btn.setAttribute('aria-label','Partial product '+(index+1)+' of '+items.length);
       btn.setAttribute('aria-pressed',String(state.partialCount===index+1));
-      btn.onclick=()=>{state.partialCount=index+1;state.partialAll=index===items.length-1;render()};
+      btn.onclick=()=>{state.partialCount=index+1;state.partialAll=false;render()};
       chooser.append(btn);
      });
      const next=document.createElement('button');next.type='button';next.textContent='Next →';next.className='stage-next';
      next.disabled=state.partialCount>=items.length;
-     next.onclick=()=>{state.partialCount=Math.min(items.length,state.partialCount+1);state.partialAll=state.partialCount===items.length;render()};
+     next.onclick=()=>{state.partialCount=Math.min(items.length,state.partialCount+1);state.partialAll=false;render()};
      chooser.append(next);sub.append(chooser);
     }
     checklist.append(sub);
@@ -643,10 +643,13 @@ function draw(){
    const items=individualProducts(a,b);
    const item=items[state.partialCount-1];
    const note=document.createElement('div');note.className='partial-explanation';
-   note.textContent=minus(item.left)+' × '+minus(item.right)+' = '+minus(item.value);
+   const topPower=a.length-1-item.i,bottomPower=b.length-1-item.j;
+   const coefficientName=p=>p===0?'constant':p===1?'x':'x to the power '+p;
+   note.setAttribute('role','status');
+   note.setAttribute('aria-live','polite');
+   note.textContent='Multiply the '+coefficientName(bottomPower)+' coefficient of the bottom factor by the '+coefficientName(topPower)+' coefficient of the top factor: '+minus(item.right)+' × '+minus(item.left)+' = '+minus(item.value);
    const location=document.createElement('span');
-   location.textContent=' · '+(item.power===0?'constant column':item.power===1?'x column':'x'+String.fromCharCode(0x00b2+0)+' column');
-   if(item.power>1)location.textContent=' · x^'+item.power+' column';
+   location.textContent=' · '+(item.power===0?'constant':item.power===1?'x':'x^'+item.power)+' column';
    note.append(location);root.append(note);
   }
   if(mode==='step'&&step===4&&!state.groupAll&&state.groupCount>0){
