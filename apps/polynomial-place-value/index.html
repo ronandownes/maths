@@ -547,6 +547,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 
 /* Responsive Maths app settings prototype: one unobtrusive mobile toggle. */
 .mobile-settings-toggle,.mobile-settings-close,.mobile-settings-backdrop{display:none}
+.mobile-settings-toggle[hidden]{display:none!important}
 .sign-short{display:none}
 .instruction-method-intro{width:min(100%,1000px);display:grid;justify-items:center;gap:clamp(16px,3vh,35px)}
 .instruction-intro-example{font:clamp(2rem,5.2vw,6.5rem)/1.22 "Cambria Math",Cambria,Georgia,serif;text-align:center;max-width:100%}
@@ -2173,6 +2174,9 @@ function switchMode(mode){
  const previous=assessment.mode;
  if(assessment.started&&mode!==assessment.mode){assessment.started=false;assessment.questions=[];assessment.configureRequested=false;setAssessmentControlsLocked()}
  assessment.mode=mode;
+ // Presentation/assessment surfaces should never be covered by mobile setup chrome.
+ if(mode!=='practice'&&mobileSettingsPanel.classList.contains('mobile-open'))setMobileSettings(false);
+ mobileSettingsToggle.hidden=mode!=='practice';
  $('practiceArea').hidden=mode!=='practice';
  $('testArea').hidden=mode!=='quiz'&&mode!=='test';
  $('worksheetPanel').hidden=mode!=='worksheet';
