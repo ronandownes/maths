@@ -306,16 +306,17 @@ function resetBoard(){board.offset=0;board.cache=[]}
 function refreshQuestion(){state.q=generator(0);state.step=0;state.view='step';resetBoard();render()}
 function newQuestion(){state.seq++;state.slot='random';refreshQuestion()}
 function setMode(mode){
- if(document.fullscreenElement===$('boardPanel'))document.exitFullscreen().catch(()=>{});
+ if(document.fullscreenElement&&(document.fullscreenElement===$('boardPanel')||document.fullscreenElement===$('lessonPanel')))document.exitFullscreen().catch(()=>{});
  state.mode=mode;
  $('practicePanel').hidden=mode!=='practice';
+ $('lessonPanel').hidden=mode!=='lesson';
  $('boardPanel').hidden=mode!=='display';
  $('assessmentPanel').hidden=mode!=='quiz'&&mode!=='test';
  $('worksheetPanel').hidden=mode!=='worksheets';
  renderToolbar();
  if(mode==='practice')renderPractice();
  if(mode==='display')renderBoard();
- if(mode==='worksheets'){}
+ if(mode==='lesson')renderLesson();
 }
 function renderToolbar(){
  for(const button of document.querySelectorAll('[data-slot]'))button.setAttribute('aria-pressed',String(String(state.slot)===button.dataset.slot));
@@ -325,70 +326,93 @@ function renderToolbar(){
  for(const button of document.querySelectorAll('[data-sign]'))button.setAttribute('aria-pressed',String(state.sign===button.dataset.sign));
  $('expandBtn').setAttribute('aria-pressed',String(state.direction==='expand'));
  $('factorBtn').setAttribute('aria-pressed',String(state.direction==='factor'));
- for(const [id,mode] of [['practiceBtn','practice'],['displayBtn','display'],['quizBtn','quiz'],['testBtn','test'],['worksheetsBtn','worksheets']])$(id).setAttribute('aria-pressed',String(state.mode===mode));
+ for(const [id,mode] of [['practiceBtn','practice'],['lessonBtn','lesson'],['displayBtn','display'],['quizBtn','quiz'],['testBtn','test'],['worksheetsBtn','worksheets']])$(id).setAttribute('aria-pressed',String(state.mode===mode));
  $('stepsBtn').setAttribute('aria-pressed',String(state.view==='step'));
  $('workedBtn').setAttribute('aria-pressed',String(state.view==='worked'));
  for(const button of document.querySelectorAll('[data-group]'))button.setAttribute('aria-pressed',String(state.group===button.dataset.group));
 }
 function diagramHTML(q){
- const p=products(q),indices=[0,2,1,3],vars=[bothVar(),secondVar(),'x',''];
- const labels=['Left vertical','Left diagonal','Right diagonal','Right vertical'];
- const paths=[
+ const terms=fourTerms(q),ids=[0,2,1,3],p=products(q);
+ const routes=[
   'M300 93 C275 220 162 308 158 385',
   'M696 94 C590 220 389 285 389 385',
   'M310 93 C420 230 620 294 620 385',
   'M700 93 C735 215 845 317 846 385'
  ];
- const visible=state.direction==='factor'||state.view==='worked'?4:Math.min(4,state.step);
- const arrows=paths.map((d,i)=>'<path class="route'+(i<visible?' revealed':'')+(state.direction==='expand'&&state.view==='step'&&state.step===i+1?' current':'')+'" d="'+d+'" marker-end="url(#arrowTip)"/>').join('');
- const circles=[[210,220],[527,215],[478,305],[785,220]].map(([x,y],i)=>'<circle class="route-number'+(i<visible?' revealed':'')+'" cx="'+x+'" cy="'+y+'" r="20"/><text class="route-index" x="'+x+'" y="'+(y+7)+'">'+(i+1)+'</text>').join('');
- const result=indices.map((index,i)=>'<text class="route-result'+(i<visible?' revealed':'')+'" text-anchor="middle" x="'+[158,389,620,846][i]+'" y="454">'+(i<visible?safeText(fmtTerm(p[index],vars[i],true)):'?')+'</text>').join('');
- const top=fmtTerm(q.a,'x',true),t2=fmtTerm(q.b,'',false);
- const bottom=fmtTerm(q.c,secondVar(),true),b2=fmtTerm(q.d,'',false);
- return '<svg viewBox="0 0 1000 485" role="img" aria-label="Vertically stacked binomials. Four routes in order: left vertical, left diagonal, right diagonal, right vertical.">'+
+ const count=state.direction==='factor'||state.view==='worked'?4:Math.min(4,state.step);
+ const arrows=routes.map((d,i)=>'<path class="route'+(i<count?' revealed':'')+(state.direction==='expand'&&state.view==='step'&&state.step===i+1?' current':'')+'" d="'+d+'" marker-end="url(#arrowTip)"/>').join('');
+ const circles=[[210,220],[527,215],[478,305],[785,220]].map(([x,y],i)=>'<circle class="route-number'+(i<count?' revealed':'')+'" cx="'+x+'" cy="'+y+'" r="20"/><text class="route-index" x="'+x+'" y="'+(y+7)+'">'+(i+1)+'</text>').join('');
+ const result=ids.map((j,i)=>'<text class="route-result'+(i<count?' revealed':'')+'" text-anchor="middle" x="'+[158,389,620,846][i]+'" y="454">'+(i<count?safeText(plainMono(terms[j].n,terms[j].vars,true)):'?')+'</text>').join('');
+ const [m1,m2]=qMonos(q);
+ const top=plainMono(q.a,m1,true),topRight=plainMono(q.b,{},false);
+ const bottom=plainMono(q.c,m2,true),bottomRight=plainMono(q.d,{},false);
+ return '<svg viewBox="0 0 1000 485" role="img" aria-label="Two vertically stacked binomials. Four routes: left goalpost, left diagonal, right diagonal and right goalpost.">'+
  '<defs><marker id="arrowTip" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="none" stroke="#235f9a" stroke-width="1.6"/></marker></defs>'+
- '<text class="row-label" x="500" y="29">FIRST BRACKET</text>'+
- '<text class="row-label" x="500" y="218">SECOND BRACKET</text>'+
+ '<text class="row-label" x="500" y="29">FIRST GROUP</text><text class="row-label" x="500" y="218">SECOND GROUP</text>'+
  arrows+circles+
- '<text class="stack-term" x="300" y="68">'+safeText(top)+'</text><text class="stack-term" x="700" y="68">'+safeText(t2)+'</text>'+
- '<text class="stack-term" x="300" y="271">'+safeText(bottom)+'</text><text class="stack-term" x="700" y="271">'+safeText(b2)+'</text>'+
+ '<text class="stack-term" x="300" y="68">'+safeText(top)+'</text><text class="stack-term" x="700" y="68">'+safeText(topRight)+'</text>'+
+ '<text class="stack-term" x="300" y="271">'+safeText(bottom)+'</text><text class="stack-term" x="700" y="271">'+safeText(bottomRight)+'</text>'+
  '<path d="M90 397 H916" stroke="#bfcedd" stroke-width="2"/>'+result+
- '<text class="row-label" x="500" y="482">FOUR PRODUCTS · LEFT VERTICAL → LEFT DIAGONAL → RIGHT DIAGONAL → RIGHT VERTICAL</text></svg>';
+ '<text class="row-label" x="500" y="482">LEFT GOALPOST → LEFT DIAGONAL → RIGHT DIAGONAL → RIGHT GOALPOST</text></svg>';
+}
+function plainMono(n,v,first=false){
+ const body=(Object.keys(v).length&&Math.abs(n)===1?'':Math.abs(n))+monoText(v,false);
+ return (n<0?(first?'−':' − '):(first?'':' + '))+body;
+}
+function renderChecklist(){
+ const host=$('stepChecklist');
+ host.hidden=state.view!=='step'||state.mode!=='practice';
+ if(host.hidden)return;
+ const titles=state.direction==='expand'?
+ ['See the two groups','Left goalpost · Firsts','Left diagonal · Inners','Right diagonal · Outers','Right goalpost · Lasts','Combine only like terms']:
+ ['Identify four products','Group adjacent terms','Take common factors','Find repeated bracket','Restore both factors'];
+ const current=Math.min(state.step,titles.length-1);
+ host.innerHTML='<h2>Steps</h2>';
+ titles.forEach((title,i)=>{
+  const button=document.createElement('button');button.type='button';
+  button.className='step-entry'+(i===current?' current':i<current?' complete':'');
+  button.innerHTML='<span class="step-number">'+(i+1)+'</span><span>'+title+'</span>';
+  button.setAttribute('aria-current',String(i===current?'step':'false'));
+  button.onclick=()=>{state.step=i;state.view='step';renderPractice()};
+  host.append(button);
+ });
 }
 function renderPractice(){
  const q=state.q;
  if(!q)return;
  $('questionNumber').textContent=typeof state.slot==='number'?'Classwork '+(state.slot+1):'New question';
  $('prompt').innerHTML=state.direction==='expand'?factored(q):expanded(q);
- for(const [id,value] of [['coefA',q.a],['coefB',q.b],['coefC',q.c],['coefD',q.d]])if(document.activeElement!==$(id))$(id).value=value;
+ for(const [id,value] of [['coefA',q.a],['coefB',q.b],['coefC',q.c],['coefD',q.d],['mono1',q.m1],['mono2',q.m2]]){
+  if(document.activeElement!==$(id))$(id).value=value;
+ }
  $('groupOptions').hidden=state.direction!=='factor';
  $('diagram').innerHTML=diagramHTML(q);
  const visible=state.direction==='expand'?(state.view==='worked'?4:Math.min(4,state.step)):4;
- const labels=['Left vertical','Left diagonal','Right diagonal','Right vertical'];
- const vars=[bothVar(),secondVar(),'x',''],indices=[0,2,1,3],p=products(q);
- $('partials').innerHTML=labels.map((label,i)=>'<div class="partial'+(i>=visible?' pending':'')+(state.view==='step'&&state.direction==='expand'&&state.step===i+1?' active':'')+'"><strong>'+(i+1)+'. '+label+'</strong><span class="value">'+(i<visible?fmtTerm(p[indices[i]],vars[i],true):'· · ·')+'</span></div>').join('');
- const limit=state.direction==='expand'?5:4;
- const step=state.view==='worked'?limit:state.step;
- const work=[];
+ const terms=fourTerms(q),ids=[0,2,1,3];
+ $('partials').innerHTML=routeLabels.map((name,i)=>'<div class="partial'+(i>=visible?' pending':'')+(state.view==='step'&&state.direction==='expand'&&state.step===i+1?' active':'')+'"><strong>'+(i+1)+'. '+name+'</strong><span class="value">'+(i<visible?fmtMono(terms[ids[i]].n,terms[ids[i]].vars,true):'· · ·')+'</span></div>').join('');
+ const limit=state.direction==='expand'?5:4,step=state.view==='worked'?limit:state.step,work=[];
  if(state.direction==='expand'){
-  const status=step===0?'Follow the four routes, one at a time.':step<=4?labels[step-1]+' — multiply the connected terms.':'Four unlike terms: no like terms to collect.';
-  $('status').textContent=status;
+  $('status').textContent=step===0?'Start with two groups: every term in one multiplies every term in the other.':step<=4?routeLabels[step-1]+' — multiply the connected terms.':'Check the variable parts before combining.';
   if(step>=4)work.push('<div class="mathline">'+expanded(q)+'</div>');
-  if(step>=5){if(state.variables==='same'){work.push('<div class="mathline final">= '+solution(q)+'</div>');work.push('<div class="explain">The two middle products are like terms: combine their coefficients.</div>')}else work.push('<div class="explain">Four unlike terms: retain them separately.</div>')}
+  if(step>=5){
+   const list=fourTerms(q),distinct=new Set(list.map(t=>monoKey(t.vars))).size===4;
+   if(!distinct)work.push('<div class="mathline final">= '+solution(q)+'</div><div class="explain">Only terms with exactly matching letters and powers can be combined.</div>');
+   else work.push('<div class="explain">All four products are unlike terms: no combining is necessary.</div>');
+  }
  }else{
   const swapped=state.group==='swapped';
-  const stageLabels=['Start with the four products.','Group adjacent pairs'+(swapped?' after swapping the middle terms.':'; no swapping required.'),'Extract a common factor from each group.','Identify the repeated binomial.','Reverse the expansion.'];
-  $('status').textContent=stageLabels[Math.min(step,4)];
-  if(step>=1)work.push('<div class="mathline">'+(swapped?expanded(q,true):expanded(q))+'</div><div class="mathline">'+grouping(q,swapped)+'</div>');
+  const stage=['Start with the four products.','Form pairs'+(swapped?' by swapping the middle two products.':'; they are already adjacent.'),'Extract the common factor from each pair.','Notice the shared binomial factor.','Write the factorised expression.'];
+  $('status').textContent=stage[Math.min(step,4)];
+  if(step>=1)work.push('<div class="mathline">'+expanded(q,swapped)+'</div><div class="mathline">'+grouping(q,swapped)+'</div>');
   if(step>=2)work.push('<div class="mathline">'+groupsFactored(q,swapped)+'</div>');
-  if(step>=3)work.push('<div class="explain">Missing coefficient by division: <span class="math">'+divisionHint(q,swapped)+'</span>. This is why the two groups must expose the same binomial.</div>');
+  if(step>=3)work.push('<div class="explain">Check a missing coefficient by division, where needed: <span class="math">'+divisionHint(q,swapped)+'</span>.</div>');
   if(step>=4)work.push('<div class="mathline final">'+factored(q)+'</div>');
  }
  $('working').innerHTML=work.join('');
  $('backStep').disabled=state.view==='worked'||state.step===0;
  $('nextStep').disabled=state.view==='worked'||state.step>=limit;
  $('nextStep').textContent=state.step>=limit?'Complete':'Next →';
- renderToolbar();
+ renderChecklist();renderToolbar();
 }
 function boardItems(){
  const count=board.cols*board.rows;
