@@ -49,7 +49,11 @@ const lesson=isGeo?[
  ['Three consecutive terms','The middle term is the average of the first and third terms. No term formula is needed.'],
  ['Pair a short sum','Pair the first and last, then the second and second-last. Each pair has the same sum.'],
  ['Write forwards and backwards','Arrange the same sum twice, in opposite orders. Each column gives first plus last.'],
- ['Find the sum formula','There are n columns, so 2Sn = n(first + last). Divide by two.']
+ ['Find the sum formula','There are n columns, so 2Sn = n(first + last). Divide by two. Find the printed formula on page 22 of the Formulae and Tables booklet.'],
+ ['Given the sum: solve for n','Substitute the sum, first term and common difference into the same formula. Solve the resulting equation, then keep only a positive integer number of terms.'],
+ ['Given the sum: solve for a','You know the sum, number of terms and difference. Isolate a, which means the first term T1, not the backwards term T0.'],
+ ['Given the sum: solve for d','You know the sum, number of terms and first term. Solve for the signed common difference d.'],
+ ['Try an exam-paper question','The 2026 Ordinary Level Paper 1 Question 5 combines the general term, a missing middle term and an arithmetic sum threshold.']
 ];
 const svgTxt=(x,y,s,size=32,colour='#1e3b59')=>'<text x="'+x+'" y="'+y+'" text-anchor="middle" font-size="'+size+'" fill="'+colour+'" font-family="Cambria Math, Georgia, serif">'+esc(s)+'</text>';
 function sequenceSVG(){
@@ -125,7 +129,11 @@ function working(){
   '9, x, 19 ⇒ 2x = 9 + 19 ⇒ <span class="box">x = 14</span>',
   'S₄ = '+format(v.reduce((u,w)=>u+w,0))+'; first + last = second + second-last',
   '2S₄ = 4('+format(v[0])+' + '+format(v[3])+')',
-  '<span class="box">Sₙ = n/2 [2a + (n − 1)d]</span>'
+  '<span class="box">Sₙ = n/2 [2a + (n − 1)d]</span> · Formulae and Tables, p. 22',
+  '210 = n/2[6 + 4(n−1)] ⇒ (n−10)(2n+21)=0 ⇒ <span class="box">n = 10</span>',
+  '190 = 10/2[2a + 9(2)] ⇒ 38 = 2a + 18 ⇒ <span class="box">a = 10</span>',
+  '148 = 8/2[2(8) + 7d] ⇒ 37 = 16 + 7d ⇒ <span class="box">d = 3</span>',
+  '2026 OL P1 Q5: 12, 17, 22 gives Tₙ=5n+7; 6, x, −4 gives x=1; 43, 39, 35 has <span class="box">S₂₃ &lt; 0</span> for the first time.'
  ][s];
 }
 function read(){
@@ -142,9 +150,13 @@ function showLesson(){
  if($('spoken').checked)read();
 }
 function problems(){
+ const bank=$('bank')?.value||'mixed';
  let types=isGeo?['ratio','next','nthgeo','missinggeo','depreciation','ratio','next','nthgeo']:
  isQuad?['second','a','termzeroquad','b','rulequad','nextquad','valuequad','second']:
- ['nextlinear','difference','termzero','rule','nth','position','middle','sum','sumnegative','firstpositive','difference'];
+ bank==='terms'?['nextlinear','difference','termzero','rule','nth','position','middle','firstpositive']:
+ bank==='series'?['sum','sumGivenN','sumGivenA','sumGivenD','sumnegative','sum','sumGivenA','sumGivenD']:
+ bank==='exam'?['exam2026a1','exam2026a2','exam2026a3','exam2026b','exam2026c']:
+ ['nextlinear','difference','termzero','rule','nth','position','middle','sum','sumGivenN','sumGivenA','sumGivenD','sumnegative','firstpositive'];
  for(let i=types.length-1;i>0;i--){const j=rand(0,i);[types[i],types[j]]=[types[j],types[i]]}
  return types.map(t=>makeProblem(t));
 }
@@ -159,6 +171,14 @@ function makeProblem(type){
  case 'nextlinear':return out('Find the next term.',list,a+4*d,'Apply the signed common difference one more time.');
  case 'sumnegative':{let A=pick([23,35,43,56]),D=-pick([2,3,4,5]),limit=1+2*A/(-D),N=Math.floor(limit)+1;return out('Find the smallest positive integer n for which the sum Sₙ is negative.',[A,A+D,A+2*D].map(format).join(', '),N,'Sₙ = n/2[2a+(n−1)d]. For n>0, solve 2a+(n−1)d < 0, then choose the smallest whole-number n.')}
  case 'firstpositive':{let D=pick([3,4,5,6]),A=-pick([20,35,60,75]),N=Math.floor(1+(-A)/D)+1;return out('Find the number of the first positive term.',[A,A+D,A+2*D].map(format).join(', '),N,'Solve a+(n−1)d > 0, then take the smallest whole-number n.')}
+ case 'sumGivenN':{const N=rand(4,level==='challenge'?25:13),A=rand(1,14),D=rand(1,level==='challenge'?8:5),S=N*(2*A+(N-1)*D)/2;return out('Given the arithmetic sum, first term and difference, find n.','Sₙ = '+S+'; a = '+A+'; d = '+D,N,'Set '+S+' = n/2[2('+A+')+(n−1)('+D+')]. Solve the quadratic and keep only the positive integer root.');}
+ case 'sumGivenA':{const N=rand(4,13),A=rand(level==='challenge'?-12:1,18),D=pick([-4,-2,2,3,5]),S=N*(2*A+(N-1)*D)/2;return out('Given the sum, n and d, find the FIRST term a.','S'+N+' = '+format(S)+'; n = '+N+'; d = '+format(D),A,'Use a = Sₙ/n − (n−1)d/2 = '+format(A)+'.');}
+ case 'sumGivenD':{const N=rand(4,13),A=rand(level==='challenge'?-12:1,20),D=pick([-5,-3,-2,2,4,6]),S=N*(2*A+(N-1)*D)/2;return out('Given the sum, n and first term, find the signed difference d.','S'+N+' = '+format(S)+'; n = '+N+'; a = '+format(A),D,'Use d = [2Sₙ/n − 2a]/(n−1) = '+format(D)+'.');}
+ case 'exam2026a1':return out('LC 2026 Ordinary Level Paper 1, Q5(a)(i): give the THIRD term after 22.', '12, 17, 22, …',37,'The next three terms are 27, 32 and 37.');
+ case 'exam2026a2':return out('LC 2026 Ordinary Level Paper 1, Q5(a)(ii): find Tₙ.', '12, 17, 22, …','5n+7','First difference +5. The boxed term zero is 7, so Tₙ=5n+7.','polynomial');
+ case 'exam2026a3':return out('LC 2026 Ordinary Level Paper 1, Q5(a)(iii): find T₂₀.', '12, 17, 22, …',107,'T₂₀=5(20)+7=107.');
+ case 'exam2026b':return out('LC 2026 Ordinary Level Paper 1, Q5(b): find the missing middle term.', '6, x, −4',1,'2x=6+(−4)=2, so x=1.');
+ case 'exam2026c':return out('LC 2026 Ordinary Level Paper 1, Q5(c): smallest n for which Sₙ < 0.', '43, 39, 35, …',23,'Sₙ=n(45−2n), which is negative for positive integer n≥23.');
  case 'difference':return out('What is the signed common difference?',list,d,'Subtract the previous term from the next term.');
  case 'termzero':return out('Work backwards to the boxed term zero.',list,c,'T₀ = T₁ − d = '+format(a)+' − ('+format(d)+') = '+format(c));
  case 'rule':return out('Write the general term Tₙ.',list,formula(d,c),'The coefficient of n is '+format(d)+' and term zero is '+format(c)+'.','polynomial');
