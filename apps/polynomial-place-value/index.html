@@ -656,8 +656,9 @@ function draw(){
    entry.append(marker,label);
    entry.onclick=()=>{
     state.step=i+1;
-    if(i===2){state.partialCount=individualProducts(a,b).length;state.partialAll=true;}
-    if(i===3){state.groupCount=n;state.groupAll=true;}
+    // Every main stage defaults to the complete result; drill-down is optional.
+    state.partialCount=individualProducts(a,b).length;state.partialAll=true;
+    state.groupCount=n;state.groupAll=true;
     render();
    };
    checklist.append(entry);
@@ -668,15 +669,11 @@ function draw(){
     const description=document.createElement('div');description.className='stage-control-title';
     description.textContent=state.partialAll?items.length+' partial products calculated. Does your homework agree? If not, check them one by one to find the mistake.':'Check each multiplication to discover where your working differs.';
     sub.append(description);
-    const modes=document.createElement('div');modes.className='stage-mode-buttons';
-    const individually=document.createElement('button');individually.type='button';
-    individually.textContent='See them one by one';
-    individually.setAttribute('aria-pressed',String(!state.partialAll));
-    individually.onclick=()=>{state.partialAll=false;state.partialCount=1;render()};
-    const all=document.createElement('button');all.type='button';all.textContent='Show all products';
-    all.setAttribute('aria-pressed',String(state.partialAll));
-    all.onclick=()=>{state.partialCount=items.length;state.partialAll=true;render()};
-    modes.append(individually,all);sub.append(modes);
+    if(state.partialAll){
+     const drill=document.createElement('button');drill.type='button';drill.textContent='See them one by one';
+     drill.onclick=()=>{state.partialAll=false;state.partialCount=1;render()};
+     sub.append(drill);
+    }
     if(!state.partialAll){
      const chooser=document.createElement('div');chooser.className='stage-jump-buttons';
      items.forEach((item,index)=>{
@@ -699,14 +696,11 @@ function draw(){
     const description=document.createElement('div');description.className='stage-control-title';
     description.textContent=state.groupAll?'Coefficients combined by powers of x. If your answer differs, inspect each column one by one.':'Check the addition in each power-of-x column to find the mistake.';
     sub.append(description);
-    const modes=document.createElement('div');modes.className='stage-mode-buttons';
-    const individually=document.createElement('button');individually.type='button';individually.textContent='See them one by one';
-    individually.setAttribute('aria-pressed',String(!state.groupAll));
-    individually.onclick=()=>{state.groupAll=false;state.groupCount=1;render()};
-    const all=document.createElement('button');all.type='button';all.textContent='Show all columns';
-    all.setAttribute('aria-pressed',String(state.groupAll));
-    all.onclick=()=>{state.groupCount=n;state.groupAll=true;render()};
-    modes.append(individually,all);sub.append(modes);
+    if(state.groupAll){
+     const drill=document.createElement('button');drill.type='button';drill.textContent='See them one by one';
+     drill.onclick=()=>{state.groupAll=false;state.groupCount=1;render()};
+     sub.append(drill);
+    }
     if(!state.groupAll){
      const chooser=document.createElement('div');chooser.className='stage-jump-buttons';
      for(let j=0;j<n;j++){
@@ -714,12 +708,12 @@ function draw(){
       btn.innerHTML=power?pow(power):'#';
       btn.setAttribute('aria-label','Group '+(power?('x to the power '+power):'constant')+' column');
       btn.setAttribute('aria-pressed',String(state.groupCount===j+1));
-      btn.onclick=()=>{state.groupCount=j+1;state.groupAll=j===n-1;render()};
+      btn.onclick=()=>{state.groupCount=j+1;state.groupAll=false;render()};
       chooser.append(btn);
      }
      const next=document.createElement('button');next.type='button';next.textContent='Next →';next.className='stage-next';
      next.disabled=state.groupCount>=n;
-     next.onclick=()=>{state.groupCount=Math.min(n,state.groupCount+1);state.groupAll=state.groupCount===n;render()};
+     next.onclick=()=>{state.groupCount=Math.min(n,state.groupCount+1);state.groupAll=false;render()};
      chooser.append(next);sub.append(chooser);
     }
     checklist.append(sub);
