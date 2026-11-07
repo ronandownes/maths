@@ -527,6 +527,22 @@ main{margin:5px auto;padding:10px 19px 18px}
 @media(max-width:700px){.instruction-contrast{grid-template-columns:1fr}.instruction-contrast-side{gap:7px}.instruction-stage{justify-content:flex-start}.instruction-contrast-side>div{font-size:clamp(1.55rem,4vw,2.4rem)}}
 
 #monicBtn[hidden]{display:none!important}
+
+/* Five explicit powers-of-ten places and matching algebraic columns. */
+.instruction-place-grid{width:min(100%,980px);table-layout:fixed;font-size:clamp(1.8rem,4.1vw,4.6rem)}
+.instruction-place-grid th:first-child{width:17%;text-align:right;padding-right:12px}
+.instruction-place-grid thead th{font-size:clamp(1rem,2.1vw,2.1rem);font-weight:700;color:#36516e}
+.instruction-place-grid thead th sup{font-size:.6em;line-height:0;vertical-align:super}
+.instruction-place-grid .instruction-active td{background:#eff6ff;color:#164f9a}
+.instruction-place-grid .instruction-result td{color:#1758a4}
+.instruction-grid-factors{font:clamp(1.6rem,3.1vw,3.3rem)/1.25 "Cambria Math",Cambria,Georgia,serif;text-align:center;white-space:normal}
+.instruction-grid-factors sup{font-size:.63em;line-height:0;vertical-align:super}
+.instruction-carry-result{font:700 clamp(2rem,3.6vw,4rem)/1.25 "Cambria Math",Cambria,Georgia,serif;color:#1758a4;text-align:center}
+.instruction-panel .instruction-insight{font-size:clamp(1.2rem,2.1vw,2.1rem);line-height:1.3;max-width:96%;margin:0}
+.instruction-panel .instruction-insight div{margin:4px 0}
+.instruction-algebra-result{color:#174ea6}
+.instruction-panel .instruction-stage{gap:clamp(8px,1.8vh,18px)}
+@media(max-width:700px){.instruction-place-grid{font-size:clamp(1.45rem,5vw,3rem)}.instruction-place-grid thead th{font-size:.95rem}.instruction-place-grid th:first-child{width:20%;padding-right:3px}.instruction-place-grid td{padding:3px 1px}}
 </style>
 </head>
 <body>
@@ -1924,52 +1940,63 @@ $('worksheetMode').onclick=()=>switchMode('worksheet');
 
 // Place-value instruction begins with the number system pupils already know.
 // x is an indeterminate: coefficient columns do not carry into adjacent powers.
+// Connect long multiplication to algebra. Distinguish decimal digits from unrestricted polynomial coefficients.
 const instructionSlides=[
- {heading:'The multiplication you already know',caption:'Multiply by the units, then by the tens.',kind:'numeric'},
- {heading:'Why do we carry?',caption:'Ten units make one ten. Ten tens make one hundred.',kind:'carry'},
- {heading:'Now multiply algebraic expressions',caption:'The same partial-product pattern.',kind:'analogue'},
- {heading:'What is different?',caption:'Combine like powers. Never carry between powers of x.',kind:'contrast'},
- {heading:'Set up the place-value columns',caption:'The highest power is x².',kind:'headers'},
- {heading:'Place the coefficients',caption:'Constants under constants.',kind:'coefficients'},
- {heading:'Multiply by 4',caption:'First partial-product row.',kind:'constant'},
- {heading:'Multiply by x',caption:'Shift one column to the left.',kind:'linear'},
- {heading:'Add the columns',caption:'Like powers belong together.',kind:'add'},
- {heading:'Append powers of x',caption:'Read from highest power to constant.',kind:'answer'},
- {heading:'Your turn',caption:'Try independently. Then check.',kind:'independent'}
+ {heading:'Keep the products organised',caption:'Cross-products work, but longer expansions can become crowded.',kind:'why'},
+ {heading:'Powers of ten organise numbers',caption:'Each digit has its own place: 10⁴, 10³, 10², 10 and # (units).',kind:'num-setup'},
+ {heading:'First multiply by 4',caption:'321 × 4 = 1284',kind:'num-ones'},
+ {heading:'Then multiply by 30',caption:'321 × 30 = 9630. Move one place left.',kind:'num-tens'},
+ {heading:'Add the rows',caption:'Carry when a base-ten column has ten or more.',kind:'num-sum'},
+ {heading:'98 × 12: the usual method',caption:'2 × 8 = 16: write 6, carry 1. Then 2 × 9 + 1 = 19.',kind:'98-standard'},
+ {heading:'98 is also 100 − 2',caption:'A different arrangement, exactly the same answer.',kind:'98-signed'},
+ {heading:'Now replace 10 by x',caption:'Use x³, x², x and # (the constant column).',kind:'alg-setup'},
+ {heading:'Multiply by 4',caption:'The coefficients stay in their matching columns.',kind:'alg-ones'},
+ {heading:'Multiply by 3x',caption:'Shift one power of x to the left.',kind:'alg-x'},
+ {heading:'Combine like powers',caption:'Add within each column. Keep every coefficient.',kind:'alg-sum'},
+ {heading:'Why no carrying?',caption:'18 is a valid coefficient, but not a single decimal digit.',kind:'compare'},
+ {heading:'Append the powers of x',caption:'Same place-value pattern. No carrying between powers of x.',kind:'alg-answer'},
+ {heading:'Your turn',caption:'Try without help. Reveal the answer only when ready.',kind:'independent'}
 ];
 let instructionSlide=0;
 let instructionAnswerVisible=false;
 let instructionInsightVisible=false;
-function instructionTable(kind){
- const stage={coefficients:0,constant:1,linear:2,add:3}[kind]??0;
- const cells=(values,cls='',label='')=>'<tr class="'+cls+'"><td class="instruction-row-label">'+label+'</td>'+
-   values.map(v=>'<td>'+(v===null?'':v)+'</td>').join('')+'</tr>';
- return '<table class="instruction-table" aria-label="Place-value expansion of 2x plus 3 by x plus 4">'+
-  '<thead><tr><th></th><th>x<sup>2</sup></th><th>x</th><th>#</th></tr></thead><tbody>'+
-  cells([null,2,3],'','Top')+
-  cells([null,1,4],'instruction-multiplier','× Bottom')+
-  (stage>=1?cells([null,8,12],kind==='constant'?'instruction-active':'','× 4'):'')+
-  (stage>=2?cells([2,3,0],kind==='linear'?'instruction-active':'','× x'):'')+
-  (stage>=3?cells([2,11,12],'instruction-result','Sum'):'')+
- '</tbody></table>';
-}
-function instructionNumberTable(){
- const line=(a,b,c,label,cls='')=>'<tr class="'+cls+'"><th scope="row">'+label+'</th>'+
-  [a,b,c].map(v=>'<td>'+(v===null?'':v)+'</td>').join('')+'</tr>';
- return '<table class="instruction-numeric-table" aria-label="18 multiplied by 17, with partial products 126 and 180, total 306">'+
- '<thead><tr><th></th><th>100s</th><th>10s</th><th>1s</th></tr></thead><tbody>'+
- line(null,1,8,'18')+
- line(null,1,7,'× 17','instruction-multiplier')+
- line(1,2,6,'× 7')+
- line(1,8,0,'× 10')+
- line(3,0,6,'Total','instruction-result')+'</tbody></table>';
+let instructionCarryVisible=false;
+function instructionGrid(mode,phase){
+ const numerical=mode!=='algebra',is98=mode==='98';
+ const headers=is98?['10<sup>3</sup>','10<sup>2</sup>','10','#']:
+  numerical?['10<sup>4</sup>','10<sup>3</sup>','10<sup>2</sup>','10','#']:
+  ['x<sup>3</sup>','x<sup>2</sup>','x','#'];
+ const data=is98?[
+  {label:'98',values:[null,null,9,8]},
+  {label:'× 12',values:[null,null,1,2],cls:'instruction-multiplier'},
+  {label:'× 2',values:[null,1,9,6],cls:'instruction-active'},
+  {label:'× 10',values:[null,9,8,0]},
+  {label:'Total',values:[1,1,7,6],cls:'instruction-result'}
+ ]:numerical?[
+  {label:'321',values:[null,null,3,2,1]},
+  {label:'× 34',values:[null,null,null,3,4],cls:'instruction-multiplier'},
+  {label:'× 4',values:[null,1,2,8,4],cls:'instruction-active'},
+  {label:'× 30',values:[null,9,6,3,0],cls:'instruction-active'},
+  {label:'Total',values:[1,0,9,1,4],cls:'instruction-result'}
+ ]:[
+  {label:'Top',values:[null,3,2,1]},
+  {label:'× Bottom',values:[null,null,3,4],cls:'instruction-multiplier'},
+  {label:'× 4',values:[null,12,8,4],cls:'instruction-active'},
+  {label:'× 3x',values:[9,6,3,0],cls:'instruction-active'},
+  {label:'Sum',values:[9,18,11,4],cls:'instruction-result'}
+ ];
+ let shown=data.slice(0,Math.min(data.length,2+phase));
+ const cells=values=>values.map(v=>'<td>'+(v===null?'':v)+'</td>').join('');
+ return '<table class="instruction-numeric-table instruction-place-grid" aria-label="'+(is98?'98 times 12':numerical?'321 times 34':'Polynomial multiplication by place value')+'">'+
+  '<thead><tr><th scope="col">Place</th>'+headers.map(v=>'<th scope="col">'+v+'</th>').join('')+'</tr></thead>'+
+  '<tbody>'+shown.map(r=>'<tr class="'+(r.cls||'')+'"><th scope="row">'+r.label+'</th>'+cells(r.values)+'</tr>').join('')+'</tbody></table>';
 }
 function drawInstruction(){
  const host=$('instructionPanel');if(host.hidden)return;
  host.replaceChildren();
  const slide=instructionSlides[instructionSlide];
  const toolbar=el('div',undefined,'instruction-toolbar');
- toolbar.append(el('strong','Place-value expansion'),el('span','Six-minute teacher-led instruction · '+instructionSlides.length+' short slides','instruction-tag'));
+ toolbar.append(el('strong','Place-value expansion'),el('span','Six-minute teacher-led lesson · '+instructionSlides.length+' quick slides','instruction-tag'));
  const full=el('button','Present ⛶');full.type='button';
  full.onclick=()=>{if(document.fullscreenElement===host)document.exitFullscreen?.();else host.requestFullscreen?.().catch(()=>{})};
  const exit=el('button','Close');exit.type='button';exit.onclick=()=>switchMode('practice');
@@ -1977,72 +2004,79 @@ function drawInstruction(){
  const stage=el('section',undefined,'instruction-stage');stage.setAttribute('aria-live','polite');
  stage.append(el('h2',slide.heading));
  const big=el('div',undefined,'instruction-focus');
- if(slide.kind==='numeric'){
-  stage.insertAdjacentHTML('beforeend',instructionNumberTable());
- }else if(slide.kind==='carry'){
-  const carry=el('div',undefined,'instruction-carry');
-  carry.innerHTML='<div class="instruction-carry-line">18 × 17 = <strong>100 + 150 + 56</strong></div>'+
-    '<div class="instruction-carry-equality">56 ones = 5 tens + 6 ones</div>'+
-    '<div class="instruction-carry-equality">20 tens = 2 hundreds</div>'+
-    '<div class="instruction-carry-result">= <strong>306</strong></div>';
-  stage.append(carry);
- }else if(slide.kind==='analogue'){
+ if(slide.kind==='why'){
   big.classList.add('instruction-analogue');
-  big.innerHTML='<div>(x + 8)(x + 7)</div><div class="instruction-algebra-result">= x<sup>2</sup> + 15x + 56</div>';
+  big.innerHTML='<div>(3x<sup>2</sup> + 2x + 1)(3x + 4)</div>';
   stage.append(big);
- }else if(slide.kind==='contrast'){
+ }else if(slide.kind==='num-setup'||slide.kind==='num-ones'||slide.kind==='num-tens'||slide.kind==='num-sum'){
+  const phase={ 'num-setup':0,'num-ones':1,'num-tens':2,'num-sum':3 }[slide.kind];
+  stage.insertAdjacentHTML('beforeend',instructionGrid('number',phase));
+  if(slide.kind==='num-sum'){
+   const result=el('div','321 × 34 = 10914','instruction-carry-result');stage.append(result);
+   const carry=el('button',instructionCarryVisible?'Hide carrying':'Show carrying','instruction-insight-button');carry.type='button';
+   carry.onclick=()=>{instructionCarryVisible=!instructionCarryVisible;drawInstruction()};
+   stage.append(carry);
+   if(instructionCarryVisible)stage.append(el('p','Tens: 8 + 3 = 11 → write 1, carry 1. Thousands: 1 + 9 = 10 → write 0, carry 1.','instruction-insight'));
+  }
+ }else if(slide.kind==='98-standard'){
+  stage.insertAdjacentHTML('beforeend',instructionGrid('98',3));
+  stage.append(el('div','196 + 980 = 1176','instruction-carry-result'));
+ }else if(slide.kind==='98-signed'){
+  big.classList.add('instruction-analogue');
+  big.innerHTML='<div>98 = 100 − 2</div><div>98 × 12 = 12(100 − 2)</div>'+
+   '<div class="instruction-algebra-result">= 1200 − 24 = 1176</div>';
+  stage.append(big);
+ }else if(['alg-setup','alg-ones','alg-x','alg-sum'].includes(slide.kind)){
+  const phase={'alg-setup':0,'alg-ones':1,'alg-x':2,'alg-sum':3}[slide.kind];
+  const heading=el('div',undefined,'instruction-grid-factors');
+  heading.innerHTML='(3x<sup>2</sup> + 2x + 1)(3x + 4)';
+  stage.append(heading);
+  stage.insertAdjacentHTML('beforeend',instructionGrid('algebra',phase));
+ }else if(slide.kind==='compare'){
   const compare=el('div',undefined,'instruction-contrast');
-  compare.innerHTML='<div class="instruction-contrast-side"><strong>Numbers (base ten)</strong><div>100 + 150 + 56</div><div class="instruction-contrast-result">= 306</div><small>Regroup into digits 0–9</small></div>'+
-   '<div class="instruction-contrast-side"><strong>Polynomials</strong><div>x<sup>2</sup> + 15x + 56</div><div class="instruction-contrast-result">No carrying</div><small>15 and 56 are valid coefficients</small></div>';
+  compare.innerHTML='<div class="instruction-contrast-side"><strong>Base ten</strong>'+
+   '<div>321 × 34</div><div class="instruction-contrast-result">10914</div>'+
+   '<small>Digits 0–9: carry where needed</small></div>'+
+   '<div class="instruction-contrast-side"><strong>Polynomial</strong>'+
+   '<div>9x<sup>3</sup> + 18x<sup>2</sup> + 11x + 4</div>'+
+   '<div class="instruction-contrast-result">No carrying</div><small>18 and 11 can stay as coefficients</small></div>';
   stage.append(compare);
-  const insight=el('button',instructionInsightVisible?'Hide optional insight':'Optional insight: negative coefficients','instruction-insight-button');
-  insight.type='button';insight.setAttribute('aria-expanded',String(instructionInsightVisible));
-  insight.onclick=()=>{instructionInsightVisible=!instructionInsightVisible;drawInstruction()};
+  const insight=el('button',instructionInsightVisible?'Hide x = 10 connection':'Check by letting x = 10','instruction-insight-button');
+  insight.type='button';insight.onclick=()=>{instructionInsightVisible=!instructionInsightVisible;drawInstruction()};
   stage.append(insight);
   if(instructionInsightVisible){
    const note=el('div',undefined,'instruction-insight');
-   note.innerHTML='<div>99 = 100 − 1 · 96 = 100 − 4</div>'+
-    '<div>91 = 90 + 1 = 100 − 10 + 1</div>'+
-    '<div>At x = 10: x<sup>2</sup> − x + 1 = 91</div>'+
-    '<small>Signed place-value coefficients are possible. Ordinary base-ten numerals normally use digits 0–9.</small>';
+   note.innerHTML='<div>9(10<sup>3</sup>) + 18(10<sup>2</sup>) + 11(10) + 4</div>'+
+    '<div>= 9000 + 1800 + 110 + 4 = 10914</div>';
    stage.append(note);
   }
- }else if(slide.kind==='headers'){
-  const powers=el('div',undefined,'instruction-powers');
-  powers.innerHTML='<span>x<sup>2</sup></span><span>x</span><span>#</span>';
-  stage.append(powers);
- }else if(['coefficients','constant','linear','add'].includes(slide.kind)){
-  stage.insertAdjacentHTML('beforeend',instructionTable(slide.kind));
- }else if(slide.kind==='answer'){
-  big.classList.add('instruction-answer');
-  big.innerHTML='<span>(2x + 3)(x + 4) =</span><span class="instruction-boxed">2x<sup>2</sup> + 11x + 12</span>';
+ }else if(slide.kind==='alg-answer'){
+  big.classList.add('instruction-analogue','instruction-answer');
+  big.innerHTML='<div>(3x<sup>2</sup> + 2x + 1)(3x + 4)</div>'+
+    '<div class="instruction-boxed">= 9x<sup>3</sup> + 18x<sup>2</sup> + 11x + 4</div>';
   stage.append(big);
  }else{
-  big.innerHTML='<span>(x + 2)(x + 3)</span>';
-  stage.append(big);
+  big.innerHTML='<span>(x + 2)(x + 3)</span>';stage.append(big);
   const check=el('button',instructionAnswerVisible?'Hide answer':'Show answer');check.type='button';
-  check.onclick=()=>{instructionAnswerVisible=!instructionAnswerVisible;drawInstruction()};
-  stage.append(check);
+  check.onclick=()=>{instructionAnswerVisible=!instructionAnswerVisible;drawInstruction()};stage.append(check);
   if(instructionAnswerVisible){
    const result=el('div',undefined,'instruction-focus instruction-answer');
    result.innerHTML='= x<sup>2</sup> + 5x + 6';stage.append(result);
   }
  }
  stage.append(el('p',slide.caption,'instruction-caption'));
- const footer=el('nav',undefined,'instruction-footer');
- footer.setAttribute('aria-label','Instruction slide navigation');
+ const footer=el('nav',undefined,'instruction-footer');footer.setAttribute('aria-label','Instruction slide navigation');
  const prev=el('button','← Previous');prev.type='button';prev.disabled=instructionSlide===0;
  prev.onclick=()=>{instructionSlide=Math.max(0,instructionSlide-1);drawInstruction()};
  const count=el('span',(instructionSlide+1)+' / '+instructionSlides.length,'instruction-count');
  const dots=el('div',undefined,'instruction-dots');
  instructionSlides.forEach((frame,i)=>{
-  const dot=el('button','');dot.type='button';
-  dot.setAttribute('aria-label','Slide '+(i+1)+': '+frame.heading);
+  const dot=el('button','');dot.type='button';dot.setAttribute('aria-label','Slide '+(i+1)+': '+frame.heading);
   if(i===instructionSlide)dot.setAttribute('aria-current','step');
   dot.onclick=()=>{instructionSlide=i;drawInstruction()};dots.append(dot);
  });
  const next=el('button',instructionSlide===instructionSlides.length-1?'Restart lesson':'Next →');next.type='button';
- next.onclick=()=>{instructionSlide=(instructionSlide+1)%instructionSlides.length;if(instructionSlide===0){instructionAnswerVisible=false;instructionInsightVisible=false}drawInstruction()};
+ next.onclick=()=>{instructionSlide=(instructionSlide+1)%instructionSlides.length;if(instructionSlide===0){instructionAnswerVisible=false;instructionInsightVisible=false;instructionCarryVisible=false}drawInstruction()};
  footer.append(prev,count,dots,next);
  host.append(toolbar,stage,footer);
 }
@@ -2052,7 +2086,7 @@ document.addEventListener('keydown',event=>{
   event.preventDefault();instructionSlide=Math.min(instructionSlides.length-1,instructionSlide+1);drawInstruction();
  }else if(event.key==='ArrowLeft'||event.key==='PageUp'){
   event.preventDefault();instructionSlide=Math.max(0,instructionSlide-1);drawInstruction();
- }else if(event.key==='Home'){event.preventDefault();instructionSlide=0;instructionAnswerVisible=false;instructionInsightVisible=false;drawInstruction()}
+ }else if(event.key==='Home'){event.preventDefault();instructionSlide=0;instructionAnswerVisible=false;instructionInsightVisible=false;instructionCarryVisible=false;drawInstruction()}
  else if(event.key==='End'){event.preventDefault();instructionSlide=instructionSlides.length-1;drawInstruction()}
  else if(event.key==='Escape'&&!document.fullscreenElement){event.preventDefault();switchMode('practice')}
 });
@@ -2071,7 +2105,7 @@ function switchMode(mode){
   $(key).setAttribute('aria-pressed',String(key==='practiceMode'?mode==='practice'&&state.slot==='fresh':mode===value));
  }
  if(mode==='worksheet')worksheetOptions();
- else if(mode==='instruction'){if(mode!==previous){instructionSlide=0;instructionAnswerVisible=false;instructionInsightVisible=false}drawInstruction()}
+ else if(mode==='instruction'){if(mode!==previous){instructionSlide=0;instructionAnswerVisible=false;instructionInsightVisible=false;instructionCarryVisible=false}drawInstruction()}
  else if(mode==='board')drawBoard();
  else if((mode==='quiz'||mode==='test')&&mode!==previous){
   assessment.configureRequested=false;initialiseTest('random');
