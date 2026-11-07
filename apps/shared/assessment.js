@@ -32,7 +32,7 @@
  // Only permitted algebra: integer coefficients, letters and non-negative powers.
  // No eval, dynamic code or arbitrary browser markup from student answers.
  function normalise(expression){
-  return String(expression).replace(/<sup>([0-9]+)<\/sup>/gi,'^$1')
+  return String(expression).trim().replace(/^=\s*/,'').replace(/<sup>([0-9]+)<\/sup>/gi,'^$1')
    .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g,part=>'^'+[...part].map(c=>'⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)).join(''))
    .replace(/[−–]/g,'-').replace(/\s+/g,'').replace(/\*/g,'');
  }
