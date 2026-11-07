@@ -21,6 +21,7 @@ button:disabled{opacity:.38;cursor:default}
 .top-questions{margin:3px 0 6px}.bankbar{padding-top:9px}.bankbar>span{font-size:.84rem;color:#576270;font-weight:650}.edit-hint{font-size:.81rem;color:#647080;margin:10px 0 0}
 .top-questions button{flex:0 0 34px;width:34px;height:34px;border-radius:50%;padding:0;font-weight:700}
 .top-questions button{min-width:34px}
+.top-questions button:last-child{width:auto;min-width:74px;border-radius:7px;padding:0 10px;font-size:.83rem}
 .settings{display:flex;flex-wrap:wrap;gap:8px 12px;padding:7px 0 8px;border-top:1px solid #e2e6ea;border-bottom:1px solid #e2e6ea}
 .setting{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:6px 12px;border:1px solid #dce2e9;border-radius:8px;background:#fbfcfe}
 .setting .caption{font-size:.81rem;font-weight:700;color:#59636f;min-width:0}
@@ -88,6 +89,9 @@ button:disabled{opacity:.38;cursor:default}
 #oreos{font-size:.78rem;padding:7px 9px;color:#667085;border:1px dashed #c9ced7;background:#fafbfc}
 #oreos[aria-pressed=true]{background:#f0f3f7;border-color:#98a4b6;color:#48566c}
 .math-table td.oreo-zero{color:#a7afb9;font-weight:400}
+.reflection{max-width:760px;margin:15px auto 3px;padding:10px 12px;border-top:1px solid #d8dee6;color:#344054;font-size:.95rem;line-height:1.45}
+.reflection strong{font-size:1rem}
+.reflection p{margin:5px 0 0}
 @media(max-width:700px){.toolbar-bottom .modes{margin-left:0}.toolbar-bottom{gap:8px}.settings-top{gap:7px}}
 </style>
 </head>
@@ -118,7 +122,7 @@ button:disabled{opacity:.38;cursor:default}
 </main>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
-const actions=['Set up the place-value columns','Keep the coefficients only','Calculate the partial products','Group like terms','Bring back the powers of x'];
+const actions=['Set up the place-value columns','Keep the coefficients only','Calculate the partial products','Group like terms','Bring back the powers of x','Reflection'];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
 const factorChoices=[...factorTypes,['any','Rand']];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
@@ -191,15 +195,22 @@ function chosenQuestion(){
 function selectQuestion(slot){
  state.slot=slot;state.question=chosenQuestion();render();
 }
-function freshQuestion(){state.freshCount++;selectQuestion('fresh')}
+function freshQuestion(){
+ const previous=state.question;
+ for(let attempt=0;attempt<16;attempt++){
+  state.freshCount++;const next=(()=>{state.slot='fresh';return chosenQuestion()})();
+  if(!previous||JSON.stringify(next)!==JSON.stringify(previous)){state.question=next;render();return}
+ }
+ state.question=chosenQuestion();render();
+}
 
 function chooseButtons(id,entries,current,change){
  const host=$(id);host.replaceChildren();
  entries.forEach(([value,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(value===current));b.onclick=()=>change(value);host.append(b)});
 }
 function renderSelectors(){
- const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);
- chooseButtons('questions',q,state.slot,v=>selectQuestion(v));
+ const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);q.push(['fresh','Random']);
+ chooseButtons('questions',q,state.slot,v=>v==='fresh'?freshQuestion():selectQuestion(v));
  function filter(key,value){state[key]=value;freshQuestion()}
  chooseButtons('types',factorChoices,state.factorRandom?'any':state.type,v=>{
   if(v==='any'){state.factorRandom=true;freshQuestion()}
@@ -216,8 +227,8 @@ function renderSelectors(){
  const host=$('modes');host.replaceChildren();
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
  toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
- const steps=document.createElement('button');steps.type='button';steps.textContent=state.mode!=='step'?'Step by step':state.step===4?'Restart steps':'Next: '+actions[state.step+1]+' →';steps.setAttribute('aria-pressed',String(state.mode==='step'));
- steps.onclick=()=>{if(state.mode!=='step'){state.mode='step';state.step=0;}else{state.step=state.step===4?0:state.step+1;}render()};host.append(steps);
+ const steps=document.createElement('button');steps.type='button';steps.textContent=state.mode!=='step'?'Step by step':state.step===5?'Restart steps':'Next: '+actions[state.step+1]+' →';steps.setAttribute('aria-pressed',String(state.mode==='step'));
+ steps.onclick=()=>{if(state.mode!=='step'){state.mode='step';state.step=0;}else{state.step=state.step===5?0:state.step+1;}render()};host.append(steps);
 }
 function coefficientInputs(){
  const host=$('coefficients');host.replaceChildren();
@@ -308,6 +319,15 @@ function draw(){
    const eq=document.createElement('div');eq.className='equation worked-conclusion';
    eq.innerHTML=visibleFactors.map(f=>'('+poly(f)+')').join('')+' = '+poly(final);
    root.append(eq);
+  }
+  if(mode==='step'&&step===5){
+   const reflection=document.createElement('div');reflection.className='reflection';
+   const heading=document.createElement('strong');heading.textContent='Reflection';
+   const paragraph=document.createElement('p');
+   paragraph.textContent=state.question.type==='ll'
+    ?'Overkill! This method is overkill for linear × linear. FOIL or the cross-product method is quicker. But hey, it was fun!'
+    :'Place-value multiplication keeps like powers aligned. For larger polynomial products, this organisation helps prevent missing terms.';
+   reflection.append(heading,paragraph);root.append(reflection);
   }
  }
 
