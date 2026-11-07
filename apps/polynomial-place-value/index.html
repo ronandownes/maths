@@ -344,6 +344,8 @@ main{margin:5px auto;padding:10px 19px 18px}
 .ws-preview-inline-grid{min-height:unset;gap:5px}
 .ws-preview-inline-grid .ws-preview-inline{min-height:unset;padding:5px 7px;display:flex;gap:6px;align-items:baseline;border:0}
 .ws-preview-inline-grid .ws-preview-question{margin:0;font-size:clamp(14px,1.3vw,19px);text-align:left}
+.worksheet-options button[aria-pressed=true]{background:#e4efff;color:#1b4d90;border-color:#5b96e6;font-weight:700}
+.ws-preview-inline-grid .ws-preview-inline>span{color:#8b96a4;font-size:.75rem}
 </style>
 </head>
 <body>
@@ -1212,20 +1214,18 @@ function drawTest(){
  }
 }
 
-const ws={counts:{ll:0,ql:12,qq:0},levels:[2],signs:['random'],support:'independent',layout:'mixed',answers:'key',extra:0,steps:true,orientation:'portrait',columns:3};
+const ws={counts:{ll:0,ql:1,qq:0},levels:[2],signs:['random'],support:'independent',layout:'inline',answers:'key',extra:0,steps:true,orientation:'portrait',columns:3,rows:1};
 let wsPreviewCache=null;
 function worksheetOptions(){
  const panel=$('worksheetPanel');panel.replaceChildren();
  const heading=el('h2','Worksheet settings');panel.append(heading);
  const grid=el('div',undefined,'worksheet-config');
  function field(name){const area=el('div',undefined,'worksheet-field');area.append(el('strong',name));grid.append(area);return area}
- const factors=field('Factor patterns · questions of each type'),frow=el('div',undefined,'worksheet-options');
- [['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad · extension']].forEach(([key,name])=>{
-  const label=el('label'),cb=el('input'),number=el('input');
-  cb.type='checkbox';cb.checked=ws.counts[key]>0;number.type='number';number.min='1';number.max='24';number.value=String(ws.counts[key]||3);number.disabled=!cb.checked;
-  cb.onchange=()=>{ws.counts[key]=cb.checked?Math.max(1,Math.min(24,Number(number.value)||3)):0;number.disabled=!cb.checked;wsStatus()};
-  number.onchange=()=>{ws.counts[key]=cb.checked?Math.max(1,Math.min(24,Math.floor(Number(number.value)||3))):0;number.value=String(ws.counts[key]||3);wsStatus()};
-  label.append(cb,el('span',name),number);frow.append(label);
+ const factors=field('Factor patterns · progress from simpler to harder'),frow=el('div',undefined,'worksheet-options');
+ [['ll','Linear × Linear'],['ql','Linear × Quadratic'],['qq','Quadratic × Quadratic']].forEach(([key,name])=>{
+ const label=el('label'),cb=el('input');cb.type='checkbox';cb.checked=ws.counts[key]>0;
+ cb.onchange=()=>{ws.counts[key]=cb.checked?1:0;if(!Object.values(ws.counts).some(Boolean)){ws.counts[key]=1;cb.checked=true}wsStatus()};
+ label.append(cb,el('span',name));frow.append(label);
  });factors.append(frow);
  function multi(name,key,entries){
   const area=field(name),list=el('div',undefined,'worksheet-options');
@@ -1263,9 +1263,12 @@ function worksheetOptions(){
  const paper=field('Paper and columns'),format=el('div',undefined,'worksheet-options');
  const orientation=el('select');[['portrait','A4 portrait'],['landscape','A4 landscape']].forEach(([v,label])=>{const o=el('option',label);o.value=v;orientation.append(o)});orientation.value=ws.orientation;orientation.onchange=()=>{ws.orientation=orientation.value;wsStatus()};
  const cols=el('select');[[2,'2 columns'],[3,'3 columns'],[4,'4 columns']].forEach(([v,label])=>{const o=el('option',label);o.value=v;cols.append(o)});cols.value=String(ws.columns);cols.onchange=()=>{ws.columns=Number(cols.value);wsStatus()};format.append(orientation,cols);paper.append(format);
- const extras=field('Additional random questions'),row=el('div',undefined,'worksheet-options'),number=el('input');number.type='number';number.min='0';number.max='24';number.value=String(ws.extra);
- number.onchange=()=>{ws.extra=Math.max(0,Math.min(24,Math.floor(Number(number.value)||0)));number.value=String(ws.extra);wsStatus()};
- row.append(el('span','Extra:'),number);extras.append(row);
+ const rowsField=field('Complete rows of questions'),choices=el('div',undefined,'worksheet-options');
+ [1,2,3].forEach(count=>{
+  const button=el('button',count+' row'+(count===1?'':'s')+' · '+(count*ws.columns)+' questions');
+  button.type='button';button.setAttribute('aria-pressed',String(ws.rows===count));
+  button.onclick=()=>{ws.rows=count;worksheetOptions()};choices.append(button);
+ });rowsField.append(choices);
  const stepsField=field('Written method steps'),stepsLabel=el('label'),stepsCheck=el('input');
  stepsCheck.type='checkbox';stepsCheck.checked=ws.steps;
  stepsCheck.onchange=()=>{ws.steps=stepsCheck.checked;wsStatus()};
@@ -1283,34 +1286,31 @@ function wsStatus(){
  const signs=ws.signs.includes('random')?3:ws.signs.length;
  const types=Object.values(ws.counts).filter(v=>v>0).length;
  const actual=n>0?Math.max(4,n):0;
- const e=$('wsStatus');if(e)e.textContent=n+' questions · '+cols+' columns · A4 '+ws.orientation+' · '+ws.support+' · '+ws.layout+' · answers: '+(ws.answers==='key'?'at the end':ws.answers);
+ const e=$('wsStatus');if(e)e.textContent=(ws.rows*ws.columns)+' questions · '+ws.rows+' complete rows · '+cols+' columns · A4 '+ws.orientation+' · '+ws.support+' · '+ws.layout+' · answers: '+(ws.answers==='key'?'at the end':ws.answers);
  wsPreviewCache=worksheetQuestions();drawWorksheetPreview();
 }
 function worksheetQuestions(){
- const old={type:state.type,level:state.level,sign:state.sign,random:state.factorRandom,constant:state.constantOn,monic:state.monic},out=[];
- state.constantOn=false;state.monic=false;
+ const old={type:state.type,level:state.level,sign:state.sign,slot:state.slot,random:state.factorRandom,constant:state.constantOn,monic:state.monic};
+ const out=[],types=['ll','ql','qq'].filter(type=>ws.counts[type]>0);
+ const count=ws.rows*ws.columns;
+ const levels=ws.levels.includes('random')?[1,2,3]:ws.levels.slice().sort();
+ const signs=ws.signs.includes('random')?['positive','negative','mixed']:['positive','negative','mixed'].filter(sign=>ws.signs.includes(sign));
  try{
-  for(const type of ['ll','ql','qq']){
-   const count=ws.counts[type];if(!count)continue;
-   state.type=type;state.factorRandom=false;
-   for(let i=0;i<count;i++){
-    const availableLevels=ws.levels.includes('random')?[1,2,3]:ws.levels;
-    const availableSigns=ws.signs.includes('random')?['positive','negative','mixed']:ws.signs;
-    state.level=availableLevels[i%availableLevels.length];state.sign=availableSigns[i%availableSigns.length];
-    const seed=i<4?seedFor(i):(seedFor(i%4)^((i+19)*47231))>>>0;
-    out.push({q:makeQuestion(seeded(seed)),type,level:state.level,number:i+1});
-   }
+  state.constantOn=false;state.factorRandom=false;state.slot='fresh';
+  for(let i=0;i<count;i++){
+   const type=types[Math.min(types.length-1,Math.floor(i*types.length/count))];
+   const sign=signs[Math.min(signs.length-1,Math.floor(i*signs.length/count))];
+   const level=levels[Math.min(levels.length-1,Math.floor(i*levels.length/count))];
+   state.type=type;state.level=level;state.sign=sign;
+   state.monic=(i===0||((i%ws.columns===0)&&i<count/3));
+   const seed=(seedFor(i+309)^((i+1)*104729))>>>0;
+   const q=makeQuestion(seeded(seed),sign);
+   out.push({q,type,level,number:i+1});
   }
-  const types=['ll','ql','qq'].filter(t=>ws.counts[t]>0);
-  for(let i=0;i<ws.extra&&types.length;i++){
-   state.type=types[i%types.length];
-   const availableLevels=ws.levels.includes('random')?[1,2,3]:ws.levels;
-   const availableSigns=ws.signs.includes('random')?['positive','negative','mixed']:ws.signs;
-   state.level=availableLevels[i%availableLevels.length];state.sign=availableSigns[i%availableSigns.length];
-   const seed=((Math.random()*0xffffffff)>>>0);
-   out.push({q:makeQuestion(seeded(seed)),type:state.type,level:state.level,number:null});
-  }
- }finally{state.type=old.type;state.level=old.level;state.sign=old.sign;state.factorRandom=old.random;state.constantOn=old.constant;state.monic=old.monic}
+ }finally{
+  state.type=old.type;state.level=old.level;state.sign=old.sign;state.slot=old.slot;
+  state.factorRandom=old.random;state.constantOn=old.constant;state.monic=old.monic;
+ }
  return out;
 }
 function drawWorksheetPreview(){
@@ -1322,7 +1322,7 @@ function drawWorksheetPreview(){
  (wsPreviewCache||[]).slice(0,ws.columns*2).forEach((item,i)=>{
   const cell=el('div',undefined,'ws-preview-cell');
   const factors=item.type==='ql'?[item.q.b,item.q.a]:[item.q.a,item.q.b];
-  cell.append(el('span',ws.layout==='inline'?String(Math.floor(i/4)+1)+' ('+worksheetLetter(i%4)+')':String(i+1)+'.'));
+  cell.append(el('span',ws.layout==='inline'?String(Math.floor(i/ws.columns)+1)+' ('+worksheetLetter(i%ws.columns)+')':String(i+1)+'.'));
   const formula=el('div',undefined,'ws-preview-question');formula.innerHTML='('+poly(factors[0])+')('+poly(factors[1])+')';cell.append(formula);
   if(ws.layout==='inline')cell.className+=' ws-preview-inline';
   if(ws.answers==='integrated'){const ans=el('div',undefined,'ws-preview-answer');ans.innerHTML='= '+poly(product(item.q.a,item.q.b));cell.append(ans)}
@@ -1342,7 +1342,7 @@ function worksheetTitle(){
 }
 function worksheetLetter(i){return String.fromCharCode(97+i%26)}
 function printInlineWorksheet(all){
- const groups=[];for(let i=0;i<all.length;i+=4)groups.push(all.slice(i,i+4));
+ const groups=[];for(let i=0;i<all.length;i+=ws.columns)groups.push(all.slice(i,i+ws.columns));
  const title=worksheetTitle(),escape=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
  function groupHTML(group,i,answers=false){
   return '<section class="task"><strong class="number">'+(i+1)+'.</strong><div class="parts">'+group.map((item,j)=>{
@@ -1354,7 +1354,7 @@ function printInlineWorksheet(all){
  }
  const intro=ws.steps?'<p class="instructions">Expand and simplify each expression. Choose any correct method.</p>':'';
  const answerPage=ws.answers==='key'?'<section class="answers"><h2>Answers</h2>'+groups.map((g,i)=>groupHTML(g,i,true)).join('')+'</section>':'';
- const css='@page{size:A4 '+ws.orientation+';margin:11mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#eef1f5;color:#1e293b;margin:0}.actions{position:sticky;top:0;background:white;padding:10px}.actions button{padding:9px}.paper,.answers{background:white;width:'+(ws.orientation==='portrait'?'210mm':'297mm')+';max-width:100%;min-height:'+(ws.orientation==='portrait'?'277mm':'190mm')+';margin:15px auto;padding:11mm}.paper header{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #aab6c5;padding-bottom:9px}.paper h1{font-size:15pt;line-height:1.3;margin:0}.name{white-space:nowrap;font-size:10pt}.instructions{font-size:10.5pt}.task{display:grid;grid-template-columns:26px minmax(0,1fr);gap:7px;margin:14px 0 19px;break-inside:avoid}.number{font-size:12pt}.parts{display:grid;grid-template-columns:repeat('+ws.columns+',minmax(0,1fr));gap:12px 9px}.part{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;min-width:0}.letter{font-size:11pt;flex:0 0 auto}.expression{font:14pt/1.35 Cambria,"Cambria Math",Georgia,serif;overflow-wrap:anywhere}.expression sup{font-size:.7em}.soft-answer{color:#a2aab4;font:11pt Cambria,Georgia,serif}.answers{break-before:page}.answers h2{font-size:16pt}.answers .expression{font-size:12pt}@media print{body{background:white}.actions{display:none}.paper,.answers{margin:0;padding:0;min-height:0;width:auto;max-width:none}}';
+ const css='@page{size:A4 '+ws.orientation+';margin:11mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#eef1f5;color:#1e293b;margin:0}.actions{position:sticky;top:0;background:white;padding:10px}.actions button{padding:9px}.paper,.answers{background:white;width:'+(ws.orientation==='portrait'?'210mm':'297mm')+';max-width:100%;min-height:'+(ws.orientation==='portrait'?'277mm':'190mm')+';margin:15px auto;padding:11mm}.paper header{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #aab6c5;padding-bottom:9px}.paper h1{font-size:15pt;line-height:1.3;margin:0}.name{white-space:nowrap;font-size:10pt}.instructions{font-size:10.5pt}.task{display:grid;grid-template-columns:22px minmax(0,1fr);gap:4px;margin:11px 0 15px;break-inside:avoid}.number{font-size:12pt}.parts{display:grid;grid-template-columns:repeat('+ws.columns+',minmax(0,1fr));gap:8px 5px}.part{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px;min-width:0}.letter{font-size:9pt;color:#9aa4af;flex:0 0 auto}.expression{font:clamp(14pt,1.35vw,19pt)/1.35 Cambria,"Cambria Math",Georgia,serif;overflow-wrap:anywhere}.expression sup{font-size:.7em}.soft-answer{color:#a2aab4;font:11pt Cambria,Georgia,serif}.answers{break-before:page}.answers h2{font-size:16pt}.answers .expression{font-size:12pt}@media print{body{background:white}.actions{display:none}.paper,.answers{margin:0;padding:0;min-height:0;width:auto;max-width:none}}';
  const questions=groups.map((g,i)=>groupHTML(g,i)).join('');
  const html='<!doctype html><html lang="en-IE"><head><meta charset="utf-8"><title>'+escape(title)+'</title><style>'+css+'</style></head><body><div class="actions"><button onclick="window.print()">Print worksheet and answers</button></div><section class="paper"><header><h1>'+escape(title)+'</h1><span class="name">Name: ______________</span></header>'+intro+questions+'</section>'+answerPage+'</body></html>';
  const popup=window.open('','_blank');if(!popup){alert('Allow pop-ups to view the worksheet.');return}popup.document.open();popup.document.write(html);popup.document.close();
