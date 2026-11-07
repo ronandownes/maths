@@ -114,6 +114,9 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 .diagram .route-result.revealed{fill:#183d63}
 .diagram .stack-term{font:58px "Cambria Math",Cambria,Georgia,serif;fill:#183b5d;text-anchor:middle}
 .diagram .stack-sign{font:52px "Cambria Math",Cambria,Georgia,serif;fill:#183b5d;text-anchor:middle}
+.diagram svg.foil-symmetric{max-height:min(66vh,570px);height:auto}
+.lesson-route-demo svg.foil-symmetric{max-height:min(66vh,570px)}
+@media(max-width:740px){.diagram svg.foil-symmetric,.lesson-route-demo svg.foil-symmetric{max-height:380px}}
 .diagram .row-label{font:700 16px Arial,sans-serif;fill:#6d7f90;text-anchor:middle}
 /* A single stack of partial products: no repeated pathway captions. */
 .partials.partial-products-stack{display:grid;grid-template-columns:1fr;gap:1px;width:min(330px,96%);margin:5px auto 14px;padding:5px 12px;border:1px solid #dbe5ef;border-radius:9px;background:#fbfdff}
@@ -480,35 +483,35 @@ function diagramHTML(q,forceAll=false){
  // not polynomial place-value columns or faded routes and answers.
  const blankStart=!forceAll&&state.direction==='expand'&&state.view!=='worked'&&state.step<=1;
  if(blankStart){
-  return '<svg class="stack-only" viewBox="0 0 1000 245" role="img" aria-label="Two binomials stacked vertically: first terms aligned, second terms aligned. No routes are revealed.">'+
-   '<text class="stack-term" x="300" y="85">'+safeText(top)+'</text>'+
-   '<text class="stack-sign" x="500" y="85">'+topSign+'</text>'+
-   '<text class="stack-term" x="700" y="85">'+safeText(topRight)+'</text>'+
-   '<text class="stack-term" x="300" y="195">'+safeText(bottom)+'</text>'+
-   '<text class="stack-sign" x="500" y="195">'+bottomSign+'</text>'+
-   '<text class="stack-term" x="700" y="195">'+safeText(bottomRight)+'</text></svg>';
+  return '<svg class="stack-only foil-symmetric" viewBox="0 0 1000 430" role="img" aria-label="Two binomials stacked at the four corners of a square. No routes are revealed.">'+
+   '<text class="stack-term" x="350" y="75">'+safeText(top)+'</text>'+
+   '<text class="stack-sign" x="500" y="75">'+topSign+'</text>'+
+   '<text class="stack-term" x="650" y="75">'+safeText(topRight)+'</text>'+
+   '<text class="stack-term" x="350" y="375">'+safeText(bottom)+'</text>'+
+   '<text class="stack-sign" x="500" y="375">'+bottomSign+'</text>'+
+   '<text class="stack-term" x="650" y="375">'+safeText(bottomRight)+'</text></svg>';
  }
  // Four clean routes from the teacher's diagram: two vertical goalposts
  // surrounding two crossing diagonals. Arrowheads show downward direction.
  const routes=[
-  'M200 100 L200 380',
-  'M690 100 L370 380',
-  'M310 100 L630 380',
-  'M800 100 L800 380'
+  'M270 110 L270 525',
+  'M640 110 L420 300 L420 525',
+  'M360 110 L580 300 L580 525',
+  'M730 110 L730 525'
  ];
  const count=forceAll||state.direction==='factor'||state.view==='worked'?4:Math.max(0,Math.min(4,state.step-1));
  // Do not render unrevealed arrows, circles, question marks or products.
  const arrows=routes.slice(0,count).map((d,i)=>'<path class="route revealed'+(state.direction==='expand'&&state.view==='step'&&state.step===i+2?' current':'')+'" d="'+d+'" marker-end="url(#arrowTip)"/>').join('');
- const circlePositions=[[179,224],[528,218],[479,300],[823,224]];
+ const circlePositions=[[246,285],[550,187],[450,271],[755,285]];
  const circles=circlePositions.slice(0,count).map(([x,y],i)=>'<circle class="route-number revealed" cx="'+x+'" cy="'+y+'" r="20"/><text class="route-index" x="'+x+'" y="'+(y+7)+'">'+(i+1)+'</text>').join('');
  const stacked=!forceAll&&state.direction==='expand'&&state.productsLayout==='stacked';
- const result=stacked?'':ids.slice(0,count).map((j,i)=>'<text class="route-result revealed" text-anchor="middle" x="'+[200,370,630,800][i]+'" y="454">'+safeText(plainMono(terms[j].n,terms[j].vars,true))+'</text>').join('');
- return '<svg viewBox="0 0 1000 '+(stacked?'412':'485')+'" role="img" aria-label="Two vertically stacked binomials with '+count+' of four multiplication routes revealed.'+(stacked?' Partial products appear in a numbered list below.':' Products appear beneath their arrow endpoints.')+'">'+
+ const result=stacked?'':ids.slice(0,count).map((j,i)=>'<text class="route-result revealed" text-anchor="middle" x="'+[270,420,580,730][i]+'" y="595">'+safeText(plainMono(terms[j].n,terms[j].vars,true))+'</text>').join('');
+ return '<svg class="foil-symmetric" viewBox="0 0 1000 '+(stacked?'555':'625')+'" role="img" aria-label="Binomial terms at square corners with '+count+' of four multiplication routes revealed.'+(stacked?' Partial products appear in a numbered list below.':' Products appear beneath their arrow endpoints.')+'">'+
  '<defs><marker id="arrowTip" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="none" stroke="#235f9a" stroke-width="1.6"/></marker></defs>'+
  arrows+circles+
- '<text class="stack-term" x="300" y="68">'+safeText(top)+'</text><text class="stack-sign" x="500" y="68">'+topSign+'</text><text class="stack-term" x="700" y="68">'+safeText(topRight)+'</text>'+
- '<text class="stack-term" x="300" y="271">'+safeText(bottom)+'</text><text class="stack-sign" x="500" y="271">'+bottomSign+'</text><text class="stack-term" x="700" y="271">'+safeText(bottomRight)+'</text>'+
- '<path d="M90 397 H916" stroke="#bfcedd" stroke-width="2"/>'+result+'</svg>';
+ '<text class="stack-term" x="350" y="75">'+safeText(top)+'</text><text class="stack-sign" x="500" y="75">'+topSign+'</text><text class="stack-term" x="650" y="75">'+safeText(topRight)+'</text>'+
+ '<text class="stack-term" x="350" y="375">'+safeText(bottom)+'</text><text class="stack-sign" x="500" y="375">'+bottomSign+'</text><text class="stack-term" x="650" y="375">'+safeText(bottomRight)+'</text>'+
+ '<path d="M205 548 H795" stroke="#bfcedd" stroke-width="2"/>'+result+'</svg>';
 }
 function plainMono(n,v,first=false){
  const body=(Object.keys(v).length&&Math.abs(n)===1?'':Math.abs(n))+monoText(v,false);
