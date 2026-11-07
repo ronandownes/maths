@@ -177,6 +177,10 @@ button:disabled{opacity:.38;cursor:default}
 .quiz-work-table sup{font-size:.62em}
 .quiz-work-table .factor-divider td{border-bottom:2px solid #8290a0}
 .quiz-work-table .work-total td{border-top:2px solid #8290a0;font-weight:700}
+.work-error-cell{position:relative;display:inline-block}
+.work-error-cross{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:900 2.1rem/1 Arial,sans-serif;color:#c92b35;text-shadow:0 0 2px white;pointer-events:none}
+.test-number-control input.fill-error{background:#fff1f1!important;color:#9b2424!important}
+.quiz-choices .quiz-choice.answer-incorrect .work-error-cell{color:#8b2020}
 .quiz-footer-score{border-top:2px solid #cbd5e1;padding:17px 12px;display:flex;gap:15px;align-items:baseline;justify-content:center;margin-top:16px}
 .quiz-footer-score strong{font-size:clamp(1.75rem,4vw,2.4rem);color:#25364b}
 .quiz-footer-score span{font-size:.92rem;color:#5c6979}
@@ -633,14 +637,24 @@ function createWorkChoices(q,index){
  return variants;
 }
 
-function workingTable(q,work){
- const n=product(q.a,q.b).length,power=n-1;
- const rowHtml=(values,kind='')=>'<tr class="'+kind+'"><td></td>'+values.map(v=>'<td>'+(v===null?'':minus(v))+'</td>').join('')+'</tr>';
+function workingTable(q,work,showMistakes=false){
+ const n=product(q.a,q.b).length,power=n-1,originalRows=workRows(q),baseRows=workRows({a:work.top,b:work.bottom});
+ const actualTotals=Array(n).fill(0);
+ work.rows.forEach(r=>r.forEach((v,j)=>{if(v!==null)actualTotals[j]+=v}));
+ const display=(value,wrong)=>wrong&&showMistakes
+   ?'<span class="work-error-cell">'+minus(value)+'<span class="work-error-cross" aria-label="Incorrect value">×</span></span>'
+   :minus(value);
  const pad=v=>Array(n-v.length).fill(null).concat(v);
+ const tr=(values,expected,kind='')=>'<tr class="'+kind+'"><td></td>'+values.map((v,j)=>
+   '<td>'+(v===null?'':display(v,expected&&v!==expected[j]))+'</td>').join('')+'</tr>';
  const head='<tr><th></th>'+Array.from({length:n},(_,i)=>'<th>'+(power-i?pow(power-i):'#')+'</th>').join('')+'</tr>';
- const cells=work.sum.map((v,i)=>'<td>'+minus(v)+(v!==0&&power-i?pow(power-i):'')+'</td>').join('');
- return '<table class="quiz-work-table">'+head+rowHtml(pad(work.top||q.a))+rowHtml(pad(work.bottom||q.b),'factor-divider')+
- work.rows.map(r=>rowHtml(r)).join('')+'<tr class="work-total"><td>+</td>'+cells+'</tr></table>';
+ const totals='<tr class="work-total"><td>+</td>'+work.sum.map((v,j)=>'<td>'+
+   (showMistakes&&v!==actualTotals[j]
+    ?'<span class="work-error-cell">'+minus(v)+(v!==0&&power-j?pow(power-j):'')+'<span class="work-error-cross" aria-label="Incorrect total">×</span></span>'
+    :minus(v)+(v!==0&&power-j?pow(power-j):''))+'</td>').join('')+'</tr>';
+ return '<table class="quiz-work-table">'+head+tr(pad(work.top),pad(q.a))+
+   tr(pad(work.bottom),pad(q.b),'factor-divider')+
+   work.rows.map((row,i)=>tr(row,baseRows[i]||originalRows[i])).join('')+totals+'</table>';
 }
 
 function initialiseTest(source){
@@ -670,7 +684,7 @@ function drawTest(){
   score.setAttribute('role','status');score.setAttribute('aria-live','polite');
   summary.append(score);
   const kind=el('div',undefined,'quiz-toggle');
-  [['working','Working'],['answer','Answer']].forEach(([value,label])=>{
+  [['working','Working'],['answer','Answer'],['fill','Fill in']].forEach(([value,label])=>{
    const btn=el('button',label);btn.type='button';
    btn.setAttribute('aria-pressed',String(assessment.quizType===value));
    btn.onclick=()=>{if(assessment.quizType!==value){assessment.quizType=value;initialiseTest('random')}};
@@ -697,7 +711,7 @@ function drawTest(){
   const formula=el('div',undefined,'test-expression');
   formula.innerHTML=testExpression(q);section.append(formula);
   const p=product(q.a,q.b);
-  if(quiz){
+  if(quiz&&assessment.quizType!=='fill'){
    const answers=el('div',undefined,'quiz-choices');
    const working=assessment.quizType==='working';
    const options=working?assessment.workChoices[index]:assessment.choices[index];
@@ -712,7 +726,7 @@ function drawTest(){
     choice.setAttribute('aria-pressed',String(selected));
     if(selected)choice.className+=' '+(isCorrect(option)?'answer-correct':'answer-incorrect');
     choice.setAttribute('aria-label','Answer '+String.fromCharCode(65+j));
-    choice.innerHTML='<span class="choice-letter">'+String.fromCharCode(65+j)+'.</span> '+(working?workingTable(q,option):poly(option));
+    choice.innerHTML='<span class="choice-letter">'+String.fromCharCode(65+j)+'.</span> '+(working?workingTable(q,option,selected&&!isCorrect(option)):poly(option));
     choice.onclick=()=>{
      if(locked||assessment.tried[index].includes(j))return;
      const correct=isCorrect(option);
@@ -748,23 +762,26 @@ function drawTest(){
     const control=el('div',undefined,'test-number-control');
     const input=el('input');input.type='text';input.inputMode='numeric';input.value=assessment.responses[index][i];
     input.setAttribute('aria-label','Question '+(index+1)+' coefficient of '+(power?'x to power '+power:'constant'));
-    input.disabled=assessment.submitted;
+    const fillQuiz=quiz&&assessment.quizType==='fill';
+    const fillCorrect=()=>assessment.responses[index].every((v,j)=>/^-?\\d+$/.test(v.trim())&&Number(v)===p[j]);
+    const fillLocked=fillQuiz&&(assessment.attempts[index]>=2||(assessment.checked[index]&&fillCorrect()));
+    input.disabled=assessment.submitted||fillLocked;
     input.oninput=()=>{assessment.responses[index][i]=input.value};
     function nudgeCoefficient(delta){
-     if(assessment.submitted)return;
+     if(assessment.submitted||fillLocked)return;
      const current=/^-?\d+$/.test(input.value.trim())?Number(input.value):0;
      const next=current+delta;
      if(!Number.isSafeInteger(next))return;
      input.value=String(next);assessment.responses[index][i]=input.value;
     }
     input.addEventListener('wheel',event=>{
-     if(assessment.submitted||document.activeElement!==input||event.deltaY===0)return;
+     if(assessment.submitted||fillLocked||document.activeElement!==input||event.deltaY===0)return;
      event.preventDefault();
      nudgeCoefficient(event.deltaY<0?1:-1);
     },{passive:false});
     const arrows=el('div',undefined,'test-number-arrows');
     [['▲',1,'Increase'],['▼',-1,'Decrease']].forEach(([glyph,delta,name])=>{
-     const button=el('button',glyph);button.type='button';button.disabled=assessment.submitted;
+     const button=el('button',glyph);button.type='button';button.disabled=assessment.submitted||fillLocked;
      button.setAttribute('aria-label',name+' coefficient');
      button.onclick=()=>nudgeCoefficient(delta);
      arrows.append(button);
@@ -772,6 +789,41 @@ function drawTest(){
     control.append(input,arrows);group.append(symbol,control);answer.append(group);
    });
    section.append(answer);
+   if(quiz){
+    const answered=assessment.responses[index].every(v=>/^-?\\d+$/.test(v.trim()));
+    const isCorrect=assessment.responses[index].every((v,j)=>/^-?\\d+$/.test(v.trim())&&Number(v)===p[j]);
+    const attempts=assessment.attempts[index];
+    const locked=attempts>=2||(attempts>0&&isCorrect);
+    const check=el('button','Check answer');check.type='button';
+    check.disabled=locked||!answered;
+    check.onclick=()=>{
+     if(locked||!answered)return;
+     if(assessment.firstAttempts[index]===null)assessment.firstAttempts[index]=isCorrect;
+     assessment.attempts[index]++;assessment.checked[index]=true;
+     drawTest();
+     const complete=assessment.questions.every((question,k)=>{
+      const values=product(question.a,question.b);
+      return assessment.responses[k].every((v,j)=>/^-?\\d+$/.test(v.trim())&&Number(v)===values[j]);
+     });
+     playQuizSound(complete?'fanfare':isCorrect?true:assessment.attempts[index]>=2?'final-wrong':false);
+    };
+    section.append(check);
+    if(attempts>0){
+     const note=el('div',isCorrect?'Correct!':attempts>=2?
+      'No more attempts. Correct answer: '+p.join(', '):
+      'Not quite — last chance.','test-feedback '+(isCorrect?'test-correct':'test-incorrect'));
+     note.setAttribute('role','status');section.append(note);
+     if(!isCorrect){
+      const fields=answer.children;
+      fields.forEach((field,j)=>{
+       const box=field.children[1].children[0];
+       if(!/^-?\\d+$/.test(assessment.responses[index][j].trim())||Number(assessment.responses[index][j])!==p[j]){
+        box.className+=' fill-error';
+       }
+      });
+     }
+    }
+   }
   }
   host.append(section);
  });
