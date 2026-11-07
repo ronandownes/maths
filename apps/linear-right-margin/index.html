@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Linear × Linear · Right Margin | Maths Apps</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#202124;background:#f1f3f4}*{box-sizing:border-box}
+body{margin:0}button,input,select{font:inherit}button{border:1px solid #c2cad5;border-radius:8px;background:#fff;color:#202124;padding:10px 13px;cursor:pointer;min-height:42px}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #74a6ff;outline-offset:2px}button:disabled{opacity:.4;cursor:default}
+button[aria-pressed=true],.primary{background:#e7f0ff;border-color:#3478c6;color:#174ea6;font-weight:750}
+header{background:#fff;border-bottom:1px solid #dce1e7;display:flex;align-items:center;gap:12px;padding:7px max(12px,calc((100% - 1120px)/2));min-height:56px}
+header img{width:46px;height:46px}header a{text-decoration:none;color:#174ea6}header strong{font-size:1.04rem}
+main{max-width:1100px;margin:8px auto;background:#fff;border:1px solid #e1e5ea;padding:16px 19px 30px}
+h1{font-size:clamp(1.15rem,2.5vw,1.55rem);margin:2px 0 8px}.top{display:flex;gap:9px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+nav{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0 6px}nav button{padding:8px 12px}
+.small{font-size:.87rem;color:#566474}.bar{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+#question{font:clamp(1.65rem,5vw,2.7rem)/1.4 "Cambria Math",Cambria,Georgia,serif;text-align:center;margin:10px auto 14px;letter-spacing:.01em}
+sup{font-size:.63em}#lead{margin:8px 0 4px;text-align:center;font-weight:650;font-size:clamp(1rem,2.3vw,1.25rem);min-height:25px}
+.sheet{max-width:750px;margin:0 auto;border:1px solid #dbe3ed;border-radius:10px;padding:12px 14px 18px;min-height:280px;background:white}
+.work{display:grid;grid-template-columns:minmax(0,1fr) minmax(100px,29%);gap:10px;align-items:start}
+.mainwork{min-width:0}.margin{border-left:2px solid #aab9ca;padding-left:11px;min-height:190px;align-self:stretch}
+.margin h2{margin:2px 0 11px;font-size:.8rem;font-weight:700;color:#566474;text-transform:uppercase;letter-spacing:.035em}
+.line{font:clamp(1.25rem,3vw,2rem)/1.35 "Cambria Math",Cambria,Georgia,serif;white-space:nowrap;min-height:47px}
+#terms,#answer{font:clamp(1.35rem,3.6vw,2.1rem)/1.4 "Cambria Math",Cambria,Georgia,serif;white-space:nowrap}
+#terms{min-height:58px;border-bottom:2px solid #8291a2;padding:4px 0 12px}#answer{min-height:66px;padding-top:14px}
+#marginA,#marginB,#marginSum{font:clamp(1.1rem,2.4vw,1.55rem)/1.4 "Cambria Math",Cambria,Georgia,serif;min-height:39px;white-space:nowrap}
+#marginSum{border-top:2px solid #8291a2;padding-top:9px;font-weight:700}
+.worklabel{font-size:.75rem;color:#68778a;margin-bottom:3px}#explainer{margin:9px auto 0;max-width:750px;min-height:50px;color:#33475d;line-height:1.45;font-size:1.02rem}
+#controls{display:flex;align-items:center;gap:7px;justify-content:space-between;flex-wrap:wrap;margin:12px auto 0;max-width:750px}
+#controls button{min-width:98px}#counter{color:#596779;font-size:.88rem}#settings{max-width:750px;margin:8px auto;border:1px solid #d7dfe9;border-radius:9px;padding:12px}
+#settings summary{cursor:pointer;font-weight:650;color:#344761}#settings .inputs{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:13px}
+#settings label{font-size:.85rem;color:#536477;display:grid;gap:4px}input[type=number],select{border:1px solid #aebdce;border-radius:6px;padding:7px;width:100%;font-size:1.05rem}
+#practiceOptions{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:8px 0 14px}
+#response{min-height:65px;max-width:750px;margin:12px auto 0}
+.answergrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;max-width:570px;margin:10px auto}
+.answergrid label{display:flex;flex-direction:column;gap:5px;font-size:.85rem;font-weight:650;color:#526477;text-align:center}
+.answergrid input{text-align:center;border:1px solid #bac8d9;border-radius:6px;font-size:1.4rem;padding:8px 3px;width:100%}
+.feedback{margin:8px auto;padding:10px 12px;border-left:4px solid #4777aa;background:#f0f6ff;line-height:1.5;max-width:750px}.feedback.good{border-color:#28824c;background:#edf9ef}.feedback.bad{border-color:#b24e4e;background:#fff3f3}
+#quizView{max-width:750px;margin:auto}#quizView .sheet{min-height:0}#quizProgress{text-align:center;color:#607087}
+#gameControls{text-align:center;margin-top:9px}#blankArea{display:block;width:100%;min-height:230px;resize:vertical;border:1px dashed #c4d0dd;border-radius:7px;padding:12px;font:1.15rem/1.6 "Cambria Math",Georgia,serif;background:repeating-linear-gradient(#fff,#fff 34px,#e8eef5 35px)}
+[hidden]{display:none!important}
+footer{max-width:750px;margin:20px auto 0;font-size:.85rem;color:#5b6a79}footer a{color:#174ea6}
+@media(max-width:600px){main{margin:0;padding:10px 9px}header{padding:5px 10px}header img{width:34px;height:34px}.sheet{padding:10px 6px}.work{grid-template-columns:minmax(0,1fr) minmax(92px,31%);gap:5px}.margin{padding-left:6px}.line{font-size:1.17rem}#terms,#answer{font-size:clamp(1.06rem,4.4vw,1.5rem)}#marginA,#marginB,#marginSum{font-size:1.05rem}#settings .inputs{grid-template-columns:repeat(2,1fr)}nav button{flex:1 1 16%;padding:8px 4px;font-size:.8rem;min-width:0}.answergrid{gap:5px}#controls button{min-width:0}}
+@media print{header,nav,#controls,#settings,#practiceOptions,#response,footer{display:none!important}main{border:0}.sheet{border:0;max-width:none}}
+</style>
+</head>
+<body>
+<header><a href="../../index.html" aria-label="Maths home"><img src="../../assets/favicon.svg" alt="Maths four-dot logo"></a><strong>Maths Apps</strong><a href="../polynomial-place-value/">Place-value multiplication</a><a href="../../algebra/factorising/">Factorising</a></header>
+<main>
+<div class="top"><h1>Multiply two linear factors in x · Right margin</h1><button id="settingsButton" type="button" aria-expanded="false" aria-controls="settings">⚙ Settings</button></div>
+<nav aria-label="Learning mode">
+<button type="button" data-mode="instruction" aria-pressed="true">Instruction</button>
+<button type="button" data-mode="practice" aria-pressed="false">Practice</button>
+<button type="button" data-mode="game" aria-pressed="false">Game</button>
+<button type="button" data-mode="quiz" aria-pressed="false">Quiz</button>
+<button type="button" data-mode="test" aria-pressed="false">Test</button>
+</nav>
+<details id="settings" hidden><summary>Question properties</summary>
+<div class="inputs"><label>First x coefficient (a)<input id="a" type="number" min="-20" max="20" value="2"></label><label>First constant (b)<input id="b" type="number" min="-20" max="20" value="3"></label><label>Second x coefficient (c)<input id="c" type="number" min="-20" max="20" value="4"></label><label>Second constant (d)<input id="d" type="number" min="-20" max="20" value="5"></label>
+<label>Signs<select id="signs"><option value="positive">Positive</option><option value="mixed">Mixed</option><option value="negative">Negative</option></select></label><label>Numbers<select id="numbers"><option value="small">Small (1–5)</option><option value="medium">Medium (1–10)</option><option value="large">Large (1–20)</option></select></label><label>Difficulty<select id="difficulty"><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select></label></div>
+<div class="bar" style="margin-top:10px"><button id="apply">Use these coefficients</button><button id="random">New example</button><button id="resetSettings">Reset</button></div>
+</details>
+<div id="practiceOptions" hidden><button id="worked" aria-pressed="true">Step-by-step worked example</button><button id="blank" aria-pressed="false">Blank sheet</button></div>
+<div id="lead" aria-live="polite">Two linear factors. Three terms in the answer.</div>
+<div id="question" aria-label="Expression to expand"></div>
+<div id="practiceView">
+<div class="sheet" id="workingSheet">
+<div class="work">
+<div class="mainwork"><div class="worklabel">Answer line — x², x, constant</div><div id="terms"></div><div id="answer"></div></div>
+<aside class="margin" aria-label="Right margin for cross-products"><h2>Right margin</h2><div id="marginA"></div><div id="marginB"></div><div id="marginSum"></div></aside>
+</div>
+<textarea id="blankArea" hidden aria-label="Blank working sheet" placeholder="Work here, or use pen and paper."></textarea>
+</div>
+<div id="explainer" aria-live="polite"></div>
+<div id="controls"><button id="previous" type="button">← Previous</button><span id="counter"></span><button id="next" type="button" class="primary">Next step →</button><button id="check" type="button" hidden>Show answer</button></div>
+</div>
+<div id="quizView" hidden>
+<p id="quizProgress"></p><div class="answergrid">
+<label>x² coefficient<input id="coef2" inputmode="numeric" type="number" autocomplete="off"></label>
+<label>x coefficient<input id="coef1" inputmode="numeric" type="number" autocomplete="off"></label>
+<label>Constant<input id="coef0" inputmode="numeric" type="number" autocomplete="off"></label></div>
+<div class="bar" style="justify-content:center"><button id="submitAnswer" class="primary">Check answer</button><button id="nextQuestion" hidden>Next question →</button></div>
+</div>
+<div id="response" aria-live="polite"></div>
+<footer>Prerequisites: <a href="../../algebra/factorising/">Algebraic expressions and common factors</a> · <a href="../polynomial-place-value/">Place-value multiplication</a>. The same multiplication underlies the forthcoming factorising-frame activity.</footer>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const state={mode:"instruction",values:[2,3,4,5],step:0,blank:false,question:0,score:0,locked:false,questions:[],gameStart:0};
+const steps=[
+"See the whole product. The answer has an x² term, an x term and a constant.",
+"Multiply the x terms. Put ac in the x² position of the answer line.",
+"Multiply the constant terms. Put bd in the constant position of the answer line.",
+"Calculate the first cross-product, adx. Put it in the RIGHT margin, not in the answer line.",
+"Calculate the second cross-product, bcx. Put it under the first in the RIGHT margin.",
+"Add the two like terms in the margin. Only their sum belongs in the x column.",
+"Write the final three-term answer. The two cross-products never occupy separate positions on the answer line."
+];
+function pretty(n,variable="",first=true){if(n===0)return first?"0":"";let sign=n<0?"−":first?"":"+";let abs=Math.abs(n);let coef=variable&&abs===1?"":String(abs);return sign+coef+variable}
+function binomial(a,b){return "("+pretty(a,"x")+ (b<0?" − ":" + ")+Math.abs(b)+")"}
+function polynomial(A,B,C){let t=pretty(A,"x²");if(B)t+=" "+(B<0?"−":"+")+" "+(Math.abs(B)===1?"":Math.abs(B))+"x";if(C)t+=" "+(C<0?"−":"+")+" "+Math.abs(C);return t||"0"}
+function computations(v=state.values){const [a,b,c,d]=v;return {A:a*c,B:a*d+b*c,C:b*d,ad:a*d,bc:b*c}}
+function write(id,content){$(id).textContent=content}
+function renderWork(){
+const [a,b,c,d]=state.values,q=computations();const s=state.step;
+write("question",binomial(a,b)+binomial(c,d));
+write("terms",s>=1?pretty(q.A,"x²")+(s>=5?"  "+(q.B<0?"−":"+")+" "+(Math.abs(q.B)===1?"":Math.abs(q.B))+"x":"     ___ x")+(s>=2?"  "+(q.C<0?"−":"+")+" "+Math.abs(q.C):"   ___"):"_____ x²   +   _____ x   +   _____");
+write("answer",s===6?polynomial(q.A,q.B,q.C):"");
+write("marginA",s>=3?pretty(q.ad,"x"):"");
+write("marginB",s>=4?pretty(q.bc,"x"):"");
+write("marginSum",s>=5?pretty(q.B,"x"):"");
+write("explainer",state.blank?"Work independently. Reveal the answer only when you want to check.":steps[s]+(s===1?" "+a+" × "+c+" = "+q.A+".":s===2?" "+b+" × "+d+" = "+q.C+".":s===3?" "+a+" × "+d+" = "+q.ad+".":s===4?" "+b+" × "+c+" = "+q.bc+".":s===5?" "+q.ad+" + ("+q.bc+") = "+q.B+".":""));
+write("counter",state.blank?"Blank sheet":(s+1)+" / "+steps.length);
+$("previous").disabled=state.blank||s===0;$("next").disabled=state.blank||s===steps.length-1;
+$("terms").hidden=state.blank;$("answer").hidden=state.blank;
+["marginA","marginB","marginSum"].forEach(id=>$(id).hidden=state.blank);
+$("blankArea").hidden=!state.blank;$("check").hidden=!state.blank;
+if(state.blank){$("terms").parentNode.querySelector(".worklabel").textContent="Your working";$("workingSheet").querySelector(".margin").hidden=true;}
+else {$("terms").parentNode.querySelector(".worklabel").textContent="Answer line — x², x, constant";$("workingSheet").querySelector(".margin").hidden=false;}
+}
+function setValues(v){state.values=v;state.step=0;state.blank=false;["a","b","c","d"].forEach((id,i)=>$(id).value=v[i]);renderWork()}
+function sample(){let limit={small:5,medium:10,large:20}[$("numbers").value]||5;const sign=$("signs").value;function n(){let k=1+Math.floor(Math.random()*limit);return sign==="negative"?-k:sign==="mixed"&&Math.random()<.5?-k:k}
+let result=[n(),n(),n(),n()];if($("difficulty").value==="easy"){result[0]=1;result[2]=1}return result}
+function setMode(mode){
+state.mode=mode;state.blank=false;state.step=0;state.question=0;state.score=0;state.locked=false;
+document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===mode)));
+$("practiceOptions").hidden=mode!=="practice";$("practiceView").hidden=["game","quiz","test"].includes(mode);
+$("quizView").hidden=!["game","quiz","test"].includes(mode);
+$("response").innerHTML="";
+if(["game","quiz","test"].includes(mode)){state.questions=Array.from({length:mode==="game"?10:mode==="quiz"?5:10},()=>sample());state.gameStart=Date.now();loadQuestion();}
+else{write("lead",mode==="instruction"?"Two linear factors. Three terms in the answer.":"Choose worked example or blank sheet.");renderWork()}
+}
+function loadQuestion(){
+let v=state.questions[state.question];state.values=v;state.locked=false;
+write("question",binomial(v[0],v[1])+binomial(v[2],v[3]));write("lead",state.mode==="game"?"Right-margin challenge":state.mode==="quiz"?"Quiz · one question at a time":"Test · independent assessment");
+write("quizProgress","Question "+(state.question+1)+" of "+state.questions.length+" · Score "+state.score);
+["coef2","coef1","coef0"].forEach(id=>{$(id).value="";$(id).disabled=false});
+$("submitAnswer").hidden=false;$("nextQuestion").hidden=true;$("response").innerHTML="";
+}
+function submitAnswer(){
+if(state.locked)return;const ids=["coef2","coef1","coef0"];const got=ids.map(id=>$(id).value.trim());if(got.some(x=>x==="")){$("response").textContent="Enter all three coefficients, including zero where needed.";return}
+let q=computations(),expected=[q.A,q.B,q.C],correct=got.every((v,i)=>Number(v)===expected[i]);
+state.locked=true;if(correct)state.score++;ids.forEach(id=>$(id).disabled=true);
+const f=document.createElement("div");f.className="feedback "+(correct?"good":"bad");
+f.textContent=(correct?"Correct. ":"Not quite. ")+(state.mode==="test"?"Answer recorded.":("The right-margin calculation is "+pretty(q.ad,"x")+" + ("+pretty(q.bc,"x")+") = "+pretty(q.B,"x")+". Final answer: "+polynomial(q.A,q.B,q.C)+"."));
+$("response").replaceChildren(f);$("submitAnswer").hidden=true;$("nextQuestion").hidden=false;
+$("nextQuestion").textContent=state.question===state.questions.length-1?"Finish":"Next question →";
+}
+function nextQuestion(){
+if(state.question<state.questions.length-1){state.question++;loadQuestion();return}
+$("quizView").hidden=true;let f=document.createElement("div");f.className="feedback";f.textContent="Completed: "+state.score+" / "+state.questions.length+" correct."+(state.mode==="game"?" Time: "+Math.round((Date.now()-state.gameStart)/1000)+" seconds.":"")+" Review the right-margin method in Instruction or practise again.";
+$("response").replaceChildren(f);
+}
+document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
+$("settingsButton").addEventListener("click",()=>{let newState=$("settings").hidden;$("settings").hidden=!newState;$("settingsButton").setAttribute("aria-expanded",String(newState));if(newState)$("settings").open=true;});
+$("next").addEventListener("click",()=>{state.step=Math.min(6,state.step+1);renderWork()});
+$("previous").addEventListener("click",()=>{state.step=Math.max(0,state.step-1);renderWork()});
+$("worked").addEventListener("click",()=>{state.blank=false;state.step=0;$("worked").setAttribute("aria-pressed","true");$("blank").setAttribute("aria-pressed","false");renderWork()});
+$("blank").addEventListener("click",()=>{state.blank=true;$("blank").setAttribute("aria-pressed","true");$("worked").setAttribute("aria-pressed","false");renderWork()});
+$("check").addEventListener("click",()=>{state.blank=false;state.step=6;renderWork()});
+$("apply").addEventListener("click",()=>{let v=["a","b","c","d"].map(id=>Number($(id).value));if(v.some((x,i)=>!Number.isInteger(x)||Math.abs(x)>20||(i===0||i===2)&&x===0)){alert("Use integer coefficients from −20 to 20, with non-zero x coefficients.");return}setValues(v);setMode("instruction")});
+$("random").addEventListener("click",()=>{setValues(sample());setMode("instruction")});
+$("resetSettings").addEventListener("click",()=>{setValues([2,3,4,5]);setMode("instruction")});
+$("submitAnswer").addEventListener("click",submitAnswer);
+$("nextQuestion").addEventListener("click",nextQuestion);
+renderWork();
+</script>
+</body>
+</html>
