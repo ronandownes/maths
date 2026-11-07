@@ -116,7 +116,7 @@ button:disabled{opacity:.38;cursor:default}
 .choice-letter{font:700 .9rem Arial,sans-serif;color:#5d6470;margin-right:8px}
 .quiz-choice.answer-correct,.quiz-choice.answer-correct[aria-pressed=true]{background:#e3f5e8;border-color:#29904e;color:#155e31}
 .quiz-choice.answer-incorrect,.quiz-choice.answer-incorrect[aria-pressed=true]{background:#fce7e7;border-color:#cb4545;color:#8b2020}
-.quiz-score{font-weight:700;margin:10px 0 0}
+.quiz-running-score{font-size:1.15rem;font-weight:750;margin-top:8px;font-variant-numeric:tabular-nums}
 .test-number-control{display:flex;align-items:stretch;border:1px solid #b8c0c9;border-radius:6px;overflow:hidden;background:#fff}
 .test-number-control input{width:79px;border:0;border-radius:0;outline:none!important}
 .test-number-arrows{display:flex;flex-direction:column;border-left:1px solid #e4e8ef;background:#f7f8fa}
@@ -411,6 +411,13 @@ function drawTest(){
  const summary=el('div');
  const quiz=assessment.mode==='quiz';
  summary.append(el('h2',quiz?'Expansion quiz':'Expansion test'),el('p',quiz?'Four questions · select an answer to check immediately · you may try again':'Four questions · 1 mark per complete correct expansion · results after submission'));
+ if(quiz){
+  const marks=assessment.firstAttempts.filter(value=>value===true).length;
+  const score=el('div','Marks: '+marks+' / 4','quiz-running-score');
+  score.setAttribute('role','status');
+  score.setAttribute('aria-live','polite');
+  summary.append(score);
+ }
  const opt=el('div',undefined,'test-options');
  const choose=el('select');choose.setAttribute('aria-label','Test question selection');
  [['bank','Homework questions 1–4'],['random','Four fresh random questions']].forEach(([value,label])=>{
@@ -486,10 +493,6 @@ function drawTest(){
   restart.onclick=()=>initialiseTest(assessment.source);actions.append(restart);
  }
  host.append(actions);
- if(quiz&&assessment.firstAttempts.every(x=>x!==null)){
-  const firstCorrect=assessment.firstAttempts.filter(Boolean).length;
-  host.append(el('p','First-attempt score: '+firstCorrect+' / 4. You can still revisit the questions.','quiz-score'));
- }
  if(!quiz&&assessment.submitted){
   const result=el('section',undefined,'test-result');
   let correct=0;
