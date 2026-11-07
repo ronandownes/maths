@@ -191,7 +191,7 @@ function copyTerm(t){return {n:t.n,vars:{...t.vars}}}
 function mult(a,b){const v={...a.vars};for(const [k,n] of Object.entries(b.vars))v[k]=(v[k]||0)+n;return {n:a.n*b.n,vars:v}}
 function key(t){return Object.keys(t.vars).sort().map(k=>k+':'+t.vars[k]).join('|')}
 function monomial(t,html=true){
- const varPart=Object.keys(t.vars).sort().map(k=>k+(t.vars[k]===1?'':html?'<sup>'+t.vars[k]+'</sup>':[...String(t.vars[k])].map(n=>supers[Number(n)]).join(''))).join('');
+ const varPart=Object.keys(t.vars).map(k=>k+(t.vars[k]===1?'':html?'<sup>'+t.vars[k]+'</sup>':[...String(t.vars[k])].map(n=>supers[Number(n)]).join(''))).join('');
  return (varPart&&Math.abs(t.n)===1?'':String(Math.abs(t.n)))+varPart;
 }
 function format(t,first=false,html=true){return(t.n<0?(first?'−':' − '):(first?'':' + '))+monomial(t,html)}
@@ -255,7 +255,7 @@ function renderBanks(){
   const btn=document.createElement('button');btn.textContent=String(i+1);btn.title='Bank '+(i+1)+': '+label;
   btn.setAttribute('aria-pressed',String(state.bank===i));btn.onclick=()=>{
    state.bank=i;state.question=0;state.manual=false;state.step=0;state.worked=false;
-   state.grouping=i===3?'swapped':'presented';state.q=teacherExample(i,0);renderBanks();
+   state.grouping='presented';state.q=teacherExample(i,0);renderBanks();
    if(state.mode==='quiz'||state.mode==='test')setMode('practice');else setMode(state.mode);
   };host.append(btn);
  });
@@ -270,12 +270,11 @@ function svgFor(q,revealed,mode){
  const bracket=(t,at)=>'<text class="math" x="'+at+'" y="'+y+'">'+t+'</text>';
  const ops=(t,at)=>'<text class="math" x="'+at+'" y="'+y+'">'+(t.n<0?'−':'+')+'</text>';
  const marker='<defs><marker id="arrowRainbow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="none" stroke="#216aab" stroke-width="1.7"/></marker></defs>';
- // Upper/lower uses both upper arches for First and Inner, both lower arches for Outer and Last.
- // Inner/outer uses a different high/low assignment to highlight inside versus outside.
+ // Two visually distinct arrangements, preserving the same four products.
  const paths=mode==='innerouter'?
- ['M190 214 Q410 15 630 214','M190 299 Q500 575 805 299','M365 214 Q495 95 630 214','M365 299 Q585 500 805 299']:
- ['M190 214 Q410 26 630 214','M190 299 Q500 560 805 299','M365 214 Q495 105 630 214','M365 299 Q585 475 805 299'];
- const coords=[[420,100],[485,446],[495,158],[595,425]];
+ ['M190 214 Q410 15 630 214','M190 299 Q500 565 805 299','M365 214 Q495 104 630 214','M365 299 Q585 495 805 299']:
+ ['M190 214 Q410 34 630 214','M190 214 Q500 -28 805 214','M365 299 Q495 530 630 299','M365 299 Q585 580 805 299'];
+ const coords=mode==='innerouter'?[[420,100],[505,460],[495,158],[595,420]]:[[420,105],[500,100],[495,425],[585,470]];
  const arrows=paths.slice(0,revealed).map((p,i)=>
   '<path class="path'+(i===revealed-1&&revealed<4?' active':'')+'" d="'+p+'" marker-end="url(#arrowRainbow)"/>'+
   '<circle class="route-number" cx="'+coords[i][0]+'" cy="'+coords[i][1]+'" r="19"/><text class="route-index" x="'+coords[i][0]+'" y="'+(coords[i][1]+7)+'">'+(i+1)+'</text>').join('');
@@ -328,7 +327,9 @@ function renderPractice(){
 function renderStepPanel(q,step,factor){
  const host=$('stepPanel');host.replaceChildren();if(state.worked)return;
  const titles=factor?['Inspect the four terms','Choose two groups','Extract common factors','Match repeated bracket','Restore the two factors']:
- ['Inspect two brackets','Firsts · upper arc','Outers · lower arc','Inners · upper arc','Lasts · lower arc','Present / collect partial products'];
+ state.arcMode==='overunder'?
+ ['Inspect both brackets','Firsts · upper','Outers · upper','Inners · lower','Lasts · lower','Present partial products']:
+ ['Inspect both brackets','Firsts · upper','Outers · lower','Inners · upper','Lasts · lower','Present partial products'];
  const h=document.createElement('h2');h.textContent='Steps';host.append(h);
  titles.forEach((label,i)=>{
   const b=document.createElement('button');b.className='step-entry'+(i===step?' current':i<step?' complete':'');
