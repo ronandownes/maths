@@ -53,7 +53,7 @@ button:disabled{opacity:.38;cursor:default}
 .math-table .sum td{border-top:2px solid #8d99a5;font-weight:700}
 .math-table sup{font-size:.62em;vertical-align:super}.math-table .final-power td{font-weight:700;border-top:1px solid #b3bdc7}.math-table .final-power td:not(.row-label){font-family:"Cambria Math",Cambria,Georgia,serif}
 .equation{font:clamp(1.4rem,3vw,2.2rem)/1.4 "Cambria Math",Cambria,Georgia,serif;text-align:center;margin:18px 0 3px;overflow-wrap:anywhere}
-.equation sup{font-size:.62em;vertical-align:super}.question-formula{margin:3px auto 10px;font-size:clamp(1.4rem,2.7vw,1.95rem)}.equation.worked-conclusion{font-size:clamp(1.35rem,2.6vw,1.85rem);margin:8px auto 0;max-width:100%;text-align:center}.math-table .final-power td{padding-top:4px;padding-bottom:3px}.math-table .sum td{padding-bottom:3px}
+.equation sup{font-size:.62em;vertical-align:super}.question-formula{margin:3px auto 10px;font-size:clamp(1.4rem,2.7vw,1.95rem)}.equation.worked-conclusion{font-size:clamp(1.35rem,2.6vw,1.85rem);margin:12px auto 0;max-width:100%;width:fit-content;text-align:center;border:2px solid #4d5b6b;border-radius:4px;padding:9px 17px;background:#fff;box-sizing:border-box}.math-table .final-power td{padding-top:4px;padding-bottom:3px}.math-table .sum td{padding-bottom:3px}
 .stepper{justify-content:space-between;gap:12px;margin-top:12px}
 .stepper button:last-child{margin-left:auto;font-weight:650}
 #stepProgress{font-size:.86rem;color:#647080}
@@ -101,9 +101,9 @@ button:disabled{opacity:.38;cursor:default}
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 </div>
 <div class="toolbar-bottom">
-<div class="setting bank-setting"><span class="caption">Question bank</span><nav class="top-questions" id="questions" aria-label="Four reproducible questions for the selected settings"></nav></div>
+<div class="setting bank-setting"><span class="caption">Question bank (Homework)</span><nav class="top-questions" id="questions" aria-label="Four reproducible questions for the selected settings"></nav></div>
 <div class="setting"><span class="caption">Signs</span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
-<div class="modes" id="modes" aria-label="How to view the solution"></div><button id="oreos" type="button" hidden aria-pressed="false" title="Show or hide optional zero placeholders">Oreos! (zeros)</button>
+<div class="modes" id="modes" aria-label="How to view the solution"></div><button id="oreos" type="button" hidden aria-pressed="false" title="Show or hide optional zero placeholders">Optional zeros</button>
 </div>
 <div class="factor-expression" id="factorExpression" aria-label="Current multiplication question"></div>
 
