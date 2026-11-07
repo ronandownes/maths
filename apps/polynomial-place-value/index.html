@@ -298,6 +298,18 @@ main{margin:5px auto;padding:10px 19px 18px}
  .activity-actions{margin-left:0}
  .activity-switch>.practice-quick-controls{flex-basis:100%;justify-content:flex-start}
 }
+
+.reflection-self-check{margin-top:16px;padding-top:12px;border-top:1px solid #d8dee6}
+.reflection-self-check>strong,.reflection-revisit>strong{font-size:1rem}
+.reflection-self-check p{font-size:.94rem}
+.reflection-rating{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:13px 0}
+.reflection-rating>span{font-size:.98rem;max-width:480px}
+.reflection-rating-buttons{display:flex;gap:5px}
+.reflection-rating-buttons button{min-width:38px;min-height:38px;padding:4px 9px}
+.reflection-rating-buttons button[aria-pressed=true]{background:#d7f5dd;color:#14552b;border-color:#238344;font-weight:750}
+.reflection-advice{font-weight:600}
+.reflection-revisit{margin-top:13px;padding-top:10px;border-top:1px solid #d8dee6}
+.reflection-small-print{color:#647080}
 </style>
 </head>
 <body>
@@ -356,7 +368,7 @@ const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed
 const signChoices=[['positive','Positive\nterms'],['negative','Negative\nnon-leading'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
-const state={type:'ql',factorRandom:false,monic:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,question:null};
+const state={type:'ql',factorRandom:false,monic:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,reflectionUsed:0,reflectionNeed:0,question:null};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -424,15 +436,15 @@ function chosenQuestion(){
  return makeQuestion(rng,state.slot==='fresh'?null:homeworkSigns[state.slot]);
 }
 function selectQuestion(slot){
- state.slot=slot;state.question=chosenQuestion();state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
+ state.slot=slot;state.question=chosenQuestion();state.reflectionUsed=0;state.reflectionNeed=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
 }
 function freshQuestion(){
  const previous=state.question;
  for(let attempt=0;attempt<16;attempt++){
   state.freshCount++;const next=(()=>{state.slot='fresh';return chosenQuestion()})();
-  if(!previous||JSON.stringify(next)!==JSON.stringify(previous)){state.question=next;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();return}
+  if(!previous||JSON.stringify(next)!==JSON.stringify(previous)){state.question=next;state.reflectionUsed=0;state.reflectionNeed=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();return}
  }
- state.question=chosenQuestion();state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
+ state.question=chosenQuestion();state.reflectionUsed=0;state.reflectionNeed=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
 }
 
 function chooseButtons(id,entries,current,change){
@@ -769,7 +781,35 @@ function draw(){
    }else{
     followup.textContent='Look at the signs of your answer. Which signs could you have predicted before doing the calculation?';
    }
-   reflection.append(heading,paragraph,followup);root.append(reflection);
+   reflection.append(heading,paragraph,followup);
+   const selfCheck=document.createElement('div');selfCheck.className='reflection-self-check';
+   const selfTitle=document.createElement('strong');selfTitle.textContent='Assess your own learning';
+   const scaleHelp=document.createElement('p');scaleHelp.textContent='Choose from 1 (very little help) to 5 (a lot of help). These are for your own reflection, not marks.';
+   selfCheck.append(selfTitle,scaleHelp);
+   function addRating(label,key){
+    const field=document.createElement('div');field.className='reflection-rating';
+    const prompt=document.createElement('span');prompt.textContent=label;field.append(prompt);
+    const buttons=document.createElement('div');buttons.className='reflection-rating-buttons';
+    for(let value=1;value<=5;value++){
+     const button=document.createElement('button');button.type='button';button.textContent=String(value);
+     button.setAttribute('aria-label',label+' '+value+' out of 5');
+     button.setAttribute('aria-pressed',String(state[key]===value));
+     button.onclick=()=>{state[key]=value;render()};
+     buttons.append(button);
+    }
+    field.append(buttons);selfCheck.append(field);
+   }
+   addRating('How much did you use the app to complete or correct this question?','reflectionUsed');
+   addRating('How much help do you think you will need next time?','reflectionNeed');
+   const advice=document.createElement('p');advice.className='reflection-advice';
+   advice.textContent=state.reflectionNeed>=4?'Start tomorrow with Step by step, then try the same skill again without looking.':state.reflectionNeed>0&&state.reflectionNeed<=2?'Try the next question independently, and use the app afterwards to check your answer.':'Use the app as much as you need; gradually try more of the working before revealing each stage.';
+   selfCheck.append(advice);
+   const revisit=document.createElement('div');revisit.className='reflection-revisit';
+   const revisitTitle=document.createElement('strong');revisitTitle.textContent='Plan to revisit';
+   const revisitText=document.createElement('p');revisitText.textContent='Tomorrow: retry a similar question. In one week: quiz yourself without help. In one month: take a short test to see what you remember. If you make a mistake, correct it and revisit sooner.';
+   const reminder=document.createElement('p');reminder.className='reflection-small-print';reminder.textContent='This is a suggested revision plan, not an automatic reminder. Make a note of it in your Maths copy.';
+   revisit.append(revisitTitle,revisitText,reminder);selfCheck.append(revisit);
+   reflection.append(selfCheck);root.append(reflection);
    const investigations=[
     {question:'Trick of the trade: take out a common factor first.',detail:'For (10x + 15)(2x² + 3x + 4), rewrite 10x + 15 as 5(2x + 3). Expand the simpler brackets first, then multiply every coefficient of the answer by 5. Why does this work?'},
     {question:'Investigation: Changing the signs of a factor changes the signs of the answer.',detail:'Take the factor (7x − 1) and change both signs to (−7x + 1) = −(7x − 1). Multiply each by the same second factor. Can you predict the entire new answer without expanding? Why is this scaling by −1?'},
