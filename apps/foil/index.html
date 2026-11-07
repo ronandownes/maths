@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FOIL · Four Channels | Maths Apps</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#243142;background:#f5f7fa;--edge:#d7e0ea;--blue:#2464aa;--green:#28683e}
+*{box-sizing:border-box}body{margin:0}button,input{font:inherit}
+button{cursor:pointer;border:1px solid #bbcbdc;border-radius:8px;padding:9px 12px;background:white;color:inherit}
+button:hover{border-color:#598ac5;background:#f1f7ff}button:focus-visible,input:focus-visible{outline:3px solid #2d7dd2;outline-offset:2px}
+button[aria-pressed=true]{background:#e5f0fc;border-color:#3b7fbe;color:#154a7b;font-weight:700}
+.top{display:flex;gap:14px;align-items:center;padding:10px clamp(12px,3vw,32px);border-bottom:1px solid var(--edge);background:white}
+.brand{display:flex;flex-direction:column;align-items:flex-end;text-decoration:none;color:#26333e;gap:0;width:112px;flex:none}
+.brand img{width:110px;height:auto}.brand small{font-size:.92rem;font-weight:750;line-height:1;margin-top:-5px}
+.top h1{font-size:clamp(1.2rem,2.6vw,1.7rem);margin:0}.top p{margin:3px 0;color:#667587;font-size:.88rem}
+.top nav{margin-left:auto;font-size:.86rem}.top nav a{color:#235b91}
+main{max-width:1150px;margin:auto;padding:16px 18px 38px}
+.choices,.edit{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.choices strong{font-size:.9rem;margin-right:6px;color:#536274}
+.main-panel{background:white;border:1px solid var(--edge);border-radius:14px;padding:clamp(13px,2vw,24px);box-shadow:0 5px 22px #1a34510c}
+.edit{justify-content:center;gap:15px;margin:16px 0}.edit label{display:grid;gap:5px;text-align:center;color:#59687a;font-size:.87rem}
+.edit input{width:88px;text-align:center;border-radius:9px;padding:9px 7px;border:1px solid #b4c4d5;color:#182738;background:#fff;font:1.35rem "Cambria Math",Cambria,Georgia,serif}
+.statement{font:clamp(1.65rem,4vw,2.5rem)/1.5 "Cambria Math",Cambria,Georgia,serif;text-align:center;margin:14px auto 24px;overflow-wrap:anywhere}
+.statement .bracket{display:inline-block;white-space:nowrap}
+.channel-header{margin:18px 0 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.channel-header h2{font-size:1.1rem;margin:0}.muted{color:#647487;font-size:.88rem}
+.channels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.channel{min-width:0;border:2px solid #d7e2ee;background:#f9fbfe;border-radius:12px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:8px;min-height:150px}
+.channel.middle{border-color:#abc6e7;background:#f3f8ff}
+.channel.selected{outline:3px solid #226bba;outline-offset:-3px;background:#e8f2fd}
+.channel .number{font-size:.77rem;color:#60748c;font-weight:700}
+.channel .pair{font:clamp(1.15rem,2.1vw,1.6rem) Cambria,Georgia,serif}
+.channel .result{font:clamp(1.45rem,3vw,2.1rem) Cambria,Georgia,serif;min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;overflow-wrap:anywhere}
+.channel .direction{font-size:.75rem;color:#60768b;text-align:center}
+.channel .result.hidden-product{color:#aab4c0}
+.flow{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0 5px}
+.flow button{min-width:110px}
+.detail{margin-top:14px;min-height:44px;border:1px solid #d9e4ef;padding:10px 12px;border-radius:8px;background:#fafcff;font-size:1rem;line-height:1.4}
+.math{font-family:"Cambria Math",Cambria,Georgia,serif;font-size:1.15em}
+.expansion{margin-top:20px;padding-top:15px;border-top:1px solid var(--edge)}
+.expansion h2{font-size:1rem;margin:0 0 9px}
+.formula{font:clamp(1.5rem,3.6vw,2.15rem)/1.5 "Cambria Math",Cambria,Georgia,serif;text-align:center;overflow-wrap:anywhere}
+.checkline{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px auto;color:#526577;font-size:.9rem;flex-wrap:wrap}
+.simplify{margin:10px auto 0;text-align:center;min-height:44px;font:clamp(1.4rem,3vw,2rem) Cambria,Georgia,serif}
+.note{color:#5f6b7a;max-width:760px;margin:14px auto 0;text-align:center;line-height:1.5;font-size:.88rem}
+@media(max-width:700px){.channels{grid-template-columns:repeat(2,minmax(0,1fr))}.channel{min-height:133px}.edit input{width:70px}.top{flex-wrap:wrap}.top nav{margin-left:0}.flow button{min-width:0;flex:1 1 140px}}
+@media print{body{background:white}.choices,.edit,.flow,.top nav{display:none}.main-panel{border:0;box-shadow:none}.channel{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header class="top"><a class="brand" href="../../index.html" aria-label="Maths Apps home"><img src="../../assets/maths-logo.svg" alt="Maths with four coloured dots"><small>Apps</small></a><div><h1>FOIL · Four Channels</h1><p>Distribute first. Combining like terms is optional.</p></div><nav><a href="../../algebra/index.html">Algebra</a> · <a href="../polynomial-place-value/index.html">Place value</a></nav></header>
+<main>
+<div class="choices" role="group" aria-label="Choose example">
+<strong>Examples</strong>
+<button type="button" data-example="symbols">A, B, C, D</button>
+<button type="button" data-example="distinct">Four different letters</button>
+<button type="button" data-example="numeric">Like terms</button>
+<button type="button" data-example="grouping">Grouping connection</button>
+</div>
+<section class="main-panel" aria-label="Four-channel binomial multiplication">
+<div class="edit" aria-label="Edit each of the four terms">
+<label>A<input id="a" aria-label="First term of first binomial" maxlength="8" autocomplete="off" spellcheck="false" value="a"></label>
+<label>B<input id="b" aria-label="Second term of first binomial" maxlength="8" autocomplete="off" spellcheck="false" value="b"></label>
+<label>C<input id="c" aria-label="First term of second binomial" maxlength="8" autocomplete="off" spellcheck="false" value="c"></label>
+<label>D<input id="d" aria-label="Second term of second binomial" maxlength="8" autocomplete="off" spellcheck="false" value="d"></label>
+</div>
+<div id="statement" class="statement" aria-live="polite"></div>
+<div class="channel-header"><h2>The four product channels</h2><span class="muted">Channels 2 and 3 are the middle pair</span></div>
+<div class="channels" id="channels"></div>
+<div class="flow" aria-label="Control product reveal">
+<button type="button" id="all">Show all four</button>
+<button type="button" id="one">One by one</button>
+<button type="button" id="next">Next product →</button>
+<button type="button" id="reset">Hide products</button>
+</div>
+<div id="detail" class="detail" role="status" aria-live="polite">Choose a channel or reveal the four products.</div>
+<div class="expansion"><h2>Expansion: the four products stay separate</h2><div id="expanded" class="formula"></div>
+<div class="checkline"><label><input type="checkbox" id="combine"> Combine like terms (only when there are any)</label></div>
+<div id="simplified" class="simplify" aria-live="polite"></div></div>
+<p class="note">FOIL describes an order for four applications of the distributive law. The method also works when the middle products are not like terms. For grouping, reversing the expansion can expose a shared binomial factor.</p>
+</section>
+</main>
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const examples={symbols:['a','b','c','d'],distinct:['x','y','p','q'],numeric:['x','2','x','3'],grouping:['x','y','a','b']};
+let revealed=4,focus=-1;
+const clean=text=>String(text).replace(/\s+/g,'').replace(/−/g,'-');
+function parse(text){
+ const m=/^([+-]?)(\d*)([a-z]?)$/.exec(clean(text));
+ if(!m||(!m[2]&&!m[3]))return null;
+ const coeff=(m[2]?Number(m[2]):1)*(m[1]==='-'?-1:1);
+ return {coeff,vars:m[3]?{[m[3]]:1}:{}};
+}
+function multiply(left,right){
+ const p=parse(left),q=parse(right);
+ if(!p||!q)return null;
+ const coeff=p.coeff*q.coeff,vars={...p.vars};
+ Object.entries(q.vars).forEach(([letter,n])=>vars[letter]=(vars[letter]||0)+n);
+ return {coeff,vars};
+}
+function varKey(m){return Object.keys(m.vars).sort().map(key=>key+':'+m.vars[key]).join('|')}
+function format(m,absolute=false){
+ if(!m)return '?';
+ const c=absolute?Math.abs(m.coeff):m.coeff;
+ const v=Object.keys(m.vars).sort().map(key=>key+(m.vars[key]===1?'':'<sup>'+m.vars[key]+'</sup>')).join('');
+ if(!v)return String(c);
+ return (c===1?'':c===-1?'−':String(c))+v;
+}
+function signed(m,first=false){
+ if(!m)return first?'?':' + ?';
+ return (m.coeff<0?(first?'−':' − '):(first?'':' + '))+format(m,true);
+}
+function term(text,first){
+ const p=parse(text);return p?signed(p,first):'?';
+}
+function bracket(a,b){return '<span class="bracket">('+term(a,true)+signed(parse(b),false)+')</span>'}
+const channelPairs=[[0,2],[0,3],[1,2],[1,3]];
+const channelLabels=['Shimmy left · channel 1','Middle · channel 2','Middle · channel 3','Shimmy right · channel 4'];
+function data(){return ['a','b','c','d'].map(id=>clean($(id).value))}
+function render(){
+ const values=data();
+ const valid=values.every(v=>parse(v)!==null);
+ $('statement').innerHTML=valid?bracket(values[0],values[1])+' '+bracket(values[2],values[3]):'Enter numbers or simple terms such as x, −x, 3 or 2y.';
+ const terms=channelPairs.map(([i,j])=>multiply(values[i],values[j]));
+ const host=$('channels');host.replaceChildren();
+ channelPairs.forEach(([i,j],k)=>{
+  const b=document.createElement('button');b.type='button';b.className='channel'+(k===1||k===2?' middle':'')+(k===focus?' selected':'');
+  b.setAttribute('aria-label','Channel '+(k+1)+': '+['AC','AD','BC','BD'][k]);
+  b.setAttribute('aria-pressed',String(k===focus));
+  const show=revealed>k;
+  b.innerHTML='<span class="number">CHANNEL '+(k+1)+'</span><span class="pair">'+['AC','AD','BC','BD'][k]+'</span><span class="result'+(show?'':' hidden-product')+'">'+(show?format(terms[k]):'· · ·')+'</span><span class="direction">'+channelLabels[k]+'</span>';
+  b.onclick=()=>{focus=k;revealed=Math.max(revealed,k+1);render()};
+  host.append(b);
+ });
+ let expression='';
+ if(valid&&revealed){for(let i=0;i<revealed;i++)expression+=signed(terms[i],i===0)}
+ $('expanded').innerHTML=expression||'Choose Show all four or One by one';
+ if(focus>=0&&terms[focus]){
+  const [i,j]=channelPairs[focus];
+  $('detail').innerHTML='Channel '+(focus+1)+': multiply <span class="math">'+format(parse(values[i]))+'</span> by <span class="math">'+format(parse(values[j]))+'</span> to obtain <span class="math">'+format(terms[focus])+'</span>.';
+ }else $('detail').textContent=revealed===4?'All four products are visible. Select any channel to inspect it.':'Click Next product to reveal the following channel.';
+ const groups=new Map();
+ terms.forEach(m=>{if(!m)return;const key=varKey(m);if(!groups.has(key))groups.set(key,{vars:m.vars,coeff:0});groups.get(key).coeff+=m.coeff});
+ const combined=[...groups.values()].filter(m=>m.coeff!==0);
+ const hasLike=groups.size<terms.length;
+ $('combine').disabled=!valid||!hasLike;
+ if(!hasLike)$('combine').checked=false;
+ $('simplified').innerHTML=$('combine').checked&&hasLike?'<span class="muted">After combining like terms: </span>'+ (combined.map((m,i)=>signed(m,i===0)).join('')||'0'):'';
+}
+$('all').onclick=()=>{revealed=4;focus=-1;render()};
+$('one').onclick=()=>{revealed=1;focus=0;render()};
+$('next').onclick=()=>{revealed=Math.min(4,revealed+1);focus=revealed-1;render()};
+$('reset').onclick=()=>{revealed=0;focus=-1;render()};
+$('combine').onchange=render;
+for(const key of ['a','b','c','d'])$(key).addEventListener('input',()=>{focus=-1;revealed=4;render()});
+document.querySelectorAll('[data-example]').forEach(button=>button.addEventListener('click',()=>{
+ const vals=examples[button.dataset.example];['a','b','c','d'].forEach((id,i)=>$(id).value=vals[i]);
+ document.querySelectorAll('[data-example]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn===button)));
+ $('combine').checked=false;focus=-1;revealed=4;render();
+}));
+document.querySelector('[data-example="symbols"]').setAttribute('aria-pressed','true');
+render();
+})();
+</script>
+</body></html>
