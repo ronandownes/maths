@@ -911,7 +911,7 @@ function drawTest(){
  }
 }
 
-const ws={counts:{ll:3,ql:3,qq:0},levels:[1],signs:['positive'],support:'independent',columns:'auto',answers:'key',extra:0,steps:false};
+const ws={counts:{ll:3,ql:3,qq:0},levels:[1],signs:['positive'],support:'independent',columns:'auto',layout:'inline',answers:'key',extra:0,steps:false};
 function worksheetOptions(){
  const panel=$('worksheetPanel');panel.replaceChildren();
  const heading=el('h2','Printable worksheet · choose content and support');panel.append(heading);
@@ -950,6 +950,7 @@ function worksheetOptions(){
  }
  select('Support / differentiation','support',[['independent','Independent — no worked examples or hints'],['gradual','Graduated support — example, then fading hints'],['example','Worked example — one solved, others independent']]);
  select('Questions across the page','columns',[['auto','Auto-fit (3 or 4)'],['2','Exactly 2 columns'],['3','Exactly 3 columns'],['4','Exactly 4 columns']]);
+ select('Question layout','layout',[['inline','In line — bracketed factors'],['vertical','Long multiplication — aligned factors with a line']]);
  select('Answers','answers',[['key','Separate teacher answer key'],['grey','Faint grey answers on questions'],['none','No answers']]);
  const extras=field('Additional random questions'),row=el('div',undefined,'worksheet-options'),number=el('input');number.type='number';number.min='0';number.max='24';number.value=String(ws.extra);
  number.onchange=()=>{ws.extra=Math.max(0,Math.min(24,Math.floor(Number(number.value)||0)));number.value=String(ws.extra);wsStatus()};
@@ -970,7 +971,7 @@ function wsStatus(){
  const signs=ws.signs.includes('random')?3:ws.signs.length;
  const types=Object.values(ws.counts).filter(v=>v>0).length;
  const actual=n>0?Math.max(cols*2,Math.ceil(Math.max(n,types*signs)/(cols*2))*cols*2):0;
- const e=$('wsStatus');if(e)e.textContent=n+' selected · '+actual+' printed ('+cols+' across) · '+ws.support+' support · levels: '+(ws.levels.includes('random')?'random':ws.levels.join(', '))+' · signs: '+(ws.signs.includes('random')?'random':ws.signs.join(', '))+' · answers: '+ws.answers;
+ const e=$('wsStatus');if(e)e.textContent=n+' selected · '+actual+' printed ('+cols+' across) · '+ws.support+' support · levels: '+(ws.levels.includes('random')?'random':ws.levels.join(', '))+' · signs: '+(ws.signs.includes('random')?'random':ws.signs.join(', '))+' · answers: '+ws.answers+' · '+(ws.layout==='vertical'?'long multiplication':'in line');
 }
 function worksheetQuestions(){
  const old={type:state.type,level:state.level,sign:state.sign,random:state.factorRandom},out=[];
@@ -1047,16 +1048,20 @@ function printWorksheet(){
  function problem(item,index){
   const q=item.q,n=q.a.length+q.b.length-1,degree=n-1,mode=support(index);
   const factors=q.type==='ql'?[q.b,q.a]:[q.a,q.b],pad=values=>Array(n-values.length).fill(null).concat(values);
-  const formula='('+poly(factors[0])+') × ('+poly(factors[1])+')';
+  const formula='('+poly(factors[0])+')('+poly(factors[1])+')';
+  const vertical='<div class="vertical-question" aria-label="Factors set up for long multiplication">'+
+    '<div class="vertical-factor">'+poly(q.a)+'</div>'+
+    '<div class="vertical-factor vertical-bottom"><span class="vertical-times">×</span>'+poly(q.b)+'</div></div>';
+  const questionView=ws.layout==='vertical'?vertical:'<div class="formula">'+formula+'</div>';
   const label='<div class="meta">'+(index+1)+'. '+names[item.type]+' · '+signNames[q.sign]+' · L'+item.level+'</div>';
   const greyAnswer=ws.answers==='grey'?'<div class="grey-answer">= '+poly(product(q.a,q.b))+'</div>':'';
   const prompt=ws.steps&&ws.support!=='independent'&&mode!=='full'?'<div class="method-prompts">1. Set up columns &nbsp; 2. Place coefficients &nbsp; 3. Multiply &nbsp; 4. Group like terms &nbsp; 5. Write the answer</div>':'';
   if(mode==='none'){
-   return '<article class="problem independent">'+label+'<div class="formula">'+formula+'</div>'+prompt+greyAnswer+'</article>';
+   return '<article class="problem independent">'+label+questionView+prompt+greyAnswer+'</article>';
   }
   if(mode==='guided'||mode==='faded'){
    const hint=mode==='guided'?'Align coefficients by place value.':'Group like terms.';
-   return '<article class="problem independent">'+label+'<div class="formula">'+formula+'</div>'+
+   return '<article class="problem independent">'+label+questionView+
     '<div class="gentle-hint">'+hint+'</div>'+prompt+greyAnswer+'</article>';
   }
   const headers=Array.from({length:n},(_,i)=>'<th>'+(degree-i?pow(degree-i):'#')+'</th>').join('');
@@ -1079,7 +1084,7 @@ function printWorksheet(){
  }
  const key=ws.answers==='key'?all.map((item,i)=>{const q=item.q,fs=q.type==='ql'?[q.b,q.a]:[q.a,q.b];
   return '<div class="solution"><strong>'+(i+1)+'. '+names[item.type]+' · L'+item.level+'</strong>'+
-   '<div>('+poly(fs[0])+') × ('+poly(fs[1])+')</div><b>= '+poly(product(q.a,q.b))+'</b></div>';
+   '<div>('+poly(fs[0])+')('+poly(fs[1])+')</div><b>= '+poly(product(q.a,q.b))+'</b></div>';
  }).join(''):'';
  const html='<!doctype html><html lang="en-IE"><head><meta charset="utf-8"><title>Polynomial worksheet</title><style>'+
  '@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;background:#f1f3f6;color:#26364a;font-family:Arial,sans-serif}'+
@@ -1089,6 +1094,10 @@ function printWorksheet(){
  '.problem{min-width:0;padding:3mm 2mm;break-inside:avoid;min-height:70mm}'+
  '.meta{font-size:11px;font-weight:650;color:#455770;min-height:9mm}.formula{font:clamp(17px,1.9vw,26px)/1.3 Cambria,"Cambria Math",Georgia,serif;text-align:center;overflow-wrap:anywhere}'+
  '.problem.independent .formula{margin-top:4mm}.gentle-hint{margin-top:5mm;font-size:10px;color:#808b98;text-align:center}'+
+ '.vertical-question{width:fit-content;max-width:100%;margin:3mm auto 0;text-align:right;font:clamp(20px,2vw,28px)/1.5 Cambria,"Cambria Math",Georgia,serif;font-variant-numeric:tabular-nums}'+
+ '.vertical-factor{position:relative;white-space:nowrap;padding:0 5mm 0 9mm}'+
+ '.vertical-bottom{border-bottom:2px solid #53677c;padding-bottom:1mm}'+
+ '.vertical-times{position:absolute;left:0;top:0;font-size:.85em;color:#43566b}'+
  '.method-prompts{font:10px/1.55 Arial,sans-serif;color:#69798a;margin-top:8mm;text-align:center}'+
  '.grey-answer{font:clamp(14px,1.3vw,18px) Cambria,Georgia,serif;color:#b3bbc5;text-align:center;margin-top:9mm}'+
  '.problem.worked{padding:2.5mm;border:1px solid #bfcbd8;border-radius:5px;background:#fff}'+
