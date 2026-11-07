@@ -73,6 +73,9 @@ def build():
         tiles=''.join(f'<a class="tile" href="{t["slug"]}/index.html"><strong>{e(t["title"])}</strong><small>Open the complete teaching page</small></a>' for t in data['topics'] if t['ready'])
         if category == 'Number':
             tiles += '<a class="tile" href="sets/explorer.html"><strong>Explore two sets</strong><small>Interactive Venn diagram: move, overlap and compare sets.</small></a>'
+        if category == 'Geometry':
+            tiles += '<a class="tile" href="../apps/right-angle-ratios/index.html"><strong>Right-Angled Trigonometry</strong><small>Included angles, ratios, predictions and three calculations for each ratio.</small></a>'
+            tiles += '<a class="tile" href="../apps/pythagoras/index.html"><strong>Pythagoras</strong><small>Exact triples, non-triples, surds and missing-side reasoning.</small></a>'
         if category == 'Algebra':
             tiles += '<a class="tile" href="expansions/index.html"><strong>Expansions</strong><small>Compare the representations and see why each is useful.</small></a>'
             tiles += '<a class="tile" href="../apps/split-brackets/index.html"><strong>Split the Brackets</strong><small>Two distributive groups and reverse factorisation.</small></a>'
