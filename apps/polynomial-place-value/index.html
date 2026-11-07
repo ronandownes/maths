@@ -299,17 +299,15 @@ main{margin:5px auto;padding:10px 19px 18px}
  .activity-switch>.practice-quick-controls{flex-basis:100%;justify-content:flex-start}
 }
 
-.reflection-self-check{margin-top:16px;padding-top:12px;border-top:1px solid #d8dee6}
-.reflection-self-check>strong,.reflection-revisit>strong{font-size:1rem}
-.reflection-self-check p{font-size:.94rem}
-.reflection-rating{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:13px 0}
-.reflection-rating>span{font-size:.98rem;max-width:480px}
-.reflection-rating-buttons{display:flex;gap:5px}
-.reflection-rating-buttons button{min-width:38px;min-height:38px;padding:4px 9px}
-.reflection-rating-buttons button[aria-pressed=true]{background:#d7f5dd;color:#14552b;border-color:#238344;font-weight:750}
-.reflection-advice{font-weight:600}
-.reflection-revisit{margin-top:13px;padding-top:10px;border-top:1px solid #d8dee6}
-.reflection-small-print{color:#647080}
+/* Optional student guidance; large, accessible print-friendly text. */
+.step-explain-button{margin:3px 0 7px 36px;padding:5px 12px;min-height:32px;background:#fff;color:#265c93;border:1px solid #a9c2dd;border-radius:7px;font-size:.88rem;cursor:pointer}
+.step-current-tip{font-size:1.05rem;line-height:1.42;margin:3px 0 11px 36px;color:#283b52;max-width:48ch}
+.deepen-panel{padding:8px 6px;max-width:100%}
+.deepen-panel h3{font-size:1.42rem;margin:6px 0 10px;line-height:1.25}
+.deepen-main,.deepen-revisit{font-size:1.1rem;line-height:1.45;margin:8px 0}
+.deepen-toggle{margin-top:10px;min-height:40px;padding:8px 15px;font-weight:650}
+.deepen-panel .investigation{margin:14px 0 6px;max-width:66ch;font-size:1.03rem;line-height:1.48}
+.deepen-panel .investigation strong{font-size:1.17rem}
 
 .settings-top .setting--advanced{margin-left:auto;padding:3px 6px;background:#f7f8fa}
 #monicBtn{font-size:.79rem;padding:6px 9px;white-space:nowrap;color:#495564;background:#f2f4f6}
@@ -517,22 +515,22 @@ main{margin:5px auto;padding:10px 19px 18px}
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
 const actions=[
- 'Set up place-value column headers',
+ 'Set up powers-of-x columns',
  'Place coefficients in matching rows and columns',
  'Calculate partial products',
  'Combine like terms',
- 'Attach the powers of x',
- 'Box the final answer',
- 'Reflect and deepen your learning'
+ 'Append powers of x to each coefficient',
+ 'Box the answer with the correct signs',
+ 'Deepen your learning'
 ];
 const instructions=[
- 'The degree of the product is the sum of the factor degrees. Label the columns from the highest power down to x and # (the constant column).',
- 'Place the higher-degree factor in the top row. Right-align the coefficients: constant beneath constant, x beneath x, and so on.',
- 'Multiply each coefficient in the bottom row by the coefficients in the top row, shifting into the correct place-value columns. Use One by one to examine a single product.',
- 'Add down each column. The resulting coefficient sequence is ordered from the highest power of x to the constant term.',
- 'Read the column totals from left to right, attaching x powers to the coefficients. Omit zero terms and retain the correct signs.',
- 'Write the simplified polynomial in descending powers, with the correct signs, and box the answer.',
- 'Check the leading coefficient and constant term. Consider which terms combined and what you would do independently next time.'
+ 'Find the highest powers of the two factors and add them to find the top column.',
+ 'Keep the higher-degree factor on top. Match constants, x terms and other like powers in the same columns.',
+ 'Multiply the bottom coefficients by those above. Each partial product belongs in its matching power-of-x column.',
+ 'Add each column. The coefficient sequence runs from the highest power to the constant.',
+ 'Append the correct power of x to each non-zero coefficient, reading from left to right.',
+ 'Use descending powers of x, include every + and − sign, and box the final answer.',
+ 'Work independently, use spaced retrieval and explore a deeper connection if you want.'
 ];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
 const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\nQuad'],['any','Rand']];
@@ -542,7 +540,7 @@ const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed
 const signChoices=[['positive','Both\npositive'],['negative','Negative\nnon-leading'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
-const state={type:'ql',factorRandom:false,coreType:'ql',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,reflectionUsed:0,reflectionNeed:0,question:null,bankQuestion:0};
+const state={type:'ql',factorRandom:false,coreType:'ql',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -610,16 +608,16 @@ function chosenQuestion(){
  return makeQuestion(rng,state.slot==='fresh'?null:bankSigns[state.slot]);
 }
 function selectQuestion(slot){
- state.slot=slot;state.question=chosenQuestion();state.reflectionUsed=0;state.reflectionNeed=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
+ state.slot=slot;state.question=chosenQuestion();state.helpStage=-1;state.showInvestigation=false;state.investigationOffset=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
 }
 function freshQuestion(){
  boardState.offset=0;
  const previous=state.question;
  for(let attempt=0;attempt<16;attempt++){
   state.freshCount++;const next=(()=>{state.slot='fresh';return chosenQuestion()})();
-  if(!previous||JSON.stringify(next)!==JSON.stringify(previous)){state.question=next;state.reflectionUsed=0;state.reflectionNeed=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();return}
+  if(!previous||JSON.stringify(next)!==JSON.stringify(previous)){state.question=next;state.helpStage=-1;state.showInvestigation=false;state.investigationOffset=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();return}
  }
- state.question=chosenQuestion();state.reflectionUsed=0;state.reflectionNeed=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
+ state.question=chosenQuestion();state.helpStage=-1;state.showInvestigation=false;state.investigationOffset=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
 }
 
 function refreshSelectedQuestion(){boardState.offset=0;if(state.slot==='fresh')freshQuestion();else selectQuestion(state.slot)}
@@ -717,7 +715,7 @@ function renderSelectors(){
  steps.textContent=state.mode==='step'?'Restart steps':'Step by step';
  steps.setAttribute('aria-pressed',String(state.mode==='step'));
  steps.setAttribute('aria-label',state.mode==='step'?'Restart guided working from step one':'Start step-by-step working');
- steps.onclick=()=>{if(assessment.mode!=='practice')switchMode('practice');state.mode='step';state.step=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render()};
+ steps.onclick=()=>{if(assessment.mode!=='practice')switchMode('practice');state.mode='step';state.step=0;state.helpStage=-1;state.showInvestigation=false;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render()};
  host.append(steps,toggle);
 }
 function coefficientInputs(){
@@ -799,15 +797,30 @@ function draw(){
    const label=document.createElement('span');label.textContent=action;
    entry.append(marker,label);
    entry.onclick=()=>{
-    state.step=i+1;
+    state.step=i+1;state.helpStage=-1;
+    if(i!==6)state.showInvestigation=false;
     // Every main stage defaults to the complete result; drill-down is optional.
     state.partialCount=individualProducts(a,b).length;state.partialAll=true;
     state.groupCount=n;state.groupAll=true;
     render();
    };
    checklist.append(entry);
-   if(i===step){
-    const tip=el('p',instructions[i],'step-current-tip');tip.setAttribute('role','note');checklist.append(tip);
+   // No paragraph appears just because guided mode or Restart is selected.
+   // A step must be selected before its optional explanation becomes available.
+   if(step>0&&i===step-1&&i<6){
+    const explain=el('button',state.helpStage===i?'Hide explanation':'Explain','step-explain-button');
+    explain.type='button';explain.setAttribute('aria-expanded',String(state.helpStage===i));
+    explain.onclick=()=>{state.helpStage=state.helpStage===i?-1:i;render()};
+    checklist.append(explain);
+    if(state.helpStage===i){
+     const tip=el('p',instructions[i],'step-current-tip');tip.setAttribute('role','note');
+     if(i===0){
+      const largest=Math.max(a.length,b.length)-1,extra=Math.min(a.length,b.length)-1;
+      const label=k=>k===0?'constant':pow(k);
+      tip.innerHTML='Highest powers: '+label(largest)+' and '+label(extra)+'. Add the indices: '+largest+' + '+extra+' = '+(largest+extra)+'. Start at '+label(largest+extra)+'.'+(extra>0?' That is '+extra+' extra higher-power '+(extra===1?'column':'columns')+'.':' No extra column is needed.');
+     }
+     checklist.append(tip);
+    }
    }
    if(i===2&&step===3){
     const items=individualProducts(a,b);
@@ -966,57 +979,19 @@ function draw(){
    root.append(eq);
   }
   if(mode==='step'&&step===7){
-   const reflection=document.createElement('div');reflection.className='reflection';
-   const heading=document.createElement('strong');heading.textContent='Reflection';
-   const paragraph=document.createElement('p');
-   const leading=a[0]*b[0],constant=a[a.length-1]*b[b.length-1];
-   const signWord=v=>v<0?'negative':v>0?'positive':'zero';
-   const leftCoefficients=a.map(Math.abs),rightCoefficients=b.map(Math.abs);
-   const factorGcds=[a,b].map(terms=>terms.reduce((g,v)=>gcd(g,v),0));
-   const signChanges=final.some(v=>v<0)&&final.some(v=>v>0);
-   paragraph.textContent='Could you predict the leading coefficient ('+minus(leading)+') and the constant term ('+minus(constant)+') mentally? They are the products of the first coefficients and the last coefficients.';
-   const followup=document.createElement('p');
-   if(factorGcds.some(v=>v>1)){
-    followup.textContent='There is a common numerical factor in '+(factorGcds[0]>1?'the top':'the bottom')+' polynomial. Can you factor it out before multiplying?';
-   }else if(signChanges){
-    followup.textContent='Your answer contains positive and negative coefficients. Which products determine their signs? Did any terms partially or completely cancel?';
-   }else if(final.every(v=>v>0)){
-    followup.textContent='All the answer coefficients are positive. Could you have predicted that from the signs of the two factors?';
-   }else if(final.every(v=>v>=0)){
-    followup.textContent='Some coefficients are zero. Which positive and negative partial products cancelled?';
-   }else{
-    followup.textContent='Look at the signs of your answer. Which signs could you have predicted before doing the calculation?';
-   }
-   reflection.append(heading,paragraph,followup);
-   const selfCheck=document.createElement('div');selfCheck.className='reflection-self-check';
-   const selfTitle=document.createElement('strong');selfTitle.textContent='Assess your own learning';
-   const scaleHelp=document.createElement('p');scaleHelp.textContent='Choose from 1 (very little help) to 5 (a lot of help). These are for your own reflection, not marks.';
-   selfCheck.append(selfTitle,scaleHelp);
-   function addRating(label,key){
-    const field=document.createElement('div');field.className='reflection-rating';
-    const prompt=document.createElement('span');prompt.textContent=label;field.append(prompt);
-    const buttons=document.createElement('div');buttons.className='reflection-rating-buttons';
-    for(let value=1;value<=5;value++){
-     const button=document.createElement('button');button.type='button';button.textContent=String(value);
-     button.setAttribute('aria-label',label+' '+value+' out of 5');
-     button.setAttribute('aria-pressed',String(state[key]===value));
-     button.onclick=()=>{state[key]=value;render()};
-     buttons.append(button);
-    }
-    field.append(buttons);selfCheck.append(field);
-   }
-   addRating('How much did you use the app to complete or correct this question?','reflectionUsed');
-   addRating('How much help do you think you will need next time?','reflectionNeed');
-   const advice=document.createElement('p');advice.className='reflection-advice';
-   advice.textContent=state.reflectionNeed>=4?'Start tomorrow with Step by step, then try the same skill again without looking.':state.reflectionNeed>0&&state.reflectionNeed<=2?'Try the next question independently, and use the app afterwards to check your answer.':'Use the app as much as you need; gradually try more of the working before revealing each stage.';
-   selfCheck.append(advice);
-   const revisit=document.createElement('div');revisit.className='reflection-revisit';
-   const revisitTitle=document.createElement('strong');revisitTitle.textContent='Plan to revisit';
-   const revisitText=document.createElement('p');revisitText.textContent='Tomorrow: retry a similar question. In one week: quiz yourself without help. In one month: take a short test to see what you remember. If you make a mistake, correct it and revisit sooner.';
-   const reminder=document.createElement('p');reminder.className='reflection-small-print';reminder.textContent='This is a suggested revision plan, not an automatic reminder. Make a note of it in your Maths copy.';
-   revisit.append(revisitTitle,revisitText,reminder);selfCheck.append(revisit);
-   reflection.append(selfCheck);root.append(reflection);
+   const panel=el('section',undefined,'deepen-panel');
+   panel.append(el('h3','Deepen your learning'));
+   panel.append(el('p','Try the next question on your own. Check and correct any mistakes, then try again.','deepen-main'));
+   const recall=el('p',undefined,'deepen-revisit');
+   recall.append(el('strong','Spaced retrieval: '),document.createTextNode('Try again tomorrow, next week and in about a month. Recall the method before looking. Revisit sooner if needed.'));
+   panel.append(recall);
+   const investigate=el('button',state.showInvestigation?'Hide investigations':'Investigations','deepen-toggle');
+   investigate.type='button';investigate.setAttribute('aria-expanded',String(state.showInvestigation));
+   investigate.onclick=()=>{state.showInvestigation=!state.showInvestigation;render()};
+   panel.append(investigate);
+   if(state.showInvestigation){
    const investigations=[
+    {question:'Relatively prime coefficients and common factors',detail:'Compare 6x² + 9x + 15 with 6x² + 9x + 14. The HCF of 6, 9 and 15 is 3; the HCF of 6, 9 and 14 is 1. That means no prime factor divides ALL the coefficients of the second polynomial, even though some pairs share factors. Such a polynomial is called primitive. Try 5(x + 2)(2x + 3): every coefficient in its expansion is divisible by 5. Use Constant on to explore other outside multipliers.'},
     {question:'Trick of the trade: take out a common factor first.',detail:'For (10x + 15)(2x² + 3x + 4), rewrite 10x + 15 as 5(2x + 3). Expand the simpler brackets first, then multiply every coefficient of the answer by 5. Why does this work?'},
     {question:'Investigation: Changing the signs of a factor changes the signs of the answer.',detail:'Take the factor (7x − 1) and change both signs to (−7x + 1) = −(7x − 1). Multiply each by the same second factor. Can you predict the entire new answer without expanding? Why is this scaling by −1?'},
     {question:'Predict the first and last coefficients.',detail:'Without multiplying out, calculate '+minus(a[0])+' × '+minus(b[0])+' and '+minus(a[a.length-1])+' × '+minus(b[b.length-1])+'. Explain why these determine the leading and constant coefficients.'},
@@ -1031,21 +1006,19 @@ function draw(){
     {question:'Investigate 3x² + 9x + 30.',detail:'What do all three coefficients have in common? Factor it out. How could you use this before expanding a product?'},
         {question:'Can every coefficient of a product share a factor?',detail:'Start with two polynomials whose coefficients have no common factor greater than 1. Investigate whether their product can have one.'},
     {question:'Explore (5x + 10)(2x² + 3x + 7).',detail:'Factor out the common number first. Compare two methods of expanding and decide which is more efficient.'},
-    {question:'Investigate 6x² + 9x + 15 and 6x² + 9x + 14.',detail:'Which polynomial has a numerical factor common to all its terms? How does changing one coefficient affect factorising?'}
+    {question:'Test collective relative primality.',detail:'The coefficients 6, 9 and 14 have HCF 1, even though 6 and 9 share 3 and 6 and 14 share 2. Why is checking the HCF of ALL coefficients different from asking whether EVERY pair is relatively prime?'}
    ];
-   const hash=state.question.a.concat(state.question.b).reduce((acc,v)=>((acc*31+v+1024)>>>0),17);
-   const selected=(hash+state.investigationOffset)%investigations.length;
-   const investigation=investigations[selected];
-   const panel=document.createElement('div');panel.className='investigation';
-   const title=document.createElement('strong');title.textContent='Investigate';
-   const question=document.createElement('p');question.textContent=investigation.question;
-   const detail=document.createElement('p');detail.textContent=investigation.detail;
-   const next=document.createElement('button');next.type='button';next.textContent='Another investigation';
-   next.setAttribute('aria-label','Show another investigation');
-   next.onclick=()=>{state.investigationOffset++;render()};
-   panel.append(title,question,detail,next);root.append(panel);
+    const selected=state.investigationOffset%investigations.length;
+    const investigation=investigations[selected];
+    const insight=el('div',undefined,'investigation');
+    insight.append(el('strong',investigation.question),el('p',investigation.detail));
+    const next=el('button','Another investigation');next.type='button';
+    next.onclick=()=>{state.investigationOffset++;render()};
+    insight.append(next);panel.append(insight);
+   }
+   root.append(panel);
   }
- }
+}
 
 }
 
