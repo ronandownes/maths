@@ -444,6 +444,18 @@ main{margin:5px auto;padding:10px 19px 18px}
 .board-answer-first,.board-answer-term{display:inline-flex;align-items:baseline;gap:.12em;white-space:nowrap;flex-shrink:0}
 .board-answer sup,.board-expression sup{font-size:.62em;line-height:0;vertical-align:super}
 @media(max-width:680px){.board-range-control{grid-template-columns:52px 80px 18px}.board-range-control input[type=range]{width:80px}}
+
+/* Bracket-free place-value stacking: equal powers share exact grid columns. */
+.board-expression{display:flex;align-items:center;justify-content:center;min-width:0;overflow:visible}
+.board-stack-layout{display:inline-flex;align-items:center;justify-content:center;min-width:0;max-width:none;gap:.20em}
+.board-stack{position:relative;display:grid;grid-template-columns:repeat(var(--place-columns),max-content);
+ grid-template-rows:auto auto auto;column-gap:.30em;row-gap:.06em;
+ justify-content:center;align-items:baseline;white-space:nowrap;line-height:1.14;padding-left:.70em;min-width:0}
+.board-stack-term{display:block;white-space:nowrap;text-align:right}
+.board-stack-rule{grid-row:3;grid-column:1 / -1;border-top:.018em solid currentColor;height:0;opacity:.65}
+.board-stack::before{content:"×";position:absolute;left:0;bottom:.10em;font-size:.76em;line-height:1}
+.board-stack-scalar{white-space:nowrap;flex-shrink:0}
+.board-stack sup{font-size:.62em;vertical-align:super;line-height:0}
 </style>
 </head>
 <body>
@@ -488,15 +500,15 @@ main{margin:5px auto;padding:10px 19px 18px}
 </main>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
-const actions=['Set up the place-value columns','Place the coefficients','Calculate partial products','Combine terms by powers of x','Interpret and populate the powers of x','Box the answer','Reflect'];
+const actions=['Align factors by powers of x','Place coefficients in matching columns','Calculate partial products','Combine terms by powers of x','Interpret and populate the powers of x','Box the answer','Reflect'];
 const instructions=[
- 'Set up the place-value columns with powers of x',
- 'Place the coefficients in the correct columns, with the higher-degree factor on top',
- 'Calculate the partial products',
- 'Combine contributions in each power-of-x column (add coefficients where there are two or more)',
- 'Interpret and populate the powers of x',
- 'Box the final answer',
- 'Reflect on the efficiency of the method'
+ 'Put the higher-degree polynomial on top. Brackets are unnecessary in the vertical multiplication layout.',
+ 'Right-align the factors by powers of x: constants under constants, x under x, x² under x². Leave unmatched higher-degree columns blank.',
+ 'Multiply each term of the lower factor by the upper factor, preserving its place value.',
+ 'Combine products only when they contribute to the same power of x.',
+ 'Restore the correct power of x to each column total.',
+ 'Box the final simplified polynomial.',
+ 'Reflect: matching powers align as matching place values do in numerical multiplication.'
 ];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
 const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\nQuad'],['any','Rand']];
@@ -1456,10 +1468,27 @@ function worksheetOptions(){
  actions.append(go,close,status);panel.append(actions);wsStatus();
 }
 const boardState={columns:1,rows:1,answers:false,offset:0};
+// Both factors share a single place-value grid, with the higher-degree factor on top.
+function boardStackRow(coefficients,row,highestDegree){
+ let earlier=false,html='';
+ coefficients.forEach((v,i)=>{
+  if(v===0)return;
+  const p=coefficients.length-1-i,abs=Math.abs(v);
+  const sign=v<0?(earlier?'− ':'−'):(earlier?'+ ':'');
+  const body=(p&&abs===1?'':abs)+pow(p);
+  html+='<span class="board-stack-term" style="grid-row:'+row+';grid-column:'+(highestDegree-p+1)+'">'+sign+body+'</span>';
+  earlier=true;
+ });
+ return html||'<span class="board-stack-term" style="grid-row:'+row+';grid-column:'+(highestDegree+1)+'">0</span>';
+}
 function boardFormula(q){
- const factors=q.a.length>q.b.length?[q.b,q.a]:[q.a,q.b];
- const scalar=q.scalar&&q.scalar!==1?'<span class="board-factor">'+minus(q.scalar)+'</span>':'';
- return scalar+factors.map(f=>'<span class="board-factor">('+poly(f)+')</span>').join('');
+ const top=q.a.length>=q.b.length?q.a:q.b;
+ const bottom=q.a.length>=q.b.length?q.b:q.a;
+ const scalar=q.scalar&&q.scalar!==1?'<span class="board-stack-scalar">'+minus(q.scalar)+' ×</span>':'';
+ return '<span class="board-stack-layout">'+scalar+
+  '<span class="board-stack" style="--place-columns:'+top.length+'">'+
+  boardStackRow(top,1,top.length-1)+boardStackRow(bottom,2,top.length-1)+
+  '<span class="board-stack-rule" aria-hidden="true"></span></span></span>';
 }
 function boardAnswerHTML(q){
  const coefficients=product(q.a,q.b).map(v=>v*(q.scalar||1)),terms=[],degree=coefficients.length-1;
