@@ -216,6 +216,127 @@ function makeProblem(type){
  }
  return out('Find the next term.',list,a+4*d,'Add the signed common difference.');
 }
+
+/* Four worked alternatives, one mathematically correct and three with inspectable errors.
+   Generated from each problem's actual numbers, never chosen at random from unverified keys. */
+function workedChoices(p){
+ const options=[{value:p.expected,work:p.explanation,why:'This method gives the required result.',correct:true}];
+ const v=Number(p.expected),base=p.base||{};
+ const add=(value,work,why)=>{if(value===undefined||value===null)return;options.push({value,work,why,correct:false})};
+ if(p.mode==='operation'){
+  const other=['×2','×3','÷2','+2','−2'].filter(x=>x!==p.expected);
+  add(other[0],'I used '+other[0]+' between the terms.','That operation does not carry every term to the next.');
+  add(other[1],'I applied '+other[1]+' to each previous term.','A geometric sequence needs the same multiplicative ratio at every step.');
+  add(other[2],'I compared the terms and chose '+other[2]+'.','Check the direction of the operation and whether it works for all pairs.');
+ }else if(p.mode==='polynomial'){
+  if(p.type==='rulequad'){
+   const m=/^n\^2\+(-?\d+)n\+(-?\d+)$/.exec(String(p.expected));
+   if(m){
+    const b=Number(m[1]),c=Number(m[2]);
+    add('2n^2+'+b+'n+'+c,'I used the full second difference as the coefficient of n².','For quadratic sequences, a is HALF the second difference.');
+    add('n^2+'+(b+1)+'n+'+c,'I increased b when substituting T₁.','Check T₁=a+b+c against the first term.');
+    add('n^2+'+b+'n+'+(c+1),'I stepped back one unit too far to find c.','The constant is precisely T₀, not a nearby term.');
+   }
+  }else{
+   const d=p.type==='exam2026a2'?5:base.d;
+   const c=p.type==='exam2026a2'?7:base.c;
+   const a=p.type==='exam2026a2'?12:base.a;
+   add(formula(-d,c),'I reversed the sign of the first difference: d = '+format(-d)+'.','The direction of subtraction matters: later term minus previous term.');
+   add(formula(d,a),'I used the first listed term '+format(a)+' as the constant.','The constant in Tₙ=dn+c is the boxed T₀, not T₁.');
+   add(formula(d,c-d),'I stepped backwards twice, producing '+format(c-d)+'.','Only one backwards step is needed from T₁ to T₀.');
+  }
+ }else if(Number.isFinite(v)){
+  if(p.type==='sum'){
+   const n=Number((p.prompt.match(/first (\d+) terms/)||[])[1]);
+   const a=base.a,d=base.d;
+   if(Number.isFinite(n)){
+    const bracket=2*a+(n-1)*d;
+    add(n*bracket,'I found 2Sₙ = '+n+' × '+format(bracket)+' and forgot to halve.','The paired rows count the sum twice.');
+    add(n*(2*a+n*d)/2,'I used n differences instead of n−1.','Between the first and nth terms there are n−1 jumps.');
+    add(n*(a+(n-1)*d)/2,'I counted just one first term inside the bracket.','The bracket must begin with 2a, not a.');
+   }
+  }else if(p.type==='sumGivenA'){
+   const m=/S\d+ = ([−\d.]+); n = (\d+); d = ([−\d.]+)/.exec(p.numbers);
+   if(m){
+    const S=num(m[1]),n=Number(m[2]),d=num(m[3]);
+    add(S/n+(n-1)*d/2,'I ADDED the difference contribution when isolating a.','Move the difference contribution across with a minus sign.');
+    add(S/n-n*d/2,'I used n differences rather than n−1.','The distance from T₁ to Tₙ is n−1 jumps.');
+    add(2*S/n-(n-1)*d/2,'I forgot to halve the 2a term.','The coefficient 2 on a must be removed.');
+   }
+  }else if(p.type==='sumGivenD'){
+   const m=/S\d+ = ([−\d.]+); n = (\d+); a = ([−\d.]+)/.exec(p.numbers);
+   if(m){
+    const S=num(m[1]),n=Number(m[2]),a=num(m[3]);
+    add((2*S/n-a)/(n-1),'I subtracted a instead of 2a.','The bracket in the sum formula contains 2a.');
+    add((2*S/n-2*a)/n,'I divided by n instead of n−1.','There are n−1 gaps between the n terms.');
+    add(-v,'I reversed the sign when dividing to obtain d.','The common difference is signed; use the original equation to check it.');
+   }
+  }else if(p.type==='termzero'){
+   const a=base.a,d=base.d;
+   add(a+d,'I moved forwards: '+format(a)+' + ('+format(d)+').','Backtracking means subtracting the signed difference.');
+   add(a,'I kept the first term as term zero.','Term zero is one step BEFORE the first listed term.');
+   add(a-2*d,'I moved backwards twice rather than once.','From T₁ to T₀ is exactly one under-arc.');
+  }else if(p.type==='difference'){
+   const d=base.d;
+   add(-d,'I took the first term minus the second.','The signed first difference is T₂−T₁.');
+   add(2*d,'I measured from the first term to the THIRD term.','One under-arc joins consecutive terms.');
+   add(d+1,'I made an extra addition of 1 during subtraction.','Recheck the arithmetic and the sign.');
+  }else if(p.type==='nth'){
+   const d=base.d,c=base.c,n=Number((p.prompt.match(/T(\d+)/)||[])[1]);
+   if(Number.isFinite(n)){
+    add(c+(n-1)*d,'I substituted n−1 in place of n.','Tₙ=dn+c already includes the term number n.');
+    add(c+(n+1)*d,'I substituted n+1 in place of n.','Check the requested term number carefully.');
+    add(d*n+base.a,'I used T₁ as the constant instead of T₀.','Use the boxed term zero for c.');
+   }
+  }else if(p.type==='middle'||p.type==='exam2026b'){
+   const m=/([−\d]+), x, ([−\d]+)/.exec(p.numbers);
+   if(m){
+    const l=num(m[1]),h=num(m[2]);
+    add(l+h,'I found first + last but forgot to divide by 2.','The middle term is the average, not the sum.');
+    add((h-l)/2,'I halved the DIFFERENCE between the outer terms.','Halving the gap is not the same as finding the average.');
+    add((l+h)/2+1,'I added one extra unit after averaging.','Check the left and right differences: they must match.');
+   }
+  }else if(p.type==='sumGivenN'){
+   add(v-1,'I stopped one term early and used n = '+format(v-1)+'.','Substitute this n into the sum formula: the given sum is not obtained.');
+   add(v+1,'I counted one term too many, taking n = '+format(v+1)+'.','Substitute the term count back into the equation.');
+   add(v+2,'I counted two extra terms without checking the sum.','A term count must be a positive integer AND satisfy the sum equation.');
+  }
+  if(options.length<4){
+   add(v+1,'I introduced an extra +1 in my final calculation.','That result does not satisfy the original conditions.');
+   add(v-1,'I subtracted an extra 1 in my final calculation.','Check the original terms or equation to detect the slip.');
+   add(v===0?2:2*v,'I doubled my final value without checking the original problem.','Doubling the answer is not justified by the question.');
+  }
+ }
+ const distinct=[],seen=new Set();
+ for(const op of options){
+   const key=tidy(op.value);
+   if(seen.has(key))continue;
+   if(op.correct || !check(p,String(op.value))){seen.add(key);distinct.push(op)}
+ }
+ if(distinct.length<4){
+  if(p.mode==='numeric'){
+   let shift=2;
+   while(distinct.length<4 && shift<100){
+    let candidate=v+shift;
+    if(!seen.has(tidy(candidate))){
+     distinct.push({value:candidate,work:'I accepted '+format(candidate)+' without checking it in the original equation.',why:'The answer must satisfy all the supplied conditions.',correct:false});
+     seen.add(tidy(candidate));
+    }shift++;
+   }
+  }else{
+   let k=2;while(distinct.length<4&&k<12){
+    const candidate=p.mode==='polynomial'?'n+'+k:'×'+(k+2);
+    if(!seen.has(tidy(candidate))&&!check(p,String(candidate))){
+     distinct.push({value:candidate,work:'I substituted '+candidate+' without checking each term.',why:'Check all the given terms or substitutions.',correct:false});seen.add(tidy(candidate));
+    }k++;
+   }
+  }
+ }
+ if(distinct.length!==4||distinct.filter(x=>x.correct).length!==1)throw Error('Invalid four-choice assessment: '+p.type);
+ for(let i=distinct.length-1;i>0;i--){const j=rand(0,i);[distinct[i],distinct[j]]=[distinct[j],distinct[i]]}
+ return distinct;
+}
+
 function check(p,value){
  const x=tidy(value);if(!x)return false;
  if(p.mode==='operation'){
