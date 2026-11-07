@@ -469,6 +469,37 @@ main{margin:5px auto;padding:10px 19px 18px}
 .bank-question-nav .bank-question-arrow{font-size:1.2rem;padding:0 6px;min-width:25px;height:29px}
 .bank-question-nav .bank-question-position{font-size:.79rem;min-width:54px;text-align:center;font-variant-numeric:tabular-nums;color:#42546b}
 @media(max-width:1230px){.activity-switch{grid-template-columns:1fr 1fr}.activity-switch>.homework-controls{grid-column:1/-1}}
+
+/* Six-minute direct instruction. One clear mathematical idea per slide. */
+.instruction-panel:not([hidden]){position:fixed;inset:1.5vh 1.25vw;z-index:1010;display:flex;flex-direction:column;min-height:0;background:#fff;border:1px solid #cbd5e1;border-radius:12px;padding:clamp(10px,1.4vw,22px);box-shadow:0 14px 48px #172a442b}
+.instruction-panel:fullscreen{inset:0;width:100vw;height:100vh;border:0;border-radius:0;box-shadow:none}
+.instruction-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:9px;border-bottom:1px solid #dce3ed;padding-bottom:10px}
+.instruction-toolbar strong{font-size:clamp(1rem,1.35vw,1.4rem)}
+.instruction-tag{font-size:.88rem;color:#4b647e;margin-right:auto}
+.instruction-toolbar button,.instruction-footer button{min-height:42px;padding:7px 16px;font-size:1rem}
+.instruction-toolbar button:disabled,.instruction-footer button:disabled{opacity:.38}
+.instruction-stage{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(12px,2.5vh,28px);padding:clamp(10px,2vh,30px)}
+.instruction-stage h2{font-size:clamp(1.75rem,3.1vw,3.5rem);line-height:1.2;text-align:center;font-weight:700;color:#1e344d;margin:0}
+.instruction-focus{font:clamp(2.7rem,6vw,7rem)/1.22 "Cambria Math",Cambria,Georgia,serif;text-align:center;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.22em;max-width:100%}
+.instruction-focus sup{font-size:.63em;vertical-align:super;line-height:0}
+.instruction-caption{font-size:clamp(1.2rem,2.2vw,2rem);text-align:center;font-weight:500;line-height:1.3;color:#4a5c70;max-width:90%}
+.instruction-powers{display:grid;grid-template-columns:repeat(3,minmax(5rem,1fr));gap:12px;width:min(100%,790px);font:clamp(2.8rem,6.3vw,6.8rem)/1.2 "Cambria Math",Cambria,Georgia,serif;text-align:center}
+.instruction-powers span{background:#f3f7fc;border:2px solid #cbd9e8;border-radius:12px;padding:16px 4px}
+.instruction-table{border-collapse:collapse;width:min(100%,940px);table-layout:fixed;font:clamp(2rem,4.6vw,5rem)/1.25 "Cambria Math",Cambria,Georgia,serif;text-align:center;font-variant-numeric:tabular-nums}
+.instruction-table th{color:#344e6a;font-weight:650;border-bottom:3px solid #a4b5c8}
+.instruction-table td,.instruction-table th{padding:clamp(3px,1vh,9px) 4px}
+.instruction-table .instruction-multiplier td{border-bottom:3px solid #647991}
+.instruction-table .instruction-active td{background:#edf5ff;color:#1858a3}
+.instruction-table .instruction-result td{border-top:3px solid #647991;font-weight:700;color:#145c91}
+.instruction-table .instruction-row-label{text-align:left;width:13%;font:clamp(.9rem,1.5vw,1.3rem) Arial,sans-serif;color:#6a7585}
+.instruction-answer{color:#174ea6}
+.instruction-boxed{border:3px solid #174ea6;padding:.22em .36em;border-radius:10px}
+.instruction-footer{border-top:1px solid #dce3ed;padding-top:11px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+.instruction-count{min-width:85px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.instruction-dots{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.instruction-dots button{width:23px;min-width:23px;height:23px;padding:0;border-radius:50%;background:#edf1f7;border:1px solid #bac5d4}
+.instruction-dots button[aria-current=step]{background:#2563a6;border-color:#2563a6}
+@media(max-width:750px){.instruction-tag{flex-basis:100%;order:3}.instruction-table{font-size:clamp(1.5rem,5vw,3.5rem)}.instruction-footer button{padding:6px 10px}.instruction-powers{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -487,15 +518,17 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
  <div class="homework-controls"><span class="homework-label">Question banks</span><nav class="top-questions" id="questions" aria-label="Eight question banks"></nav><div id="bankQuestionNav" class="bank-question-nav" aria-label="Browse questions within the selected bank"></div></div>
  <div class="activity-section activities-section"><span class="activity-title">Activities</span><div class="activity-actions" aria-label="Choose activity">
+  <button id="instructionMode" type="button" aria-pressed="false">Instruction</button>
   <button id="boardMode" type="button" aria-pressed="false">Display</button>
   <button id="practiceMode" type="button" hidden aria-pressed="false">Practice</button>
   <button id="quizMode" type="button" aria-pressed="false">Quiz</button>
   <button id="testMode" type="button" aria-pressed="false">Test</button>
-  <button id="worksheetMode" type="button" aria-pressed="false">Worksheets</button>
+  <button id="worksheetMode" type="button" aria-pressed="false">Sheets</button>
  </div></div>
  <div class="activity-section procedural-section"><span class="activity-title">Procedural fluency</span><div class="practice-quick-controls" id="practiceQuickControls"><div class="modes" id="modes" aria-label="Procedural fluency"></div></div></div>
 </div>
-<section id="worksheetPanel" class="worksheet-panel" hidden aria-label="Worksheet settings"></section>
+<section id="worksheetPanel" class="worksheet-panel" hidden aria-label="Sheet settings for classwork and assignments"></section>
+<section id="instructionPanel" class="instruction-panel" hidden aria-label="Six-minute teacher-led place-value instruction" role="region"></section>
 <section id="boardPanel" class="board-panel" hidden aria-label="Project questions to the board"></section>
 <div id="practiceArea">
 <div class="practice-layout">
@@ -1407,7 +1440,7 @@ const ws={sheet:1,category:'positive',use:'classwork',count:24,counts:{ll:0,ql:1
 let wsPreviewCache=null;
 function worksheetOptions(){
  const panel=$('worksheetPanel');panel.replaceChildren();
- const heading=el('h2','Worksheets');panel.append(heading);
+ const heading=el('h2','Sheets');panel.append(heading);
  const top=el('div',undefined,'worksheet-quick');
  const pickRow=(headingText,choices,current,onChange)=>{
   const field=el('div',undefined,'worksheet-quick-group'),label=el('strong',headingText),buttons=el('div',undefined,'worksheet-options');
@@ -1843,6 +1876,97 @@ function printWorksheet(){
  popup.document.open();popup.document.write(html);popup.document.close();
 }
 $('worksheetMode').onclick=()=>switchMode('worksheet');
+
+const instructionSlides=[
+ {heading:'Expand two brackets',caption:'What will the highest power be?',kind:'opening'},
+ {heading:'Set up the place-value columns',caption:'1 + 1 = 2',kind:'headers'},
+ {heading:'Place the coefficients',caption:'Constants under constants.',kind:'coefficients'},
+ {heading:'Multiply by 4',caption:'First partial-product row.',kind:'constant'},
+ {heading:'Multiply by x',caption:'Shift one column to the left.',kind:'linear'},
+ {heading:'Add the columns',caption:'Like powers belong together.',kind:'add'},
+ {heading:'Append powers of x',caption:'Read from highest power to constant.',kind:'answer'},
+ {heading:'Your turn',caption:'Try independently. Then check.',kind:'independent'}
+];
+let instructionSlide=0;
+let instructionAnswerVisible=false;
+function instructionTable(kind){
+ const stage={coefficients:0,constant:1,linear:2,add:3}[kind]??0;
+ const cells=(values,cls='',label='')=>'<tr class="'+cls+'"><td class="instruction-row-label">'+label+'</td>'+
+   values.map(v=>'<td>'+(v===null?'':v)+'</td>').join('')+'</tr>';
+ return '<table class="instruction-table" aria-label="Place-value multiplication of 2x plus 3 by x plus 4">'+
+  '<thead><tr><th></th><th>x<sup>2</sup></th><th>x</th><th>#</th></tr></thead><tbody>'+
+  cells([null,2,3],'','Top')+
+  cells([null,1,4],'instruction-multiplier','× Bottom')+
+  (stage>=1?cells([null,8,12],kind==='constant'?'instruction-active':'','× 4'):'')+
+  (stage>=2?cells([2,3,0],kind==='linear'?'instruction-active':'','× x'):'')+
+  (stage>=3?cells([2,11,12],'instruction-result','Sum'):'')+
+ '</tbody></table>';
+}
+function drawInstruction(){
+ const host=$('instructionPanel');if(host.hidden)return;
+ host.replaceChildren();
+ const slide=instructionSlides[instructionSlide];
+ const toolbar=el('div',undefined,'instruction-toolbar');
+ toolbar.append(el('strong','Instruction'),el('span','Six-minute teacher-led lesson · 8 slides','instruction-tag'));
+ const full=el('button','Present ⛶');full.type='button';
+ full.onclick=()=>{if(document.fullscreenElement===host)document.exitFullscreen?.();else host.requestFullscreen?.().catch(()=>{})};
+ const exit=el('button','Close');exit.type='button';exit.onclick=()=>switchMode('practice');
+ toolbar.append(full,exit);
+ const stage=el('section',undefined,'instruction-stage');stage.setAttribute('aria-live','polite');
+ stage.append(el('h2',slide.heading));
+ const big=el('div',undefined,'instruction-focus');
+ if(slide.kind==='opening'){
+  big.innerHTML='<span>(2x + 3)</span><span>(x + 4)</span>';
+  stage.append(big);
+ }else if(slide.kind==='headers'){
+  const powers=el('div',undefined,'instruction-powers');
+  powers.innerHTML='<span>x<sup>2</sup></span><span>x</span><span>#</span>';
+  stage.append(powers);
+ }else if(['coefficients','constant','linear','add'].includes(slide.kind)){
+  stage.insertAdjacentHTML('beforeend',instructionTable(slide.kind));
+ }else if(slide.kind==='answer'){
+  big.classList.add('instruction-answer');
+  big.innerHTML='<span>(2x + 3)(x + 4) =</span><span class="instruction-boxed">2x<sup>2</sup> + 11x + 12</span>';
+  stage.append(big);
+ }else{
+  big.innerHTML='<span>(x + 2)(x + 3)</span>';
+  stage.append(big);
+  const check=el('button',instructionAnswerVisible?'Hide answer':'Show answer');check.type='button';
+  check.onclick=()=>{instructionAnswerVisible=!instructionAnswerVisible;drawInstruction()};
+  stage.append(check);
+  if(instructionAnswerVisible){
+   const result=el('div',undefined,'instruction-focus instruction-answer');
+   result.innerHTML='= x<sup>2</sup> + 5x + 6';stage.append(result);
+  }
+ }
+ stage.append(el('p',slide.caption,'instruction-caption'));
+ const footer=el('nav',undefined,'instruction-footer');
+ footer.setAttribute('aria-label','Instruction slide navigation');
+ const prev=el('button','← Previous');prev.type='button';prev.disabled=instructionSlide===0;
+ prev.onclick=()=>{instructionSlide=Math.max(0,instructionSlide-1);drawInstruction()};
+ const count=el('span',(instructionSlide+1)+' / '+instructionSlides.length,'instruction-count');
+ const dots=el('div',undefined,'instruction-dots');
+ instructionSlides.forEach((frame,i)=>{
+  const dot=el('button','');dot.type='button';
+  dot.setAttribute('aria-label','Slide '+(i+1)+': '+frame.heading);
+  if(i===instructionSlide)dot.setAttribute('aria-current','step');
+  dot.onclick=()=>{instructionSlide=i;drawInstruction()};dots.append(dot);
+ });
+ const next=el('button',instructionSlide===instructionSlides.length-1?'Restart lesson':'Next →');next.type='button';
+ next.onclick=()=>{instructionSlide=(instructionSlide+1)%instructionSlides.length;if(instructionSlide===0)instructionAnswerVisible=false;drawInstruction()};
+ footer.append(prev,count,dots,next);
+ host.append(toolbar,stage,footer);
+}
+document.addEventListener('keydown',event=>{
+ if(assessment.mode!=='instruction'||event.target.matches('input,textarea,select'))return;
+ if(event.key==='ArrowRight'||event.key==='PageDown'||event.key===' '){
+  event.preventDefault();instructionSlide=Math.min(instructionSlides.length-1,instructionSlide+1);drawInstruction();
+ }else if(event.key==='ArrowLeft'||event.key==='PageUp'){
+  event.preventDefault();instructionSlide=Math.max(0,instructionSlide-1);drawInstruction();
+ }else if(event.key==='Home'){event.preventDefault();instructionSlide=0;instructionAnswerVisible=false;drawInstruction()}
+ else if(event.key==='End'){event.preventDefault();instructionSlide=instructionSlides.length-1;drawInstruction()}
+ else if(event.key==='Escape'&&!document.fullscreenElement){event.preventDefault();switchMode('practice')}
+});
 function switchMode(mode){
  const previous=assessment.mode;
  if(assessment.started&&mode!==assessment.mode){assessment.started=false;assessment.questions=[];assessment.configureRequested=false;setAssessmentControlsLocked()}
@@ -1850,18 +1974,22 @@ function switchMode(mode){
  $('practiceArea').hidden=mode!=='practice';
  $('testArea').hidden=mode!=='quiz'&&mode!=='test';
  $('worksheetPanel').hidden=mode!=='worksheet';
+ $('instructionPanel').hidden=mode!=='instruction';
  $('boardPanel').hidden=mode!=='board';
+ if(previous==='instruction'&&mode!=='instruction'&&document.fullscreenElement===$('instructionPanel'))document.exitFullscreen?.().catch(()=>{});
  $('practiceQuickControls').hidden=false;
- for(const [key,value] of [['practiceMode','practice'],['quizMode','quiz'],['testMode','test'],['worksheetMode','worksheet'],['boardMode','board']]){
+ for(const [key,value] of [['practiceMode','practice'],['instructionMode','instruction'],['quizMode','quiz'],['testMode','test'],['worksheetMode','worksheet'],['boardMode','board']]){
   $(key).setAttribute('aria-pressed',String(key==='practiceMode'?mode==='practice'&&state.slot==='fresh':mode===value));
  }
  if(mode==='worksheet')worksheetOptions();
+ else if(mode==='instruction'){if(mode!==previous){instructionSlide=0;instructionAnswerVisible=false}drawInstruction()}
  else if(mode==='board')drawBoard();
  else if((mode==='quiz'||mode==='test')&&mode!==previous){
   assessment.configureRequested=false;initialiseTest('random');
  }
 }
 $('practiceMode').onclick=()=>{switchMode('practice');freshQuestion()};
+$('instructionMode').onclick=()=>switchMode('instruction');
 $('quizMode').onclick=()=>switchMode('quiz');
 $('testMode').onclick=()=>switchMode('test');
 $('boardMode').onclick=()=>switchMode('board');
