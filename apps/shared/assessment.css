@@ -1,0 +1,15 @@
+/* Shared Maths Apps assessment tokens and behaviours.
+   Imported by every app that has a Quiz or Test. */
+:root{--maths-blue:#165fa4;--maths-border:#dce5ee;--maths-ink:#223954;--maths-correct:#e6f6eb;--maths-warning:#fff4e7}
+.maths-assessment-pager{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:16px 0 4px}
+.maths-assessment-progress{font-size:1rem;font-weight:750;color:#506681}
+.maths-assessment-pager button{min-height:40px}
+.maths-assessment-feedback{font-size:1rem;font-weight:700;line-height:1.5;margin:11px 0;padding:10px 13px;border-radius:8px;background:var(--maths-warning);border:1px solid #e9c48e;color:#784318}
+.maths-assessment-feedback.correct{background:var(--maths-correct);border-color:#9bd3ab;color:#245b37}
+.maths-assessment-answer{width:100%;min-height:64px;padding:12px;font:clamp(1.25rem,2.2vw,1.8rem) Cambria,Georgia,serif;border:1px solid #a9bdd0;border-radius:8px;background:white}
+.maths-assessment-answer:focus{outline:3px solid #9fc7ef;outline-offset:1px}
+.maths-assessment-guide{font-size:.88rem;color:#536a80;line-height:1.45}
+.maths-assessment-score{font-size:clamp(1.25rem,2.5vw,1.8rem);font-weight:750;margin:15px 0}
+.maths-assessment-sound{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.maths-assessment-sound button{padding:6px 10px;font-size:.85rem}
+@media(max-width:650px){.maths-assessment-pager{align-items:stretch}.maths-assessment-pager button{width:100%}}
