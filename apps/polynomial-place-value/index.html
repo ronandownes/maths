@@ -766,13 +766,18 @@ function drawTest(){
     const fillCorrect=()=>assessment.responses[index].every((v,j)=>/^-?\d+$/.test(v.trim())&&Number(v)===p[j]);
     const fillLocked=fillQuiz&&(assessment.attempts[index]>=2||(assessment.checked[index]&&fillCorrect()));
     input.disabled=assessment.submitted||fillLocked;
-    input.oninput=()=>{assessment.responses[index][i]=input.value};
+    function refreshQuizCheck(){
+     if(!fillQuiz||!section.querySelector)return;
+     const button=section.querySelector('.quiz-fill-check');
+     if(button)button.disabled=fillLocked||!assessment.responses[index].every(v=>/^-?\d+$/.test(v.trim()));
+    }
+    input.oninput=()=>{assessment.responses[index][i]=input.value;refreshQuizCheck()};
     function nudgeCoefficient(delta){
      if(assessment.submitted||fillLocked)return;
      const current=/^-?\d+$/.test(input.value.trim())?Number(input.value):0;
      const next=current+delta;
      if(!Number.isSafeInteger(next))return;
-     input.value=String(next);assessment.responses[index][i]=input.value;
+     input.value=String(next);assessment.responses[index][i]=input.value;refreshQuizCheck();
     }
     input.addEventListener('wheel',event=>{
      if(assessment.submitted||fillLocked||document.activeElement!==input||event.deltaY===0)return;
@@ -794,18 +799,20 @@ function drawTest(){
     const isCorrect=assessment.responses[index].every((v,j)=>/^-?\d+$/.test(v.trim())&&Number(v)===p[j]);
     const attempts=assessment.attempts[index];
     const locked=attempts>=2||(attempts>0&&isCorrect);
-    const check=el('button','Check answer');check.type='button';
+    const check=el('button','Check answer','quiz-fill-check');check.type='button';
     check.disabled=locked||!answered;
     check.onclick=()=>{
-     if(locked||!answered)return;
-     if(assessment.firstAttempts[index]===null)assessment.firstAttempts[index]=isCorrect;
+     const ready=assessment.responses[index].every(v=>/^-?\d+$/.test(v.trim()));
+     const correctNow=assessment.responses[index].every((v,j)=>/^-?\d+$/.test(v.trim())&&Number(v)===p[j]);
+     if(locked||!ready)return;
+     if(assessment.firstAttempts[index]===null)assessment.firstAttempts[index]=correctNow;
      assessment.attempts[index]++;assessment.checked[index]=true;
      drawTest();
      const complete=assessment.questions.every((question,k)=>{
       const values=product(question.a,question.b);
       return assessment.responses[k].every((v,j)=>/^-?\d+$/.test(v.trim())&&Number(v)===values[j]);
      });
-     playQuizSound(complete?'fanfare':isCorrect?true:assessment.attempts[index]>=2?'final-wrong':false);
+     playQuizSound(complete?'fanfare':correctNow?true:assessment.attempts[index]>=2?'final-wrong':false);
     };
     section.append(check);
     if(attempts>0){
