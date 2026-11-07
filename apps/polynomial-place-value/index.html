@@ -98,7 +98,7 @@ button:disabled{opacity:.38;cursor:default}
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 </div>
 <div class="toolbar-bottom">
-<div class="setting bank-setting"><span class="caption">Bank</span><nav class="top-questions" id="questions" aria-label="Four reproducible questions for the selected settings"></nav></div>
+<div class="setting bank-setting"><span class="caption">Question bank</span><nav class="top-questions" id="questions" aria-label="Four reproducible questions for the selected settings"></nav></div>
 <div class="setting"><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
 <div class="modes" id="modes" aria-label="How to view the solution"></div>
 </div>
@@ -115,12 +115,18 @@ button:disabled{opacity:.38;cursor:default}
 const $ = id=>document.getElementById(id);
 const actions=['Set up the place-value columns','Calculate the partial products','Group like terms','Bring back the powers of x'];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
-const factorChoices=[['any','Factors'],...factorTypes];
+const factorChoices=[['any','Factors ↻'],...factorTypes];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
 const signChoices=[['random','Signs'],['positive','Positive'],['negative','Negative'],['mixed','Mixed']];
 const levels=[[1,'1'],[2,'2'],[3,'3'],['any','↻']];
 
 const state={type:'ql',factorRandom:false,sign:'positive',level:1,mode:'worked',step:0,slot:0,freshCount:0,question:null};
+const fixedBank=[
+ {type:'ll',sign:'positive',level:1,a:[1,2],b:[2,3]},
+ {type:'ql',sign:'mixed',level:1,a:[1,2,3],b:[2,-1]},
+ {type:'ql',sign:'mixed',level:2,a:[2,3,5],b:[3,-2]},
+ {type:'qq',sign:'mixed',level:2,a:[2,-3,5],b:[3,2,-1]}
+];
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
 const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t}return a};
@@ -136,43 +142,47 @@ function seedFor(slot){const typeIndex=factorTypes.findIndex(x=>x[0]===state.typ
  return ((slot+1)*209759+(state.level+13)*17539+(typeIndex+1)*9151+(signIndex+2)*1877)>>>0}
 function seeded(seed){let x=seed>>>0;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))}}
 function chooseSign(next){return ['positive','negative','mixed'][next(0,2)]}
-function makeQuestion(next,serial){
+function makeQuestion(next){
  const [na,nb]=state.type==='ll'?[2,2]:state.type==='ql'?[3,2]:[3,3];
  const level=state.level,sign=state.sign==='random'?chooseSign(next):state.sign;
- const choose=(a)=>a[next(0,a.length-1)];
- const small=()=>next(2,9),low=()=>next(1,6),big=()=>choose([10,11,11,11,20,21,30,31]);
- let a,b;
- for(let trial=0;trial<2000;trial++){
+ const pick=values=>values[next(0,values.length-1)];
+ const fav=()=>pick([1,2,2,2,3,3,3,5,5,4,7,8,9]);
+ const easy=()=>pick([1,1,1,2,2,2,3,3,3,4,5,5,7]);
+ const moderate=()=>pick([1,2,2,3,3,3,4,4,5,5,7,8,9]);
+ const challenge=()=>pick([10,11,11,11,20,21,30,31]);
+ for(let trial=0;trial<3500;trial++){
+  let a,b;
   if(level===1){
-   a=Array.from({length:na},()=>low());b=Array.from({length:nb},()=>low());
-   // One unit coefficient in each factor, at independently selected positions.
+   a=Array.from({length:na},easy);
+   b=Array.from({length:nb},easy);
    a[next(0,na-1)]=1;b[next(0,nb-1)]=1;
   }else if(level===2){
-   a=Array.from({length:na},small);b=Array.from({length:nb},small);
-   if(next(0,3)===0)(next(0,1)?a:b)[0]=11;
+   a=Array.from({length:na},moderate);
+   b=Array.from({length:nb},moderate);
+   if(next(0,5)===0)(next(0,1)===0?a:b)[next(0,(next(0,1)===0?na:nb)-1)]=11;
   }else{
-   a=Array.from({length:na},small);b=Array.from({length:nb},small);
-   // A useful two-digit factor, usually 11, rather than unrestricted large coefficients.
-   const target=next(0,1)?a:b;target[next(0,target.length-1)]=big();
+   a=Array.from({length:na},fav);
+   b=Array.from({length:nb},fav);
+   const target=next(0,1)===0?a:b;
+   target[next(0,target.length-1)]=challenge();
   }
-  for(const arr of [a,b]){
-   for(let i=1;i<arr.length;i++){
-    if(sign==='negative'||(sign==='mixed'&&next(0,1)===1))arr[i]*=-1;
-   }
+  for(const arr of [a,b])for(let i=1;i<arr.length;i++){
+   if(sign==='negative'||(sign==='mixed'&&next(0,1)===1))arr[i]=-Math.abs(arr[i]);
   }
   if(sign==='mixed'){
-   const other=a.slice(1).concat(b.slice(1)).filter(v=>v!==0);
-   if(other.every(v=>v>0))b[b.length-1]*=-1;
-   if(other.every(v=>v<0))a[a.length-1]*=-1;
+   const all=a.slice(1).concat(b.slice(1));
+   if(all.every(v=>v>0))b[b.length-1]=-Math.abs(b[b.length-1]);
+   if(all.every(v=>v<0))a[a.length-1]=Math.abs(a[a.length-1]);
   }
-  if(primitive(a)&&primitive(b)&&a[0]>0&&b[0]>0)return{a,b};
+  if(!primitive(a)||!primitive(b))continue;
+  if(level===2&&product(a,b).some(v=>Math.abs(v)>100))continue;
+  if(level===1&&product(a,b).some(v=>Math.abs(v)>60))continue;
+  return {a,b};
  }
- // Guaranteed primitive fallback, retaining the selected sign pattern.
- return{a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],
-        b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)]};
+ return {a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)]};
 }
-function chosenQuestion(){const rng=state.slot==='fresh'?seeded(seedFor(state.freshCount+1000) ^ ((Math.random()*0xffffffff)>>>0)):seeded(seedFor(state.slot));return makeQuestion(rng,state.slot)}
-function selectQuestion(slot){state.slot=slot;state.question=chosenQuestion();render()}
+function chosenQuestion(){if(state.slot!=='fresh')return{a:[...fixedBank[state.slot].a],b:[...fixedBank[state.slot].b]};const rng=seeded(seedFor(state.freshCount+1000) ^ ((Math.random()*0xffffffff)>>>0));return makeQuestion(rng)}
+function selectQuestion(slot){state.slot=slot;if(slot!=='fresh'){const item=fixedBank[slot];state.type=item.type;state.sign=item.sign;state.level=item.level;state.factorRandom=false;}state.question=chosenQuestion();render()}
 function freshQuestion(){state.freshCount++;selectQuestion('fresh')}
 function chooseButtons(id,entries,current,change){
  const host=$(id);host.replaceChildren();
@@ -189,6 +199,7 @@ function renderSelectors(){
  chooseButtons('signs',signChoices,state.sign,v=>filter('sign',v));
  chooseButtons('levels',levels,state.level,v=>{if(v==='any'){state.level=1+Math.floor(Math.random()*3);freshQuestion()}else filter('level',v)});
  const randomLevel=$('levels').children[3];randomLevel.className='level-random';randomLevel.title='Randomly choose Level 1, 2 or 3';randomLevel.setAttribute('aria-label','Random level');
+ const randomFactor=$('types').children[0];randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
  const host=$('modes');host.replaceChildren();
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
  toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
