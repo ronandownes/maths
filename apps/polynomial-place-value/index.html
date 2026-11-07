@@ -24,6 +24,8 @@ button:disabled{opacity:.38;cursor:default}
 .settings{display:flex;flex-wrap:wrap;gap:8px 12px;padding:7px 0 8px;border-top:1px solid #e2e6ea;border-bottom:1px solid #e2e6ea}
 .setting{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:6px 12px;border:1px solid #dce2e9;border-radius:8px;background:#fbfcfe}
 .setting .caption{font-size:.81rem;font-weight:700;color:#59636f;min-width:0}
+.caption-wrapped{display:flex;flex-direction:column;text-align:center;line-height:1.14;white-space:nowrap}
+.caption-wrapped span{display:block}
 .button-group button{font-size:.87rem;padding:8px 11px}
 .modes{margin:8px 0 4px}
 .modes button{font-size:.94rem}
@@ -81,7 +83,7 @@ button:disabled{opacity:.38;cursor:default}
 .settings-top{justify-content:flex-start;border-top:0;padding-top:1px}
 .settings-top .setting{padding:4px 8px}
 .level-random{font-size:.78rem!important;padding:7px 8px!important;color:#6b7280!important;background:#f8fafc!important;border-style:dashed!important}
-.level-random[aria-pressed=true]{background:#f8fafc!important;border-color:#b8c0c9!important}
+.level-random[aria-pressed=true]{background:#e8f0fe!important;border-color:#1a73e8!important;color:#174ea6!important}
 #types button:first-child,#signs button:first-child{font-weight:700}
 #oreos{font-size:.78rem;padding:7px 9px;color:#667085;border:1px dashed #c9ced7;background:#fafbfc}
 #oreos[aria-pressed=true]{background:#f0f3f7;border-color:#98a4b6;color:#48566c}
@@ -97,12 +99,12 @@ button:disabled{opacity:.38;cursor:default}
 <main>
 
 <div class="settings settings-top">
-<div class="setting"><span class="caption">Factors</span><div class="button-group" id="types" aria-label="Factors: choose a degree combination or random factors"></div></div>
+<div class="setting"><span class="caption caption-wrapped">Factor<span>pattern</span></span><div class="button-group" id="types" aria-label="Factors: choose a degree combination or random factors"></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 </div>
 <div class="toolbar-bottom">
-<div class="setting bank-setting"><span class="caption">Question bank (Homework)</span><nav class="top-questions" id="questions" aria-label="Four reproducible questions for the selected settings"></nav></div>
-<div class="setting"><span class="caption">Signs</span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
+<div class="setting bank-setting"><span class="caption caption-wrapped">Question bank<span>(Homework)</span></span><nav class="top-questions" id="questions" aria-label="Four reproducible questions for the selected settings"></nav></div>
+<div class="setting"><span class="caption caption-wrapped">Sign<span>pattern</span></span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
 <div class="modes" id="modes" aria-label="How to view the solution"></div><button id="oreos" type="button" hidden aria-pressed="false" title="Show or hide optional zero placeholders">Optional zeros</button>
 </div>
 <div class="factor-expression" id="factorExpression" aria-label="Current multiplication question"></div>
@@ -118,18 +120,13 @@ button:disabled{opacity:.38;cursor:default}
 const $ = id=>document.getElementById(id);
 const actions=['Set up the place-value columns','Keep the coefficients only','Calculate the partial products','Group like terms','Bring back the powers of x'];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
-const factorChoices=[...factorTypes,['any','↻']];
+const factorChoices=[...factorTypes,['any','Rand']];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
-const signChoices=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','↻']];
-const levels=[[1,'1'],[2,'2'],[3,'3'],['any','↻']];
+const signChoices=[['positive','Positives'],['negative','Negatives'],['mixed','Mixed'],['random','Rand']];
+const levels=[[1,'1'],[2,'2'],[3,'3'],['any','Rand']];
 
-const state={type:'ql',factorRandom:false,sign:'positive',level:1,mode:'worked',step:0,slot:0,freshCount:0,showOreos:false,question:null};
-const fixedBank=[
- {type:'ll',sign:'positive',level:1,a:[1,2],b:[2,3]},
- {type:'ql',sign:'mixed',level:1,a:[1,2,3],b:[2,-1]},
- {type:'ql',sign:'mixed',level:2,a:[2,3,5],b:[3,-2]},
- {type:'qq',sign:'mixed',level:2,a:[2,-3,5],b:[3,2,-1]}
-];
+const state={type:'ql',factorRandom:false,sign:'positive',level:1,levelRandom:false,mode:'worked',step:0,slot:0,freshCount:0,showOreos:false,question:null};
+
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
 const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t}return a};
@@ -141,13 +138,14 @@ function poly(a){let result='',degree=a.length-1;
  }return result||'0';
 }
 function product(a,b){const out=Array(a.length+b.length-1).fill(0);a.forEach((x,i)=>b.forEach((y,j)=>{out[i+j]+=x*y}));return out}
-function seedFor(slot){const typeIndex=factorTypes.findIndex(x=>x[0]===state.type),signIndex=signTypes.findIndex(x=>x[0]===state.sign);
- return ((slot+1)*209759+(state.level+13)*17539+(typeIndex+1)*9151+(signIndex+2)*1877)>>>0}
+function seedFor(slot){const typeIndex=state.factorRandom?3:factorTypes.findIndex(x=>x[0]===state.type),signIndex=signTypes.findIndex(x=>x[0]===state.sign);
+ return ((slot+1)*209759+(state.levelRandom?17:state.level+13)*17539+(typeIndex+1)*9151+(signIndex+2)*1877)>>>0}
 function seeded(seed){let x=seed>>>0;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))}}
 function chooseSign(next){return ['positive','negative','mixed'][next(0,2)]}
 function makeQuestion(next){
- const [na,nb]=state.type==='ll'?[2,2]:state.type==='ql'?[3,2]:[3,3];
- const level=state.level,sign=state.sign==='random'?chooseSign(next):state.sign;
+ const type=state.factorRandom?factorTypes[next(0,factorTypes.length-1)][0]:state.type;
+ const [na,nb]=type==='ll'?[2,2]:type==='ql'?[3,2]:[3,3];
+ const level=state.levelRandom?next(1,3):state.level,sign=state.sign==='random'?chooseSign(next):state.sign;
  const pick=values=>values[next(0,values.length-1)];
  const fav=()=>pick([1,2,2,2,3,3,3,5,5,4,7,8,9]);
  const easy=()=>pick([1,1,1,2,2,2,3,3,3,4,5,5,7]);
@@ -180,13 +178,21 @@ function makeQuestion(next){
   if(!primitive(a)||!primitive(b))continue;
   if(level===2&&product(a,b).some(v=>Math.abs(v)>100))continue;
   if(level===1&&product(a,b).some(v=>Math.abs(v)>60))continue;
-  return {a,b};
+  return {a,b,type};
  }
- return {a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)]};
+ return {a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)],type};
 }
-function chosenQuestion(){if(state.slot!=='fresh')return{a:[...fixedBank[state.slot].a],b:[...fixedBank[state.slot].b]};const rng=seeded(seedFor(state.freshCount+1000) ^ ((Math.random()*0xffffffff)>>>0));return makeQuestion(rng)}
-function selectQuestion(slot){state.slot=slot;if(slot!=='fresh'){const item=fixedBank[slot];state.type=item.type;state.sign=item.sign;state.level=item.level;state.factorRandom=false;}state.question=chosenQuestion();render()}
+function chosenQuestion(){
+ const rng=state.slot==='fresh'
+  ?seeded(seedFor(state.freshCount+1000)^((Math.random()*0xffffffff)>>>0))
+  :seeded(seedFor(state.slot));
+ return makeQuestion(rng);
+}
+function selectQuestion(slot){
+ state.slot=slot;state.question=chosenQuestion();render();
+}
 function freshQuestion(){state.freshCount++;selectQuestion('fresh')}
+
 function chooseButtons(id,entries,current,change){
  const host=$(id);host.replaceChildren();
  entries.forEach(([value,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(value===current));b.onclick=()=>change(value);host.append(b)});
@@ -196,11 +202,14 @@ function renderSelectors(){
  chooseButtons('questions',q,state.slot,v=>selectQuestion(v));
  function filter(key,value){state[key]=value;freshQuestion()}
  chooseButtons('types',factorChoices,state.factorRandom?'any':state.type,v=>{
-  if(v==='any'){state.factorRandom=true;state.type=factorTypes[Math.floor(Math.random()*factorTypes.length)][0];freshQuestion()}
+  if(v==='any'){state.factorRandom=true;freshQuestion()}
   else {state.factorRandom=false;filter('type',v)}
  });
  chooseButtons('signs',signChoices,state.sign,v=>filter('sign',v));
- chooseButtons('levels',levels,state.level,v=>{if(v==='any'){state.level=1+Math.floor(Math.random()*3);freshQuestion()}else filter('level',v)});
+ chooseButtons('levels',levels,state.levelRandom?'any':state.level,v=>{
+  if(v==='any'){state.levelRandom=true;freshQuestion()}
+  else{state.levelRandom=false;filter('level',v)}
+ });
  const randomLevel=$('levels').children[3];randomLevel.className='level-random';randomLevel.title='Randomly choose Level 1, 2 or 3';randomLevel.setAttribute('aria-label','Random level');
  const randomFactor=$('types').children[factorTypes.length];randomFactor.className='level-random';randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
  const randomSign=$('signs').children[3];randomSign.className='level-random';randomSign.title='Randomly choose a sign pattern';randomSign.setAttribute('aria-label','Random signs');
@@ -212,7 +221,7 @@ function renderSelectors(){
 }
 function coefficientInputs(){
  const host=$('coefficients');host.replaceChildren();
- (state.type==='ql'?[['First factor','b'],['Second factor','a']]:[['First factor','a'],['Second factor','b']]).forEach(([title,key])=>{
+ (state.question.type==='ql'?[['First factor','b'],['Second factor','a']]:[['First factor','a'],['Second factor','b']]).forEach(([title,key])=>{
   const group=document.createElement('div');group.className='factor-fields';
   state.question[key].forEach((v,i)=>{
    const degree=state.question[key].length-i-1;
@@ -271,7 +280,7 @@ function draw(){
  $('heading').textContent=mode==='step'?actions[step]:'';
  $('help').textContent='';
  const pad=v=>Array(n-v.length).fill(null).concat(v);
- const visibleFactors=state.type==='ql'?[b,a]:[a,b];
+ const visibleFactors=state.question.type==='ql'?[b,a]:[a,b];
  $('factorExpression').innerHTML=visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
  const oreos=$('oreos');
  oreos.hidden=mode==='question'||(mode==='step'&&step<2);
