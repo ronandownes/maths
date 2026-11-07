@@ -409,6 +409,8 @@ main{margin:5px auto;padding:10px 19px 18px}
 .factor-expression .factor sup{font-size:.62em}
 #beyondPanel[hidden]{display:none!important}
 .quiz-thinking-message{font-weight:700;font-size:.92rem;color:#8c3a27;margin:7px 0}
+.procedural-section .practice-quick-controls[hidden]{display:none!important}
+.activity-section .activity-actions button,.activity-section .modes button{min-height:39px}
 </style>
 </head>
 <body>
@@ -426,14 +428,14 @@ main{margin:5px auto;padding:10px 19px 18px}
 </div>
 <div class="activity-switch" aria-label="Learning and practice">
  <div class="homework-controls"><span class="homework-label">Classwork</span><nav class="top-questions" id="questions" aria-label="Four classwork sets"></nav></div>
+ <div class="activity-section"><span class="activity-title">Display</span><div class="activity-actions"><button id="boardMode" type="button" aria-pressed="false">Display</button></div></div>
+ <div class="activity-section procedural-section"><span class="activity-title">Procedural Fluency</span><div class="practice-quick-controls" id="practiceQuickControls"><div class="modes" id="modes" aria-label="Procedural fluency"></div></div></div>
  <div class="activity-section"><span class="activity-title">Learning activities</span><div class="activity-actions" aria-label="Choose learning activity">
   <button id="practiceMode" type="button" hidden aria-pressed="false">Practice</button>
-  <button id="boardMode" type="button" aria-pressed="false">Display</button>
   <button id="quizMode" type="button" aria-pressed="false">Quiz</button>
   <button id="testMode" type="button" aria-pressed="false">Test</button>
   <button id="worksheetMode" type="button" aria-pressed="false">Worksheets</button>
  </div></div>
- <div class="activity-section procedural-section"><span class="activity-title">Procedural Fluency</span><div class="practice-quick-controls" id="practiceQuickControls"><div class="modes" id="modes" aria-label="Procedural fluency"></div></div></div>
 </div>
 <section id="worksheetPanel" class="worksheet-panel" hidden aria-label="Worksheet settings"></section>
 <section id="boardPanel" class="board-panel" hidden aria-label="Project questions to the board"></section>
@@ -623,9 +625,10 @@ function renderSelectors(){
  const practiceButton=$('practiceMode');practiceButton.setAttribute('aria-pressed',String(assessment.mode==='practice'&&state.slot==='fresh'));
  const host=$('modes');host.replaceChildren();
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
- toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
+ toggle.onclick=()=>{if(assessment.mode!=='practice')switchMode('practice');state.mode=state.mode==='worked'?'question':'worked';render()};
  const steps=document.createElement('button');steps.type='button';steps.textContent='Step by step';steps.setAttribute('aria-pressed',String(state.mode==='step'));
- steps.onclick=()=>{state.mode='step';state.step=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render()};host.append(steps);
+ steps.onclick=()=>{if(assessment.mode!=='practice')switchMode('practice');state.mode='step';state.step=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render()};host.append(steps);
+ host.append(toggle);
  if(state.mode==='step'){
   const reset=document.createElement('button');reset.type='button';reset.textContent='Reset steps';
   reset.setAttribute('aria-label','Reset step-by-step working');
@@ -1731,7 +1734,7 @@ function switchMode(mode){
  $('testArea').hidden=mode!=='quiz'&&mode!=='test';
  $('worksheetPanel').hidden=mode!=='worksheet';
  $('boardPanel').hidden=mode!=='board';
- $('practiceQuickControls').hidden=mode!=='practice';
+ $('practiceQuickControls').hidden=mode==='quiz'||mode==='test';
  for(const [key,value] of [['practiceMode','practice'],['quizMode','quiz'],['testMode','test'],['worksheetMode','worksheet'],['boardMode','board']]){
   $(key).setAttribute('aria-pressed',String(key==='practiceMode'?mode==='practice'&&state.slot==='fresh':mode===value));
  }
