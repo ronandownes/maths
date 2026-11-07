@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#ffffff"><meta name="description" content="Draw under-arcs, subtract, box term zero, and develop the general term. Then solve missing-term problems and investigate sums."><title>Linear Sequences · Maths Apps</title><link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg"><link rel="stylesheet" href="../shared/assessment.css"><link rel="stylesheet" href="../shared/sequences.css"></head>
+<body data-kind="linear">
+<header><a href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Four-dot Maths logo"></a><b>Apps</b><h1>Linear Sequences</h1><a class="booklink" href="https://ronandownes.github.io/book/sequences-intro.html">Book ↗</a></header>
+<main>
+<nav class="modes" aria-label="Activity modes">
+<button type="button" data-mode="learn" aria-pressed="true">Learn</button><button type="button" data-mode="quiz" aria-pressed="false">Quiz</button><button type="button" data-mode="test" aria-pressed="false">Test</button>
+<button type="button" id="optionsBtn" class="options" aria-controls="settings" aria-expanded="false">⚙ Options</button>
+</nav>
+<aside id="settings" class="settings" hidden aria-label="App settings">
+<h3>Settings</h3><label>Difficulty <select id="difficulty"><option value="foundation">Foundation</option><option value="standard" selected>Standard</option><option value="challenge">Challenge</option></select></label>
+<label>Example <select id="example"><option value="0">Example 1</option><option value="1">Example 2</option></select></label>
+<label>Sound effects <input id="sound" type="checkbox" checked></label>
+<label>Spoken instruction <input id="spoken" type="checkbox"></label>
+<p class="small">Two attempts per question, in both Quiz and Test. Your answers stay on this device.</p>
+<button id="closeSettings" type="button" class="primary">Close</button>
+</aside>
+<section id="learn"><p class="lead">Draw under-arcs, subtract, box term zero, and develop the general term. Then solve missing-term problems and investigate sums. Click Next, use keyboard arrows, or select a teaching stage.</p>
+<div class="diagram" id="lessonDiagram"></div><div class="speech" id="lessonText" role="status" aria-live="polite"></div>
+<div class="formula" id="lessonFormula"></div>
+<div class="actions"><button type="button" id="prev">← Previous</button><span id="progress" class="progress"></span><button type="button" id="read">🔊 Read</button><button type="button" id="next" class="primary">Next →</button></div>
+<div class="quicknav" aria-label="Jump to teaching stage"><button type="button" data-jump="0">Terms</button><button type="button" data-jump="2">Difference</button><button type="button" data-jump="3">Term zero</button><button type="button" data-jump="4">General term</button><button type="button" data-jump="7">Missing term</button><button type="button" data-jump="8">Sum</button></div>
+<p class="small">For classroom projection: the arrow keys and Page Up/Page Down move between steps. On iPhone, use the touch buttons and collapse the settings.</p>
+</section>
+<section id="assessment" class="assessment" hidden>
+<p class="lead">Work out the answer on paper or mentally. Two guesses maximum per question; the next question appears after the final attempt.</p>
+<div id="questionPanel"><p class="small" id="questionCount"></p><div class="question" id="questionText"></div><div class="numbers" id="numbers"></div><label for="answer">Your answer</label><input id="answer" name="answer" autocomplete="off" spellcheck="false" placeholder="Enter a number or expression">
+<div class="actions"><button type="button" id="check" class="primary">Check answer</button><button type="button" id="advance" hidden>Next question →</button><span id="tries" class="small"></span></div><div class="feedback" role="status" aria-live="polite" id="feedback" hidden></div></div>
+<div id="results" hidden></div>
+</section>
+<nav class="quicknav" aria-label="Related sequence apps">
+<a href="../linear-sequences/index.html">Linear</a><a href="../quadratic-sequences/index.html">Quadratic</a><a href="../geometric-sequences/index.html">Geometric</a><a href="../../number/sequences/index.html">Maths lessons</a>
+</nav>
+</main>
+<script src="../shared/assessment.js"></script><script src="../shared/sequences.js"></script>
+</body></html>
