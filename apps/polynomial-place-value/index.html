@@ -182,8 +182,9 @@ button:disabled{opacity:.38;cursor:default}
 .quiz-work-table sup{font-size:.62em}
 .quiz-work-table .factor-divider td{border-bottom:2px solid #8290a0}
 .quiz-work-table .work-total td{border-top:2px solid #8290a0;font-weight:700}
-.work-error-cell{position:relative;display:inline-block}
-.work-error-cross{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:900 2.1rem/1 Arial,sans-serif;color:#c92b35;text-shadow:0 0 2px white;pointer-events:none}
+.work-error-cell{display:inline-flex;align-items:center;justify-content:center;gap:.2em;white-space:nowrap}
+.work-error-cross{position:static;display:inline-block;flex:none;font:900 1.35em/1 Arial,sans-serif;color:#c92b35;pointer-events:none}
+.work-correct-tick{display:inline-block;color:#187d48;font:900 1.65rem/1 Arial,sans-serif}
 .test-number-control input.fill-error{background:#fff1f1!important;color:#9b2424!important}
 .quiz-choices .quiz-choice.answer-incorrect .work-error-cell{color:#8b2020}
 .quiz-footer-score{border-top:2px solid #cbd5e1;padding:17px 12px;display:flex;gap:15px;align-items:baseline;justify-content:center;margin-top:16px}
@@ -631,7 +632,7 @@ function createWorkChoices(q,index){
  // through the subsequent multiplication and addition.
  const incorrectTop=q.a.slice(),incorrectBottom=q.b.slice();
  const target=rng(0,1)===0?incorrectTop:incorrectBottom;
- const pos=rng(0,target.length-1);
+ const pos=rng(Math.max(0,target.length-2),target.length-1);
  target[pos]+=(target[pos]>=0?1:-1);
  const copied={a:incorrectTop,b:incorrectBottom};
  variants.push({rows:workRows(copied),sum:product(copied.a,copied.b),
@@ -639,7 +640,8 @@ function createWorkChoices(q,index){
  // Multiplication error propagated into the final column total.
  const spots=[];
  base.forEach((row,i)=>row.forEach((v,j)=>{if(v!==null)spots.push([i,j])}));
- const [ri,ci]=spots[rng(0,spots.length-1)];
+ const preferred=spots.filter(([row,col])=>col>=Math.floor(correct.length/2));
+ const [ri,ci]=(preferred.length?preferred:spots)[rng(0,(preferred.length?preferred:spots).length-1)];
  const badRows=base.map(row=>row.slice());
  const delta=rng(0,1)===0?-1:1;
  badRows[ri][ci]+=delta;
@@ -647,7 +649,7 @@ function createWorkChoices(q,index){
  variants.push({rows:badRows,sum:badSum,valid:false,error:'multiplication',
   top:q.a.slice(),bottom:q.b.slice()});
  // Addition error: products correct but the column total incorrect.
- const col=rng(0,correct.length-1),sum=correct.slice();
+ const col=rng(Math.floor(correct.length/2),correct.length-1),sum=correct.slice();
  sum[col]+=(rng(0,1)===0?-1:1);
  variants.push({rows:base.map(row=>row.slice()),sum,valid:false,error:'addition',
   top:q.a.slice(),bottom:q.b.slice()});
@@ -662,15 +664,15 @@ function workingTable(q,work,showMistakes=false){
  const actualTotals=Array(n).fill(0);
  work.rows.forEach(r=>r.forEach((v,j)=>{if(v!==null)actualTotals[j]+=v}));
  const display=(value,wrong)=>wrong&&showMistakes
-   ?'<span class="work-error-cell">'+minus(value)+'<span class="work-error-cross" aria-label="Incorrect value">×</span></span>'
+   ?'<span class="work-error-cell"><span>'+minus(value)+'</span><span class="work-error-cross" aria-label="Incorrect value">✕</span></span>'
    :minus(value);
  const pad=v=>Array(n-v.length).fill(null).concat(v);
  const tr=(values,expected,kind='')=>'<tr class="'+kind+'"><td></td>'+values.map((v,j)=>
    '<td>'+(v===null?'':display(v,expected&&v!==expected[j]))+'</td>').join('')+'</tr>';
- const head='<tr><th></th>'+Array.from({length:n},(_,i)=>'<th>'+(power-i?pow(power-i):'#')+'</th>').join('')+'</tr>';
+ const head='<tr><th>'+(showMistakes?'':work.valid?'<span class="work-correct-tick" aria-label="All working correct">✓</span>':'')+'</th>'+Array.from({length:n},(_,i)=>'<th>'+(power-i?pow(power-i):'#')+'</th>').join('')+'</tr>';
  const totals='<tr class="work-total"><td>+</td>'+work.sum.map((v,j)=>'<td>'+
    (showMistakes&&v!==actualTotals[j]
-    ?'<span class="work-error-cell">'+minus(v)+(v!==0&&power-j?pow(power-j):'')+'<span class="work-error-cross" aria-label="Incorrect total">×</span></span>'
+    ?'<span class="work-error-cell"><span>'+minus(v)+(v!==0&&power-j?pow(power-j):'')+'</span><span class="work-error-cross" aria-label="Incorrect total">✕</span></span>'
     :minus(v)+(v!==0&&power-j?pow(power-j):''))+'</td>').join('')+'</tr>';
  return '<table class="quiz-work-table">'+head+tr(pad(work.top),pad(q.a))+
    tr(pad(work.bottom),pad(q.b),'factor-divider')+
@@ -746,7 +748,7 @@ function drawTest(){
     choice.setAttribute('aria-pressed',String(selected));
     if(selected)choice.className+=' '+(isCorrect(option)?'answer-correct':'answer-incorrect');
     choice.setAttribute('aria-label','Answer '+String.fromCharCode(65+j));
-    choice.innerHTML='<span class="choice-letter">'+String.fromCharCode(65+j)+'.</span> '+(working?workingTable(q,option,selected&&!isCorrect(option)):poly(option));
+    choice.innerHTML='<span class="choice-letter">'+String.fromCharCode(65+j)+'.</span> '+(working?workingTable(q,option,selected):poly(option));
     choice.onclick=()=>{
      if(locked||assessment.tried[index].includes(j))return;
      const correct=isCorrect(option);
