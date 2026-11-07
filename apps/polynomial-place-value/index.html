@@ -500,6 +500,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 .instruction-dots button{width:23px;min-width:23px;height:23px;padding:0;border-radius:50%;background:#edf1f7;border:1px solid #bac5d4}
 .instruction-dots button[aria-current=step]{background:#2563a6;border-color:#2563a6}
 @media(max-width:750px){.instruction-tag{flex-basis:100%;order:3}.instruction-table{font-size:clamp(1.5rem,5vw,3.5rem)}.instruction-footer button{padding:6px 10px}.instruction-powers{grid-template-columns:repeat(3,minmax(0,1fr))}}
+#monicBtn[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -512,11 +513,11 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="setting"><span class="caption">Factor pattern</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor pattern"></div><select id="challengeSelect" aria-label="Optional higher degree factor patterns"><option value="">Challenge…</option><option value="l3">Linear × Cubic</option><option value="l4">Linear × Quartic</option><option value="l5">Linear × Quintic</option><option value="q3">Quadratic × Cubic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 <div class="setting"><span class="caption">Sign pattern</span><div class="button-group" id="signs" aria-label="Choose signs"></div></div>
-<div class="setting setting--advanced"><span class="caption">Options</span><div class="advanced-buttons"><button type="button" id="constantBtn" aria-pressed="false" title="Optional: constant multiplier">Constant off</button><button type="button" id="monicBtn" aria-pressed="false" title="Optional support: leading coefficient 1">Monic off</button><button type="button" id="challengeBtn" hidden aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false">Challenge off</button></div></div>
+<div class="setting setting--advanced"><span class="caption">Options</span><div class="advanced-buttons"><button type="button" id="constantBtn" aria-pressed="false" title="HCF Off gives a primitive expansion (coefficient HCF 1); HCF On gives a common numerical factor.">HCF Off</button><button type="button" id="monicBtn" hidden aria-pressed="false" title="Advanced: leading coefficient 1">Monic off</button><button type="button" id="challengeBtn" hidden aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false">Challenge off</button></div></div>
 <div class="beyond-choices" id="beyondPanel" hidden><div class="button-group" id="beyondChoices"></div><span id="beyondNote"></span></div>
 </div>
 <div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
- <div class="homework-controls"><span class="homework-label">Question banks</span><nav class="top-questions" id="questions" aria-label="Eight question banks"></nav><div id="bankQuestionNav" class="bank-question-nav" aria-label="Browse questions within the selected bank"></div></div>
+ <div class="homework-controls"><span class="homework-label">Question banks</span><nav class="top-questions" id="questions" aria-label="Six question banks containing six questions each"></nav><div id="bankQuestionNav" class="bank-question-nav" aria-label="Browse questions within the selected bank"></div></div>
  <div class="activity-section activities-section"><span class="activity-title">Activities</span><div class="activity-actions" aria-label="Choose activity">
   <button id="instructionMode" type="button" aria-pressed="false">Instruction</button>
   <button id="boardMode" type="button" aria-pressed="false">Display</button>
@@ -572,7 +573,7 @@ const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed
 const signChoices=[['positive','Both\npositive'],['negative','Negative\nnon-leading'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
-const state={type:'ql',factorRandom:false,coreType:'ql',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
+const state={type:'ll',factorRandom:false,coreType:'ll',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:1,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -626,17 +627,19 @@ function makeQuestion(next,signOverride=null){
   if(type==='cl'&&Math.abs(b[0])===1)continue;
   if(!beyondTypes.includes(type)&&level===2&&product(a,b).some(v=>Math.abs(v)>100))continue;
   if(!beyondTypes.includes(type)&&level===1&&product(a,b).some(v=>Math.abs(v)>60))continue;
-  return {a,b,type,sign,scalar:state.slot==='fresh'&&state.constantOn?pick([2,3,4,5,-2,-3]):1};
+  return {a,b,type,sign,scalar:state.constantOn?pick([2,3,4,5]):1};
  }
- return {a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)],type,sign,scalar:1};
+ return {a:[1,...Array(na-1).fill(sign==='negative'?-2:2)],b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)],type,sign,scalar:state.constantOn?2:1};
 }
 function chosenQuestion(){
  const rng=state.slot==='fresh'
   ?seeded(seedFor(state.freshCount+1000)^((Math.random()*0xffffffff)>>>0))
   :seeded(seedFor(17+state.slot*123+state.bankQuestion*891));
- // Each bank has twelve reproducible questions. Banks vary sign fluency;
- // the factor pattern and level remain controlled by the teacher above.
- const bankSigns=['positive','negative','mixed','mixed','positive','negative','mixed','mixed'];
+ // Six reproducible questions in each of six banks.
+ const bankSigns=['positive','negative','mixed','positive','negative','mixed'];
+ if(state.slot===0&&state.bankQuestion===0&&state.type==='ll'&&state.level===1&&!state.factorRandom){
+  return {a:[1,1],b:[2,1],type:'ll',sign:'positive',scalar:state.constantOn?2:1};
+ }
  return makeQuestion(rng,state.slot==='fresh'?null:bankSigns[state.slot]);
 }
 function selectQuestion(slot){
@@ -674,10 +677,10 @@ function individualProducts(a,b){
  return products;
 }
 function renderSelectors(){
- const q=[];for(let i=0;i<8;i++)q.push([i,String(i+1)]);
+ const q=[];for(let i=0;i<6;i++)q.push([i,String(i+1)]);
  function openBankQuestion(bank,index){
   if(assessment.started)return;
-  state.bankQuestion=(index+12)%12;
+  state.bankQuestion=(index+6)%6;
   const stayOnBoard=assessment.mode==='board';
   if(!stayOnBoard)switchMode('practice');
   boardState.offset=0;selectQuestion(bank);assessmentConfigChanged();
@@ -685,13 +688,12 @@ function renderSelectors(){
  chooseButtons('questions',q,state.slot,v=>{
   openBankQuestion(v,v===state.slot?state.bankQuestion+1:0);
  });
- const bankDescriptions=['Positive foundations','Negative non-leading terms','Mixed signs','Mixed-sign practice',
-  'Positive extension','Negative extension','Mixed-sign extension','Mixed-sign challenge'];
- for(let i=0;i<8;i++)$('questions').children[i].title='Question bank '+(i+1)+' · '+bankDescriptions[i]+'. Click again for the next question.';
+ const bankDescriptions=['Positive foundations','Negative signs','Mixed signs','Positive extension','Negative extension','Mixed-sign challenge'];
+ for(let i=0;i<6;i++)$('questions').children[i].title='Question bank '+(i+1)+' · '+bankDescriptions[i]+'. Click again for the next question.';
  const nav=$('bankQuestionNav');nav.replaceChildren();
  const chosen=Number.isInteger(state.slot);
  const previous=el('button','‹','bank-question-arrow');previous.type='button';previous.title='Previous question in this bank';previous.disabled=!chosen||assessment.started;
- const position=el('span',chosen?'Q '+(state.bankQuestion+1)+' / 12':'New question','bank-question-position');
+ const position=el('span',chosen?'Q '+(state.bankQuestion+1)+' / 6':'New question','bank-question-position');
  const next=el('button','›','bank-question-arrow');next.type='button';next.title='Next question in this bank';next.disabled=!chosen||assessment.started;
  previous.onclick=()=>openBankQuestion(state.slot,state.bankQuestion-1);
  next.onclick=()=>openBankQuestion(state.slot,state.bankQuestion+1);
@@ -719,8 +721,8 @@ function renderSelectors(){
  const challenge=$('challengeBtn');challenge.textContent=state.beyondOpen?'Challenge on':'Challenge off';
  challenge.setAttribute('aria-pressed',String(state.beyondOpen));challenge.setAttribute('aria-expanded',String(state.beyondOpen));
  challenge.onclick=()=>{if(assessment.started)return;state.beyondOpen=!state.beyondOpen;if(!state.beyondOpen&&beyondTypes.includes(state.type))state.type=state.coreType;refreshSelectedQuestion();assessmentConfigChanged()};
- const constant=$('constantBtn');constant.textContent=state.constantOn?'Constant on':'Constant off';constant.setAttribute('aria-pressed',String(state.constantOn));
- constant.onclick=()=>{if(assessment.started)return;state.constantOn=!state.constantOn;freshQuestion();assessmentConfigChanged()};
+ const constant=$('constantBtn');constant.textContent=state.constantOn?'HCF On':'HCF Off';constant.setAttribute('aria-pressed',String(state.constantOn));
+ constant.onclick=()=>{if(assessment.started)return;state.constantOn=!state.constantOn;refreshSelectedQuestion();assessmentConfigChanged()};
  // Numbered homework questions follow fixed signs; the sign buttons must
  // describe the question currently on screen, not a stale selection.
  chooseButtons('signs',signChoices,state.slot==='fresh'?state.sign:state.question.sign,v=>filter('sign',v));
