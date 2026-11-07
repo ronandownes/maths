@@ -144,7 +144,7 @@ function showLesson(){
 function problems(){
  let types=isGeo?['ratio','next','nthgeo','missinggeo','depreciation','ratio','next','nthgeo']:
  isQuad?['second','a','termzeroquad','b','rulequad','nextquad','valuequad','second']:
- ['difference','termzero','rule','nth','position','middle','sum','difference'];
+ ['nextlinear','difference','termzero','rule','nth','position','middle','sum','sumnegative','firstpositive','difference'];
  for(let i=types.length-1;i>0;i--){const j=rand(0,i);[types[i],types[j]]=[types[j],types[i]]}
  return types.map(t=>makeProblem(t));
 }
@@ -156,6 +156,9 @@ function makeProblem(type){
  const list=[a,a+d,a+2*d,a+3*d].map(format).join(', ');
  const out=(prompt,numbers,expected,explanation,mode='numeric')=>({prompt,numbers,expected,explanation,mode});
  switch(type){
+ case 'nextlinear':return out('Find the next term.',list,a+4*d,'Apply the signed common difference one more time.');
+ case 'sumnegative':{let A=pick([23,35,43,56]),D=-pick([2,3,4,5]),limit=1+2*A/(-D),N=Math.floor(limit)+1;return out('Find the smallest positive integer n for which the sum Sₙ is negative.',[A,A+D,A+2*D].map(format).join(', '),N,'Sₙ = n/2[2a+(n−1)d]. For n>0, solve 2a+(n−1)d < 0, then choose the smallest whole-number n.')}
+ case 'firstpositive':{let D=pick([3,4,5,6]),A=-pick([20,35,60,75]),N=Math.floor(1+(-A)/D)+1;return out('Find the number of the first positive term.',[A,A+D,A+2*D].map(format).join(', '),N,'Solve a+(n−1)d > 0, then take the smallest whole-number n.')}
  case 'difference':return out('What is the signed common difference?',list,d,'Subtract the previous term from the next term.');
  case 'termzero':return out('Work backwards to the boxed term zero.',list,c,'T₀ = T₁ − d = '+format(a)+' − ('+format(d)+') = '+format(c));
  case 'rule':return out('Write the general term Tₙ.',list,formula(d,c),'The coefficient of n is '+format(d)+' and term zero is '+format(c)+'.','polynomial');
