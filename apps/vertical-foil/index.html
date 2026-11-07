@@ -174,6 +174,52 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 .lesson-route-demo svg{display:block;width:100%;max-height:330px}
 .lesson-slide .lesson-route-demo + p{font-size:clamp(.96rem,1.7vw,1.35rem)}
 @media(max-width:610px){.lesson-comparison{grid-template-columns:1fr}.lesson-area-inner{height:175px}.lesson-area-regions span{font-size:.95rem}.lesson-two-way th:first-child{width:32%}}
+
+/* Small screens prioritise Practice and the two fluency modes. Settings appear on demand. */
+.mobile-mode-bar{display:none}
+@media(max-width:760px){
+ .topbar{padding:5px 10px}
+ .topbar .tagline{display:none}
+ main{padding:6px 9px 18px}
+ .mobile-mode-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 2px 8px}
+ .mobile-mode-bar strong{font-size:.89rem;color:#536980}
+ .mobile-mode-bar button{font-size:.9rem;border-radius:9px;padding:8px 12px;background:#f4f8fc}
+ .mobile-options-region{display:contents}
+ .mobile-options-region>.settings,.mobile-options-region .cluster.classwork,.mobile-options-region .cluster.activities{display:none}
+ #mathsAppMain.options-open .mobile-options-region>.settings{display:flex;gap:6px;padding:8px 4px}
+ #mathsAppMain.options-open .mobile-options-region .cluster.classwork,
+ #mathsAppMain.options-open .mobile-options-region .cluster.activities{display:flex}
+ .activity-switch{border:0;padding:0;display:flex;flex-direction:column;align-items:stretch}
+ .cluster.procedure{display:none}
+ #mathsAppMain[data-mode="practice"] .cluster.procedure{display:flex;position:sticky;top:0;z-index:15;
+  padding:8px 6px;background:rgba(255,255,255,.97);border:1px solid #d6e3f0;border-radius:11px;
+  box-shadow:0 4px 14px rgba(14,50,88,.09);width:100%;align-items:stretch}
+ .cluster.procedure h2{display:none}
+ .cluster.procedure .buttons{display:grid;grid-template-columns:1fr 1fr auto;gap:5px}
+ .cluster.procedure .buttons button{font-size:.92rem;white-space:normal;min-height:48px;
+  padding:8px 6px;border-radius:9px}
+ .cluster.procedure .buttons button#stepsBtn,
+ .cluster.procedure .buttons button#workedBtn{font-weight:750;font-size:1rem}
+ .cluster.procedure .buttons button#resetBtn{font-size:.77rem}
+ #mathsAppMain.options-open .activity-switch{padding-bottom:8px;border-bottom:1px solid #e1e8ef}
+ #mathsAppMain.options-open .cluster.activities .buttons{justify-content:flex-start}
+ #mathsAppMain.options-open .cluster.classwork .buttons{justify-content:flex-start}
+ .editors{gap:6px;max-height:88px;overflow:auto}
+ .editors label{font-size:.7rem}
+ .editors input{width:53px;padding:3px}
+ .editors input[type=text]{width:58px}
+ .example-title{margin:5px 0;font-size:1.15rem}
+ .diagram svg{max-height:280px}
+ .transport{position:relative;gap:5px}
+ .transport button{min-width:0;min-height:43px;padding:8px;font-size:.86rem}
+ .lesson-slide{padding:13px;gap:12px}
+ .lesson-slide h3{font-size:1.6rem}
+ .lesson-slide p{font-size:1.08rem}
+ .lesson-maths{font-size:1.5rem}
+ .lesson-controls{justify-content:flex-start}
+ .lesson-two-way th,.lesson-two-way td{padding:7px}
+ .lesson-area-inner{height:142px}
+}
 </style>
 </head>
 <body>
@@ -181,7 +227,9 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 <a class="brand" href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"><span>Apps</span></a>
 <div><a class="crumb" href="../../algebra/index.html">Algebra</a> · <a class="crumb" href="../../algebra/expansions/index.html">Expansions</a> <h1>Vertical FOIL</h1><p class="tagline">Two stacked binomials · four spatial multiplication routes</p></div>
 </header>
-<main>
+<main id="mathsAppMain" data-mode="lesson">
+<div class="mobile-mode-bar"><strong id="mobileModeLabel">Instruction</strong><button type="button" id="mobileOptionsBtn" aria-expanded="false" aria-controls="mobileOptionsRegion">Options <span aria-hidden="true">▾</span></button></div>
+<div id="mobileOptionsRegion" class="mobile-options-region">
 <div class="settings" aria-label="Question settings">
 <div class="setting"><strong>Method</strong><button id="expandBtn" aria-pressed="true">Expand</button><button id="factorBtn" aria-pressed="false">Factorise</button></div>
 <div class="setting"><strong>Letters</strong><select id="letterPreset" aria-label="Letter package"><option value="XYZ">XYZ</option><option value="ABC">ABC</option><option value="GHI">GHI</option><option value="PQR">PQR</option><option value="random">Random</option></select></div>
@@ -193,7 +241,7 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 <div class="cluster classwork"><h2>Classwork</h2><div class="buttons"><button data-slot="0">1</button><button data-slot="1">2</button><button data-slot="2">3</button><button data-slot="3">4</button><button data-slot="random">Random</button></div></div>
 <div class="cluster activities"><h2>Activities</h2><div class="buttons"><button id="lessonBtn">Instruction</button><button id="practiceBtn">Practice</button><button id="displayBtn">Display</button><button id="quizBtn">Quiz</button><button id="testBtn">Test</button><button id="worksheetsBtn">Sheets</button></div></div>
 <div class="cluster procedure"><h2>Procedural fluency</h2><div class="buttons"><button id="stepsBtn">Step by step</button><button id="workedBtn">Worked</button><button id="resetBtn">Reset steps</button></div></div>
-</div>
+</div></div>
 <section id="practicePanel" aria-label="Four-route practice"><div class="practice-layout"><div class="practice-main">
 <div class="example-title" id="questionNumber"></div>
 <div class="expression" id="prompt"></div>
@@ -211,7 +259,7 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 <div class="method-options" id="groupOptions" hidden><button data-group="intact">Groups intact</button><button data-group="swapped">Swap middle terms</button></div>
 <div class="working" id="working" aria-live="polite"></div>
 <div class="transport"><button id="backStep">← Previous</button><button id="nextStep" class="primary">Next →</button><button id="allSteps">Show all</button><button id="newQuestion">New question</button></div>
-<p class="pedagogy" id="pedagogy">Follow four routes: left goalpost (firsts), left diagonal (inners), right diagonal (outers), right goalpost (lasts). Combine products only when their letters and powers match.</p>
+<p class="pedagogy" id="pedagogy">Every top term multiplies every bottom term. The goalposts and diagonals show all four products; collect only terms with identical variable parts.</p>
 </div><aside id="stepChecklist" class="step-checklist" hidden aria-label="Procedural steps"></aside></div></section>
 <section id="lessonPanel" hidden aria-label="Six-minute teacher-led instruction slides"></section>
 <section id="boardPanel" hidden aria-label="Classroom display"></section>
@@ -337,6 +385,10 @@ function resetBoard(){board.offset=0;board.cache=[]}
 function refreshQuestion(){state.q=generator(0);state.step=0;state.view='step';resetBoard();render()}
 function newQuestion(){state.seq++;state.slot='random';refreshQuestion()}
 function setMode(mode){
+ $('mathsAppMain').dataset.mode=mode;
+ $('mobileModeLabel').textContent={lesson:'Instruction',practice:'Practice',display:'Display',quiz:'Quiz',test:'Test',worksheets:'Sheets'}[mode]||'Maths';
+ $('mathsAppMain').classList.remove('options-open');
+ $('mobileOptionsBtn').setAttribute('aria-expanded','false');
  if(document.fullscreenElement&&(document.fullscreenElement===$('boardPanel')||document.fullscreenElement===$('lessonPanel')))document.exitFullscreen().catch(()=>{});
  state.mode=mode;
  $('practicePanel').hidden=mode!=='practice';
@@ -462,45 +514,46 @@ function renderPractice(){
 }
 
 const lessonSlides=[
- {title:'Start with a two-way table',body:
-  '<p>There are <b>3 red tops</b>, <b>2 blue tops</b>, <b>4 kinds of shorts</b> and <b>5 kinds of trousers</b>. Choose one top and one bottom.</p>'+
-  '<table class="lesson-two-way" aria-label="Two-way table, columns 3 and 2, rows 4 and 5"><thead><tr><th scope="col">Bottom ↓ / Top →</th><th scope="col">3 red</th><th scope="col">2 blue</th></tr></thead><tbody><tr><th scope="row">4 shorts</th><td>12</td><td>8</td></tr><tr><th scope="row">5 trousers</th><td>15</td><td>10</td></tr></tbody></table>'+
-  '<p>Why are there <b>four cells</b>?</p>',
-  reveal:'<div class="lesson-maths">(3 + 2)(4 + 5) = 12 + 8 + 15 + 10 = 45</div><p>Each cell counts one combination. The total counts every possible outfit once.</p>'},
- {title:'The same idea as an area model',body:
-  '<p>Split a rectangle into widths <b>3</b> and <b>2</b>, and heights <b>4</b> and <b>5</b>. Four smaller rectangles appear.</p>'+
-  '<div class="lesson-area-model" role="img" aria-label="Area model: widths 3 and 2; heights 4 and 5. Products 12, 8, 15 and 10."><div class="lesson-area-column-labels"><span>3</span><span>2</span></div><div class="lesson-area-inner"><div class="lesson-area-row-labels"><span>4</span><span>5</span></div><div class="lesson-area-regions"><span>3 × 4 = 12</span><span>2 × 4 = 8</span><span>3 × 5 = 15</span><span>2 × 5 = 10</span></div></div></div>',
-  reveal:'<p>The area is <b>(3 + 2)(4 + 5)</b>. We get the same four partial products as in the two-way table. A diagram explains <i>why</i> the distributive law works.</p>'},
- {title:'What are like and unlike terms?',body:
-  '<div class="lesson-comparison"><div class="lesson-choice"><strong>Same variable part</strong><div class="lesson-maths">3p²q and 7p²q</div><p>These are <b>like terms</b>.</p></div><div class="lesson-choice"><strong>Different variable part</strong><div class="lesson-maths">3p²q² and 7p²q</div><p>These are <b>unlike terms</b>.</p></div></div>'+
-  '<p>What changes: the number, the letter, or the power?</p>',
-  reveal:'<p>Like terms have <b>identical variable parts</b> — same letters raised to the same powers. Coefficients may differ.</p><div class="lesson-maths">3p²q + 7p²q = 10p²q</div><p>But p²q² and p²q cannot be collected.</p>'},
- {title:'Now align two factors vertically',body:
-  '<p>We use the <b>Vertical FOIL</b> routes. The upper group and lower group each have two terms.</p>'+
+ {title:'A quick observation: unlike variable parts',body:
+  '<p>Look at these two binomials:</p><div class="lesson-maths">(3x + 11)(2y − 3)</div>'+
+  '<p>The variable terms use <b>x</b> and <b>y</b>. They are distinct. What will happen when we multiply every top term by every bottom term?</p>'+
+  '<div class="lesson-comparison"><div class="lesson-choice"><strong>Same variable pattern</strong><div class="lesson-maths">(3x + 11)(2x − 3)</div><p>Both binomials use x.</p></div>'+
+  '<div class="lesson-choice"><strong>Another matching pattern</strong><div class="lesson-maths">(a²b − 8)(11a²b + 3)</div><p>Both use a²b, not just a single letter.</p></div></div>',
+  reveal:'<p>When the two non-constant terms are <b>different non-constant monomials</b>, each of the four products has a different variable part. There will be <b>four unlike terms</b> to retain. When the monomials match, the middle products can be like terms. Numerical coefficients do not determine likeness.</p>'},
+ {title:'Why does multiplication give four products?',body:
+  '<p>Each choice in one group pairs with every choice in the other.</p>'+
+  '<table class="lesson-two-way" aria-label="Two-way table with three and two across, four and five down"><thead><tr><th>Bottom ↓ / Top →</th><th>3</th><th>2</th></tr></thead><tbody><tr><th>4</th><td>12</td><td>8</td></tr><tr><th>5</th><td>15</td><td>10</td></tr></tbody></table>'+
+  '<p>A two-by-two arrangement produces <b>four products</b>. An area model shows the same distributive law.</p>'+
+  '<div class="lesson-area-model" role="img" aria-label="Four rectangular regions with widths three and two and heights four and five"><div class="lesson-area-column-labels"><span>3</span><span>2</span></div><div class="lesson-area-inner"><div class="lesson-area-row-labels"><span>4</span><span>5</span></div><div class="lesson-area-regions"><span>12</span><span>8</span><span>15</span><span>10</span></div></div></div>',
+  reveal:'<div class="lesson-maths">(3 + 2)(4 + 5) = 12 + 8 + 15 + 10</div><p>The table and area model explain <b>why</b> there are four products; they are not extra steps pupils need to draw every time.</p>'},
+ {title:'Splitting the brackets: useful but lengthy',body:
+  '<div class="lesson-maths">(3x + 2)(5y + 4)</div>'+
+  '<p>We can distribute the entire second bracket to each term in the first.</p>'+
+  '<div class="lesson-maths">3x(5y + 4) + 2(5y + 4)</div>'+
+  '<p>Notice the two <b>intact groups</b>. This is a powerful way to understand the distributive law.</p>',
+  reveal:'<div class="lesson-maths">15xy + 12x + 10y + 8</div><p>Splitting brackets works and will matter when we <b>reverse expansion by factorising</b>. But for expansion alone, repeated writing of the brackets is slower than following the four routes.</p>'},
+ {title:'Vertical FOIL: the efficient route',body:
+  '<p>Stack the binomials: first term over first, second over second. No place-value alignment is needed.</p>'+
   '<div class="lesson-route-demo diagram"><!--VERTICAL_ROUTE_DIAGRAM--></div>'+
-  '<p>Read the arrows: <b>left goalpost → left diagonal → right diagonal → right goalpost</b>.</p>',
-  reveal:'<div class="lesson-maths">15xy + 10y + 12x + 8</div><p>Each arrow gives one product, and every possible pairing is counted exactly once.</p>'},
- {title:'Why four unlike products?',body:
+  '<p>Two <b>straight goalposts</b> and two <b>crossing diagonals</b>. Each upper term multiplies each lower term once.</p>',
+  reveal:'<div class="lesson-maths">15xy + 10y + 12x + 8</div><p>No splitting or rearrangement is needed just to expand.</p>'},
+ {title:'Observe: four unlike terms',body:
   '<div class="lesson-maths">(3x + 2)(5y + 4)</div>'+
   '<div class="lesson-maths lesson-terms"><span>15xy</span><span>10y</span><span>12x</span><span>8</span></div>'+
-  '<p>Compare their variable parts: <b>xy, y, x, 1</b>. Can any two terms be combined?</p>',
-  reveal:'<p><b>No.</b> Because x and y are different variables, all four variable parts are different. That is why these four products remain separate.</p><p>Do not confuse having two <i>factors</i> with having <i>like terms</i>.</p>'},
- {title:'Split the brackets to reveal two groups',body:
-  '<p>To undo an expansion, identify two groups which both contain the same bracket.</p>'+
-  '<div class="lesson-maths">AC + BC + AD + BD</div>'+
-  '<div class="lesson-comparison"><div class="lesson-choice"><strong>First pair</strong><div class="lesson-maths">AC + BC</div></div><div class="lesson-choice"><strong>Second pair</strong><div class="lesson-maths">AD + BD</div></div></div>',
-  reveal:'<div class="lesson-maths">C(A + B) + D(A + B)</div><div class="lesson-maths">= (A + B)(C + D)</div><p>Both groups reveal <b>(A + B)</b>. We have reversed the original multiplication without swapping terms.</p>'},
- {title:'Why might we swap the middle terms?',body:
-  '<div class="lesson-maths">AC + BC + AD + BD</div>'+
-  '<p>The neighbouring pairs already work. What if we instead want to collect the products belonging to <b>A</b>, then those belonging to <b>B</b>?</p>'+
-  '<div class="lesson-maths">AC + AD + BC + BD</div>',
-  reveal:'<div class="lesson-maths">A(C + D) + B(C + D)</div><div class="lesson-maths">= (A + B)(C + D)</div><p>Swapping the middle terms exposes another productive pairing. Pairing <b>AC + BD</b> and <b>BC + AD</b> is a tempting alternative, but generally does not reveal the original binomial factor by ordinary grouping.</p>'},
- {title:'Retrieval: explain the method',body:
-  '<p><b>1.</b> Why does a two-by-two table give four partial products?</p>'+
-  '<p><b>2.</b> Which four routes appear in Vertical FOIL?</p>'+
-  '<p><b>3.</b> Why are 3p²q and 7p²q like terms, but p²q² and p²q unlike?</p>'+
-  '<p><b>4.</b> When might swapping the middle two products help with factorisation?</p>',
-  reveal:'<p>Every top term pairs with every bottom term; follow both goalposts and both diagonals; like terms have identical variable parts; swapping the middle two terms can expose an alternative repeated binomial.</p>'}
+  '<p>The variable parts are <b>xy, y, x, and 1</b>. Are any the same?</p>'+
+  '<div class="lesson-comparison"><div class="lesson-choice"><strong>Like</strong><div class="lesson-maths">3p²q, 7p²q</div></div><div class="lesson-choice"><strong>Unlike</strong><div class="lesson-maths">3p²q², 7p²q</div></div></div>',
+  reveal:'<p><b>No terms combine.</b> The product is already a four-term answer. The variable part must match exactly, including its powers. Four distinct products does not always mean four unlike terms: for (3x + 2)(5x + 4), the middle products are both x terms.</p>'},
+ {title:'Why we still learn to split brackets',body:
+  '<p>Later, factorisation means running the expansion backwards. Keeping the groups intact exposes a repeated bracket.</p>'+
+  '<div class="lesson-maths">15xy + 12x + 10y + 8</div>'+
+  '<div class="lesson-maths">(15xy + 12x) + (10y + 8)</div>',
+  reveal:'<div class="lesson-maths">3x(5y + 4) + 2(5y + 4)</div><div class="lesson-maths">= (3x + 2)(5y + 4)</div><p>Both groups contain <b>(5y + 4)</b>. We can also swap the two middle terms to expose the other repeated bracket; swapping is not necessary when the existing pairs already work.</p>'},
+ {title:'Reflection: which method for which purpose?',body:
+  '<p><b>Explain:</b> the two-way table and area model establish the distributive law.</p>'+
+  '<p><b>Understand and reverse:</b> split the bracket to keep the two groups visible.</p>'+
+  '<p><b>Expand efficiently:</b> stack the two binomials and use the two goalposts and two diagonals.</p>'+
+  '<p>What matters most when deciding whether to simplify the answer?</p>',
+  reveal:'<p>Check the <b>variable parts</b> of the four products. If none match, there is nothing to collect. If two match exactly, combine their coefficients. Choose the representation for its purpose rather than automatically writing every intermediate bracket.</p>'}
 ];
 let lessonIndex=0,lessonReveal=false;
 function renderLesson(){
@@ -742,6 +795,8 @@ function worksheet(){
  w.document.open();w.document.write(doc);w.document.close();
 }
 function render(){
+ $('mathsAppMain').dataset.mode=state.mode;
+ $('mobileModeLabel').textContent={lesson:'Instruction',practice:'Practice',display:'Display',quiz:'Quiz',test:'Test',worksheets:'Sheets'}[state.mode]||'Maths';
  renderToolbar();
  if(state.mode==='practice')renderPractice();
  else if(state.mode==='display')renderBoard();
@@ -760,6 +815,11 @@ for(const btn of document.querySelectorAll('[data-sign]'))btn.onclick=()=>{state
 for(const btn of document.querySelectorAll('[data-slot]'))btn.onclick=()=>{state.slot=btn.dataset.slot==='random'?'random':Number(btn.dataset.slot);if(state.slot==='random')state.seq++;changed()};
 $('expandBtn').onclick=()=>{state.direction='expand';state.step=0;state.view='step';resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');render()};
 $('factorBtn').onclick=()=>{state.direction='factor';state.step=0;state.view='step';resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');render()};
+$('mobileOptionsBtn').onclick=()=>{
+ const main=$('mathsAppMain'),open=!main.classList.contains('options-open');
+ main.classList.toggle('options-open',open);
+ $('mobileOptionsBtn').setAttribute('aria-expanded',String(open));
+};
 $('practiceBtn').onclick=()=>setMode('practice');
 $('lessonBtn').onclick=()=>{lessonIndex=0;lessonReveal=false;setMode('lesson')};
 $('displayBtn').onclick=()=>setMode('display');
