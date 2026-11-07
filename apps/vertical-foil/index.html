@@ -113,6 +113,37 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 .diagram .route-result.revealed{fill:#183d63}
 .diagram .stack-term{font:58px "Cambria Math",Cambria,Georgia,serif;fill:#183b5d;text-anchor:middle}
 .diagram .row-label{font:700 16px Arial,sans-serif;fill:#6d7f90;text-anchor:middle}
+
+/* Four paths + two complexity controls + a step checklist on the right. */
+.setting select{border:1px solid #b8c7d9;background:white;padding:7px 8px;border-radius:6px}
+.complexity-setting input[type=range]{width:125px;height:24px;accent-color:#2468af;cursor:pointer}
+.complexity-setting output{min-width:18px;text-align:center;font-size:.86rem;font-weight:750}
+.practice-layout{display:grid;grid-template-columns:minmax(0,1fr) 240px;align-items:start;gap:12px}
+.practice-main{min-width:0}
+.step-checklist{border:1px solid #dbe4ef;background:#f9fbff;border-radius:10px;padding:12px 10px;position:sticky;top:9px}
+.step-checklist h2{font-size:1.06rem;margin:0 0 6px;color:#2a4d70}
+.step-entry{width:100%;min-height:47px;display:flex;align-items:center;gap:8px;padding:8px 6px;border:0;border-bottom:1px solid #e2e8f0;border-radius:0;background:transparent;white-space:normal;text-align:left;color:#67798b;font-weight:650;font-size:.83rem}
+.step-entry:last-child{border-bottom:0}
+.step-entry .step-number{flex:none;width:29px;height:29px;border-radius:50%;display:grid;place-items:center;border:1px solid #c8d8e8;background:#fff}
+.step-entry.current{color:#165eaa}.step-entry.current .step-number{color:#0f5ea8;background:#edf5ff;border-color:#3e81ca}
+.step-entry.complete{color:#34694b}.step-entry.complete .step-number{background:#e5f5ec;border-color:#96cab0}
+.editors{gap:7px 10px}
+.editors input[type=text]{width:77px;border:1px solid #b9c7d6;border-radius:6px;padding:5px;text-align:center;font:1.05rem Cambria,Georgia,serif}
+.diagram svg{max-height:345px}
+#lessonPanel{padding:17px 9px}
+.lesson-head{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.lesson-head h2{margin:0;font-size:1.3rem}
+.lesson-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.lesson-slide{max-width:1010px;min-height:380px;margin:15px auto;padding:clamp(15px,3.7vw,38px);border:1px solid #d7e3f0;border-radius:12px;background:#fff;display:grid;gap:17px;align-content:center}
+.lesson-slide h3{font-size:clamp(1.65rem,3vw,2.55rem);margin:0}
+.lesson-slide p{font-size:clamp(1.12rem,2vw,1.55rem);line-height:1.5;margin:0}
+.lesson-maths{font:clamp(1.35rem,3vw,2.35rem)/1.5 Cambria,Georgia,serif;overflow-wrap:anywhere;text-align:center}
+.lesson-maths small{font-size:.7em}
+.lesson-choice{padding:16px;border:1px solid #dce5ee;background:#f7fbff;border-radius:10px}
+.lesson-choice.warn{border-color:#ddb1a5;background:#fff9f5}
+#lessonPanel:fullscreen{background:white;overflow:auto}#lessonPanel:fullscreen .lesson-slide{min-height:75vh;max-width:95vw}
+@media(max-width:950px){.practice-layout{grid-template-columns:minmax(0,1fr) 210px;gap:8px}}
+@media(max-width:760px){.practice-layout{grid-template-columns:1fr}.step-checklist{position:static;order:2}.diagram svg{max-height:310px}}
 </style>
 </head>
 <body>
@@ -122,23 +153,26 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 </header>
 <main>
 <div class="settings" aria-label="Question settings">
-<div class="setting"><strong>Variables</strong><button data-vars="different">Unlike x/y</button><button data-vars="same">Like x/x</button></div>
 <div class="setting"><strong>Method</strong><button id="expandBtn" aria-pressed="true">Expand</button><button id="factorBtn" aria-pressed="false">Factorise</button></div>
-<div class="setting"><strong>Level</strong><button data-level="1">1</button><button data-level="2">2</button><button data-level="3">3</button></div>
-<div class="setting"><strong>Sign pattern</strong><button data-sign="positive">Positive</button><button data-sign="negative">Negative non-leading</button><button data-sign="mixed">Mixed</button><button data-sign="random">Random</button></div>
+<div class="setting"><strong>Letters</strong><select id="letterPreset" aria-label="Letter package"><option value="XYZ">XYZ</option><option value="ABC">ABC</option><option value="GHI">GHI</option><option value="PQR">PQR</option><option value="random">Random</option></select></div>
+<div class="setting complexity-setting"><strong>Numbers</strong><input id="numberScale" type="range" min="0" max="4" step="1" value="1" aria-label="Numerical coefficient complexity"><output id="numberValue">1</output></div>
+<div class="setting complexity-setting"><strong>Powers</strong><input id="powerScale" type="range" min="0" max="4" step="1" value="0" aria-label="Variable power and composition complexity"><output id="powerValue">0</output></div>
+<div class="setting"><strong>Signs</strong><button data-sign="positive">Positive</button><button data-sign="negative">Negative</button><button data-sign="mixed">Mixed</button><button data-sign="random">Random</button></div>
 </div>
 <div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
 <div class="cluster classwork"><h2>Classwork</h2><div class="buttons"><button data-slot="0">1</button><button data-slot="1">2</button><button data-slot="2">3</button><button data-slot="3">4</button><button data-slot="random">Random</button></div></div>
-<div class="cluster activities"><h2>Activities</h2><div class="buttons"><button id="practiceBtn">Practice</button><button id="displayBtn">Display</button><button id="quizBtn">Quiz</button><button id="testBtn">Test</button><button id="worksheetsBtn">Worksheets</button></div></div>
+<div class="cluster activities"><h2>Activities</h2><div class="buttons"><button id="practiceBtn">Practice</button><button id="lessonBtn">Lesson</button><button id="displayBtn">Display</button><button id="quizBtn">Quiz</button><button id="testBtn">Test</button><button id="worksheetsBtn">Worksheets</button></div></div>
 <div class="cluster procedure"><h2>Procedural fluency</h2><div class="buttons"><button id="stepsBtn">Step by step</button><button id="workedBtn">Worked</button><button id="resetBtn">Reset steps</button></div></div>
 </div>
-<section id="practicePanel" aria-label="Four-route practice">
+<section id="practicePanel" aria-label="Four-route practice"><div class="practice-layout"><div class="practice-main">
 <div class="example-title" id="questionNumber"></div>
 <div class="expression" id="prompt"></div>
-<div class="editors" aria-label="Editable factor coefficients">
-<label>Coefficient of x <input id="coefA" type="number" min="1" max="99" step="1" aria-label="Coefficient of x"></label>
+<div class="editors" aria-label="Edit coefficients and variable powers">
+<label>First coefficient <input id="coefA" type="number" min="1" max="99" step="1" aria-label="First coefficient"></label>
+<label>First letters <input id="mono1" type="text" maxlength="20" spellcheck="false" autocomplete="off" aria-label="First variable term e.g. x^2y" title="x, xy, a^2, p^3q"></label>
 <label>First constant <input id="coefB" type="number" min="-99" max="99" step="1" aria-label="First constant"></label>
-<label id="coefCLabel">Coefficient of y <input id="coefC" type="number" min="1" max="99" step="1" aria-label="Coefficient of y"></label>
+<label>Second coefficient <input id="coefC" type="number" min="1" max="99" step="1" aria-label="Second coefficient"></label>
+<label>Second letters <input id="mono2" type="text" maxlength="20" spellcheck="false" autocomplete="off" aria-label="Second variable term e.g. y^2" title="y, pq, b^2, x^2"></label>
 <label>Second constant <input id="coefD" type="number" min="-99" max="99" step="1" aria-label="Second constant"></label>
 </div>
 <div class="diagram" id="diagram" aria-label="Vertical stack and four routes"></div>
@@ -147,13 +181,14 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 <div class="method-options" id="groupOptions" hidden><button data-group="intact">Groups intact</button><button data-group="swapped">Swap middle terms</button></div>
 <div class="working" id="working" aria-live="polite"></div>
 <div class="transport"><button id="backStep">← Previous</button><button id="nextStep" class="primary">Next →</button><button id="allSteps">Show all</button><button id="newQuestion">New question</button></div>
-<p class="pedagogy" id="pedagogy">Follow the paths in the teacher's order: left vertical, left diagonal, right diagonal, right vertical. Combine the two central products only if they have the same variable and power.</p>
-</section>
+<p class="pedagogy" id="pedagogy">Follow four routes: left goalpost (firsts), left diagonal (inners), right diagonal (outers), right goalpost (lasts). Combine products only when their letters and powers match.</p>
+</div><aside id="stepChecklist" class="step-checklist" hidden aria-label="Procedural steps"></aside></div></section>
+<section id="lessonPanel" hidden aria-label="Interactive lesson slides"></section>
 <section id="boardPanel" hidden aria-label="Classroom display"></section>
 <section id="assessmentPanel" hidden aria-label="Quiz and test"></section>
 <section id="worksheetPanel" hidden aria-label="Worksheet settings">
 <h2>Printable Vertical FOIL worksheet</h2>
-<p>Generates a fresh set of questions with the selected level, signs and method. Generous working space is retained.</p>
+<p>Generates questions from the chosen letters, numbers, powers and signs, with generous working space.</p>
 <div class="ws-options">
 <label>Questions <select id="wsCount"><option value="6">6</option><option value="8" selected>8</option><option value="12">12</option></select></label>
 <label>Columns <select id="wsColumns"><option value="2" selected>2</option><option value="3">3</option></select></label>
@@ -166,56 +201,105 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id);
-const state={level:2,sign:'positive',slot:0,seq:0,variables:'different',direction:'expand',mode:'practice',view:'step',step:0,group:'intact',q:null};
+const state={numbers:1,powers:0,preset:'XYZ',manual1:null,manual2:null,sign:'positive',slot:0,seq:0,direction:'expand',mode:'practice',view:'step',step:0,group:'intact',q:null};
 const board={cols:1,rows:1,offset:0,answers:false,cache:[]};
 const assessment={mode:null,questions:[],selected:[],completed:false,quizIndex:0};
-const positions=[['Left vertical','ax × cy'],['Left diagonal','b × cy'],['Right diagonal','ax × d'],['Right vertical','b × d']];
+const routeLabels=['Left goalpost · Firsts','Left diagonal · Inners','Right diagonal · Outers','Right goalpost · Lasts'];
 function rand(seed){let x=(seed>>>0)||1234567;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))};}
-function randomSign(next){return ['positive','negative','mixed'][next(0,2)];}
-function getSign(){return state.slot===0?'positive':state.slot===1?'negative':state.slot===2||state.slot===3?'mixed':state.sign;}
+const raised='⁰¹²³⁴⁵⁶⁷⁸⁹';
+function parseMono(raw){
+ const input=String(raw).replace(/\s+/g,'').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g,part=>'^'+[...part].map(c=>raised.indexOf(c)).join(''));
+ if(!input||input.length>22||!/^(?:[A-Za-z](?:\^[1-9][0-9]?)?)+$/.test(input))return null;
+ const vars={};let degree=0;
+ for(const m of input.matchAll(/([A-Za-z])(?:\^([1-9][0-9]?))?/g)){
+  const p=Number(m[2]||1);if(p>12)return null;
+  vars[m[1]]=(vars[m[1]]||0)+p;degree+=p;
+ }
+ return degree<=16?vars:null;
+}
+function monoKey(v){return Object.keys(v).sort().map(letter=>letter+':'+v[letter]).join('|')}
+function monoText(v,html=true){
+ return Object.keys(v).sort().map(letter=>{
+  const p=v[letter];return letter+(p===1?'':html?'<sup>'+p+'</sup>':[...String(p)].map(n=>raised[Number(n)]).join(''));
+ }).join('');
+}
+function multiplyMono(a,b){const v={...a};for(const [letter,p] of Object.entries(b))v[letter]=(v[letter]||0)+p;return v}
+function fmtMono(n,v,first=false){
+ const body=(Object.keys(v).length&&Math.abs(n)===1?'':Math.abs(n))+monoText(v,true);
+ return (n<0?(first?'−':' − '):(first?'':' + '))+body;
+}
+function letterPair(next){
+ const packs={ABC:['a','b','c'],GHI:['g','h','i'],PQR:['p','q','r'],XYZ:['x','y','z']};
+ let letters=packs[state.preset];
+ if(!letters){const keys=Object.keys(packs);letters=packs[keys[next(0,keys.length-1)]]}
+ let left=letters[next(0,2)],right=letters[next(0,2)];
+ if(left===right)right=letters[(letters.indexOf(left)+1)%3];
+ return [left,right];
+}
+function chooseMonos(next){
+ const [a,b]=letterPair(next);
+ const pair=state.powers===1?[a+'^2',b]:
+ state.powers===2?[a+'^2',b+'^2']:
+ state.powers===3?[a+b,b+'^3']:
+ state.powers===4?[a+'^3'+b+'^2',a+b+'^3']:[a,b];
+ return [state.manual1||pair[0],state.manual2||pair[1]];
+}
+function randomSign(next){return ['positive','negative','mixed'][next(0,2)]}
+function numberPool(){
+ return [[1,2,3],[1,2,3,4,5],[1,2,3,4,5,6,7,8,9],[1,2,3,4,5,6,7,8,9,11,13,21],[1,2,3,4,5,6,7,8,9,11,13,17,21,31,41]][state.numbers];
+}
 function generator(index=0,offset=0){
  const slot=typeof state.slot==='number'?state.slot:17;
- const next=rand((91931+state.level*7717+slot*6217+state.seq*10333+offset*50077+index*8819)>>>0);
- const range=state.level===1?3:state.level===2?7:12;
- const a=next(1,range),c=next(1,range);
- let b=next(1,range),d=next(1,range);
- const sign=getSign()==='random'?randomSign(next):getSign();
- if(sign==='negative'){b=-b;d=-d}
- else if(sign==='mixed'){if(next(0,1)){b=-b}else{d=-d}}
- return {a,b,c,d};
+ const next=rand((91931+state.numbers*7717+state.powers*14983+slot*6217+state.seq*10333+offset*50077+index*8819)>>>0);
+ const pool=numberPool(),pick=()=>pool[next(0,pool.length-1)];
+ const sign=state.sign==='random'?randomSign(next):state.sign;
+ const [m1,m2]=chooseMonos(next);
+ for(let i=0;i<90;i++){
+  const a=pick(),c=pick();let b=pick(),d=pick();
+  if(sign==='negative'){b=-b;d=-d}
+  if(sign==='mixed'){if(next(0,1))b=-b;else d=-d}
+  const q={a,b,c,d,m1,m2},values=fourTerms(q),totals=new Map();
+  for(const v of values){const k=monoKey(v.vars);totals.set(k,(totals.get(k)||0)+v.n)}
+  if(values.every(v=>Math.abs(v.n)<100)&&[...totals.values()].every(v=>Math.abs(v)<100))return q;
+ }
+ const small=[1,2,3,4,5],v=()=>small[next(0,4)];
+ const a=v(),c=v();let b=v(),d=v();
+ if(sign==='negative'){b=-b;d=-d}else if(sign==='mixed'){if(next(0,1))b=-b;else d=-d}
+ return {a,b,c,d,m1,m2};
 }
 function products(q){return [q.a*q.c,q.a*q.d,q.b*q.c,q.b*q.d]}
-function secondVar(){return state.variables==='same'?'x':'y'}
-function bothVar(){return state.variables==='same'?'x²':'xy'}
-function fmtTerm(value,variable,first){
- const abs=Math.abs(value),body=(variable&&abs===1?'':String(abs))+variable;
- return (value<0?(first?'−':' − '):(first?'':' + '))+body;
+function qMonos(q){const a=parseMono(q.m1),b=parseMono(q.m2);if(!a||!b)throw Error('Invalid variable expression');return [a,b]}
+function binomial(n,m,k){return '('+fmtMono(n,parseMono(m),true)+fmtMono(k,{},false)+')'}
+function factored(q){return binomial(q.a,q.m1,q.b)+binomial(q.c,q.m2,q.d)}
+function fourTerms(q){
+ const [a,b]=qMonos(q),p=products(q);
+ return [{n:p[0],vars:multiplyMono(a,b)},{n:p[1],vars:a},{n:p[2],vars:b},{n:p[3],vars:{}}];
 }
-function binomial(a,letter,b){return '('+fmtTerm(a,letter,true)+fmtTerm(b,'',false)+')'}
-function factored(q){return binomial(q.a,'x',q.b)+binomial(q.c,secondVar(),q.d)}
-function expanded(q,swap=false){
- const p=products(q),terms=[{n:p[0],v:bothVar()},{n:p[1],v:'x'},{n:p[2],v:secondVar()},{n:p[3],v:''}];
- const order=swap?[0,1,2,3]:[0,2,1,3];
- return order.map((i,j)=>fmtTerm(terms[i].n,terms[i].v,j===0)).join('');
+function expanded(q,swapped=false){
+ const terms=fourTerms(q),order=swapped?[0,1,2,3]:[0,2,1,3];
+ return order.map((j,i)=>fmtMono(terms[j].n,terms[j].vars,i===0)).join('');
 }
 function solution(q){
- if(state.variables!=='same')return expanded(q);
- const p=products(q);return fmtTerm(p[0],'x²',true)+(p[1]+p[2]===0?'':fmtTerm(p[1]+p[2],'x',false))+fmtTerm(p[3],'',false);
+ const list=fourTerms(q),order=[list[0],list[2],list[1],list[3]],groups=new Map();
+ order.forEach(v=>{const key=monoKey(v.vars);if(!groups.has(key))groups.set(key,{n:v.n,vars:v.vars});else groups.get(key).n+=v.n});
+ const result=[...groups.values()].filter(v=>v.n);
+ return result.length?result.map((v,i)=>fmtMono(v.n,v.vars,i===0)).join(''):'0';
 }
-function grouping(q,swap){
- const p=products(q),groups=swap?[[0,1],[2,3]]:[[0,2],[1,3]];
- const v=[bothVar(),'x',secondVar(),''];
- return groups.map(group=>'('+group.map((i,j)=>fmtTerm(p[i],v[i],j===0)).join('')+')').join(' + ');
+function grouping(q,swapped){
+ const t=fourTerms(q),groups=swapped?[[0,1],[2,3]]:[[0,2],[1,3]];
+ return groups.map(g=>'('+g.map((j,i)=>fmtMono(t[j].n,t[j].vars,i===0)).join('')+')').join(' + ');
 }
-function groupsFactored(q,swap){
- const lead=swap?fmtTerm(q.a,'x',true):fmtTerm(q.c,secondVar(),true);
- const tail=swap?fmtTerm(q.b,'',false):fmtTerm(q.d,'',false);
- const same=swap?binomial(q.c,secondVar(),q.d):binomial(q.a,'x',q.b);
- return lead+same+tail+same;
+function groupsFactored(q,swapped){
+ const [m1,m2]=qMonos(q);
+ const lead=swapped?fmtMono(q.a,m1,true):fmtMono(q.c,m2,true);
+ const tail=swapped?fmtMono(q.b,{},false):fmtMono(q.d,{},false);
+ const common=swapped?binomial(q.c,q.m2,q.d):binomial(q.a,q.m1,q.b);
+ return lead+common+tail+common;
 }
-function divisionHint(q,swap){
- if(swap)return fmtTerm(q.b*q.c,secondVar(),true)+' ÷ '+fmtTerm(q.c,secondVar(),true)+' = '+fmtTerm(q.b,'',true);
- return fmtTerm(q.a*q.d,'x',true)+' ÷ '+fmtTerm(q.a,'x',true)+' = '+fmtTerm(q.d,'',true);
+function divisionHint(q,swapped){
+ const [m1,m2]=qMonos(q);
+ return swapped?fmtMono(q.b*q.c,m2,true)+' ÷ '+fmtMono(q.c,m2,true)+' = '+fmtMono(q.b,{},true):
+ fmtMono(q.a*q.d,m1,true)+' ÷ '+fmtMono(q.a,m1,true)+' = '+fmtMono(q.d,{},true);
 }
 function safeText(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function resetBoard(){board.offset=0;board.cache=[]}
@@ -235,10 +319,10 @@ function setMode(mode){
 }
 function renderToolbar(){
  for(const button of document.querySelectorAll('[data-slot]'))button.setAttribute('aria-pressed',String(String(state.slot)===button.dataset.slot));
- for(const button of document.querySelectorAll('[data-level]'))button.setAttribute('aria-pressed',String(state.level===Number(button.dataset.level)));
- for(const button of document.querySelectorAll('[data-sign]'))button.setAttribute('aria-pressed',String(getSign()===button.dataset.sign));
- for(const button of document.querySelectorAll('[data-vars]'))button.setAttribute('aria-pressed',String(state.variables===button.dataset.vars));
- $('coefCLabel').firstChild.textContent='Coefficient of '+secondVar()+' ';
+ $('letterPreset').value=state.preset;
+ $('numberScale').value=String(state.numbers);$('numberValue').textContent=String(state.numbers);
+ $('powerScale').value=String(state.powers);$('powerValue').textContent=String(state.powers);
+ for(const button of document.querySelectorAll('[data-sign]'))button.setAttribute('aria-pressed',String(state.sign===button.dataset.sign));
  $('expandBtn').setAttribute('aria-pressed',String(state.direction==='expand'));
  $('factorBtn').setAttribute('aria-pressed',String(state.direction==='factor'));
  for(const [id,mode] of [['practiceBtn','practice'],['displayBtn','display'],['quizBtn','quiz'],['testBtn','test'],['worksheetsBtn','worksheets']])$(id).setAttribute('aria-pressed',String(state.mode===mode));
