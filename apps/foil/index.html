@@ -256,7 +256,7 @@ function renderPractice(){
  $('groupOptions').hidden=state.direction!=='factor';
  $('diagram').innerHTML=diagramHTML(q);
  const visible=state.direction==='expand'?(state.view==='worked'?4:Math.min(4,state.step)):4;
- const labels=['Left vertical','Left diagonal','Right diagonal','Right vertical'];
+ const labels=['F · Left vertical','O · Left diagonal','I · Right diagonal','L · Right vertical'];
  const vars=['xy','x','y',''];
  const p=products(q);
  $('partials').innerHTML=labels.map((label,i)=>'<div class="partial'+(i>=visible?' pending':'')+(state.view==='step'&&state.direction==='expand'&&state.step===i+1?' active':'')+'"><strong>'+(i+1)+'. '+label+'</strong><span class="value">'+(i<visible?fmtTerm(p[i],vars[i],true):'· · ·')+'</span></div>').join('');
