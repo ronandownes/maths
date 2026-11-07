@@ -51,8 +51,8 @@
     const context = contexts[(options||{}).context] || contexts.expansions;
     const style=document.createElement('style');
     style.textContent=[
-      '.unifying-launch{font:600 .82rem system-ui,sans-serif;padding:6px 10px;min-height:34px;border:1px solid #9eb9d1;background:#edf5fd;color:#174469;border-radius:7px;cursor:pointer;white-space:nowrap}',
-      '.unifying-panel[hidden]{display:none!important}',
+      '.unifying-launch{position:fixed;right:12px;bottom:12px;z-index:9998;font:600 .82rem system-ui,sans-serif;padding:6px 10px;min-height:36px;border:1px solid #9eb9d1;background:#edf5fd;color:#174469;border-radius:20px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 10px #0002}',
+      '.unifying-panel[hidden],.unifying-launch[hidden]{display:none!important}',
       '.unifying-panel{position:fixed;z-index:9999;top:64px;right:12px;width:min(425px,calc(100vw - 24px));max-height:calc(100dvh - 78px);overflow:auto;background:white;border:2px solid #28658d;border-radius:12px;box-shadow:0 12px 36px #0003;padding:16px;color:#172b3d;font:16px/1.48 system-ui,sans-serif;text-align:left}',
       '.unifying-panel h2{font:bold 1.26rem/1.3 system-ui,sans-serif;margin:10px 0}',
       '.unifying-panel p{font:inherit;margin:10px 0}',
@@ -106,6 +106,7 @@
     function open(on){
       panel.hidden=!on;
       launch.setAttribute('aria-expanded',String(on));
+      launch.hidden=on;
       if(on){draw();close.focus();}
       else launch.focus();
     }
