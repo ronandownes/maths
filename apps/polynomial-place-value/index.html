@@ -19,8 +19,8 @@ button[aria-pressed=true]{background:#e8f0fe;border-color:#1a73e8;color:#174ea6;
 button:disabled{opacity:.38;cursor:default}
 .top-questions,.modes,.stepper,.control-line,.button-group{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
 .top-questions{margin:3px 0 6px}.bankbar{padding-top:9px}.bankbar>span{font-size:.84rem;color:#576270;font-weight:650}.edit-hint{font-size:.81rem;color:#647080;margin:10px 0 0}
-.top-questions button{flex:1 1 55px;padding:8px 8px;font-weight:700}
-.top-questions button{min-width:50px}
+.top-questions button{flex:0 0 34px;width:34px;height:34px;border-radius:50%;padding:0;font-weight:700}
+.top-questions button{min-width:34px}
 .settings{display:flex;flex-wrap:wrap;gap:8px 12px;padding:7px 0 8px;border-top:1px solid #e2e6ea;border-bottom:1px solid #e2e6ea}
 .setting{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:6px 12px;border:1px solid #dce2e9;border-radius:8px;background:#fbfcfe}
 .setting .caption{font-size:.81rem;font-weight:700;color:#59636f;min-width:0}
@@ -165,7 +165,7 @@ function chooseButtons(id,entries,current,change){
  entries.forEach(([value,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(value===current));b.onclick=()=>change(value);host.append(b)});
 }
 function renderSelectors(){
- const q=[];for(let i=0;i<4;i++)q.push([i,'Bank '+(i+1)]);
+ const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);
  chooseButtons('questions',q,state.slot,v=>selectQuestion(v));
  function filter(key,value){state[key]=value;freshQuestion()}
  chooseButtons('types',factorTypes,state.type,v=>filter('type',v));
@@ -264,7 +264,7 @@ function draw(){
  }
 
 }
-function render(){renderSelectors();$('bankLabel').textContent='Questions: '+factorTypes.find(x=>x[0]===state.type)[1]+' · '+signTypes.find(x=>x[0]===state.sign)[1]+' · Level '+state.level;coefficientInputs();draw()}
+function render(){renderSelectors();$('bankLabel').textContent='Bank · '+factorTypes.find(x=>x[0]===state.type)[1]+' · '+signTypes.find(x=>x[0]===state.sign)[1]+' · Level '+state.level;coefficientInputs();draw()}
 selectQuestion(0);
 })();</script>
 </body>
