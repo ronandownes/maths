@@ -936,20 +936,31 @@ function renderSelectors(){
  // Numbered homework questions follow fixed signs; the sign buttons must
  // describe the question currently on screen, not a stale selection.
  chooseButtons('signs',signChoices,state.slot==='fresh'?state.sign:state.question.sign,v=>filter('sign',v));
- // Non-leading sign positions: 2 for LL, 3 for LQ, 4 for QQ.
- // Show the same minimal notation for Challenge degrees.
- const signCount=Math.max(1,(state.question?.a?.length||2)+(state.question?.b?.length||2)-2);
- const compactSigns={
-  positive:'+'.repeat(signCount),
-  negative:'−'.repeat(signCount),
-  mixed:signCount===2?'+−':signCount<=4?'±'.repeat(signCount):'±×'+signCount,
+ // Linear × linear uses a two-symbol shorthand for the signs of
+ // the constant terms: ++, −−, or +− (the leading terms remain positive).
+ // For quadratics and higher degrees, explicitly show the positive leading
+ // coefficient: +++ or +−−, never −−− for a quadratic.
+ // In mixed-degree products, the symbol depicts the higher-degree factor.
+ const shape=Math.max(state.question?.a?.length||2,state.question?.b?.length||2);
+ const twoLinears=(state.question?.a?.length===2&&state.question?.b?.length===2);
+ const compactSigns=twoLinears?{
+  positive:'++',negative:'−−',mixed:'+−',random:'?'
+ }:{
+  positive:'+'.repeat(shape),
+  negative:'+'+'−'.repeat(shape-1),
+  mixed:'+'+'±'.repeat(shape-1),
   random:'?'
  };
- const descriptions={
-  positive:'All '+signCount+' non-leading coefficients positive',
-  negative:'All '+signCount+' non-leading coefficients negative',
-  mixed:'Mixed signs among '+signCount+' non-leading coefficients',
-  random:'Random sign pattern'
+ const descriptions=twoLinears?{
+  positive:'Two sums: positive constants in both linear factors',
+  negative:'Two differences: negative constants in both linear factors',
+  mixed:'One sum and one difference in the linear factors',
+  random:'Random choice of sign pattern for the linear factors'
+ }:{
+  positive:'All coefficients positive. The higher-degree factor has pattern '+compactSigns.positive+'.',
+  negative:'Leading coefficient positive and all non-leading coefficients negative. The higher-degree factor has pattern '+compactSigns.negative+'.',
+  mixed:'At least one positive and one negative non-leading coefficient across both factors; the higher-degree factor may have different signs.',
+  random:'Randomly select the positive, negative or mixed sign pattern'
  };
  signChoices.forEach(([value,label],i)=>{
   const button=$('signs').children[i];
