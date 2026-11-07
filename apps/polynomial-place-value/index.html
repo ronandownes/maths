@@ -60,6 +60,11 @@ button:disabled{opacity:.38;cursor:default}
  .math-table .row-label{width:38px;font-size:.76rem}
  .canvas{padding:12px 3px}
 }
+.factor-expression{font:clamp(1.65rem,3.2vw,2.25rem)/1.45 "Cambria Math",Cambria,Georgia,serif;text-align:center;padding:8px 8px 2px;color:#202124}
+.factor-expression sup{font-size:.62em;vertical-align:super}
+.factor-expression .bracket{display:inline-block;font-size:1.14em;line-height:1;vertical-align:-.035em}
+.factor-expression .factor{display:inline-block;white-space:nowrap}
+@media(max-width:680px){.factor-expression{font-size:1.55rem}}
 </style>
 </head>
 <body>
@@ -76,6 +81,7 @@ button:disabled{opacity:.38;cursor:default}
 </div>
 <div class="bankbar"><span id="bankLabel">Questions for these settings</span><nav class="top-questions" id="questions" aria-label="Questions for the selected factors, signs and level"></nav></div>
 <div class="modes" id="modes" aria-label="How to view the solution"></div>
+<div class="factor-expression" id="factorExpression" aria-label="Current multiplication question"></div>
 <p class="edit-hint">Change any coefficient using the arrows or by typing a number. The working updates immediately.</p>
 <div class="coefficients" id="coefficients" aria-label="Edit factor coefficients"></div>
 <h2 id="heading"></h2>
@@ -194,12 +200,10 @@ function draw(){
  $('heading').textContent=mode==='step'?actions[step]:mode==='worked'?'Fully worked':'';
  $('help').textContent='';
  const pad=v=>Array(n-v.length).fill(null).concat(v);
- const question=document.createElement('div');question.className='equation question-formula';
- question.innerHTML='('+poly(a)+')('+poly(b)+')';
- if(mode!=='answer')root.append(question);
+ $('factorExpression').innerHTML='<span class="factor"><span class="bracket">(</span>'+poly(a)+'<span class="bracket">)</span></span> <span class="factor"><span class="bracket">(</span>'+poly(b)+'<span class="bracket">)</span></span>';
  if(mode==='answer'){
   const eq=document.createElement('div');eq.className='equation';
-  eq.innerHTML='('+poly(a)+')('+poly(b)+') = '+poly(final);
+  eq.innerHTML=poly(final);
   root.append(eq);
  }else if(mode!=='question'){
   const table=document.createElement('table');table.className='math-table';
