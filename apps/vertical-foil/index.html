@@ -256,6 +256,12 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
  #practicePanel .expression{font-size:clamp(1.9rem,8vw,2.7rem);margin:3px auto}
  .diagram svg{max-height:260px}
 }
+.language-choice{display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:5px;font-size:.77rem;color:#66798e}
+.language-choice button{font-size:.77rem;padding:5px 8px}
+@media(max-width:760px){
+ .cluster.procedure .language-choice{display:flex;justify-content:center;gap:5px;font-size:.73rem}
+ .cluster.procedure .language-choice button{min-height:30px;padding:4px 9px}
+}
 </style>
 </head>
 <body>
@@ -276,7 +282,7 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 <div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
 <div class="cluster classwork"><h2>Classwork</h2><div class="buttons"><button data-slot="0">1</button><button data-slot="1">2</button><button data-slot="2">3</button><button data-slot="3">4</button><button data-slot="random">Random</button></div></div>
 <div class="cluster activities"><h2>Activities</h2><div class="buttons"><button id="lessonBtn">Instruction</button><button id="practiceBtn">Practice</button><button id="displayBtn">Display</button><button id="quizBtn">Quiz</button><button id="testBtn">Test</button><button id="worksheetsBtn">Sheets</button></div></div>
-<div class="cluster procedure"><h2>Procedural fluency</h2><div class="buttons"><button id="stepsBtn">Step by step</button><button id="workedBtn">Worked</button><button id="resetBtn">Reset steps</button></div></div>
+<div class="cluster procedure"><h2>Procedural fluency</h2><div class="buttons"><button id="stepsBtn">Step by step</button><button id="workedBtn">Worked</button><button id="resetBtn">Reset steps</button></div><div class="language-choice" role="group" aria-label="Wording for explanation"><span>Language</span><button id="basicLanguageBtn" type="button">Everyday</button><button id="mathsLanguageBtn" type="button">Mathematical</button></div></div>
 </div><details class="advanced-term-editor"><summary>Edit the question</summary><div class="editors" aria-label="Edit coefficients and variable powers">
 <label>First coefficient <input id="coefA" type="number" min="1" max="99" step="1" aria-label="First coefficient"></label>
 <label>First letters <input id="mono1" type="text" maxlength="20" spellcheck="false" autocomplete="off" aria-label="First variable term e.g. x^2y" title="x, xy, a^2, p^3q"></label>
@@ -316,10 +322,14 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id);
-const state={numbers:1,powers:0,preset:'XYZ',manual1:null,manual2:null,sign:'positive',slot:0,seq:0,direction:'expand',mode:'practice',view:'step',step:0,group:'intact',q:null};
+const state={numbers:1,powers:0,preset:'XYZ',manual1:null,manual2:null,sign:'positive',slot:0,seq:0,direction:'expand',mode:'practice',language:'everyday',view:'step',step:0,group:'intact',q:null};
 const board={cols:1,rows:1,offset:0,answers:false,cache:[]};
 const assessment={mode:null,questions:[],selected:[],attempts:[],tried:[],firstAttempts:[],responses:[],completed:false,quizIndex:0,sound:true};
-const routeLabels=['Left goalpost · Firsts','Left diagonal · Inners','Right diagonal · Outers','Right goalpost · Lasts'];
+const routeNames={
+ everyday:['Left straight down','Diagonal down-left','Diagonal down-right','Right straight down'],
+ mathematical:['Left vertical partial product','Left diagonal partial product','Right diagonal partial product','Right vertical partial product']
+};
+function routeLabel(index){return routeNames[state.language][index]}
 function rand(seed){let x=(seed>>>0)||1234567;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))};}
 const raised='⁰¹²³⁴⁵⁶⁷⁸⁹';
 function parseMono(raw){
@@ -449,6 +459,8 @@ function renderToolbar(){
  $('stepsBtn').setAttribute('aria-pressed',String(state.view==='step'));
  $('workedBtn').setAttribute('aria-pressed',String(state.view==='worked'));
  for(const button of document.querySelectorAll('[data-group]'))button.setAttribute('aria-pressed',String(state.group===button.dataset.group));
+ $('basicLanguageBtn').setAttribute('aria-pressed',String(state.language==='everyday'));
+ $('mathsLanguageBtn').setAttribute('aria-pressed',String(state.language==='mathematical'));
 }
 function diagramHTML(q,forceAll=false){
  const terms=fourTerms(q),ids=[0,2,1,3];
@@ -495,7 +507,7 @@ function renderChecklist(){
  host.hidden=state.view!=='step'||state.mode!=='practice';
  if(host.hidden)return;
  const titles=state.direction==='expand'?
- ['Drop brackets · stack','Left goalpost','Left diagonal','Right diagonal','Right goalpost',new Set(fourTerms(state.q).map(term=>monoKey(term.vars))).size===4?'Observe unlike terms':'Collect like terms']:
+ [state.language==='everyday'?'Drop brackets · stack':'Rewrite as vertically stacked binomials',...routeNames[state.language],new Set(fourTerms(state.q).map(term=>monoKey(term.vars))).size===4?'Observe unlike terms':'Collect like terms']:
  ['Identify four products','Group adjacent terms','Take common factors','Find repeated bracket','Restore both factors'];
  const current=Math.min(Math.max(0,state.step-1),titles.length-1);
  host.innerHTML='<h2>Steps</h2>';
@@ -527,7 +539,7 @@ function renderPractice(){
  $('partials').replaceChildren();
  const limit=state.direction==='expand'?6:4,step=state.view==='worked'?limit:state.step,work=[];
  if(state.direction==='expand'){
-  $('status').textContent=step===0?'First, drop the brackets and stack the two binomials.':step===1?'First term above first; second term above second. Now multiply down each route.':step<=5?'Multiply across the two different factors.':new Set(fourTerms(q).map(t=>monoKey(t.vars))).size===4?'Four unlike terms: no collecting required.':'Collect only the terms with matching variable parts.';
+  $('status').textContent=step===0?'First, drop the brackets and stack the two binomials.':step===1?'First term above first; second term above second. Now multiply down each route.':step<=5?(state.language==='everyday'?routeLabel(step-2)+': multiply the connected terms.':routeLabel(step-2)+': distribute one term from each factor.'):new Set(fourTerms(q).map(t=>monoKey(t.vars))).size===4?'Four unlike terms: no collecting required.':'Collect only the terms with matching variable parts.';
   if(step>=5)work.push('<div class="mathline">'+expanded(q)+'</div>');
   if(step>=6){
    const list=fourTerms(q),distinct=new Set(list.map(t=>monoKey(t.vars))).size===4;
@@ -856,6 +868,9 @@ $('mobileOptionsBtn').onclick=()=>{
  const main=$('mathsAppMain'),open=!main.classList.contains('options-open');
  main.classList.toggle('options-open',open);
  $('mobileOptionsBtn').setAttribute('aria-expanded',String(open));
+};
+for(const [id,language] of [['basicLanguageBtn','everyday'],['mathsLanguageBtn','mathematical']])$(id).onclick=()=>{
+ state.language=language;renderToolbar();if(state.mode==='practice')renderPractice();
 };
 $('practiceBtn').onclick=()=>setMode('practice');
 $('lessonBtn').onclick=()=>{lessonIndex=0;lessonReveal=false;setMode('lesson')};
