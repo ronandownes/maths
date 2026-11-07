@@ -28,6 +28,7 @@ button:disabled{opacity:.38;cursor:default}
 .caption-wrapped{display:flex;flex-direction:column;text-align:center;line-height:1.14;white-space:nowrap}
 .caption-wrapped span{display:block}
 .button-group button{font-size:.87rem;padding:8px 11px}
+#types button,#signs button{white-space:pre-line;text-align:center;line-height:1.2;min-height:46px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center}
 .modes{margin:8px 0 4px}
 .modes button{font-size:.94rem}
 .modes button[aria-pressed=true]{border-color:#174ea6}.modes button:first-child{font-weight:700}
@@ -168,9 +169,9 @@ button:disabled{opacity:.38;cursor:default}
 const $ = id=>document.getElementById(id);
 const actions=['Set up the place-value columns','Fill in the coefficients','Calculate the partial products','Group like terms','Interpret the coefficients as powers of x','Box the answer','Reflection'];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
-const factorChoices=[...factorTypes,['any','Rand']];
+const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\nQuad'],['any','Rand']];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
-const signChoices=[['positive','Positive signs'],['negative','Negative signs'],['mixed','Mixed signs'],['random','Random signs']];
+const signChoices=[['positive','Both\npositive'],['negative','Both\nnegative'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
 const state={type:'ql',factorRandom:false,sign:'positive',level:1,levelRandom:false,mode:'worked',step:0,slot:0,freshCount:0,question:null};
@@ -250,7 +251,7 @@ function freshQuestion(){
 
 function chooseButtons(id,entries,current,change){
  const host=$(id);host.replaceChildren();
- entries.forEach(([value,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(value===current));b.onclick=()=>change(value);host.append(b)});
+ entries.forEach(([value,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-label',label.replace(/\n/g,' '));b.setAttribute('aria-pressed',String(value===current));b.onclick=()=>change(value);host.append(b)});
 }
 function renderSelectors(){
  const q=[];for(let i=0;i<4;i++)q.push([i,String(i+1)]);q.push(['fresh','Random']);
