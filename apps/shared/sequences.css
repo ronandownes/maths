@@ -65,3 +65,14 @@ button:disabled{opacity:.45;cursor:default}.modes,.toolbar,.actions,.quicknav{di
 .explanation-panel.error{border-color:#b74141;background:#fff3f1}
 .exam-options-note{font-size:.93rem;line-height:1.4;color:#536879;margin:8px 0}
 @media(max-width:680px){.choices{grid-template-columns:1fr}.choice-card{min-height:94px}.pairing-proof{gap:3px}.pairing-column{padding:7px 2px}}
+
+/* Sequence lesson: diagram left, teaching steps and algebra on the right. */
+@media(min-width:801px){
+  #learn{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(0,1fr);column-gap:16px;align-items:start}
+  #learn>.lead{grid-column:1/-1}
+  #learn>.diagram{grid-column:1;grid-row:2/span 2;margin-top:0;min-height:285px;display:flex;align-items:center;justify-content:center}
+  #learn>.speech{grid-column:2;grid-row:2;margin:0;min-height:150px}
+  #learn>.formula{grid-column:2;grid-row:3;margin:0;min-height:105px;text-align:left;overflow-wrap:anywhere}
+  #learn>.actions,#learn>.quicknav,#learn>p.small,#learn>details{grid-column:1/-1}
+  #learn>.diagram svg{max-height:320px}
+}
