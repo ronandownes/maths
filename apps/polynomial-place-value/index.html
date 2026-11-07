@@ -393,12 +393,11 @@ main{margin:5px auto;padding:10px 19px 18px}
 </main>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
-const actions=['Set up the place-value columns','Place the coefficients','Calculate partial products','Place the zero placeholders','Combine terms by powers of x','Interpret and populate the powers of x','Box the answer','Reflect'];
+const actions=['Set up the place-value columns','Place the coefficients','Calculate partial products','Combine terms by powers of x','Interpret and populate the powers of x','Box the answer','Reflect'];
 const instructions=[
  'Set up the place-value columns with powers of x',
  'Place the coefficients in the correct columns, with the higher-degree factor on top',
  'Calculate the partial products',
- 'Place zeros at the end of shifted multiplication rows to keep the place-value columns aligned',
  'Combine contributions in each power-of-x column (add coefficients where there are two or more)',
  'Interpret and populate the powers of x',
  'Box the final answer',
@@ -621,7 +620,7 @@ function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomia
 }
 function draw(){
  const {a,b}=state.question,final=product(a,b).map(v=>v*(state.question.scalar||1)),n=final.length,degree=n-1;
- const mode=state.mode,step=mode==='worked'?7:mode==='question'?0:state.step;
+ const mode=state.mode,step=mode==='worked'?6:mode==='question'?0:state.step;
  const root=$('canvas');root.replaceChildren();
  $('heading').textContent='';
  $('help').textContent='';
@@ -642,7 +641,7 @@ function draw(){
    entry.onclick=()=>{
     state.step=i+1;
     if(i===2){state.partialCount=individualProducts(a,b).length;state.partialAll=true;}
-    if(i===4){state.groupCount=n;state.groupAll=true;}
+    if(i===3){state.groupCount=n;state.groupAll=true;}
     render();
    };
    checklist.append(entry);
@@ -678,7 +677,7 @@ function draw(){
     }
     checklist.append(sub);
    }
-   if(i===4&&step===5){
+   if(i===3&&step===4){
     const sub=document.createElement('div');sub.className='stage-controls';
     sub.setAttribute('aria-label','Combine like terms by column');
     const description=document.createElement('div');description.className='stage-control-title';
@@ -757,12 +756,12 @@ function draw(){
     }
    }
   }
-  if(step>=5){
-   const sums=mode==='step'&&step===5&&!state.groupAll
+  if(step>=4){
+   const sums=mode==='step'&&step===4&&!state.groupAll
     ?final.map((v,j)=>j<state.groupCount?v:null):final;
-   row(table,sums,'sum','+',degree,step>=6);
+   row(table,sums,'sum','+',degree,step>=5);
   }
-  if(mode==='step'&&step===5&&!state.groupAll&&state.groupCount>0){
+  if(mode==='step'&&step===4&&!state.groupAll&&state.groupCount>0){
    const selectedColumn=state.groupCount-1;
    table.className+=' group-focus';
    for(let ri=3;ri<table.children.length;ri++){
@@ -781,11 +780,6 @@ function draw(){
    if(heading)heading.className+=' group-heading';
   }
   root.append(table);
-  if(mode==='step'&&step===4){
-   const note=document.createElement('div');note.className='partial-explanation';
-   note.textContent='Place-value shift: the second partial-product row ends with one 0; the third row (if present) ends with two 0s. These placeholders keep every coefficient in its correct column before addition.';
-   root.append(note);
-  }
   if(mode==='step'&&step===3&&state.partialCount>0&&!state.partialAll){
    const items=individualProducts(a,b);
    const item=items[state.partialCount-1];
@@ -799,18 +793,18 @@ function draw(){
    location.textContent=' · '+(item.power===0?'constant':item.power===1?'x':'x^'+item.power)+' column';
    note.append(location);root.append(note);
   }
-  if(mode==='step'&&step===5&&!state.groupAll&&state.groupCount>0){
+  if(mode==='step'&&step===4&&!state.groupAll&&state.groupCount>0){
    const values=workRows(state.question).map(r=>r[state.groupCount-1]).filter(v=>v!==null);
    const explain=document.createElement('div');explain.className='group-explanation';
    explain.textContent=values.map(minus).join(' + ').replace(/\+ −/g,'− ')+' = '+minus(final[state.groupCount-1]);
    root.append(explain);
   }
-  if(step>=7){
+  if(step>=6){
    const eq=document.createElement('div');eq.className='equation worked-conclusion';
    eq.innerHTML=poly(final);
    root.append(eq);
   }
-  if(mode==='step'&&step===8){
+  if(mode==='step'&&step===7){
    const reflection=document.createElement('div');reflection.className='reflection';
    const heading=document.createElement('strong');heading.textContent='Reflection';
    const paragraph=document.createElement('p');
