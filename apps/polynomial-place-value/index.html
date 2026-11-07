@@ -75,6 +75,13 @@ button:disabled{opacity:.38;cursor:default}
 .step-upcoming{color:#8b96a6}
 .partial-buttons{display:flex;gap:5px;flex-wrap:wrap;padding:3px 2px 12px 45px;border-bottom:1px solid #e6eaf0}
 .partial-buttons button{width:32px;height:32px;padding:0;border-radius:50%;font-size:.93rem;font-weight:700}
+.partial-buttons button.partial-all{width:auto;min-width:43px;border-radius:6px;padding:0 6px}
+.partial-buttons button.partial-all[aria-pressed=true]{background:#174ea6;color:white;border-color:#174ea6}
+.coefficients{position:relative}
+.operand-connector{position:absolute;height:3px;background:#5c80ba;transform-origin:0 50%;pointer-events:none;z-index:2;border-radius:4px;box-shadow:0 0 0 1px #fff}
+.operand-connector::before,.operand-connector::after{content:"";position:absolute;width:9px;height:9px;border:2px solid #5c80ba;background:white;border-radius:50%;top:-3px}
+.operand-connector::before{left:-4px}.operand-connector::after{right:-4px}
+.coefficient-control.coefficient-highlight{background:#eaf1fd!important;border-color:#426eae!important}
 .partial-buttons button.partial-done{background:#eaf1fe;border-color:#8caee3;color:#174ea6}
 .partial-buttons button[aria-pressed=true]{background:#174ea6;color:#fff;border-color:#174ea6}
 .coefficient-control.coefficient-highlight{border:3px solid #1a73e8;background:#edf5ff}
@@ -237,7 +244,7 @@ const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed
 const signChoices=[['positive','Both\npositive'],['negative','Both\nnegative'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
-const state={type:'ql',factorRandom:false,sign:'positive',level:1,levelRandom:false,mode:'worked',step:0,slot:0,freshCount:0,partialCount:0,question:null};
+const state={type:'ql',factorRandom:false,sign:'positive',level:1,levelRandom:false,mode:'worked',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,question:null};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -301,13 +308,13 @@ function chosenQuestion(){
  return makeQuestion(rng);
 }
 function selectQuestion(slot){
- state.slot=slot;state.question=chosenQuestion();state.partialCount=0;render();
+ state.slot=slot;state.question=chosenQuestion();state.partialCount=0;state.partialAll=false;render();
 }
 function freshQuestion(){
  const previous=state.question;
  for(let attempt=0;attempt<16;attempt++){
   state.freshCount++;const next=(()=>{state.slot='fresh';return chosenQuestion()})();
-  if(!previous||JSON.stringify(next)!==JSON.stringify(previous)){state.question=next;state.partialCount=0;render();return}
+  if(!previous||JSON.stringify(next)!==JSON.stringify(previous)){state.question=next;state.partialCount=0;state.partialAll=false;render();return}
  }
  state.question=chosenQuestion();state.partialCount=0;render();
 }
@@ -357,11 +364,11 @@ function renderSelectors(){
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
  toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
  const steps=document.createElement('button');steps.type='button';steps.textContent='Step by step';steps.setAttribute('aria-pressed',String(state.mode==='step'));
- steps.onclick=()=>{state.mode='step';state.step=0;state.partialCount=0;render()};host.append(steps);
+ steps.onclick=()=>{state.mode='step';state.step=0;state.partialCount=0;state.partialAll=false;render()};host.append(steps);
  if(state.mode==='step'){
   const reset=document.createElement('button');reset.type='button';reset.textContent='Reset steps';
   reset.setAttribute('aria-label','Reset step-by-step working');
-  reset.onclick=()=>{state.step=0;state.partialCount=0;render()};host.append(reset);
+  reset.onclick=()=>{state.step=0;state.partialCount=0;state.partialAll=false;render()};host.append(reset);
  }
 }
 function coefficientInputs(){
@@ -372,7 +379,7 @@ function coefficientInputs(){
    const degree=state.question[key].length-i-1;
    const label=document.createElement('label');label.className='coefficient';
    const control=document.createElement('div');control.className='coefficient-control';
-   if(state.mode==='step'&&state.step===3&&state.partialCount>0){
+   if(state.mode==='step'&&state.step===3&&state.partialCount>0&&!state.partialAll){
     const selected=individualProducts(state.question.a,state.question.b)[state.partialCount-1];
     if(selected&&((key==='a'&&i===selected.i)||(key==='b'&&i===selected.j)))control.className+=' coefficient-highlight';
    }
@@ -442,7 +449,7 @@ function draw(){
    const marker=document.createElement('span');marker.className='checklist-marker';marker.textContent=i<step?'✓':String(i+1);
    const label=document.createElement('span');label.textContent=action;
    entry.append(marker,label);
-   entry.onclick=()=>{state.step=i+1;if(i===2)state.partialCount=0;render()};
+   entry.onclick=()=>{state.step=i+1;if(i===2){state.partialCount=0;state.partialAll=false;}render()};
    checklist.append(entry);
    if(i===2&&step===3){
     const sub=document.createElement('div');sub.className='partial-buttons';
@@ -452,11 +459,16 @@ function draw(){
      const btn=document.createElement('button');btn.type='button';
      btn.textContent=String(index+1);
      btn.setAttribute('aria-label','Show partial product '+(index+1)+' of '+items.length);
-     btn.setAttribute('aria-pressed',String(state.partialCount===index+1));
+     btn.setAttribute('aria-pressed',String(!state.partialAll&&state.partialCount===index+1));
      btn.className=index<state.partialCount?'partial-done':'';
-     btn.onclick=()=>{state.partialCount=index+1;render()};
+     btn.onclick=()=>{state.partialCount=index+1;state.partialAll=false;render()};
      sub.append(btn);
     });
+    const all=document.createElement('button');all.type='button';all.className='partial-all';
+    all.textContent='All';all.setAttribute('aria-label','Show all partial products');
+    all.setAttribute('aria-pressed',String(state.partialAll));
+    all.onclick=()=>{state.partialCount=items.length;state.partialAll=true;render()};
+    sub.append(all);
     checklist.append(sub);
    }
   });
@@ -488,7 +500,7 @@ function draw(){
   }
   if(step>=4)row(table,final,'sum','+',degree,step>=5);
   root.append(table);
-  if(mode==='step'&&step===3&&state.partialCount>0){
+  if(mode==='step'&&step===3&&state.partialCount>0&&!state.partialAll){
    const items=individualProducts(a,b);
    const item=items[state.partialCount-1];
    const note=document.createElement('div');note.className='partial-explanation';
@@ -779,7 +791,25 @@ function switchMode(mode){
 $('practiceMode').onclick=()=>switchMode('practice');
 $('quizMode').onclick=()=>switchMode('quiz');
 $('testMode').onclick=()=>switchMode('test');
-function render(){renderSelectors();coefficientInputs();draw()}
+function connectSelectedCoefficients(){
+ const host=$('coefficients');
+ const previous=host.querySelector&&host.querySelector('.operand-connector');
+ if(previous)previous.remove();
+ if(state.mode!=='step'||state.step!==3||state.partialCount<1||state.partialAll||!host.querySelectorAll||!host.getBoundingClientRect)return;
+ const selected=host.querySelectorAll('.coefficient-highlight');
+ if(selected.length!==2)return;
+ const base=host.getBoundingClientRect(),r1=selected[0].getBoundingClientRect(),r2=selected[1].getBoundingClientRect();
+ const x1=r1.left+r1.width/2-base.left,y1=r1.bottom-base.top+5;
+ const x2=r2.left+r2.width/2-base.left,y2=r2.bottom-base.top+5;
+ const length=Math.hypot(x2-x1,y2-y1);
+ if(length<10)return;
+ const line=document.createElement('div');line.className='operand-connector';
+ line.style.left=x1+'px';line.style.top=y1+'px';line.style.width=length+'px';
+ line.style.transform='rotate('+Math.atan2(y2-y1,x2-x1)+'rad)';
+ host.append(line);
+}
+function render(){renderSelectors();coefficientInputs();draw();connectSelectedCoefficients()}
+window.addEventListener('resize',connectSelectedCoefficients);
 selectQuestion(0);
 })();</script>
 </body>
