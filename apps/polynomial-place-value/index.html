@@ -555,6 +555,8 @@ main{margin:5px auto;padding:10px 19px 18px}
 
 /* Responsive Maths app settings prototype: one unobtrusive mobile toggle. */
 .mobile-settings-toggle,.mobile-settings-close,.mobile-settings-backdrop{display:none}
+#signs .sign-long{display:none!important}
+#signs .sign-short{display:inline!important}
 .mobile-settings-toggle[hidden]{display:none!important}
 .sign-short{display:none}
 .instruction-method-intro{width:min(100%,1000px);display:grid;justify-items:center;gap:clamp(16px,3vh,35px)}
@@ -593,6 +595,25 @@ main{margin:5px auto;padding:10px 19px 18px}
 .language-choice button{font-size:.75rem;padding:5px 8px;border-radius:7px}
 .language-choice button[aria-pressed="true"]{background:#eaf3ff;border-color:#377abc;color:#1a5590;font-weight:750}
 @media(max-width:700px){.language-choice{margin:4px auto;gap:4px}.language-choice button{font-size:.76rem;min-height:32px}}
+
+/* Keep the activities on one line and preserve space for mathematics. */
+.activity-switch{display:grid!important;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;gap:5px 12px}
+.activity-switch>.activities-section{grid-column:1;grid-row:1;justify-self:start;min-width:0}
+.activity-switch>.procedural-section{grid-column:2;grid-row:1;justify-self:end;min-width:0}
+.activity-switch>.homework-controls{grid-column:1/-1;grid-row:2;justify-self:start;min-width:0}
+.activity-switch>.activities-section .activity-actions{display:flex;flex-wrap:nowrap;gap:4px;white-space:nowrap;justify-content:flex-start}
+.activity-switch>.activities-section .activity-actions button{font-size:.82rem;padding:7px 8px}
+.activity-switch>.procedural-section .practice-quick-controls{gap:4px;justify-content:flex-end;flex-wrap:wrap}
+.activity-switch>.procedural-section .practice-quick-controls button{font-size:.79rem;padding:6px 8px}
+#worksheetMode{margin-left:0}
+#signs button{min-width:0;padding:7px 8px;font-size:clamp(.91rem,1.3vw,1.07rem);font-weight:700}
+#monicBtn{display:inline-flex;min-height:39px;align-items:center}
+@media(max-width:940px){
+ .activity-switch{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}
+ .activity-switch>.activities-section{grid-column:1;grid-row:1;max-width:100%;overflow-x:auto}
+ .activity-switch>.homework-controls{grid-column:1;grid-row:2;max-width:100%;overflow-x:auto}
+ .activity-switch>.procedural-section{grid-column:1;grid-row:3;justify-self:start}
+}
 </style>
 </head>
 <body>
@@ -608,7 +629,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="setting"><span class="caption">Factor pattern</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor pattern"></div><select id="challengeSelect" aria-label="Optional higher degree factor patterns"><option value="">Challenge…</option><option value="l3">Linear × Cubic</option><option value="l4">Linear × Quartic</option><option value="l5">Linear × Quintic</option><option value="q3">Quadratic × Cubic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 <div class="setting"><span class="caption">Signs within factors</span><div class="button-group" id="signs" aria-label="Choose signs"></div></div>
-<div class="setting setting--advanced"><span class="caption">Options</span><div class="advanced-buttons"><button type="button" id="constantBtn" aria-pressed="false" title="HCF Off gives a primitive expansion (coefficient HCF 1); HCF On gives a common numerical factor.">HCF Off</button><button type="button" id="monicBtn" hidden aria-pressed="false" title="Advanced: leading coefficient 1">Monic off</button><button type="button" id="challengeBtn" hidden aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false">Challenge off</button></div></div>
+<div class="setting setting--advanced"><span class="caption">Options</span><div class="advanced-buttons"><button type="button" id="constantBtn" aria-pressed="false" title="HCF Off gives a primitive expansion (coefficient HCF 1); HCF On gives a common numerical factor.">HCF Off</button><button type="button" id="monicBtn" aria-pressed="false" title="Advanced: leading coefficient 1">Monic off</button><button type="button" id="challengeBtn" hidden aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false">Challenge off</button></div></div>
 <div class="beyond-choices" id="beyondPanel" hidden><div class="button-group" id="beyondChoices"></div><span id="beyondNote"></span></div>
 </div>
 <div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
@@ -771,7 +792,7 @@ function makeQuestion(next,signOverride=null){
    const target=next(0,1)===0?a:b;
    target[next(0,target.length-1)]=challenge();
   }
-  if(state.monic&&state.slot==='fresh'){a[0]=1;if(type!=='cl')b[0]=1;}
+  if(state.monic){a[0]=1;if(type!=='cl')b[0]=1;}
   for(const arr of [a,b])for(let i=1;i<arr.length;i++){
    if(sign==='negative'||(sign==='mixed'&&next(0,1)===1))arr[i]=-Math.abs(arr[i]);
   }
@@ -797,7 +818,7 @@ function chosenQuestion(){
   :seeded(seedFor(17+state.slot*123+state.bankQuestion*891));
  // Six reproducible questions in each of six ordered banks.
  // Respect the teacher's current factor/sign/level overrides after bank selection.
- if(state.slot===0&&state.bankQuestion===0&&state.type==='ll'&&state.level===1&&state.sign==='positive'&&!state.factorRandom){
+ if(state.slot===0&&state.bankQuestion===0&&state.type==='ll'&&state.level===1&&state.sign==='positive'&&!state.factorRandom&&!state.monic){
   return {a:state.constantOn?[2,2]:[1,1],b:[2,1],type:'ll',sign:'positive',scalar:1};
  }
  return makeQuestion(rng);
@@ -890,9 +911,21 @@ function renderSelectors(){
  // Numbered homework questions follow fixed signs; the sign buttons must
  // describe the question currently on screen, not a stale selection.
  chooseButtons('signs',signChoices,state.slot==='fresh'?state.sign:state.question.sign,v=>filter('sign',v));
- // Keep a full accessible description; phones show only compact symbolic controls.
- const compactSigns={'positive':'++','negative':'−−','mixed':'+−','random':'±'};
- const descriptions={'positive':'All non-leading signs positive','negative':'All non-leading signs negative','mixed':'Mixed positive and negative non-leading signs','random':'Random signs'};
+ // Non-leading sign positions: 2 for LL, 3 for LQ, 4 for QQ.
+ // Show the same minimal notation for Challenge degrees.
+ const signCount=Math.max(1,(state.question?.a?.length||2)+(state.question?.b?.length||2)-2);
+ const compactSigns={
+  positive:'+'.repeat(signCount),
+  negative:'−'.repeat(signCount),
+  mixed:signCount===2?'+−':signCount<=4?'±'.repeat(signCount):'±×'+signCount,
+  random:'?'
+ };
+ const descriptions={
+  positive:'All '+signCount+' non-leading coefficients positive',
+  negative:'All '+signCount+' non-leading coefficients negative',
+  mixed:'Mixed signs among '+signCount+' non-leading coefficients',
+  random:'Random sign pattern'
+ };
  signChoices.forEach(([value,label],i)=>{
   const button=$('signs').children[i];
   const long=el('span',label,'sign-long'),short=el('span',compactSigns[value],'sign-short');
@@ -909,8 +942,8 @@ function renderSelectors(){
  }
  chooseButtons('levels',levels,state.level,v=>filter('level',v));
  const monicButton=$('monicBtn');monicButton.setAttribute('aria-pressed',String(state.monic));monicButton.textContent=state.monic?'Monic on':'Monic off';
- monicButton.title=state.monic?'Monic is on: both random factors have leading coefficient 1. Click to turn off.':'Click to practise with leading coefficient 1 in both random factors. Numbered homework remains unchanged.';
- monicButton.onclick=()=>{if(assessment.started)return;state.monic=!state.monic;freshQuestion();assessmentConfigChanged()};
+ monicButton.title=state.monic?'Both factors have leading coefficient 1 (where applicable). Click to switch off.':'Require leading coefficients of 1, including numbered banks and Challenge.';
+ monicButton.onclick=()=>{if(assessment.started)return;state.monic=!state.monic;refreshSelectedQuestion();assessmentConfigChanged()};
  const randomFactor=$('types').children[factorTypes.length];randomFactor.className='level-random';randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
  const randomSign=$('signs').children[3];randomSign.className='level-random';randomSign.title='Randomly choose a sign pattern';randomSign.setAttribute('aria-label','Random signs');
  setAssessmentControlsLocked();
@@ -1904,7 +1937,7 @@ function worksheetQuestions(countOverride){
    const type=types[Math.min(types.length-1,Math.floor(progress*types.length))],sign=signFor(i);
    const level=ws.sheet===1?Math.min(levelBase,2):ws.sheet===2?levelBase:Math.max(levelBase,2);
    state.type=type;state.sign=sign;state.level=level;
-   state.monic=(ws.sheet===1&&i%4===0)||(ws.sheet===2&&i%6===0);
+   state.monic=old.monic; // Respect the teacher's explicit Monic choice in printed sheets.
    const seed=seedFor(50000+ws.sheet*1103+i*97+(ws.use==='homework'?10007:0));
    const q=makeQuestion(seeded(seed),sign);
    if(!state.constantOn&&ws.sheet>=3&&progress>.6&&i%4===1){
