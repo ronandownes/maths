@@ -391,6 +391,18 @@ main{margin:5px auto;padding:10px 19px 18px}
 .board-panel:fullscreen .board-grid{flex:1;height:auto;min-height:0;gap:4px}
 .board-panel:fullscreen .board-question{border-color:#f0f2f5}
 @media(max-width:640px){.board-grid{min-height:340px;gap:3px}.board-question{padding:9px 4px}.board-number{left:4px;top:3px}}
+.settings-top.common-settings>.setting>.caption{text-align:center;align-self:stretch}
+.factor-pattern-controls{display:flex;align-items:center;flex-wrap:wrap;gap:5px}
+#challengeSelect{border:1px solid #c8d0da;border-radius:6px;background:#fff;padding:6px 5px;min-height:39px;font-size:.78rem;max-width:172px;color:#273346}
+#challengeSelect:has(option:checked:not([value=""])){background:#fde9ef;border-color:#be6b88}
+#challengeBtn[hidden],#practiceMode[hidden]{display:none!important}
+.activity-switch{align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.activity-section{display:flex;flex-direction:column;gap:5px;align-items:center}
+.activity-title{display:block;text-align:center;font-weight:700;font-size:.78rem;color:#5b6978;line-height:1.15}
+.activity-section .activity-actions{margin-left:0}
+.activity-section .practice-quick-controls{display:flex;align-items:center;justify-content:center}
+.activity-section .modes{justify-content:center}
+@media(max-width:940px){.activity-switch{justify-content:center}.activity-section{flex:1 1 auto}}
 </style>
 </head>
 <body>
@@ -400,22 +412,22 @@ main{margin:5px auto;padding:10px 19px 18px}
 </header>
 <main>
 <div class="settings settings-top common-settings">
-<div class="setting"><span class="caption">Factor pattern</span><div class="button-group" id="types" aria-label="Choose factor pattern"></div></div>
+<div class="setting"><span class="caption">Factor pattern</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor pattern"></div><select id="challengeSelect" aria-label="Optional higher degree factor patterns"><option value="">Challenge…</option><option value="l5">Linear × Quintic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 <div class="setting"><span class="caption">Sign pattern</span><div class="button-group" id="signs" aria-label="Choose signs"></div></div>
-<div class="setting setting--advanced"><span class="caption">Options</span><div class="advanced-buttons"><button type="button" id="constantBtn" aria-pressed="false" title="Optional: constant multiplier">Constant off</button><button type="button" id="monicBtn" aria-pressed="false" title="Optional support: leading coefficient 1">Monic off</button><button type="button" id="challengeBtn" aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false" title="Optional higher-degree challenge">Challenge off</button></div></div>
-<div class="beyond-choices" id="beyondPanel" hidden><strong>Optional challenge</strong><div class="button-group" id="beyondChoices"></div><span id="beyondNote">Choose a factor pattern to explore.</span></div>
+<div class="setting setting--advanced"><span class="caption">Options</span><div class="advanced-buttons"><button type="button" id="constantBtn" aria-pressed="false" title="Optional: constant multiplier">Constant off</button><button type="button" id="monicBtn" aria-pressed="false" title="Optional support: leading coefficient 1">Monic off</button><button type="button" id="challengeBtn" hidden aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false">Challenge off</button></div></div>
+<div class="beyond-choices" id="beyondPanel" hidden><div class="button-group" id="beyondChoices"></div><span id="beyondNote"></span></div>
 </div>
-<div class="activity-switch" aria-label="Exercises and learning activities">
- <div class="homework-controls"><span class="homework-label">Classwork</span><nav class="top-questions" id="questions" aria-label="Four numbered classwork exercise choices"></nav></div>
- <div class="activity-actions" aria-label="Choose learning activity">
-  <button id="practiceMode" type="button" aria-pressed="false" title="Generate another random expansion question">More practice</button>
+<div class="activity-switch" aria-label="Learning and practice">
+ <div class="homework-controls"><span class="homework-label">Classwork</span><nav class="top-questions" id="questions" aria-label="Four classwork sets"></nav></div>
+ <div class="activity-section"><span class="activity-title">Learning activities</span><div class="activity-actions" aria-label="Choose learning activity">
+  <button id="practiceMode" type="button" hidden aria-pressed="false">Practice</button>
+  <button id="boardMode" type="button" aria-pressed="false">Display</button>
   <button id="quizMode" type="button" aria-pressed="false">Quiz</button>
   <button id="testMode" type="button" aria-pressed="false">Test</button>
   <button id="worksheetMode" type="button" aria-pressed="false">Worksheets</button>
-  <button id="boardMode" type="button" aria-pressed="false">Board display</button>
- </div>
- <div class="practice-quick-controls" id="practiceQuickControls"><div class="modes" id="modes" aria-label="How to view the solution"></div></div>
+ </div></div>
+ <div class="activity-section procedural-section"><span class="activity-title">Procedural Fluency</span><div class="practice-quick-controls" id="practiceQuickControls"><div class="modes" id="modes" aria-label="Procedural fluency"></div></div></div>
 </div>
 <section id="worksheetPanel" class="worksheet-panel" hidden aria-label="Worksheet settings"></section>
 <section id="boardPanel" class="board-panel" hidden aria-label="Project questions to the board"></section>
@@ -569,6 +581,16 @@ function renderSelectors(){
  const beyondPanel=$('beyondPanel');beyondPanel.hidden=!state.beyondOpen;
  $('beyondNote').textContent=state.type==='l5'?'Quintic: highest power is x⁵ (degree 5).':state.type==='q4'||state.type==='44'?'Quartic: highest power is x⁴ (degree 4).':'Choose a challenge. These questions are excluded from Random and Homework.';
  chooseButtons('beyondChoices',beyondChoices,state.type,v=>{if(assessment.started)return;state.type=v;state.beyondOpen=true;state.factorRandom=false;freshQuestion();assessmentConfigChanged()});
+ const challengeSelect=$('challengeSelect');
+ challengeSelect.value=beyondTypes.includes(state.type)?state.type:'';
+ challengeSelect.disabled=assessment.started;
+ challengeSelect.onchange=()=>{
+  if(assessment.started)return;
+  const v=challengeSelect.value;
+  if(v){state.type=v;state.beyondOpen=true;state.factorRandom=false}
+  else {state.type=state.coreType;state.beyondOpen=false}
+  freshQuestion();assessmentConfigChanged();
+ };
  const challenge=$('challengeBtn');challenge.textContent=state.beyondOpen?'Challenge on':'Challenge off';
  challenge.setAttribute('aria-pressed',String(state.beyondOpen));challenge.setAttribute('aria-expanded',String(state.beyondOpen));
  challenge.onclick=()=>{if(assessment.started)return;state.beyondOpen=!state.beyondOpen;if(!state.beyondOpen&&beyondTypes.includes(state.type))state.type=state.coreType;freshQuestion();assessmentConfigChanged()};
