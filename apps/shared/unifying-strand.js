@@ -21,6 +21,14 @@
       'Explain why (a + b)(c + d) = ac + ad + bc + bd. Test the false claim (a + b)² = a² + b² and find a counterexample.',
       'In pairs, one explains the columns and one checks that every partial product is present. Swap roles and justify your choices using correct notation.'
     ],
+    'complex-numbers': [
+      'Recognise a + bi, the real and imaginary parts, and the essential rule i² = −1.',
+      'Translate between a complex number in rectangular form and its point (a,b) on the Argand plane.',
+      'Connect adding and subtracting complex numbers with coordinate operations and vectors; connect multiplication with expanding brackets.',
+      'Given two numbers, choose an operation, calculate accurately, and check whether the diagram is consistent with the answer.',
+      'Explain why (a+bi)(a−bi)=a²+b². What follows when a+bi is not zero?',
+      'Work in pairs: one gives a graphical explanation, the other an algebraic one. Swap and challenge one another using correct mathematical language.'
+    ],
     'expansions': [
       'Name the factors and terms; multiply every term in the first bracket by every term in the second.',
       'Compare a two-by-two area model, partial products, crossed pairings and vertical working.',
