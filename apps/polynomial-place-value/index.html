@@ -54,20 +54,27 @@ button:disabled{opacity:.38;cursor:default}
 .step-introduction{min-height:210px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font:700 clamp(1.55rem,3.3vw,2.4rem)/1.35 Arial,Helvetica,sans-serif;color:#25364b;padding:18px}
 .step-introduction strong{font-weight:750;font-size:.9em}
 .step-introduction em{font-family:"Cambria Math",Cambria,Georgia,serif;font-style:italic}
-.practice-layout{display:grid;grid-template-columns:minmax(0,1fr) 235px;align-items:start;gap:14px}
+.practice-layout{display:block}
+#practiceArea.step-active{display:grid;grid-template-columns:minmax(0,1fr) minmax(270px,345px);column-gap:14px;align-items:start}
+#practiceArea.step-active>.toolbar-bottom{grid-column:1;grid-row:1;min-width:0}
+#practiceArea.step-active>.practice-layout{display:contents}
+#practiceArea.step-active .practice-working{grid-column:1;grid-row:2}
+#practiceArea.step-active .step-checklist{grid-column:2;grid-row:1/span 2}
 .practice-working{min-width:0}
-.step-checklist{border:1px solid #d9e2ed;border-radius:9px;background:#fbfcff;padding:12px;margin-top:6px}
-.step-checklist-title{font-size:1.03rem;font-weight:750;color:#334155;margin-bottom:9px}
-.checklist-item{display:flex;align-items:flex-start;gap:9px;font-size:.91rem;line-height:1.3;padding:9px 2px;border-bottom:1px solid #e6eaf0}
+.step-checklist{border:1px solid #d9e2ed;border-radius:9px;background:#fbfcff;padding:14px;margin-top:0}
+.step-checklist-title{font-size:1.35rem;font-weight:750;color:#334155;margin-bottom:10px}
+.checklist-item{display:flex;align-items:center;gap:11px;width:100%;white-space:normal;text-align:left;border:0;border-radius:0;background:transparent;font:500 1.08rem/1.32 Arial,Helvetica,sans-serif;padding:13px 3px;border-bottom:1px solid #e6eaf0;cursor:pointer}
 .checklist-item:last-child{border-bottom:0}
-.checklist-marker{width:25px;height:25px;flex:0 0 25px;border:1px solid #c4cedb;border-radius:50%;display:inline-flex;justify-content:center;align-items:center;font-size:.8rem;font-weight:750}
+.checklist-item:hover{background:#edf3fb}
+.checklist-item:focus-visible{outline:3px solid #78aaff;outline-offset:-2px}
+.checklist-marker{width:32px;height:32px;flex:0 0 32px;border:1px solid #c4cedb;border-radius:50%;display:inline-flex;justify-content:center;align-items:center;font-size:.99rem;font-weight:750}
 .step-complete{color:#5c6b7d}
 .step-complete .checklist-marker{color:#fff;background:#4d7c65;border-color:#4d7c65}
 .step-current{font-weight:750;color:#174ea6}
 .step-current .checklist-marker{background:#e8f0fe;border-color:#6598e3;color:#174ea6}
 .step-upcoming{color:#8b96a6}
 .step-active-instruction{font:750 clamp(1.35rem,2.65vw,2rem)/1.3 Arial,Helvetica,sans-serif;text-align:center;color:#25364b;max-width:720px;margin:4px auto 20px;padding:8px}
-@media(max-width:850px){.practice-layout{grid-template-columns:minmax(0,1fr)}.step-checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px;margin-top:6px}.step-checklist-title{grid-column:1/-1}}
+@media(max-width:850px){#practiceArea.step-active{display:flex;flex-direction:column;gap:10px}#practiceArea.step-active>.toolbar-bottom{width:100%}#practiceArea.step-active>.practice-layout{display:contents}#practiceArea.step-active .practice-working{order:2;width:100%}#practiceArea.step-active .step-checklist{order:1;width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}.step-checklist-title{grid-column:1/-1}}
 @media(max-width:520px){.step-checklist{grid-template-columns:1fr}.step-active-instruction{font-size:1.4rem}}
 #heading{font-size:1.12rem;margin:0 0 9px;font-weight:650}
 .math-table{margin:0 auto;border-collapse:collapse;table-layout:fixed;width:min(100%,760px)}
@@ -329,8 +336,8 @@ function renderSelectors(){
  const host=$('modes');host.replaceChildren();
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
  toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
- const steps=document.createElement('button');steps.type='button';steps.textContent=state.mode!=='step'?'Step by step':state.step===6?'Restart steps':'Next: '+actions[state.step+1]+' →';steps.setAttribute('aria-pressed',String(state.mode==='step'));
- steps.onclick=()=>{if(state.mode!=='step'){state.mode='step';state.step=-1;}else{state.step=state.step===6?-1:state.step+1;}render()};host.append(steps);
+ const steps=document.createElement('button');steps.type='button';steps.textContent='Step by step';steps.setAttribute('aria-pressed',String(state.mode==='step'));
+ steps.onclick=()=>{state.mode='step';state.step=0;render()};host.append(steps);
 }
 function coefficientInputs(){
  const host=$('coefficients');host.replaceChildren();
@@ -392,32 +399,28 @@ function draw(){
  const root=$('canvas');root.replaceChildren();
  $('heading').textContent=mode==='step'&&step>=0?actions[step]:'';
  $('help').textContent='';
+ $('practiceArea').className=mode==='step'?'step-active':'';
  const checklist=$('stepChecklist');
  checklist.hidden=mode!=='step';
  if(mode==='step'){
   checklist.replaceChildren();
   const caption=document.createElement('div');caption.className='step-checklist-title';caption.textContent='Steps';checklist.append(caption);
   actions.forEach((action,i)=>{
-   const entry=document.createElement('div');entry.className='checklist-item '+(step>=i?'step-complete':step===i-1?'step-current':'step-upcoming');
-   const marker=document.createElement('span');marker.className='checklist-marker';marker.textContent=step>=i?'✓':String(i+1);
+   const entry=document.createElement('button');entry.type='button';
+   entry.className='checklist-item '+(i<step?'step-complete':i===step?'step-current':'step-upcoming');
+   entry.setAttribute('aria-current',i===step?'step':'false');
+   entry.setAttribute('aria-label','Go to step '+(i+1)+': '+action);
+   const marker=document.createElement('span');marker.className='checklist-marker';marker.textContent=i<step?'✓':String(i+1);
    const label=document.createElement('span');label.textContent=action;
-   entry.append(marker,label);checklist.append(entry);
+   entry.append(marker,label);
+   entry.onclick=()=>{state.step=i;render()};
+   checklist.append(entry);
   });
  }
  const pad=v=>Array(n-v.length).fill(null).concat(v);
  const visibleFactors=state.question.type==='ql'?[b,a]:[a,b];
  $('factorExpression').innerHTML=visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
- if(mode==='step'&&step===-1){
-  const introduction=document.createElement('div');
-  introduction.className='step-introduction';
-  introduction.innerHTML='Set up the place-value columns<br><strong>with powers of <em>x</em></strong>';
-  root.append(introduction);return;
- }
  if(mode!=='question'){
-  if(mode==='step'&&step>=0){
-   const instruction=document.createElement('div');instruction.className='step-active-instruction';
-   instruction.textContent=instructions[step];root.append(instruction);
-  }
   const table=document.createElement('table');table.className='math-table';
   if(true){
    const headings=document.createElement('tr');headings.append(document.createElement('th'));
