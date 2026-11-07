@@ -143,6 +143,10 @@ button:disabled{opacity:.38;cursor:default}
 .test-header h2{font-size:1.2rem;margin:0 0 5px}
 .test-header p{font-size:.87rem;color:#596474;margin:0}
 .test-options{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.quiz-toggle{display:inline-flex;flex-wrap:nowrap;gap:3px;background:#f3f5f8;border:1px solid #d8dfe8;border-radius:8px;padding:3px}
+.quiz-toggle button{font-size:.87rem;padding:7px 12px;white-space:nowrap}
+.quiz-toggle button[aria-pressed=true]{background:#e8f0fe;border:1px solid #1a73e8;color:#174ea6;font-weight:750}
+.quiz-choice:disabled.answer-incorrect{opacity:1;background:#fce7e7;border-color:#cb4545;color:#8b2020}
 .test-options select{font:inherit;padding:8px;border:1px solid #b8c0c9;border-radius:6px;background:white}
 .test-question{border:1px solid #dde2ea;border-radius:9px;padding:16px;margin:0 0 12px;background:#fff}
 .test-question h3{margin:0 0 6px;font-size:1rem}
@@ -262,10 +266,10 @@ function seedFor(slot){const typeIndex=state.factorRandom?3:factorTypes.findInde
  return ((slot+1)*209759+(state.level+13)*17539+(typeIndex+1)*9151+(signIndex+2)*1877)>>>0}
 function seeded(seed){let x=seed>>>0;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))}}
 function chooseSign(next){return ['positive','negative','mixed'][next(0,2)]}
-function makeQuestion(next){
- const type=state.factorRandom?factorTypes[next(0,factorTypes.length-1)][0]:state.type;
+function makeQuestion(next,quizRandom=false){
+ const type=quizRandom||state.factorRandom?factorTypes[next(0,factorTypes.length-1)][0]:state.type;
  const [na,nb]=type==='ll'?[2,2]:type==='ql'?[3,2]:[3,3];
- const level=state.level,sign=state.sign==='random'?chooseSign(next):state.sign;
+ const level=state.level,sign=quizRandom||state.sign==='random'?chooseSign(next):state.sign;
  const pick=values=>values[next(0,values.length-1)];
  const fav=()=>pick([1,2,2,2,3,3,3,5,5,4,7,8,9]);
  const easy=()=>pick([1,1,1,2,2,2,3,3,3,4,5,5,7]);
@@ -539,7 +543,7 @@ function draw(){
 
 }
 
-const assessment={mode:'practice',questions:[],responses:[],submitted:false,checked:[],choices:[],selected:[],firstAttempts:[],run:0,source:'bank',sound:true,quizType:'answer',workChoices:[]};
+const assessment={mode:'practice',questions:[],responses:[],submitted:false,checked:[],choices:[],selected:[],firstAttempts:[],run:0,source:'bank',sound:true,quizType:'working',workChoices:[],attempts:[],tried:[]};
 function el(tag,textValue,className){
  const e=document.createElement(tag);if(textValue!==undefined)e.textContent=textValue;
  if(className)e.className=className;return e;
@@ -551,12 +555,12 @@ function playQuizSound(correct){
   if(!AudioCtor)return;
   const ctx=new AudioCtor();
   const now=ctx.currentTime;
-  const notes=correct===true?[[660,0,.16],[880,.18,.25]]:correct==='fanfare'?[[523,0,.16],[659,.18,.16],[784,.36,.18],[1047,.56,.48]]:[[350,0,.23],[245,.29,.31]];
+  const notes=correct===true?[[660,0,.16],[880,.18,.25]]:correct==='fanfare'?[[523,0,.16],[659,.18,.16],[784,.36,.18],[1047,.56,.48]]:correct==='final-wrong'?[[390,0,.17],[305,.21,.19],[225,.46,.32]]:[[350,0,.23],[245,.29,.31]];
   notes.forEach(([frequency,offset,duration])=>{
    const osc=ctx.createOscillator(),gain=ctx.createGain();
-   osc.type=correct===false?'triangle':'sine';osc.frequency.value=frequency;
+   osc.type=(correct===false||correct==='final-wrong')?'triangle':'sine';osc.frequency.value=frequency;
    gain.gain.setValueAtTime(0,now+offset);
-   gain.gain.linearRampToValueAtTime(correct===false?.105:.13,now+offset+.02);
+   gain.gain.linearRampToValueAtTime(correct===false||correct==='final-wrong'?.105:.13,now+offset+.02);
    gain.gain.exponentialRampToValueAtTime(.001,now+offset+duration);
    osc.connect(gain);gain.connect(ctx.destination);
    osc.start(now+offset);osc.stop(now+offset+duration+.01);
@@ -597,47 +601,58 @@ function workRows(q){
 }
 function createWorkChoices(q,index){
  const base=workRows(q),correct=product(q.a,q.b);
- const variants=[{rows:base.map(r=>r.slice()),sum:correct.slice(),valid:true,error:'none'}];
- // Two authentic multiplication errors, each carried through into its column sum.
- const spots=[];
- base.forEach((r,i)=>r.forEach((v,j)=>{if(v!==null)spots.push([i,j])}));
  const rng=seeded(seedFor(index+assessment.run*17+277));
- const start=rng(0,spots.length-1);
- for(let k=0;k<2;k++){
-  const [ri,ci]=spots[(start+k*Math.max(1,Math.floor(spots.length/2)))%spots.length];
-  const rows=base.map(r=>r.slice());
-  rows[ri][ci]+=k===0?1:-1;
-  const sum=correct.slice();sum[ci]+=k===0?1:-1;
-  variants.push({rows,sum,valid:false,error:'multiplication'});
- }
- // Correct products, but one incorrect column addition.
- const column=rng(0,correct.length-1);
- const sum=correct.slice();sum[column]+=(correct[column]>=0?1:-1);
- variants.push({rows:base.map(r=>r.slice()),sum,valid:false,error:'addition'});
+ const variants=[{rows:base.map(r=>r.slice()),sum:correct.slice(),valid:true,error:'none',top:q.a.slice(),bottom:q.b.slice()}];
+ // A transcription error: an incorrect coefficient is carried consistently
+ // through the subsequent multiplication and addition.
+ const incorrectTop=q.a.slice(),incorrectBottom=q.b.slice();
+ const target=rng(0,1)===0?incorrectTop:incorrectBottom;
+ const pos=rng(0,target.length-1);
+ target[pos]+=(target[pos]>=0?1:-1);
+ const copied={a:incorrectTop,b:incorrectBottom};
+ variants.push({rows:workRows(copied),sum:product(copied.a,copied.b),
+  valid:false,error:'transcription',top:incorrectTop,bottom:incorrectBottom});
+ // Multiplication error propagated into the final column total.
+ const spots=[];
+ base.forEach((row,i)=>row.forEach((v,j)=>{if(v!==null)spots.push([i,j])}));
+ const [ri,ci]=spots[rng(0,spots.length-1)];
+ const badRows=base.map(row=>row.slice());
+ const delta=rng(0,1)===0?-1:1;
+ badRows[ri][ci]+=delta;
+ const badSum=correct.slice();badSum[ci]+=delta;
+ variants.push({rows:badRows,sum:badSum,valid:false,error:'multiplication',
+  top:q.a.slice(),bottom:q.b.slice()});
+ // Addition error: products correct but the column total incorrect.
+ const col=rng(0,correct.length-1),sum=correct.slice();
+ sum[col]+=(rng(0,1)===0?-1:1);
+ variants.push({rows:base.map(row=>row.slice()),sum,valid:false,error:'addition',
+  top:q.a.slice(),bottom:q.b.slice()});
  for(let i=variants.length-1;i>0;i--){
   const j=rng(0,i);[variants[i],variants[j]]=[variants[j],variants[i]];
  }
  return variants;
 }
+
 function workingTable(q,work){
  const n=product(q.a,q.b).length,power=n-1;
  const rowHtml=(values,kind='')=>'<tr class="'+kind+'"><td></td>'+values.map(v=>'<td>'+(v===null?'':minus(v))+'</td>').join('')+'</tr>';
  const pad=v=>Array(n-v.length).fill(null).concat(v);
  const head='<tr><th></th>'+Array.from({length:n},(_,i)=>'<th>'+(power-i?pow(power-i):'#')+'</th>').join('')+'</tr>';
  const cells=work.sum.map((v,i)=>'<td>'+minus(v)+(v!==0&&power-i?pow(power-i):'')+'</td>').join('');
- return '<table class="quiz-work-table">'+head+rowHtml(pad(q.a))+rowHtml(pad(q.b),'factor-divider')+
+ return '<table class="quiz-work-table">'+head+rowHtml(pad(work.top||q.a))+rowHtml(pad(work.bottom||q.b),'factor-divider')+
  work.rows.map(r=>rowHtml(r)).join('')+'<tr class="work-total"><td>+</td>'+cells+'</tr></table>';
 }
 
 function initialiseTest(source){
  assessment.source=source;assessment.run++;
  assessment.questions=Array.from({length:4},(_,i)=>{
-  const rng=source==='bank'?seeded(seedFor(i)):seeded(seedFor(100000+assessment.run*37+i*1009)^((Math.random()*0xffffffff)>>>0));
-  return makeQuestion(rng);
+  const rng=seeded(seedFor(100000+assessment.run*37+i*1009)^((Math.random()*0xffffffff)>>>0));
+  return makeQuestion(rng,assessment.mode==='quiz');
  });
  assessment.responses=assessment.questions.map(q=>Array(product(q.a,q.b).length).fill(''));
  assessment.submitted=false;assessment.checked=Array(4).fill(false);
  assessment.selected=Array(4).fill(-1);assessment.firstAttempts=Array(4).fill(null);
+ assessment.attempts=Array(4).fill(0);assessment.tried=Array.from({length:4},()=>[]);
  assessment.choices=assessment.questions.map((q,i)=>createChoices(q,i));
  assessment.workChoices=assessment.questions.map((q,i)=>createWorkChoices(q,i));
  drawTest();
@@ -652,28 +667,26 @@ function drawTest(){
  if(quiz){
   const marks=assessment.firstAttempts.filter(value=>value===true).length;
   const score=el('div','Marks: '+marks+' / 4','quiz-running-score');
-  score.setAttribute('role','status');
-  score.setAttribute('aria-live','polite');
+  score.setAttribute('role','status');score.setAttribute('aria-live','polite');
   summary.append(score);
-  const sound=el('button',assessment.sound?'Sound: On':'Sound: Off','quiz-sound');
-  sound.type='button';sound.setAttribute('aria-pressed',String(assessment.sound));
-  sound.setAttribute('aria-label','Toggle quiz feedback sound');
-  sound.onclick=()=>{assessment.sound=!assessment.sound;drawTest()};
-  opt.append(sound);
- }
- if(quiz){
-  const kind=el('select');kind.setAttribute('aria-label','Quiz type');
-  [['answer','Pick the correct answer'],['working','Pick the correct working']].forEach(([value,label])=>{
-   const item=el('option',label);item.value=value;item.selected=assessment.quizType===value;kind.append(item);
+  const kind=el('div',undefined,'quiz-toggle');
+  [['working','Working'],['answer','Answer']].forEach(([value,label])=>{
+   const btn=el('button',label);btn.type='button';
+   btn.setAttribute('aria-pressed',String(assessment.quizType===value));
+   btn.onclick=()=>{if(assessment.quizType!==value){assessment.quizType=value;initialiseTest('random')}};
+   kind.append(btn);
   });
-  kind.onchange=()=>{assessment.quizType=kind.value;initialiseTest(assessment.source)};
+  kind.setAttribute('role','group');kind.setAttribute('aria-label','Quiz type');
   opt.append(kind);
-  const choose=el('select');choose.setAttribute('aria-label','Quiz question selection');
-  [['bank','Homework questions 1–4'],['random','Four fresh random questions']].forEach(([value,label])=>{
-   const item=el('option',label);item.value=value;item.selected=assessment.source===value;choose.append(item);
+  const sound=el('div',undefined,'quiz-toggle');
+  [['on','Sound on'],['off','Sound off']].forEach(([value,label])=>{
+   const btn=el('button',label);btn.type='button';
+   btn.setAttribute('aria-pressed',String(assessment.sound===(value==='on')));
+   btn.onclick=()=>{assessment.sound=value==='on';drawTest()};
+   sound.append(btn);
   });
-  choose.onchange=()=>initialiseTest(choose.value);
-  opt.append(choose);
+  sound.setAttribute('role','group');sound.setAttribute('aria-label','Quiz sound');
+  opt.append(sound);
  }else{
   opt.append(el('span','Four random questions','test-random-label'));
  }
@@ -690,25 +703,28 @@ function drawTest(){
    const options=working?assessment.workChoices[index]:assessment.choices[index];
    if(working)answers.className+=' quiz-working-choices';
    options.forEach((option,j)=>{
-    const choice=el('button',undefined,'quiz-choice');
-    choice.type='button';
-    choice.setAttribute('aria-pressed',String(assessment.selected[index]===j));
+    const choice=el('button',undefined,'quiz-choice');choice.type='button';
     const isCorrect=answer=>working?answer.valid:answer.every((v,k)=>v===p[k]);
     const alreadyCorrect=assessment.selected[index]>=0&&isCorrect(options[assessment.selected[index]]);
-    choice.disabled=alreadyCorrect;
+    const locked=alreadyCorrect||assessment.attempts[index]>=2;
+    choice.disabled=locked||assessment.tried[index].includes(j);
     const selected=assessment.selected[index]===j;
-    if(selected){choice.className+=' '+(isCorrect(option)?'answer-correct':'answer-incorrect')}
+    choice.setAttribute('aria-pressed',String(selected));
+    if(selected)choice.className+=' '+(isCorrect(option)?'answer-correct':'answer-incorrect');
     choice.setAttribute('aria-label','Answer '+String.fromCharCode(65+j));
     choice.innerHTML='<span class="choice-letter">'+String.fromCharCode(65+j)+'.</span> '+(working?workingTable(q,option):poly(option));
     choice.onclick=()=>{
-     if(alreadyCorrect)return;
+     if(locked||assessment.tried[index].includes(j))return;
      const correct=isCorrect(option);
      if(assessment.firstAttempts[index]===null)assessment.firstAttempts[index]=correct;
+     assessment.attempts[index]++;
+     assessment.tried[index].push(j);
      assessment.selected[index]=j;assessment.checked[index]=true;
      const allComplete=assessment.selected.every((v,i)=>v>=0&&
       (assessment.quizType==='working'?assessment.workChoices[i][v].valid:
        assessment.choices[i][v].every((c,j)=>c===product(assessment.questions[i].a,assessment.questions[i].b)[j])));
-     drawTest();playQuizSound(allComplete?'fanfare':correct);
+     drawTest();
+     playQuizSound(allComplete?'fanfare':!correct&&assessment.attempts[index]>=2?'final-wrong':correct);
     };
     answers.append(choice);
    });
@@ -716,7 +732,12 @@ function drawTest(){
    if(assessment.checked[index]){
     const selected=options[assessment.selected[index]];
     const correct=working?selected.valid:selected.every((v,j)=>v===p[j]);
-    const feedback=el('div',correct?'Correct!':'Not quite — try again.','test-feedback');
+    const remaining=assessment.attempts[index];
+    const correctIndex=options.findIndex(x=>working?x.valid:x.every((v,k)=>v===p[k]));
+    const message=correct?'Correct!':remaining>=2
+      ?'No more attempts. Correct '+(working?'working':'answer')+': '+String.fromCharCode(65+correctIndex)+'.'
+      :'Not quite — last chance.';
+    const feedback=el('div',message,'test-feedback');
     feedback.setAttribute('role','status');section.append(feedback);
    }
   }else{
@@ -767,7 +788,7 @@ function drawTest(){
   actions.append(el('span','No scores or worked solutions appear until submission.'));
  }else{
   const restart=el('button',quiz?'New quiz':'Retake test');restart.type='button';
-  restart.onclick=()=>initialiseTest(assessment.source);actions.append(restart);
+  restart.onclick=()=>initialiseTest('random');actions.append(restart);
  }
  host.append(actions);
  if(!quiz&&assessment.submitted){
@@ -797,7 +818,7 @@ function switchMode(mode){
  for(const [key,value] of [['practiceMode','practice'],['quizMode','quiz'],['testMode','test']]){
   $(key).setAttribute('aria-pressed',String(mode===value));
  }
- if(active){initialiseTest(mode==='test'?'random':assessment.source)}
+ if(active){initialiseTest('random')}
 }
 $('practiceMode').onclick=()=>switchMode('practice');
 $('quizMode').onclick=()=>switchMode('quiz');
