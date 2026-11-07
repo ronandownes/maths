@@ -75,7 +75,7 @@ def build():
             tiles += '<a class="tile" href="sets/explorer.html"><strong>Explore two sets</strong><small>Interactive Venn diagram: move, overlap and compare sets.</small></a>'
         if category == 'Algebra':
             tiles += '<a class="tile" href="../apps/polynomial-place-value/index.html"><strong>Place-value expansion</strong><small>Expand polynomials in one variable using vertical place-value multiplication.</small></a>'
-            tiles += '<a class="tile" href="../apps/foil/index.html"><strong>FOIL · Four Channels</strong><small>See all four products, including cases without like terms.</small></a>'
+            tiles += '<a class="tile" href="../apps/foil/index.html"><strong>Unlike Factors</strong><small>Four vertical-stack products, expansion, grouping, Display, Quiz, Test and worksheets.</small></a>'
         planned=''.join(f'<li>{e(t["title"])}</li>' for t in data['topics'] if not t['ready'])
         overview=f'<p class="lead">{e(data["introduction"])}</p><h2>Ready lessons</h2><div class="tile-grid">{tiles}</div><h2>Other topics in this section</h2><p>These have a place in the structure but have not yet been written:</p><ul>{planned}</ul>'
         output(ROOT/slug/'index.html',frame(category,category,category,data['introduction'],overview,depth=1))
