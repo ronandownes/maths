@@ -1,0 +1,126 @@
+{
+  "title": "Leaving Certificate Mathematics: sequences and series question index",
+  "status": "PARTIAL — not a complete audit of examinations",
+  "updated": "2026-11-07",
+  "scope": "Paper 1 questions relevant to arithmetic, geometric and quadratic sequences, sums and applications.",
+  "caution": "Summaries of assessed skills, not full reproduced paper questions. Use original examination papers and marking schemes to confirm final wording and mark allocations.",
+  "questions": [
+    {
+      "id": "2026-OL-P1-Q5a",
+      "year": 2026,
+      "level": "Ordinary",
+      "paper": 1,
+      "question": "5(a)",
+      "group_marks": 30,
+      "kind": "arithmetic",
+      "skills": [
+        "extend sequence",
+        "general term",
+        "calculate T20"
+      ],
+      "example_terms": [
+        12,
+        17,
+        22
+      ],
+      "source": "Maths-LC-O-2026-P1.pdf (user Library), pages 12–13",
+      "verified": "primary PDF text"
+    },
+    {
+      "id": "2026-OL-P1-Q5b",
+      "year": 2026,
+      "level": "Ordinary",
+      "paper": 1,
+      "question": "5(b)",
+      "group_marks": 30,
+      "kind": "arithmetic",
+      "skills": [
+        "missing middle term"
+      ],
+      "example_terms": [
+        "6",
+        "x",
+        "−4"
+      ],
+      "source": "Maths-LC-O-2026-P1.pdf (user Library), page 13",
+      "verified": "primary PDF text"
+    },
+    {
+      "id": "2026-OL-P1-Q5c",
+      "year": 2026,
+      "level": "Ordinary",
+      "paper": 1,
+      "question": "5(c)",
+      "group_marks": 30,
+      "kind": "arithmetic-series",
+      "skills": [
+        "sum of first n terms",
+        "smallest n for negative sum"
+      ],
+      "example_terms": [
+        43,
+        39,
+        35
+      ],
+      "source": "Maths-LC-O-2026-P1.pdf (user Library), page 13",
+      "verified": "primary PDF text"
+    },
+    {
+      "id": "2026-OL-P1-Q1b",
+      "year": 2026,
+      "level": "Ordinary",
+      "paper": 1,
+      "question": "1(b)",
+      "group_marks": 30,
+      "kind": "geometric-application",
+      "skills": [
+        "percentage depreciation",
+        "compounded annual reduction"
+      ],
+      "details": "Initial €22,600 and 18% annual depreciation.",
+      "source": "Maths-LC-O-2026-P1.pdf (user Library), page 3",
+      "verified": "primary PDF text"
+    },
+    {
+      "id": "2022-OL-P1-Q6",
+      "year": 2022,
+      "level": "Ordinary",
+      "paper": 1,
+      "question": "6",
+      "group_marks": 30,
+      "kind": "arithmetic-series",
+      "skills": [
+        "first term",
+        "common difference",
+        "first positive term",
+        "sum equals zero"
+      ],
+      "details": "General term Tn = −254 + 4(n−1).",
+      "source": "https://study.ie/past-papers/leaving-cert/maths/ordinary/2022/paper-1",
+      "verified": "published exam question summary"
+    },
+    {
+      "id": "2022-OL-P1-Q9",
+      "year": 2022,
+      "level": "Ordinary",
+      "paper": 1,
+      "question": "9(b)",
+      "group_marks": 50,
+      "kind": "geometric-application",
+      "skills": [
+        "constant percentage depreciation",
+        "exponential model",
+        "value after 4 years"
+      ],
+      "details": "Car value falls by 20% annually.",
+      "source": "https://archive.maths.nuim.ie/staff/dmalone/StateExamPapers/Maths-LC-O-2022-P1.pdf",
+      "verified": "paper text excerpt"
+    }
+  ],
+  "next_actions": [
+    "Verify 2026 Higher Level Paper 1 Questions 2 and 6 against primary paper.",
+    "Audit 2023–2025 Ordinary and Higher Level papers.",
+    "Add explicit Foundation Level items, scheme references, and mark allocations by part.",
+    "Avoid inferring that older pre-Project-Maths papers reflect current specifications."
+  ]
+}
