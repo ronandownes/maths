@@ -16,6 +16,8 @@ button,input{font:inherit;border-radius:6px;border:1px solid #b8c0c9;background:
 button{padding:9px 13px;cursor:pointer;white-space:nowrap}
 button:hover{background:#f1f5fb}button:focus-visible,input:focus-visible{outline:3px solid #78aaff;outline-offset:2px}
 button[aria-pressed=true]{background:#e8f0fe;border-color:#1a73e8;color:#174ea6;font-weight:750}
+#monicBtn[aria-pressed=true]{background:#d7f5dd;border-color:#238344;color:#14552b;font-weight:750}
+#monicBtn[aria-pressed=true]:hover{background:#c5efce}
 button:disabled{opacity:.38;cursor:default}
 .top-questions,.modes,.stepper,.control-line,.button-group{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
 .top-questions{margin:3px 0 6px}.bankbar{padding-top:9px}.bankbar>span{font-size:.84rem;color:#576270;font-weight:650}.edit-hint{font-size:.81rem;color:#647080;margin:10px 0 0}
@@ -294,7 +296,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="settings settings-top common-settings">
 <div class="setting"><span class="caption caption-wrapped">Factor<span>pattern</span></span><div class="button-group" id="types" aria-label="Factors: choose a degree combination or random factors"></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
-<div class="setting"><button type="button" id="monicBtn" aria-pressed="false" title="Optional practice: both polynomials have leading coefficient 1. Numbered homework remains unchanged.">Monic</button></div>
+<div class="setting"><button type="button" id="monicBtn" aria-pressed="false" title="Optional practice: both polynomials have leading coefficient 1. Numbered homework remains unchanged.">Monic (Click me)</button></div>
 <div class="setting"><span class="caption caption-wrapped">Sign<span>pattern</span></span><div class="button-group" id="signs" aria-label="Signs: choose a sign pattern or random signs"></div></div>
 </div>
 <div class="activity-switch" aria-label="Choose learning activity">
@@ -466,6 +468,7 @@ function renderSelectors(){
  }
  chooseButtons('levels',levels,state.level,v=>filter('level',v));
  const monicButton=$('monicBtn');monicButton.setAttribute('aria-pressed',String(state.monic));
+ monicButton.title=state.monic?'Monic is on: both random factors have leading coefficient 1. Click to turn off.':'Click to practise with leading coefficient 1 in both random factors. Numbered homework remains unchanged.';
  monicButton.onclick=()=>{state.monic=!state.monic;freshQuestion();if(assessment.mode!=='practice')initialiseTest(assessment.source)};
  const randomFactor=$('types').children[factorTypes.length];randomFactor.className='level-random';randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
  const randomSign=$('signs').children[3];randomSign.className='level-random';randomSign.title='Randomly choose a sign pattern';randomSign.setAttribute('aria-label','Random signs');
