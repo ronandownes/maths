@@ -120,7 +120,7 @@ button:disabled{opacity:.38;cursor:default}
 </main>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
-const actions=['Set up the place-value columns','Fill in the coefficients','Calculate the partial products','Group like terms','Bring back the powers of x','Reflection'];
+const actions=['Set up the place-value columns','Fill in the coefficients','Calculate the partial products','Group like terms','Interpret the coefficients as powers of x','Box the answer','Reflection'];
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
 const factorChoices=[...factorTypes,['any','Rand']];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
@@ -225,8 +225,8 @@ function renderSelectors(){
  const host=$('modes');host.replaceChildren();
  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=state.mode==='worked'?'Hide':'Worked';toggle.setAttribute('aria-pressed',String(state.mode==='worked'));
  toggle.onclick=()=>{state.mode=state.mode==='worked'?'question':'worked';render()};host.append(toggle);
- const steps=document.createElement('button');steps.type='button';steps.textContent=state.mode!=='step'?'Step by step':state.step===5?'Restart steps':'Next: '+actions[state.step+1]+' →';steps.setAttribute('aria-pressed',String(state.mode==='step'));
- steps.onclick=()=>{if(state.mode!=='step'){state.mode='step';state.step=0;}else{state.step=state.step===5?0:state.step+1;}render()};host.append(steps);
+ const steps=document.createElement('button');steps.type='button';steps.textContent=state.mode!=='step'?'Step by step':state.step===6?'Restart steps':'Next: '+actions[state.step+1]+' →';steps.setAttribute('aria-pressed',String(state.mode==='step'));
+ steps.onclick=()=>{if(state.mode!=='step'){state.mode='step';state.step=0;}else{state.step=state.step===6?0:state.step+1;}render()};host.append(steps);
 }
 function coefficientInputs(){
  const host=$('coefficients');host.replaceChildren();
@@ -284,7 +284,7 @@ function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomia
 }
 function draw(){
  const {a,b}=state.question,final=product(a,b),n=final.length,degree=n-1;
- const mode=state.mode,step=mode==='worked'?4:mode==='question'?0:state.step;
+ const mode=state.mode,step=mode==='worked'?5:mode==='question'?0:state.step;
  const root=$('canvas');root.replaceChildren();
  $('heading').textContent=mode==='step'?actions[step]:'';
  $('help').textContent='';
@@ -309,15 +309,14 @@ function draw(){
     row(table,values,'','',degree,false,false,shift);
    }
   }
-  if(step>=3)row(table,final,'sum','+',degree);
-  if(step>=4)row(table,final,'final-power','',degree,true);
+  if(step>=3)row(table,final,'sum','+',degree,step>=4);
   root.append(table);
-  if(step>=4){
+  if(step>=5){
    const eq=document.createElement('div');eq.className='equation worked-conclusion';
-   eq.innerHTML=visibleFactors.map(f=>'('+poly(f)+')').join('')+' = '+poly(final);
+   eq.innerHTML=poly(final);
    root.append(eq);
   }
-  if(mode==='step'&&step===5){
+  if(mode==='step'&&step===6){
    const reflection=document.createElement('div');reflection.className='reflection';
    const heading=document.createElement('strong');heading.textContent='Reflection';
    const paragraph=document.createElement('p');
