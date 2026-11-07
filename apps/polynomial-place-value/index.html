@@ -347,6 +347,10 @@ main{margin:5px auto;padding:10px 19px 18px}
 .worksheet-options button[aria-pressed=true]{background:#e4efff;color:#1b4d90;border-color:#5b96e6;font-weight:700}
 .ws-preview-inline-grid .ws-preview-inline>span{color:#8b96a4;font-size:.75rem}
 .ws-preview-inline-grid .ws-preview-inline>span{color:#8994a3;font-size:.75rem}
+.worksheet-stage-list{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.worksheet-stage{padding:7px 9px;border:1px solid #d9e2ed;border-radius:8px;background:#f9fbfd;font-size:.84rem;display:flex;align-items:center;gap:6px}
+.worksheet-stage:has(input:checked){background:#eaf3ff;border-color:#a7c7ef}
+.ws-progression-note{font-size:.8rem;color:#566477}
 </style>
 </head>
 <body>
@@ -1215,7 +1219,7 @@ function drawTest(){
  }
 }
 
-const ws={counts:{ll:0,ql:1,qq:0},levels:[2],signs:['random'],support:'independent',layout:'inline',answers:'key',extra:0,steps:true,orientation:'portrait',columns:3,rows:1,labels:'question'};
+const ws={counts:{ll:0,ql:1,qq:0},levels:[2],signs:['random'],support:'independent',layout:'inline',answers:'key',extra:0,steps:true,orientation:'portrait',columns:3,rows:1,labels:'question',progression:'guided',stages:['monic-positive','general-positive','general-negative','general-mixed']};
 let wsPreviewCache=null;
 function worksheetOptions(){
  const panel=$('worksheetPanel');panel.replaceChildren();
@@ -1271,6 +1275,30 @@ function worksheetOptions(){
   button.type='button';button.setAttribute('aria-pressed',String(ws.rows===count));
   button.onclick=()=>{ws.rows=count;worksheetOptions()};choices.append(button);
  });rowsField.append(choices);
+ const progress=field('Progression · each question gets harder');
+ const pchoices=el('div',undefined,'worksheet-options');
+ [['guided','Progressive (recommended)'],['custom','Choose the stages'],['uniform','Same settings throughout']].forEach(([value,label])=>{
+  const btn=el('button',label);btn.type='button';btn.setAttribute('aria-pressed',String(ws.progression===value));
+  btn.onclick=()=>{ws.progression=value;worksheetOptions()};pchoices.append(btn);
+ });progress.append(pchoices);
+ const stageNames=[['monic-positive','Monic + positive'],['general-positive','General + positive'],['general-negative','General + negative'],['general-mixed','General + mixed signs']];
+ if(ws.progression!=='uniform'){
+  const stages=el('div',undefined,'worksheet-stage-list');
+  stageNames.forEach(([key,label],idx)=>{
+   const row=el('label',undefined,'worksheet-stage');
+   const check=el('input');check.type='checkbox';check.checked=ws.stages.includes(key);
+   check.disabled=ws.progression==='guided';
+   check.onchange=()=>{
+    if(check.checked)ws.stages.push(key);
+    else if(ws.stages.length>1)ws.stages=ws.stages.filter(x=>x!==key);
+    worksheetOptions();
+   };
+   const title=el('span',(idx+1)+'. '+label);
+   row.append(check,title);stages.append(row);
+  });
+  const note=el('small','The stages are used in order. Each is a question style, not another task or a compulsory extra row.');
+  progress.append(stages,note);
+ }
  const stepsField=field('Written method steps'),stepsLabel=el('label'),stepsCheck=el('input');
  stepsCheck.type='checkbox';stepsCheck.checked=ws.steps;
  stepsCheck.onchange=()=>{ws.steps=stepsCheck.checked;wsStatus()};
@@ -1297,17 +1325,19 @@ function worksheetQuestions(){
  const count=ws.rows*ws.columns;
  const levels=ws.levels.includes('random')?[1,2,3]:ws.levels.slice().sort();
  const signs=ws.signs.includes('random')?['positive','negative','mixed']:['positive','negative','mixed'].filter(sign=>ws.signs.includes(sign));
+ const stages=ws.progression==='custom'?ws.stages:['monic-positive','general-positive','general-negative','general-mixed'];
  try{
   state.constantOn=false;state.factorRandom=false;state.slot='fresh';
   for(let i=0;i<count;i++){
    const type=types[Math.min(types.length-1,Math.floor(i*types.length/count))];
-   const sign=signs[Math.min(signs.length-1,Math.floor(i*signs.length/count))];
+   const stage=ws.progression==='uniform'?null:stages[Math.min(stages.length-1,Math.floor(i*stages.length/count))];
+   const sign=stage?(stage.endsWith('positive')?'positive':stage.endsWith('negative')?'negative':'mixed'):signs[Math.min(signs.length-1,Math.floor(i*signs.length/count))];
    const level=levels[Math.min(levels.length-1,Math.floor(i*levels.length/count))];
    state.type=type;state.level=level;state.sign=sign;
-   state.monic=(i===0||((i%ws.columns===0)&&i<count/3));
+   state.monic=stage?stage.startsWith('monic'):false;
    const seed=(seedFor(i+309)^((i+1)*104729))>>>0;
    const q=makeQuestion(seeded(seed),sign);
-   out.push({q,type,level,number:i+1});
+   out.push({q,type,level,number:i+1,stage:stage||'uniform'});
   }
  }finally{
   state.type=old.type;state.level=old.level;state.sign=old.sign;state.slot=old.slot;
@@ -1335,6 +1365,7 @@ function drawWorksheetPreview(){
  if(ws.layout==='inline')grid.className+=' ws-preview-inline-grid';
  host.append(heading,info,grid);
  if(ws.answers==='key')host.append(el('p','Answers at the end: '+(wsPreviewCache||[]).length+' numbered solutions.','ws-answer-note'));
+ if(ws.progression!=='uniform'){const description=el('p','Order: '+(ws.progression==='guided'?['Monic + positive','General + positive','General + negative','General + mixed signs']:ws.stages.map(stage=>stage.replace('-', ' + ').replace('general','General').replace('monic','Monic'))).join(' → '));description.className='ws-progression-note';host.append(description)}
 }
 
 function worksheetTitle(){
