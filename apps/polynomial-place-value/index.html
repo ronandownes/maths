@@ -423,7 +423,7 @@ const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\n
 const beyondChoices=[['l5','Linear × Quintic'],['q4','Quadratic × Quartic'],['44','Quartic × Quartic']];
 const beyondTypes=beyondChoices.map(item=>item[0]);
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
-const signChoices=[['positive','Both\npositive'],['negative','Both\nnegative'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
+const signChoices=[['positive','Both\npositive'],['negative','Negative\nnon-leading'],['mixed','Mixed\nsigns'],['random','Random\nsigns']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 
 const state={type:'ql',factorRandom:false,coreType:'ql',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,reflectionUsed:0,reflectionNeed:0,question:null};
