@@ -3,11 +3,11 @@
 const $=id=>document.getElementById(id),T=window.TriangleMath,Assess=window.MathsAssessment;
 const kind=document.body.dataset.app,pyth=kind==='pythagoras';
 const fixedRatio=['sin','cos','tan'].includes(document.body.dataset.ratio)?document.body.dataset.ratio:null;
-const cfg={mode:'instruction',ratio:fixedRatio||'sin',route:'ratio',find:'num',bank:pyth?'triples':'decimal',precision:1,angle:35,hyp:10,step:0,slide:0,reveal:false,question:0,showRays:false,sound:true,attempts:0,wrong:[],chosen:null,quizIndex:0,quizQuestions:[],testQuestions:[],testAnswers:[],submitted:false,testType:'any'};
+const cfg={mode:'instruction',ratio:fixedRatio||'sin',route:'ratio',find:'num',bank:pyth?'triples':'decimal',precision:1,angle:35,hyp:10,step:0,slide:0,reveal:false,question:0,activeQuestion:null,showRays:false,sound:true,attempts:0,wrong:[],chosen:null,quizIndex:0,quizQuestions:[],testQuestions:[],testAnswers:[],submitted:false,testType:'any'};
 const ratioSides={sin:['opp','hyp'],cos:['adj','hyp'],tan:['opp','adj']},round=v=>T.round(v,cfg.precision),fmt=v=>String(round(v));
 const sideNames={opp:'opposite',adj:'adjacent',hyp:'hypotenuse'};
 const tripleList=T.bank();
-function makeQuestion(n=cfg.question){
+function makeQuestion(n=cfg.question,vary=false){
  if(pyth){
   const entry=tripleList[n%tripleList.length],useTriple=cfg.bank==='triples'||cfg.bank==='mixed'&&n%2===0;
   let a=useTriple?entry.a:4+n%6,b=useTriple?entry.b:n%3===0?10:7+n%5;
@@ -26,8 +26,10 @@ function makeQuestion(n=cfg.question){
   return {a,b,h,given,answer,find,angle:Math.atan2(a,b)*180/Math.PI,exact:useTriple,triplet:entry};
  }
  const entry=tripleList[n%tripleList.length],useTriple=cfg.bank==='triples';
- const rawAngle=useTriple?entry.angle:cfg.bank==='surds'?[30,45,60][n%3]:cfg.angle+(n%3-1)*4;
- const h=useTriple?entry.c:cfg.hyp,original=T.sides(rawAngle,h);
+ const variedAngle=Math.max(5,Math.min(85,cfg.angle+(n%3-1)*4));
+ const rawAngle=useTriple?entry.angle:cfg.bank==='surds'?[30,45,60][n%3]:vary?variedAngle:cfg.angle;
+ const variedHyp=Math.max(3,Math.min(20,Math.round((cfg.hyp+(n%3-1)*1.5)*2)/2));
+ const h=useTriple?entry.c:vary?variedHyp:cfg.hyp,original=T.sides(rawAngle,h);
  const given={opp:round(original.opp),adj:round(original.adj),hyp:round(original.hyp)};
  const find=cfg.route==='unknown'?cfg.find:['num','den','angle'][n%3],[num,den]=ratioSides[cfg.ratio];
  const displayAngle=round(rawAngle),value=T.trig(cfg.ratio,displayAngle),ratio=given[num]/given[den];
@@ -47,7 +49,7 @@ function questionTriangle(q,answers=false){
   return T.triangle({angle:q.angle,hypotenuse:q.h,marks,highlight:cfg.showRays?['adj','opp','hyp']:[]});}
  const [num,den]=ratioSides[q.ratio];let marks={opp:'O',adj:'A',hyp:'H'};
  for(const k of [num,den])marks[k]=q.find==='angle'?fmt(q[k]):q.find==='num'&&k===num?'?':q.find==='den'&&k===den?'?':fmt(q[k]);
- return T.triangle({angle:q.angle,hypotenuse:q.hyp,marks,highlight:cfg.showRays?[num,den]:[]});
+ return T.triangle({angle:q.angle,hypotenuse:q.hyp,angleLabel:q.find==='angle'&&!answers?'?°':fmt(q.angle)+'°',marks,highlight:cfg.showRays?[num,den]:[]});
 }
 function equation(q,worked=false){
  if(pyth){
@@ -72,15 +74,25 @@ function prediction(q){
  if(q.ratio==='tan')return 'Predict: below 45° opposite < adjacent; at 45° equal; above 45° opposite > adjacent. Tangent crosses 1 at 45°.';
  return 'Predict: '+(q.ratio==='sin'?'opposite':'adjacent')+' is shorter than the hypotenuse. The ratio is between 0 and 1 for an acute angle.';
 }
-function renderToolbar(){
+function renderToolbar(question=cfg.activeQuestion){
  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(cfg.mode===b.dataset.mode)));
  document.querySelectorAll('[data-ratio]').forEach(b=>b.setAttribute('aria-pressed',String(cfg.ratio===b.dataset.ratio)));
  document.querySelectorAll('[data-route]').forEach(b=>b.setAttribute('aria-pressed',String(cfg.route===b.dataset.route)));
  $('ratioControls').hidden=pyth||Boolean(fixedRatio);
  $('routeControls').hidden=pyth;
- $('bank').value=cfg.bank;$('find').value=cfg.find;
+ $('bank').value=cfg.bank;$('find').value=question?question.find:cfg.find;
+ $('find').disabled=cfg.route==='ratio'||cfg.mode==='quiz'||cfg.mode==='test';
+ $('trigFind').hidden=pyth||cfg.mode==='test';
  $('pythFind').value=cfg.testType;
  $('precision').value=String(cfg.precision);
+ $('bank').disabled=cfg.mode==='quiz'||cfg.mode==='test';$('precision').disabled=cfg.mode==='quiz'||cfg.mode==='test';
+ const exactBank=cfg.bank==='triples',specialBank=cfg.bank==='surds';
+ $('angleControl').hidden=pyth||exactBank||specialBank||cfg.mode==='test'||Boolean(question&&question.find==='angle');
+ $('hypControl').hidden=pyth||exactBank||cfg.mode==='test'||Boolean(question&&(question.ratio==='tan'||question.find==='den'&&ratioSides[question.ratio][1]==='hyp'));
+ if(question&&!pyth){
+  if(!$('angleControl').hidden){cfg.angle=Number(question.angle);$('angle').value=cfg.angle;$('angleOut').textContent=cfg.angle+'°';}
+  if(!$('hypControl').hidden){cfg.hyp=Number(question.hyp);$('hyp').value=cfg.hyp;$('hypOut').textContent=String(cfg.hyp);}
+ }
 }
 function setOptionsOpen(open){
  const panel=$('optionsPanel'),toggle=$('optionsToggle'),backdrop=$('optionsBackdrop');
@@ -140,7 +152,7 @@ function ratioExplorer(ratio){
  const info=ratioInfo[ratio],area=document.createElement('div');area.className='ratio-explorer';
  const controls=document.createElement('div');controls.className='ratio-explorer-controls';
  const label=document.createElement('label');label.textContent='Acute reference angle θ';
- const slider=document.createElement('input');slider.type='range';slider.min='1';slider.max='89';slider.step='1';slider.value='35';slider.setAttribute('aria-label','Acute reference angle in degrees');
+ const slider=document.createElement('input');slider.type='range';slider.min='5';slider.max='85';slider.step='1';slider.value='35';slider.setAttribute('aria-label','Acute reference angle in degrees');
  const angle=document.createElement('output');angle.textContent='35°';label.append(angle);controls.append(label,slider);
  const readout=document.createElement('p');readout.className='ratio-readout';readout.setAttribute('aria-live','polite');controls.append(readout);
  const diagram=document.createElement('div');diagram.className='ratio-explorer-diagram';
@@ -148,7 +160,7 @@ function ratioExplorer(ratio){
   const degrees=Number(slider.value),value=T.trig(ratio,degrees);
   angle.textContent=degrees+'°';
   readout.textContent=info.valueText(degrees,value);
-  diagram.innerHTML=T.triangle({angle:degrees,hypotenuse:10,marks:{adj:'A',opp:'O',hyp:'H'}});
+  diagram.innerHTML=T.triangle({angle:degrees,hypotenuse:10,angleLabel:degrees+'°',marks:{adj:'A',opp:'O',hyp:'H'}});
  }
  slider.addEventListener('input',update);update();area.append(controls,diagram);return area;
 }
@@ -161,7 +173,7 @@ function instruction(){
  slide.append(heading,text);
  if(cfg.slide===0||cfg.slide===1){
   const drawing=document.createElement('div');drawing.style.maxWidth='410px';drawing.style.margin='auto';
-  drawing.innerHTML=T.triangle({angle:35,hypotenuse:10,marks:{adj:'A',opp:'O',hyp:'H'},highlight:[]});slide.append(drawing)
+  drawing.innerHTML=T.triangle({angle:35,hypotenuse:10,angleLabel:'35°',marks:{adj:'A',opp:'O',hyp:'H'},highlight:[]});slide.append(drawing)
  }
  if(fixedRatio&&cfg.slide===slides.length-1)slide.append(ratioExplorer(fixedRatio));
  if(cfg.reveal){const reveal=document.createElement('div');reveal.className='notice math';reveal.textContent=answer;slide.append(reveal)}
@@ -174,6 +186,7 @@ function instruction(){
 }
 function practice(){
  const q=makeQuestion(),display=cfg.mode==='display';
+ cfg.activeQuestion=q;renderToolbar(q);
  if(display){
   $('displayTriangle').innerHTML=questionTriangle(q);
   $('displayEquation').textContent=equation(q,cfg.step>0);
@@ -198,7 +211,7 @@ function practice(){
 }
 function startAssessment(type){
  cfg.attempts=0;cfg.wrong=[];cfg.chosen=null;cfg.quizIndex=0;cfg.submitted=false;
- cfg.quizQuestions=Array.from({length:4},(_,i)=>makeQuestion(cfg.question+i));
+ cfg.quizQuestions=Array.from({length:4},(_,i)=>makeQuestion(cfg.question+i,true));
  cfg.testAnswers=Array(4).fill('');
  assessment();
 }
@@ -209,6 +222,8 @@ function matchesAnswer(value,q){
 }
 function assessment(){
  const host=$('assessmentPanel');host.replaceChildren();
+ if(cfg.mode==='quiz'&&cfg.quizIndex<4){cfg.activeQuestion=cfg.quizQuestions[cfg.quizIndex];renderToolbar(cfg.activeQuestion)}
+ else if(cfg.mode==='test'){cfg.activeQuestion=null;renderToolbar(null)}
  if(cfg.mode==='quiz'){
   if(cfg.quizIndex===4){
    const done=document.createElement('div');done.className='assessment';done.innerHTML='<h2>Quiz complete</h2><p>Four questions completed.</p>';host.append(done);return;
@@ -256,7 +271,7 @@ function assessment(){
  host.append(box)
 }
 function sheet(){
- const questions=Array.from({length:6},(_,i)=>makeQuestion(cfg.question+i)),title=(pyth?'Pythagoras':fixedRatio?ratioInfo[fixedRatio].title+' Ratio':'Right-Angled Trigonometry')+' · Six questions';
+ const questions=Array.from({length:6},(_,i)=>makeQuestion(cfg.question+i,true)),title=(pyth?'Pythagoras':fixedRatio?ratioInfo[fixedRatio].title+' Ratio':'Right-Angled Trigonometry')+' · Six questions';
  const body=questions.map((q,i)=>'<article><b>'+(i+1)+'.</b> '+questionText(q)+'<div class="diagram">'+questionTriangle(q)+'</div><div class="space"></div></article>').join('');
  const answers=questions.map((q,i)=>'<p>'+(i+1)+'. '+fmt(correctAnswer(q))+'</p>').join('');
  const html='<!doctype html><html><head><title>'+title+'</title><style>@page{size:A4;margin:14mm}body{font:15px Arial}h1{font-size:22px}main{display:grid;grid-template-columns:1fr 1fr;gap:12px}article{border:1px solid #eee;padding:10px;min-height:240px;break-inside:avoid}.diagram svg{max-width:100%;height:135px}.space{height:55px}.key{break-before:page}button{padding:10px}@media print{button{display:none}}</style></head><body><button onclick="print()">Print / Save PDF</button><h1>'+title+'</h1><p>Name: __________________________</p><main>'+body+'</main><div class="key"><h2>Answer key</h2>'+answers+'</div></body></html>';
@@ -271,7 +286,7 @@ if($('optionsBackdrop'))$('optionsBackdrop').onclick=()=>setOptionsOpen(false);
 document.addEventListener('keydown',event=>{if(event.key==='Escape')setOptionsOpen(false)});
 $('find').onchange=()=>{cfg.find=$('find').value;cfg.question=0;if(cfg.mode==='practice'||cfg.mode==='display')practice()};
 $('pythFind').onchange=()=>{cfg.testType=$('pythFind').value;cfg.question=0;if(cfg.mode==='practice'||cfg.mode==='display')practice()};
-$('bank').onchange=()=>{cfg.bank=$('bank').value;cfg.question=0;if(cfg.mode==='practice'||cfg.mode==='display')practice()};
+$('bank').onchange=()=>{cfg.bank=$('bank').value;cfg.question=0;cfg.activeQuestion=null;renderToolbar();if(cfg.mode==='practice'||cfg.mode==='display')practice()};
 $('precision').onchange=()=>{cfg.precision=Number($('precision').value);if(cfg.mode==='practice'||cfg.mode==='display')practice()};
 $('angle').oninput=()=>{cfg.angle=Number($('angle').value);$('angleOut').textContent=cfg.angle+'°';if(cfg.mode==='practice'||cfg.mode==='display')practice()};
 $('hyp').oninput=()=>{cfg.hyp=Number($('hyp').value);$('hypOut').textContent=String(cfg.hyp);if(cfg.mode==='practice'||cfg.mode==='display')practice()};
