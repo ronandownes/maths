@@ -329,7 +329,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 #constantBtn[aria-pressed=true]{background:#e4eefc;border-color:#6c97d9;color:#224f91}
 #challengeBtn[aria-pressed=true]{background:#f8dbe2;border-color:#bc536d;color:#77253e}
 .setting--advanced{gap:5px}
-.scalar-prefix{color:#24558e;font-weight:700;white-space:nowrap}
+.scalar-prefix{color:#24558e;font-weight:750;white-space:nowrap;font-size:1.2em;line-height:1;margin-right:.12em;vertical-align:baseline}
 .ws-live-preview{margin:14px 0 4px;padding:14px;background:#f8fafc;border:1px solid #d7e1ee;border-radius:10px}
 .ws-live-preview>strong{font-size:1rem}.ws-live-preview>p{font-size:.83rem;color:#4c6179;margin:7px 0}
 .ws-preview-grid{display:grid;gap:8px;padding:10px;background:#fff;border:1px solid #ccd6e4;min-height:240px}
@@ -713,7 +713,7 @@ function draw(){
  }
  const pad=v=>Array(n-v.length).fill(null).concat(v);
  const visibleFactors=['ql','cl','l5','q4'].includes(state.question.type)?[b,a]:[a,b];
- $('factorExpression').innerHTML=((state.question.scalar||1)!==1?'<span class="scalar-prefix">'+minus(state.question.scalar)+' × </span>':'')+visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
+ $('factorExpression').innerHTML=((state.question.scalar||1)!==1?'<span class="scalar-prefix">'+minus(state.question.scalar)+'</span>':'')+visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
  if(mode!=='question'&&(mode!=='step'||step>=1)){
   const table=document.createElement('table');table.className='math-table';
   if(true){
@@ -921,7 +921,7 @@ function playQuizSound(correct){
 }
 function testExpression(q){
  const factors=['ql','cl','l5','q4'].includes(q.type)?[q.b,q.a]:[q.a,q.b];
- return (q.scalar&&q.scalar!==1?minus(q.scalar)+' × ':'')+factors.map(f=>'('+poly(f)+')').join(' ');
+ return (q.scalar&&q.scalar!==1?minus(q.scalar)+'':'')+factors.map(f=>'('+poly(f)+')').join(' ');
 }
 function createChoices(q,index){
  const correct=product(q.a,q.b),length=correct.length;
