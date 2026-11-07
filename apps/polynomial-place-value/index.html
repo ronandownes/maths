@@ -339,13 +339,13 @@ main{margin:5px auto;padding:10px 19px 18px}
 </main>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
-const actions=['Set up the place-value columns','Place the coefficients','Calculate partial products','Place the zero placeholders','Group like terms','Interpret and populate the powers of x','Box the answer','Reflect'];
+const actions=['Set up the place-value columns','Place the coefficients','Calculate partial products','Place the zero placeholders','Combine terms by powers of x','Interpret and populate the powers of x','Box the answer','Reflect'];
 const instructions=[
  'Set up the place-value columns with powers of x',
  'Place the coefficients in the correct columns, with the higher-degree factor on top',
  'Calculate the partial products',
  'Place zeros at the end of shifted multiplication rows to keep the place-value columns aligned',
- 'Group like terms by adding the coefficients in each column',
+ 'Combine contributions in each power-of-x column (add coefficients where there are two or more)',
  'Interpret and populate the powers of x',
  'Box the final answer',
  'Reflect on the efficiency of the method'
@@ -578,8 +578,8 @@ function draw(){
    entry.append(marker,label);
    entry.onclick=()=>{
     state.step=i+1;
-    if(i===2){state.partialCount=1;state.partialAll=false;}
-    if(i===4){state.groupCount=1;state.groupAll=false;}
+    if(i===2){state.partialCount=individualProducts(a,b).length;state.partialAll=true;}
+    if(i===4){state.groupCount=n;state.groupAll=true;}
     render();
    };
    checklist.append(entry);
@@ -617,9 +617,9 @@ function draw(){
    }
    if(i===4&&step===5){
     const sub=document.createElement('div');sub.className='stage-controls';
-    sub.setAttribute('aria-label','Group like terms');
+    sub.setAttribute('aria-label','Combine like terms by column');
     const description=document.createElement('div');description.className='stage-control-title';
-    description.textContent='Add coefficients by column';
+    description.textContent='Combine contributions in each power-of-x column';
     sub.append(description);
     const modes=document.createElement('div');modes.className='stage-mode-buttons';
     const individually=document.createElement('button');individually.type='button';individually.textContent='One by one';
