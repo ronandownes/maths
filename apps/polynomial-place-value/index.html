@@ -911,7 +911,7 @@ function drawTest(){
  }
 }
 
-const ws={counts:{ll:3,ql:3,qq:0},levels:[1],signs:['positive'],support:'gradual',columns:'auto',answers:'key',extra:0,steps:true};
+const ws={counts:{ll:3,ql:3,qq:0},levels:[1],signs:['positive'],support:'gradual',columns:'auto',answers:'key',extra:0,steps:false};
 function worksheetOptions(){
  const panel=$('worksheetPanel');panel.replaceChildren();
  const heading=el('h2','Printable worksheet · choose content and support');panel.append(heading);
@@ -966,7 +966,9 @@ function worksheetOptions(){
 }
 function wsStatus(){
  const n=Object.values(ws.counts).reduce((sum,v)=>sum+v,0)+ws.extra;
- const e=$('wsStatus');if(e)e.textContent=n+' questions · '+ws.support+' support · levels: '+(ws.levels.includes('random')?'random':ws.levels.join(', '))+' · signs: '+(ws.signs.includes('random')?'random':ws.signs.join(', '))+' · answers: '+ws.answers+' · page automatically filled';
+ const cols=ws.columns==='auto'?(ws.counts.qq>0?3:4):Number(ws.columns);
+ const actual=n>0?Math.max(cols*2,Math.ceil(n/(cols*2))*cols*2):0;
+ const e=$('wsStatus');if(e)e.textContent=n+' selected · '+actual+' printed ('+cols+' across) · '+ws.support+' support · levels: '+(ws.levels.includes('random')?'random':ws.levels.join(', '))+' · signs: '+(ws.signs.includes('random')?'random':ws.signs.join(', '))+' · answers: '+ws.answers;
 }
 function worksheetQuestions(){
  const old={type:state.type,level:state.level,sign:state.sign,random:state.factorRandom},out=[];
