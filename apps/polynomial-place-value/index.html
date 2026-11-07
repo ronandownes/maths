@@ -648,16 +648,23 @@ function drawTest(){
     input.setAttribute('aria-label','Question '+(index+1)+' coefficient of '+(power?'x to power '+power:'constant'));
     input.disabled=assessment.submitted;
     input.oninput=()=>{assessment.responses[index][i]=input.value};
+    function nudgeCoefficient(delta){
+     if(assessment.submitted)return;
+     const current=/^-?\d+$/.test(input.value.trim())?Number(input.value):0;
+     const next=current+delta;
+     if(!Number.isSafeInteger(next))return;
+     input.value=String(next);assessment.responses[index][i]=input.value;
+    }
+    input.addEventListener('wheel',event=>{
+     if(assessment.submitted||document.activeElement!==input||event.deltaY===0)return;
+     event.preventDefault();
+     nudgeCoefficient(event.deltaY<0?1:-1);
+    },{passive:false});
     const arrows=el('div',undefined,'test-number-arrows');
     [['▲',1,'Increase'],['▼',-1,'Decrease']].forEach(([glyph,delta,name])=>{
      const button=el('button',glyph);button.type='button';button.disabled=assessment.submitted;
      button.setAttribute('aria-label',name+' coefficient');
-     button.onclick=()=>{
-      const current=/^-?\d+$/.test(input.value.trim())?Number(input.value):0;
-      const next=current+delta;
-      if(!Number.isSafeInteger(next))return;
-      input.value=String(next);assessment.responses[index][i]=input.value;
-     };
+     button.onclick=()=>nudgeCoefficient(delta);
      arrows.append(button);
     });
     control.append(input,arrows);group.append(symbol,control);answer.append(group);
