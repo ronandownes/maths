@@ -374,6 +374,18 @@ main{margin:5px auto;padding:10px 19px 18px}
 .worksheet-quick{display:grid;gap:10px;padding:12px;margin:8px 0 12px;border:1px solid #cfdeec;background:#f7fbff;border-radius:10px}
 .worksheet-quick-group{display:grid;gap:6px}.worksheet-quick-group>strong{font-size:.85rem;color:#4e6179}
 .worksheet-quick .worksheet-options button{min-height:36px}.worksheet-quick button[aria-pressed=true]{background:#dcecff;border-color:#4e83c5;font-weight:700}
+.board-panel{background:#fff;border:1px solid #cddae9;border-radius:12px;padding:12px;margin:10px 0}
+.board-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.board-controls strong{margin-right:auto}
+.board-grid{display:grid;gap:12px;min-height:65vh;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+.board-grid-9{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr))}
+.board-question{border:1px solid #d7e0eb;border-radius:9px;padding:16px;min-width:0;display:flex;align-items:center;justify-content:center;position:relative;flex-direction:column}
+.board-number{position:absolute;top:9px;left:11px;color:#778395;font-size:.96rem}
+.board-expression{font:clamp(1.4rem,2.65vw,3rem)/1.35 "Cambria Math",Cambria,Georgia,serif;text-align:center;overflow-wrap:anywhere}
+.board-answer{font:clamp(1.16rem,2vw,2.3rem)/1.4 "Cambria Math",Cambria,Georgia,serif;color:#275b87;text-align:center;margin-top:15px}
+.board-panel:fullscreen{background:#fff;padding:20px;display:flex;flex-direction:column}
+.board-panel:fullscreen .board-grid{flex:1;min-height:0}
+@media(max-width:660px){.board-grid,.board-grid-9{gap:5px}.board-question{padding:13px 5px}.board-expression{font-size:clamp(1rem,3.4vw,1.6rem)}}
 </style>
 </head>
 <body>
@@ -390,16 +402,18 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="beyond-choices" id="beyondPanel" hidden><strong>Optional challenge</strong><div class="button-group" id="beyondChoices"></div><span id="beyondNote">Choose a factor pattern to explore.</span></div>
 </div>
 <div class="activity-switch" aria-label="Exercises and learning activities">
- <div class="homework-controls"><span class="homework-label">Exercises</span><nav class="top-questions" id="questions" aria-label="Four fixed numbered exercises"></nav></div>
+ <div class="homework-controls"><span class="homework-label">Classwork</span><nav class="top-questions" id="questions" aria-label="Four numbered classwork exercise choices"></nav></div>
  <div class="activity-actions" aria-label="Choose learning activity">
   <button id="practiceMode" type="button" aria-pressed="false" title="Generate another random expansion question">More practice</button>
   <button id="quizMode" type="button" aria-pressed="false">Quiz</button>
   <button id="testMode" type="button" aria-pressed="false">Test</button>
   <button id="worksheetMode" type="button" aria-pressed="false">Worksheets</button>
+  <button id="boardMode" type="button" aria-pressed="false">Board display</button>
  </div>
  <div class="practice-quick-controls" id="practiceQuickControls"><div class="modes" id="modes" aria-label="How to view the solution"></div></div>
 </div>
 <section id="worksheetPanel" class="worksheet-panel" hidden aria-label="Worksheet settings"></section>
+<section id="boardPanel" class="board-panel" hidden aria-label="Project questions to the board"></section>
 <div id="practiceArea">
 <div class="practice-layout">
  <div class="practice-working">
@@ -1365,6 +1379,41 @@ function worksheetOptions(){
  const status=el('span');status.id='wsStatus';go.onclick=printWorksheet;close.onclick=()=>switchMode('practice');
  actions.append(go,close,status);panel.append(actions);wsStatus();
 }
+const boardState={size:4,answers:false,offset:0};
+function boardFormula(q){
+ const factors=q.type==='ql'?[q.b,q.a]:[q.a,q.b];
+ const scalar=q.scalar&&q.scalar!==1?minus(q.scalar):'';
+ return scalar+'('+poly(factors[0])+')('+poly(factors[1])+')';
+}
+function drawBoard(){
+ const host=$('boardPanel');host.replaceChildren();
+ const controls=el('div',undefined,'board-controls');
+ controls.append(el('strong','Classwork '+ws.sheet+' · '+({positive:'Positive only',negative:'Negative non-leading',mixed:'Mixed signs',progressive:'Progressive mix'}[ws.category])));
+ [['4','2 × 2'],['9','3 × 3']].forEach(([n,label])=>{
+  const btn=el('button',label);btn.type='button';btn.setAttribute('aria-pressed',String(boardState.size===Number(n)));
+  btn.onclick=()=>{boardState.size=Number(n);boardState.offset=0;drawBoard()};controls.append(btn);
+ });
+ const answers=el('button',boardState.answers?'Hide answers':'Show answers');
+ answers.type='button';answers.setAttribute('aria-pressed',String(boardState.answers));answers.onclick=()=>{boardState.answers=!boardState.answers;drawBoard()};
+ controls.append(answers);
+ const fresh=el('button','Different questions');fresh.type='button';
+ fresh.onclick=()=>{boardState.offset++;drawBoard()};controls.append(fresh);
+ const full=el('button','Full screen');full.type='button';
+ full.onclick=()=>{if(!document.fullscreenElement){host.requestFullscreen?.()}else document.exitFullscreen?.()};
+ controls.append(full);
+ const close=el('button','Close board');close.type='button';close.onclick=()=>switchMode('worksheet');controls.append(close);
+ host.append(controls);
+ const questions=worksheetQuestions(boardState.size+boardState.offset*boardState.size).slice(-boardState.size);
+ const grid=el('div',undefined,'board-grid');grid.className+=' board-grid-'+boardState.size;
+ questions.forEach((item,i)=>{
+  const cell=el('article',undefined,'board-question');
+  const num=el('span',(i+1)+'.','board-number'),expression=el('div',undefined,'board-expression');
+  expression.innerHTML=boardFormula(item.q);cell.append(num,expression);
+  if(boardState.answers){const solution=el('div',undefined,'board-answer');solution.innerHTML='= '+poly(product(item.q.a,item.q.b));cell.append(solution)}
+  grid.append(cell);
+ });
+ host.append(grid);
+}
 function worksheetRowsPerSide(){
  if(ws.use==='classwork')return 2;
  return ({spacious:5,balanced:8,compact:10})[ws.density]||8;
@@ -1375,9 +1424,9 @@ function wsStatus(){
  if(e)e.textContent=total+' questions · '+(ws.use==='classwork'?'Short classwork / exit ticket':'Matching homework')+' · '+ws.columns+' columns · '+ws.category+' · Worksheet '+ws.sheet;
  wsPreviewCache=worksheetQuestions();drawWorksheetPreview();
 }
-function worksheetQuestions(){
+function worksheetQuestions(countOverride){
  const old={type:state.type,level:state.level,sign:state.sign,slot:state.slot,random:state.factorRandom,constant:state.constantOn,monic:state.monic};
- const out=[],count=worksheetTotal(),selected=state.type;
+ const out=[],count=countOverride||worksheetTotal(),selected=state.type;
  const types=beyondTypes.includes(selected)?[state.coreType]:selected==='any'?['ll','ql','qq']:[selected];
  const levelBase=Math.max(1,Math.min(3,state.level));
  const signFor=i=>ws.category==='progressive'?['positive','positive','negative','mixed'][Math.min(3,Math.floor(4*i/count))]:ws.category;
@@ -1586,25 +1635,27 @@ function printWorksheet(){
 }
 $('worksheetMode').onclick=()=>switchMode('worksheet');
 function switchMode(mode){
- if(assessment.started&&mode!==assessment.mode){return}
+ if(assessment.started&&mode!==assessment.mode)return;
  const previous=assessment.mode;
  assessment.mode=mode;
  $('practiceArea').hidden=mode!=='practice';
  $('testArea').hidden=mode!=='quiz'&&mode!=='test';
  $('worksheetPanel').hidden=mode!=='worksheet';
+ $('boardPanel').hidden=mode!=='board';
  $('practiceQuickControls').hidden=mode!=='practice';
- for(const [key,value] of [['practiceMode','practice'],['quizMode','quiz'],['testMode','test'],['worksheetMode','worksheet']]){
+ for(const [key,value] of [['practiceMode','practice'],['quizMode','quiz'],['testMode','test'],['worksheetMode','worksheet'],['boardMode','board']]){
   $(key).setAttribute('aria-pressed',String(key==='practiceMode'?mode==='practice'&&state.slot==='fresh':mode===value));
  }
- if(mode==='worksheet'){
-  worksheetOptions();
- }else if((mode==='quiz'||mode==='test')&&mode!==previous){
+ if(mode==='worksheet')worksheetOptions();
+ else if(mode==='board')drawBoard();
+ else if((mode==='quiz'||mode==='test')&&mode!==previous){
   assessment.started=false;assessment.questions=[];setAssessmentControlsLocked();drawTest();
  }
 }
 $('practiceMode').onclick=()=>{switchMode('practice');freshQuestion()};
 $('quizMode').onclick=()=>switchMode('quiz');
 $('testMode').onclick=()=>switchMode('test');
+$('boardMode').onclick=()=>switchMode('board');
 function connectTableOperands(){
  const host=$('canvas');
  const previous=host.querySelector&&host.querySelector('.table-operand-connector');
