@@ -428,7 +428,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 </div>
 <div class="activity-switch" aria-label="Learning and practice">
  <div class="homework-controls"><span class="homework-label">Classwork</span><nav class="top-questions" id="questions" aria-label="Four classwork sets"></nav></div>
- <div class="activity-section"><span class="activity-title">Display</span><div class="activity-actions"><button id="boardMode" type="button" aria-pressed="false">Display</button></div></div>
+ <div class="activity-section"><span class="activity-title">Presentation</span><div class="activity-actions"><button id="boardMode" type="button" aria-pressed="false">Display</button></div></div>
  <div class="activity-section procedural-section"><span class="activity-title">Procedural Fluency</span><div class="practice-quick-controls" id="practiceQuickControls"><div class="modes" id="modes" aria-label="Procedural fluency"></div></div></div>
  <div class="activity-section"><span class="activity-title">Learning activities</span><div class="activity-actions" aria-label="Choose learning activity">
   <button id="practiceMode" type="button" hidden aria-pressed="false">Practice</button>
@@ -1287,7 +1287,7 @@ function drawTest(){
     section.append(check);
     if(attempts>0){
      const note=el('div',isCorrect?'Correct!':attempts>=2?
-      'No more attempts. Correct answer: '+p.join(', '):
+      'Stop guessing. Start thinking. Correct answer: '+p.join(', '):
       'ONE MORE CHANCE — your next answer is final.','test-feedback '+(isCorrect?'test-correct':attempts===1?'quiz-last-chance':'test-incorrect'));
      note.setAttribute('role','status');section.append(note);
      if(!isCorrect){
@@ -1317,7 +1317,7 @@ function drawTest(){
   actions.append(el('span','No scores or worked solutions appear until submission.'));
  }else{
   const restart=el('button',quiz?'New quiz':'Retake test');restart.type='button';
-  restart.onclick=()=>{assessment.started=false;assessment.questions=[];setAssessmentControlsLocked();drawTest()};actions.append(restart);
+  restart.onclick=()=>initialiseTest('random');actions.append(restart);
  }
  const abort=el('button','Abort '+(quiz?'quiz':'test'));abort.type='button';
  abort.onclick=()=>{assessment.started=false;assessment.questions=[];assessment.submitted=false;setAssessmentControlsLocked();drawTest()};
@@ -1734,7 +1734,7 @@ function switchMode(mode){
  $('testArea').hidden=mode!=='quiz'&&mode!=='test';
  $('worksheetPanel').hidden=mode!=='worksheet';
  $('boardPanel').hidden=mode!=='board';
- $('practiceQuickControls').hidden=mode==='quiz'||mode==='test';
+ $('practiceQuickControls').hidden=false;
  for(const [key,value] of [['practiceMode','practice'],['quizMode','quiz'],['testMode','test'],['worksheetMode','worksheet'],['boardMode','board']]){
   $(key).setAttribute('aria-pressed',String(key==='practiceMode'?mode==='practice'&&state.slot==='fresh':mode===value));
  }
