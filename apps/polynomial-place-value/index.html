@@ -153,9 +153,11 @@ button:disabled{opacity:.38;cursor:default}
 .level-random[aria-pressed=true]{background:#e8f0fe!important;border-color:#1a73e8!important;color:#174ea6!important}
 #types button:first-child,#signs button:first-child{font-weight:700}
 .math-table td.placeholder-zero{color:#a7afb9;font-weight:400}
-.reflection{max-width:760px;margin:13px auto 3px;padding:12px 14px;border-top:1px solid #d8dee6;color:#344054;font-size:clamp(1.12rem,1.75vw,1.32rem);line-height:1.45}
-.reflection strong{font-size:1.12em}
-.reflection p{margin:5px 0 0}
+.reflection{max-width:760px;margin:16px auto 3px;padding:12px 8px 0;border-top:1px solid #d8dee6;color:#344054;font-size:clamp(.94rem,1.4vw,1.06rem);line-height:1.48}
+.reflection>h3{font:700 1.02rem/1.35 Arial,Helvetica,sans-serif;color:#334155;margin:0 0 7px}
+.reflection p{margin:6px 0}
+.reflection strong{font-weight:700}
+.reflection .reflection-prompt{margin-top:8px}
 .investigation{max-width:760px;margin:11px auto 0;padding:12px 14px;border:1px solid #d7e3ec;border-radius:8px;color:#263e55;font-size:clamp(1.1rem,1.7vw,1.3rem);line-height:1.43}
 .investigation strong{font-size:1.08em}
 .investigation p{margin:7px 0}
@@ -1051,6 +1053,26 @@ function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomia
  });
  table.append(tr);
 }
+function drawReflection(hcf){
+ const section=document.createElement('section');
+ section.className='reflection';
+ section.setAttribute('aria-label','Reflection');
+ const heading=document.createElement('h3');heading.textContent='Reflection';
+ const principle=document.createElement('p');
+ principle.innerHTML='<strong>Why it works.</strong> This is the distributive property, arranged like long multiplication. Align coefficients by descending powers of x, then combine like powers.';
+ const contrast=document.createElement('p');
+ contrast.innerHTML='<strong>Why no carrying?</strong> In base ten, ten units become one unit of the next place. Here x is a variable, not a fixed base. Coefficients need no carrying and may be negative.';
+ section.append(heading,principle,contrast);
+ if(hcf.needed){
+  const hcfNote=document.createElement('p');
+  hcfNote.innerHTML='<strong>HCF.</strong> Factor it out before multiplying; distribute it back at the end. The product stays the same.';
+  section.append(hcfNote);
+ }
+ const thought=document.createElement('p');thought.className='reflection-prompt';
+ thought.innerHTML='<strong>Think:</strong> 99 = 100 − 1 also uses a negative contribution. Why does ordinary decimal notation use digits 0–9 instead?';
+ section.append(thought);
+ return section;
+}
 function draw(){
  const hcf=hcfData(state.question),{a,b}=hcf;
  const final=product(a,b),expanded=final.map(v=>v*hcf.factor),n=final.length,degree=n-1;
@@ -1255,7 +1277,7 @@ function draw(){
   if(step>=6){
    const eq=document.createElement('div');eq.className='equation worked-conclusion';
    eq.innerHTML=poly(expanded);
-   root.append(eq);
+   root.append(eq,drawReflection(hcf));
   }
 }
 
