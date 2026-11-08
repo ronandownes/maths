@@ -14,3 +14,6 @@ document.querySelectorAll('[data-reveal-list]').forEach(list => {
   next?.addEventListener('click',()=>{count=Math.min(rows.length,count+1);update();});
   reset?.addEventListener('click',()=>{count=0;update();});update();
 });
+
+/* Shared contextual strand/topic navigation. */
+(()=>{const current=document.currentScript;if(!current||document.querySelector('script[src*="assets/navigation.js"]'))return;const script=document.createElement('script');script.src=new URL('navigation.js',current.src).href;script.defer=true;document.head.append(script);})();

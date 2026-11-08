@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Interactive sequence challenges: explore growing squares, perimeter, boundary length and the number of lines needed to draw a pattern.">
+  <title>Sequence Challenges · Maths Apps</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='18' cy='18' r='13' fill='%23E63329'/%3E%3Ccircle cx='46' cy='18' r='13' fill='%233FAE49'/%3E%3Ccircle cx='18' cy='46' r='13' fill='%232D7DD2'/%3E%3Ccircle cx='46' cy='46' r='13' fill='%231A1A1A'/%3E%3C/svg%3E">
+  <style>
+    :root{font-family:Arial,Helvetica,sans-serif;color:#213247;background:#f2f5f8;--blue:#2D7DD2;--orange:#df8522;--ink:#213247;--line:#d6e2ef;--grey:#a2b5c6;--bluewash:#ecf5ff}
+    *{box-sizing:border-box}
+    body{margin:0}
+    a{color:#1c5a96}
+    header{height:66px;display:flex;align-items:center;gap:16px;padding:9px max(16px,calc((100% - 1170px)/2));background:white;border-bottom:1px solid #dce4ed}
+    .brand{display:flex;align-items:center;text-decoration:none;min-width:153px}
+    .brand svg{width:142px;height:48px;display:block}
+    .brand-text{font-size:1.05rem;font-weight:750;padding-left:13px;border-left:1px solid #d3e0eb}
+    .crumbs{margin-left:auto;color:#617588;font-size:.9rem;white-space:nowrap}
+    .crumbs a{text-decoration:none}
+    main{max-width:1160px;margin:18px auto;padding:0 18px 35px}
+    .hero{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 0 17px}
+    .eyebrow{font-size:.76rem;letter-spacing:.13em;color:#285f94;font-weight:800;text-transform:uppercase;margin:0 0 7px}
+    h1{font-size:clamp(1.65rem,3.5vw,2.5rem);letter-spacing:-.035em;margin:0 0 6px;color:#173653}
+    .lead{font-size:clamp(1rem,1.5vw,1.13rem);line-height:1.5;max-width:760px;color:#53687e;margin:0}
+    .language{display:flex;flex-direction:column;gap:5px;min-width:155px;color:#526b83;font-size:.8rem;font-weight:700}
+    .language select{font-size:.88rem;padding:8px}
+    button,input,select{font:inherit}
+    button{cursor:pointer;border:1px solid #bed1e3;background:white;color:#28445e;min-height:41px;border-radius:9px;padding:9px 12px;font-weight:700}
+    button:hover{background:#edf5fd}
+    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #84b1e6;outline-offset:3px}
+    button[aria-pressed=true],button.active,.primary{color:white;background:#202124;border-color:#202124}
+    button:disabled{opacity:.38;cursor:default}
+    input[type=number]{border:1px solid #afc5d9;border-radius:8px;min-height:42px;padding:8px 11px;width:110px;font-size:1rem}
+    select{border:1px solid #afc5d9;background:white;border-radius:8px;color:var(--ink)}
+    .patternbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:0 0 14px}
+    .patternbar button{text-align:left;min-height:64px;line-height:1.35;font-size:clamp(.9rem,1.5vw,1.03rem);padding:12px 14px}
+    .patternbar small{display:block;font-weight:500;color:#5c758e;font-size:.79rem;margin-top:4px}
+    .patternbar button[aria-pressed=true] small{color:#e2effa}
+    .layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);gap:16px}
+    .panel{background:white;border:1px solid #dce5ef;border-radius:13px;box-shadow:0 2px 7px #28425d0a;padding:20px}
+    .sectiontop{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+    .sectiontop h2{font-size:1.19rem;margin:0;color:#1c3c58}
+    .sectiontop p{color:#617589;margin:4px 0 0;font-size:.9rem}
+    .stepper{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .stepper button{font-size:1.25rem;min-width:43px}
+    .nValue{display:block;text-align:center;min-width:52px;padding:2px 8px;font:700 1.7rem Cambria,Georgia,serif;color:#173c60}
+    .range{width:100%;accent-color:#2264a2;min-height:28px;cursor:pointer}
+    .canvas{border:1px solid #dbe7f1;border-radius:11px;min-height:340px;background:radial-gradient(circle at center,#fff 0%,#f7fbff 100%);display:flex;justify-content:center;align-items:center;padding:14px}
+    .canvas svg{width:100%;max-width:590px;height:326px;display:block;overflow:visible}
+    .legend{display:flex;gap:15px;align-items:center;flex-wrap:wrap;padding:12px 0 3px;color:#5a6e84;font-size:.87rem}
+    .swatch{display:inline-block;width:26px;height:0;border-top:4px solid;vertical-align:middle;margin-right:5px;border-radius:8px}
+    .legend label{cursor:pointer;margin-left:auto}
+    .metricnav{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+    .metricnav button{font-weight:650;min-height:39px;font-size:.93rem}
+    .biganswer{background:#eef6fd;border:1px solid #c6dfef;border-radius:10px;text-align:center;padding:22px 10px;margin:10px 0 15px}
+    .biganswer .number{font-size:clamp(2.7rem,6vw,4rem);font-weight:800;color:#154f82;letter-spacing:-.04em;line-height:1.1}
+    .biganswer .numlabel{font-size:.97rem;color:#58708a;font-weight:700;margin-top:7px}
+    .biganswer .concealed{font-size:2.1rem;color:#7b91a4}
+    .context{font-size:.94rem;line-height:1.55;color:#51667c;margin:7px 0 0}
+    .section-label{margin:6px 0 9px;font-size:.86rem;color:#5d748b;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .sequence{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:8px 0 10px}
+    .term{padding:11px 2px 10px;border:1px solid #d7e5f0;border-radius:8px;text-align:center;background:#f8fbfd;min-width:0}
+    .term small{display:block;color:#687d90;font-weight:700;font-size:.73rem;white-space:nowrap}
+    .term strong{display:block;color:#1c527e;font-size:clamp(.94rem,2vw,1.22rem);margin-top:6px}
+    .diff{font-size:.86rem;margin:10px 0 5px;color:#526f87}
+    .formula{margin-top:12px;border-radius:10px;padding:15px;background:#f8fbfe;border:1px solid #d9e4ee}
+    .formula .expression{font:700 clamp(1.45rem,3vw,2rem) Cambria,Georgia,serif;color:#164e83;display:block;margin:10px 0}
+    .explain{color:#476177;line-height:1.5;font-size:.99rem}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0}
+    .wide{margin-top:16px}
+    .challenge{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .challenge h2{margin:0 0 7px;color:#1d3c58;font-size:1.2rem}
+    .challenge p{line-height:1.55;margin:5px 0 14px;color:#50677e}
+    .challenge .choice{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 15px}
+    .challenge .choice button{min-width:63px}
+    .answerline{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .feedback{margin-top:12px;min-height:40px;padding:10px 12px;background:#eff5fc;border-radius:8px;color:#335d81;line-height:1.5}
+    .feedback.good{background:#e5f6ea;color:#1f6339}
+    .feedback.bad{background:#fff4e5;color:#8f4d11}
+    .prompt{font-size:1.12rem!important;color:#1f3f5d!important;font-weight:700}
+    footer{margin:25px 0 0;color:#5e7389;font-size:.82rem;line-height:1.5}
+    [hidden]{display:none!important}
+    .diagramcaption{font-size:.85rem;color:#68809a;text-align:center;margin:7px 0 0}
+    @media(max-width:850px){.layout{grid-template-columns:1fr}.challenge{grid-template-columns:1fr}.hero{align-items:flex-start;flex-wrap:wrap}}
+    @media(max-width:650px){header{gap:6px;padding:8px 12px;height:auto;min-height:58px}.brand{min-width:97px}.brand svg{width:100px;height:38px}.crumbs{font-size:.7rem}.brand-text{font-size:.86rem;padding-left:6px}main{padding:0 10px 25px;margin:16px auto}.panel{padding:12px}.patternbar{grid-template-columns:1fr 1fr;gap:7px}.patternbar button{padding:9px;min-height:60px}.canvas{padding:6px;min-height:255px}.canvas svg{height:246px}.legend label{margin:0}.challenge{gap:12px}.term{padding:9px 0}.term small{font-size:.65rem}}
+    @media print{body{background:white}header,.patternbar,.language,.stepper,.range,.actions,.challenge .choice,.answerline,footer{display:none!important}.layout,.challenge{display:block}.panel{break-inside:avoid;box-shadow:none;margin-bottom:10px}.biganswer{padding:10px}}
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="https://ronandownes.github.io/maths/" aria-label="Maths home">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 205 64" role="img" aria-label="Maths, four-coloured-dot logo"><g transform="translate(4 8)"><circle cx="10" cy="10" r="9" fill="#E63329"/><circle cx="34" cy="10" r="9" fill="#3FAE49"/><circle cx="10" cy="34" r="9" fill="#2D7DD2"/><circle cx="34" cy="34" r="9" fill="#1A1A1A"/></g><text x="63" y="38" font-family="Arial, Helvetica, sans-serif" font-size="33" font-weight="700" fill="#202124">Maths</text></svg>
+    </a>
+    <div class="brand-text">Apps</div>
+    <div class="crumbs"><a href="https://ronandownes.github.io/maths/number/sequences/">Number / Sequences</a></div>
+  </header>
+  <main>
+    <div class="hero">
+      <div><p class="eyebrow">Explore • Notice • Generalise</p><h1>Sequence Challenges</h1><p class="lead" id="introText">How does a pattern grow? Count squares, measure perimeter and find how many unit lines are needed.</p></div>
+      <label class="language" for="language">Language <select id="language"><option value="rigorous">Mathematical</option><option value="plain" selected>Plain English</option><option value="eal">EAL support</option></select></label>
+    </div>
+    <nav class="patternbar" id="patternBar" aria-label="Choose a growing pattern">
+      <button type="button" data-pattern="frame" aria-pressed="true">▣ Square of squares <small>Hollow frame</small></button>
+      <button type="button" data-pattern="strip" aria-pressed="false">▥ Seven squares <small>One long row</small></button>
+      <button type="button" data-pattern="lshape" aria-pressed="false">└ L-shape <small>Two growing arms</small></button>
+      <button type="button" data-pattern="rectangle" aria-pressed="false">▤ Growing rectangle <small>Always 2 high</small></button>
+    </nav>
+    <div class="layout">
+      <section class="panel" aria-label="Pattern explorer">
+        <div class="sectiontop">
+          <div><h2 id="patternTitle">Square of Squares</h2><p id="patternSubtitle">A one-square-thick frame</p></div>
+          <div class="stepper"><button id="minus" type="button" aria-label="Decrease side length">−</button><div><small style="display:block;color:#5f778e;text-align:center;font-weight:700">n =</small><span class="nValue" id="nValue">5</span></div><button id="plus" type="button" aria-label="Increase side length">+</button></div>
+        </div>
+        <label for="nSlider" class="section-label">Change the size</label>
+        <input class="range" type="range" id="nSlider" min="3" max="12" step="1" value="5" aria-label="Side length or width">
+        <div class="canvas"><svg id="patternSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 360" role="img" aria-label="Square frame on a unit grid"></svg></div>
+        <p class="diagramcaption" id="diagramCaption">The outside and inside borders are different.</p>
+        <div class="legend"><span><i class="swatch" style="border-color:#2264a2"></i>Outside edge</span><span id="innerLegend"><i class="swatch" style="border-color:#df8522"></i>Hole edge</span><span><i class="swatch" style="border-color:#a2b5c6"></i>Shared lines</span><label><input type="checkbox" id="showShared" checked> Show shared lines</label></div>
+      </section>
+      <section class="panel" aria-label="Investigate the numbers">
+        <div class="sectiontop"><div><h2>What are we counting?</h2><p>Choose a measure.</p></div></div>
+        <nav class="metricnav" id="metricBar" aria-label="Choose a measurement"></nav>
+        <div class="biganswer"><div id="countDisplay" class="number concealed">?</div><div id="countLabel" class="numlabel">Total perimeter</div><div class="actions" style="justify-content:center"><button type="button" id="revealCount">Reveal count</button></div></div>
+        <div class="section-label">Look for a sequence</div>
+        <div class="sequence" id="sequenceTable" aria-label="First six sequence terms"></div>
+        <p class="diff" id="difference" hidden></p>
+        <div class="actions"><button id="diffButton" type="button">Show first differences</button><button id="formulaButton" type="button">Reveal the n-rule</button></div>
+        <div class="formula" id="formulaPanel" hidden><span style="font-size:.87rem;font-weight:800;color:#62788c">GENERAL RULE</span><span class="expression" id="rule"></span><div id="reason" class="explain"></div></div>
+        <p id="metricContext" class="context"></p>
+      </section>
+    </div>
+    <div class="challenge wide">
+      <section class="panel"><h2>Predict a distant pattern</h2><p class="prompt" id="question">How many unit lines are needed when n = 25?</p><div class="choice" aria-label="Choose a target size"><button type="button" data-target="25" aria-pressed="true">n = 25</button><button type="button" data-target="100" aria-pressed="false">n = 100</button><label for="customN">Or n = </label><input type="number" id="customN" min="3" max="1000000" value="40" aria-label="Choose a custom n"><button type="button" id="useCustom">Use</button></div><div class="answerline"><label for="answer" class="section-label" style="margin:0">Your prediction</label><input type="number" id="answer" min="0" step="1" inputmode="numeric" placeholder="Number"><button id="check" class="primary" type="button">Check</button><button id="hint" type="button">Hint</button></div><div class="feedback" id="feedback" role="status" aria-live="polite">Try to find a rule before calculating a large pattern.</div></section>
+      <section class="panel"><h2>Explain your method</h2><p id="reasonQuestion">Can you find two ways to count the unit lines?</p><p>Start small. What changes when the next row or column is added? Why does the rule work for every whole-number size?</p><div class="actions"><button id="workingButton" type="button">Show one method</button><button id="resetButton" type="button">Start another pattern</button></div><div id="workedExample" class="formula" hidden></div></section>
+    </div>
+    <footer>Original interactive exploration developed for Maths Apps. Inspired by <a href="https://nrich.maths.org/problems/seven-squares" target="_blank" rel="noopener noreferrer">NRICH: Seven Squares (University of Cambridge)</a>. One line means one unit-length segment; a shared segment is counted only once. For a hollow frame, the total boundary includes the edge around the hole.</footer>
+  </main>
+  <script>
+  (function(){
+    'use strict';
+    const $ = id => document.getElementById(id);
+    const SVG = 'http://www.w3.org/2000/svg';
+    const defs = {
+      frame:{name:'Square of Squares',subtitle:'A one-square-thick frame',min:3,unit:'Side length',met:['squares','outer','perimeter','lines'],calc:{squares:n=>4*n-4,outer:n=>4*n,perimeter:n=>8*n-8,lines:n=>12*n-12},rules:{squares:'4n − 4',outer:'4n',perimeter:'8n − 8',lines:'12n − 12'},reasons:{squares:'Each of four sides has n squares, but the 4 corner squares are counted twice. So 4n − 4.',outer:'There are 4 outside sides, each n units long. So 4n.',perimeter:'Outside boundary: 4n. Hole boundary: 4(n − 2). Add them: 4n + 4(n − 2) = 8n − 8.',lines:'Outside 4n; shared lines between neighbouring squares 4(n − 1); inside border 4(n − 2). Total: 12n − 12.'},caption:'Blue: outside boundary. Orange: inside boundary. Grey: separators.',note:'The total boundary of a frame is longer than its outside edge.'},
+      strip:{name:'Seven Squares',subtitle:'A growing row of unit squares',min:1,unit:'Length',met:['squares','outer','lines'],calc:{squares:n=>n,outer:n=>2*n+2,lines:n=>3*n+1},rules:{squares:'n',outer:'2n + 2',lines:'3n + 1'},reasons:{squares:'There are n unit squares in the row.',outer:'Top and bottom use n units each. The two ends use one each: 2n + 2.',lines:'The first square uses 4 lines. Each extra square shares one edge and needs 3 more. So 4 + 3(n − 1) = 3n + 1.'},caption:'Each new square shares one side with the previous one.',note:'Shared edges count once when you count lines, but do not form part of the perimeter.'},
+      lshape:{name:'Growing L-shape',subtitle:'Two arms that are n squares long',min:2,unit:'Height and width',met:['squares','outer','lines'],calc:{squares:n=>2*n-1,outer:n=>4*n,lines:n=>6*n-2},rules:{squares:'2n − 1',outer:'4n',lines:'6n − 2'},reasons:{squares:'Two arms of n squares overlap at the corner, so 2n − 1.',outer:'Follow the whole L-shaped boundary. The outer and inner edges together have length 4n.',lines:'There are 2n − 1 squares. Four lines per square, minus the 2n − 2 edges that neighbouring squares share: 4(2n − 1) − (2n − 2) = 6n − 2.'},caption:'Two n-square arms overlap in one corner square.',note:'An L shape can have perimeter 4n even though the interior is not a full square.'},
+      rectangle:{name:'Growing Rectangle',subtitle:'Two squares high and n squares wide',min:1,unit:'Width',met:['squares','outer','lines','dots'],calc:{squares:n=>2*n,outer:n=>2*n+4,lines:n=>5*n+2,dots:n=>3*(n+1)},rules:{squares:'2n',outer:'2n + 4',lines:'5n + 2',dots:'3(n + 1)'},reasons:{squares:'Two rows, each with n unit squares: 2n.',outer:'A 2 by n rectangle has perimeter 2(2 + n) = 2n + 4.',lines:'Three horizontal rows each contain n unit lines. There are n + 1 vertical columns, each containing 2 unit lines. Total 3n + 2(n + 1) = 5n + 2.',dots:'The grid has 3 rows of vertices and n + 1 columns, so 3(n + 1).'},caption:'The height stays at 2 units while the width increases.',note:'Count distinct unit segments: horizontal plus vertical.'}
+    };
+    const metricNames = {squares:'Unit squares',outer:'Outside perimeter',perimeter:'Total perimeter',lines:'Unit lines',dots:'Grid dots'};
+    const state = {pattern:'frame',n:5,metric:'perimeter',count:false,diffs:false,formula:false,target:25};
+    function cfg(){return defs[state.pattern]}
+    function cellList(){const a=[];const n=state.n;
+      if(state.pattern==='frame'){for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(y===0||x===0||x===n-1||y===n-1)a.push([x,y]);}
+      else if(state.pattern==='strip'){for(let x=0;x<n;x++)a.push([x,0]);}
+      else if(state.pattern==='lshape'){for(let y=0;y<n;y++)a.push([0,y]);for(let x=1;x<n;x++)a.push([x,n-1]);}
+      else {for(let y=0;y<2;y++)for(let x=0;x<n;x++)a.push([x,y]);}
+      return a;
+    }
+    function segments(cells){const m=new Map();function add(k,x1,y1,x2,y2){if(m.has(k)){m.get(k).uses++;return}m.set(k,{x1,y1,x2,y2,uses:1});}
+      for(const [x,y] of cells){add('h:'+x+':'+y,x,y,x+1,y);add('h:'+x+':'+(y+1),x,y+1,x+1,y+1);add('v:'+x+':'+y,x,y,x,y+1);add('v:'+(x+1)+':'+y,x+1,y,x+1,y+1);}
+      return [...m.values()];
+    }
+    function svgEl(name,attrs={}){const el=document.createElementNS(SVG,name);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,String(v));return el;}
+    function draw(){const s=$('patternSvg');s.replaceChildren();const cells=cellList(),segs=segments(cells),n=state.n,cols=n,rows=(state.pattern==='strip')?1:(state.pattern==='rectangle'?2:n);const scale=Math.min(266/cols,246/rows,70),left=(520-cols*scale)/2,top=(344-rows*scale)/2;
+      s.setAttribute('aria-label',cfg().name+' with '+cfg().unit.toLowerCase()+' '+n+', showing '+cells.length+' unit squares.');
+      for(const [x,y] of cells)s.appendChild(svgEl('rect',{x:left+x*scale+1,y:top+y*scale+1,width:Math.max(1,scale-2),height:Math.max(1,scale-2),fill:state.metric==='squares'?'#e8f3fc':'#f4f8fd',rx:scale>15?2:0}));
+      const inner = z => state.pattern==='frame' && z.uses===1 && !(z.x1===0&&z.x2===0)&&!(z.y1===0&&z.y2===0)&&!(z.x1===n&&z.x2===n)&&!(z.y1===n&&z.y2===n);
+      for(const z of segs){const inside=inner(z),shared=z.uses===2;if(shared&&!$('showShared').checked)continue;
+        let colour=shared?'#a2b5c6':inside?'#df8522':'#2264a2';let width=shared?2:4.1;
+        if(state.metric==='outer'&&(inside||shared)){colour='#d8e0e7';width=1.3}
+        if(state.metric==='perimeter'&&shared){colour='#d8e0e7';width=1.3}
+        if(state.metric==='squares'){colour='#8ba8c4';width=1.5}
+        s.appendChild(svgEl('line',{x1:left+z.x1*scale,y1:top+z.y1*scale,x2:left+z.x2*scale,y2:top+z.y2*scale,stroke:colour,'stroke-width':width,'stroke-linecap':'round'}));
+      }
+      // Draw dots only when specifically requested.
+      if(state.metric==='dots')for(let x=0;x<=cols;x++)for(let y=0;y<=rows;y++)s.appendChild(svgEl('circle',{cx:left+x*scale,cy:top+y*scale,r:Math.max(2.7,scale*.06),fill:'#185c9b'}));
+      const line=svgEl('line',{x1:left,y1:top+rows*scale+22,x2:left+cols*scale,y2:top+rows*scale+22,stroke:'#67819b','stroke-width':1.8});s.appendChild(line);
+      for(const x of [left,left+cols*scale])s.appendChild(svgEl('line',{x1:x,y1:top+rows*scale+17,x2:x,y2:top+rows*scale+27,stroke:'#67819b','stroke-width':1.5}));
+      const t=svgEl('text',{x:260,y:top+rows*scale+40,fill:'#517088','font-size':'15','font-weight':'700','text-anchor':'middle'});t.textContent=cfg().unit+' = '+n;s.appendChild(t);
+      if(state.pattern==='frame'){const hole=svgEl('text',{x:260,y:top+rows*scale/2+5,'text-anchor':'middle',fill:'#8c9dac','font-size':'14','font-weight':'700'});hole.textContent='hole';s.appendChild(hole);}
+    }
+    function renderMetrics(){let el=$('metricBar');el.replaceChildren();for(const m of cfg().met){let b=document.createElement('button');b.type='button';b.textContent=metricNames[m];b.setAttribute('aria-pressed',String(m===state.metric));b.addEventListener('click',()=>{state.metric=m;state.count=false;state.diffs=false;state.formula=false;render()});el.appendChild(b);}}
+    function renderSequence(){const box=$('sequenceTable');box.replaceChildren();const start=cfg().min;for(let n=start;n<start+6;n++){let item=document.createElement('div');item.className='term';let lbl=document.createElement('small');lbl.textContent='n = '+n;let val=document.createElement('strong');val.textContent=String(cfg().calc[state.metric](n));item.append(lbl,val);box.appendChild(item);}}
+    function contentByLanguage(){const wording={
+      rigorous:'Investigate how a growing diagram changes. Derive a general expression for each measure.',
+      plain:'How does a pattern grow? Count squares, measure perimeter and find how many unit lines are needed.',
+      eal:'Look. Count. Change n. Find the pattern. Write a rule for any n.'};
+      $('introText').textContent=wording[$('language').value];
+    }
+    function render(){const c=cfg();$('patternTitle').textContent=c.name;$('patternSubtitle').textContent=c.subtitle;$('nValue').textContent=String(state.n);$('nSlider').min=String(c.min);$('nSlider').value=String(state.n);$('minus').disabled=state.n<=c.min;$('plus').disabled=state.n>=12;$('diagramCaption').textContent=c.caption;$('innerLegend').hidden=state.pattern!=='frame';
+      document.querySelectorAll('[data-pattern]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.pattern===state.pattern)));
+      renderMetrics();draw();$('countLabel').textContent=metricNames[state.metric];$('countDisplay').textContent=state.count?String(c.calc[state.metric](state.n)):'?';$('countDisplay').className='number'+(state.count?'':' concealed');$('revealCount').textContent=state.count?'Hide count':'Reveal count';
+      renderSequence();$('difference').hidden=!state.diffs;$('difference').textContent='First difference: +'+(c.calc[state.metric](Math.max(4,c.min+1))-c.calc[state.metric](Math.max(3,c.min)))+' each time n increases by 1.';$('diffButton').textContent=state.diffs?'Hide first differences':'Show first differences';
+      $('formulaPanel').hidden=!state.formula;$('formulaButton').textContent=state.formula?'Hide the n-rule':'Reveal the n-rule';$('rule').textContent=metricNames[state.metric]+' = '+c.rules[state.metric];$('reason').textContent=c.reasons[state.metric];$('metricContext').textContent=c.note;
+      $('question').textContent='Predict '+metricNames[state.metric].toLowerCase()+' when n = '+state.target+'.';$('reasonQuestion').textContent=state.pattern==='frame'?'Why are the outside perimeter, total perimeter and all the lines different counts?':'Can you explain your rule in two different ways?';
+      document.querySelectorAll('[data-target]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.target)===state.target)));
+      $('workedExample').hidden=true;contentByLanguage();
+    }
+    function changePattern(p){if(!defs[p])return;state.pattern=p;state.metric=p==='frame'?'perimeter':'lines';state.n=Math.min(12,Math.max(cfg().min,p==='frame'?5:p==='strip'?7:p==='lshape'?4:3));state.count=false;state.diffs=false;state.formula=false;clearAnswer();render();}
+    function clearAnswer(){$('answer').value='';$('feedback').className='feedback';$('feedback').textContent='Try to find a rule before calculating a large pattern.';}
+    function setN(n){state.n=Math.min(12,Math.max(cfg().min,n));state.count=false;render();}
+    document.querySelectorAll('[data-pattern]').forEach(b=>b.addEventListener('click',()=>changePattern(b.dataset.pattern)));
+    $('plus').addEventListener('click',()=>setN(state.n+1));$('minus').addEventListener('click',()=>setN(state.n-1));$('nSlider').addEventListener('input',e=>setN(Number(e.target.value)));$('showShared').addEventListener('change',draw);
+    $('revealCount').addEventListener('click',()=>{state.count=!state.count;render()});$('diffButton').addEventListener('click',()=>{state.diffs=!state.diffs;render()});$('formulaButton').addEventListener('click',()=>{state.formula=!state.formula;render()});$('language').addEventListener('change',contentByLanguage);
+    document.querySelectorAll('[data-target]').forEach(b=>b.addEventListener('click',()=>{state.target=Number(b.dataset.target);clearAnswer();render()}));
+    $('useCustom').addEventListener('click',()=>{const n=Number($('customN').value);if(!Number.isSafeInteger(n)||n<cfg().min||n>1000000){$('feedback').className='feedback bad';$('feedback').textContent='Enter a whole number from '+cfg().min+' to 1,000,000.';return}state.target=n;clearAnswer();render()});
+    $('check').addEventListener('click',()=>{const raw=$('answer').value.trim();const a=Number(raw),expected=cfg().calc[state.metric](state.target);if(!raw||!Number.isSafeInteger(a)){ $('feedback').className='feedback bad';$('feedback').textContent='Enter a whole-number answer.';return}if(a===expected){$('feedback').className='feedback good';$('feedback').textContent='Correct. '+cfg().rules[state.metric]+' gives '+expected.toLocaleString('en-IE')+' for n = '+state.target+'.';}else{$('feedback').className='feedback bad';$('feedback').textContent='Not quite. Try the first differences or count one smaller pattern. You can check again.';}});
+    $('answer').addEventListener('keydown',e=>{if(e.key==='Enter')$('check').click()});
+    $('hint').addEventListener('click',()=>{const a=cfg().calc[state.metric](state.target-1),b=cfg().calc[state.metric](state.target),step=b-a;$('feedback').className='feedback';$('feedback').textContent='Hint: each increase of 1 in n adds '+step+' to this count. Look at the small sequence, then jump to n = '+state.target+'.';});
+    $('workingButton').addEventListener('click',()=>{const el=$('workedExample');el.hidden=!el.hidden;if(!el.hidden){const heading=document.createElement('strong');heading.textContent=metricNames[state.metric]+': '+cfg().rules[state.metric];const p=document.createElement('p');p.className='explain';p.textContent=cfg().reasons[state.metric];el.replaceChildren(heading,p);}else{el.replaceChildren()}});
+    $('resetButton').addEventListener('click',()=>changePattern(state.pattern==='frame'?'strip':state.pattern==='strip'?'lshape':state.pattern==='lshape'?'rectangle':'frame'));
+    // Verify that enumerating the drawn unit lines agrees with the general rules.
+    for(const key of Object.keys(defs)){const d=defs[key];for(let n=d.min;n<=12;n++){let cells=[];if(key==='frame'){for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(x===0||y===0||x===n-1||y===n-1)cells.push([x,y]);}else if(key==='strip'){for(let x=0;x<n;x++)cells.push([x,0]);}else if(key==='lshape'){for(let y=0;y<n;y++)cells.push([0,y]);for(let x=1;x<n;x++)cells.push([x,n-1]);}else{for(let y=0;y<2;y++)for(let x=0;x<n;x++)cells.push([x,y]);}const e=segments(cells),boundary=e.filter(x=>x.uses===1).length;if(cells.length!==d.calc.squares(n)||e.length!==d.calc.lines(n)||boundary!==(d.calc.perimeter?d.calc.perimeter(n):d.calc.outer(n)))console.error('Pattern formula mismatch:',key,n);}}
+    render();
+  })();
+  </script>
+<script src="../../assets/navigation.js" defer></script>
+</body>
+</html>
