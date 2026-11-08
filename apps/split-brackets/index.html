@@ -144,6 +144,28 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 #splitMain:fullscreen .partial .value,#splitMain.maths-classroom-focus .partial .value{font-size:clamp(1.8rem,3vw,2.8rem)}
 @media(max-width:690px){.cluster.procedure{margin-left:0}.activity-switch{flex-direction:row}.split-layout{grid-template-columns:1fr}.partials{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+
+/* The entire method is one Overleaf-style aligned equation. No separate boxes. */
+#diagram{width:100%;max-width:1180px;margin:6px auto 9px;overflow-x:auto;overflow-y:visible;padding:12px 12px 18px}
+.maths-aligned-working{display:flex;justify-content:center;width:max-content;min-width:100%;font-family:"Cambria Math",Cambria,"STIX Two Math",Georgia,serif;color:#202124}
+.math-fallback{width:max-content;margin:0 auto}
+.math-row{display:grid;grid-template-columns:1.4em max-content;align-items:baseline;gap:.23em;margin:.16em 0;white-space:nowrap;font:normal clamp(1.5rem,2.7vw,2.75rem)/1.62 "Cambria Math",Cambria,Georgia,serif}
+.math-row .math-equals{text-align:right}
+.math-row .math-content{white-space:nowrap}
+.math-row i{font-style:italic}
+.math-row .math-boxed{border:1.8px solid #202124;padding:.06em .23em}
+.tex-solution{position:absolute;left:-10000px;visibility:hidden;pointer-events:none;white-space:nowrap;font-size:clamp(1.6rem,2.75vw,2.8rem);line-height:1.5}
+.tex-solution.ready{position:static;left:auto;visibility:visible;pointer-events:auto}
+.tex-solution mjx-container{margin:0 auto!important;max-width:none}
+.tex-solution svg{max-height:none!important;max-width:none!important;width:auto!important;height:auto!important}
+#partials,#working{display:none!important}
+#practicePanel .status{max-width:820px;margin:10px auto 15px}
+#practicePanel .transport{margin-top:15px}
+#splitMain:fullscreen #diagram,#splitMain.maths-classroom-focus #diagram{padding:18px 14px 24px;margin:10px auto}
+#splitMain:fullscreen .math-row,#splitMain.maths-classroom-focus .math-row{font-size:clamp(1.95rem,3.8vw,4rem)}
+#splitMain:fullscreen .tex-solution,#splitMain.maths-classroom-focus .tex-solution{font-size:clamp(2rem,3.8vw,4rem)}
+@media(max-width:700px){#diagram{padding:8px 5px 16px}.math-row{font-size:clamp(1.32rem,4.7vw,2rem)}.tex-solution{font-size:clamp(1.35rem,4.7vw,2rem)}}
+
 </style>
 </head>
 <body>
@@ -194,6 +216,8 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 </section>
 </main>
 <script src="../shared/classroom-fullscreen.js"></script>
+<script>window.MathJax={startup:{typeset:false},svg:{fontCache:'global'},options:{enableMenu:false}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-svg.js" onload="document.dispatchEvent(new Event('maths-tex-ready'))"></script>
 <script>
 (()=>{
 'use strict';
@@ -275,55 +299,95 @@ function renderToolbar(){
  $('workedBtn').setAttribute('aria-pressed',String(state.view==='worked'));
  for(const button of document.querySelectorAll('[data-group]'))button.setAttribute('aria-pressed',String(state.group===button.dataset.group));
 }
-function diagramHTML(q){
+
+function expansionLines(q){
  const common=binomial(q.c,'y',q.d);
+ const sign=q.b<0?' − ':' + ';
  const first=fmtTerm(q.a,'x',true)+common;
- const second=fmtTerm(q.b,'',true)+common;
- const p=products(q);
- const revealed=state.direction==='factor'||state.view==='worked'?4:Math.min(4,state.step);
- function pair(offset,left,leftVar,right,rightVar){
-  if(revealed<=offset)return '· · ·';
-  if(revealed===offset+1)return fmtTerm(left,leftVar,true)+' + …';
-  return fmtTerm(left,leftVar,true)+fmtTerm(right,rightVar,false);
- }
- const groups=[
-  {title:'Group 1 · multiply the first term',factor:first,expanded:pair(0,p[0],'xy',p[1],'x')},
-  {title:'Group 2 · multiply the second term',factor:second,expanded:pair(2,p[2],'y',p[3],'')}
+ const second=fmtTerm(Math.abs(q.b),'',true)+common;
+ const p=products(q),bAbs=Math.abs(q.b);
+ const firstPair=fmtTerm(p[0],'xy',true)+fmtTerm(p[1],'x',false);
+ const secondPair=fmtTerm(bAbs*q.c,'y',true)+fmtTerm(bAbs*q.d,'',false);
+ return [
+  factored(q),
+  first+sign+second,
+  '('+firstPair+')'+sign+second,
+  '('+firstPair+')'+sign+'('+secondPair+')',
+  expanded(q)
  ];
- return '<div class="split-layout" role="group" aria-label="Two intact distributive groups">'+groups.map(g=>
-  '<div class="split-card"><strong>'+g.title+'</strong><div class="split-math">'+g.factor+'</div><div class="split-arrow">↓</div><div class="split-math">'+g.expanded+'</div></div>').join('')+'</div>';
 }
+function factorisationLines(q){
+ const swapped=state.group==='swapped';
+ return [
+  swapped?expanded(q,true):expanded(q),
+  grouping(q,swapped),
+  groupsFactored(q,swapped),
+  swapped?binomial(q.c,'y',q.d)+binomial(q.a,'x',q.b):factored(q)
+ ];
+}
+function latexMath(s){
+ return String(s).replace(/−/g,'-');
+}
+function safeMathHTML(s){
+ return safeText(s).replace(/([xy])/g,'<i>$1</i>');
+}
+function diagramHTML(q){
+ const limit=state.direction==='expand'?5:4;
+ const step=state.view==='worked'?limit:Math.min(limit,state.step);
+ const allLines=state.direction==='expand'?expansionLines(q):factorisationLines(q);
+ const complete=step===limit;
+ const count=Math.min(allLines.length,step+1);
+ const shown=allLines.slice(0,count);
+ const fallback=shown.map((value,i)=>{
+  const box=complete&&i===shown.length-1;
+  return '<div class="math-row"><span class="math-equals">'+(i===0?'':'=')+'</span><span class="math-content'+(box?' math-boxed':'')+'">'+safeMathHTML(value)+'</span></div>';
+ }).join('');
+ const tex='\\[\\begin{aligned}'+shown.map((value,i)=>{
+  const box=complete&&i===shown.length-1;
+  return '&'+(i===0?'':'= ')+(box?'\\boxed{'+latexMath(value)+'}':latexMath(value));
+ }).join(' \\\\[0.45em] ')+'\\end{aligned}\\]';
+ return '<div class="maths-aligned-working" aria-label="Aligned expansion">'+
+  '<div class="math-fallback">'+fallback+'</div>'+
+  '<div class="tex-solution" aria-hidden="true">'+tex+'</div></div>';
+}
+let typesetGeneration=0;
+function typesetDiagram(){
+ const root=$('diagram');
+ const math=root.querySelector('.tex-solution'),fallback=root.querySelector('.math-fallback');
+ if(!math||!fallback||!window.MathJax||typeof MathJax.typesetPromise!=='function')return;
+ const generation=++typesetGeneration;
+ MathJax.typesetPromise([math]).then(()=>{
+  if(generation===typesetGeneration&&math.isConnected&&root.contains(math)){
+   math.classList.add('ready');math.setAttribute('aria-hidden','false');
+   fallback.hidden=true;
+  }
+ }).catch(()=>{if(math.isConnected)math.hidden=true});
+}
+document.addEventListener('maths-tex-ready',()=>{
+ if(window.MathJax?.startup?.promise){
+  MathJax.startup.promise.then(typesetDiagram).catch(()=>{});
+ }else typesetDiagram();
+});
 function renderPractice(){
  const q=state.q;
  if(!q)return;
  $('questionNumber').textContent=typeof state.slot==='number'?'Classwork '+(state.slot+1):'New question';
- $('prompt').innerHTML=state.direction==='expand'?factored(q):expanded(q);
- for(const [id,value] of [['coefA',q.a],['coefB',q.b],['coefC',q.c],['coefD',q.d]])if(document.activeElement!==$(id))$(id).value=value;
+
+ $('prompt').hidden=true;
+ for(const [id,value] of [['coefA',q.a],['coefB',q.b],['coefC',q.c],['coefD',q.d]]){
+  if(document.activeElement!==$(id))$(id).value=value;
+ }
  $('groupOptions').hidden=state.direction!=='factor';
- $('diagram').innerHTML=diagramHTML(q);
- const visible=state.direction==='expand'?(state.view==='worked'?4:Math.min(4,state.step)):4;
- const labels=['Group 1 · product 1','Group 1 · product 2','Group 2 · product 1','Group 2 · product 2'];
- const vars=['xy','x','y',''];
- const p=products(q);
- $('partials').innerHTML=labels.map((label,i)=>'<div class="partial'+(i>=visible?' pending':'')+(state.view==='step'&&state.direction==='expand'&&state.step===i+1?' active':'')+'"><strong>'+(i+1)+'. '+label+'</strong><span class="value">'+(i<visible?fmtTerm(p[i],vars[i],true):'· · ·')+'</span></div>').join('');
  const limit=state.direction==='expand'?5:4;
  const step=state.view==='worked'?limit:state.step;
- const work=[];
- if(state.direction==='expand'){
-  const status=step===0?'Split into two groups before expanding.':step<=4?labels[step-1]+'.':'Box the answer.';
-  $('status').textContent=status;
-  if(step>=1)work.push('<div class="mathline">'+groupsFactored(q,false)+'</div>');
-  if(step>=5)work.push('<div class="mathline final boxed-answer">'+expanded(q)+'</div>');
- }else{
-  const swapped=state.group==='swapped';
-  const stageLabels=['Start with four unlike terms.','Group adjacent pairs'+(swapped?' after swapping the middle terms.':'; no swapping required.'),'Extract each group’s common factor.','Identify the repeated binomial.','Reverse the expansion.'];
-  $('status').textContent=stageLabels[Math.min(step,4)];
-  if(step>=1)work.push('<div class="mathline">'+(swapped?expanded(q,true):expanded(q))+'</div><div class="mathline">'+grouping(q,swapped)+'</div>');
-  if(step>=2)work.push('<div class="mathline">'+groupsFactored(q,swapped)+'</div>');
-  if(step>=3)work.push('<div class="explain">Missing coefficient by division: <span class="math">'+divisionHint(q,swapped)+'</span>. This is why the two groups must expose the same binomial.</div>');
-  if(step>=4)work.push('<div class="mathline final">'+(swapped?binomial(q.c,'y',q.d)+binomial(q.a,'x',q.b):factored(q))+'</div>');
- }
- $('working').innerHTML=work.join('');
+ $('diagram').innerHTML=diagramHTML(q);
+ $('partials').hidden=true;$('partials').replaceChildren();
+ $('working').hidden=true;$('working').replaceChildren();
+ const directions=state.direction==='expand'
+  ?['Use the distributive property.','Split into two groups.','Expand the first group.','Expand the second group.','Remove the brackets.','Box the answer.']
+  :['Reverse the distributive property.','Group the terms.','Factor each group.','Identify the common bracket.','Box the answer.'];
+ $('status').textContent=directions[Math.min(step,limit)];
+ typesetDiagram();
  $('backStep').disabled=state.view==='worked'||state.step===0;
  $('nextStep').disabled=state.view==='worked'||state.step>=limit;
  $('nextStep').textContent=state.step>=limit?'Complete':'Next →';
