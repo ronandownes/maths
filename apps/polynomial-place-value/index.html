@@ -988,6 +988,82 @@ function individualProducts(a,b){
  // The nested loops above already provide this order.
  return products;
 }
+
+const factorSizes={ll:[2,2],ql:[3,2],qq:[3,3],l3:[4,2],l4:[5,2],l5:[6,2],q3:[4,3],q4:[5,3],q5:[6,3],'44':[5,5],m3:[3,2],m4:[4,2],m5:[5,2]};
+const monomialTypes=['m3','m4','m5'];
+const signPatterns=n=>n<=1?['']:Array.from({length:Math.pow(2,n-1)},(_,v)=>Array.from({length:n-1},(_,i)=>v&(1<<(n-2-i))?'−':'+').join(''));
+function applyExerciseChoice(number,index){
+ if(assessment.started)return;
+ const p=bankProfiles[number];if(!p)return;
+ if(state.slot!==number){
+  state.type=p.type;state.coreType=p.type;state.factorRandom=!!p.mixed;state.level=p.level;
+  state.oneMode=p.oneMode||'off';state.sign=p.sign;state.signHigh=null;state.signLow=null;
+  state.zeroMode='off';state.hcfMode='off';state.hcfNumber='random';state.constantOn=false;state.manual=false;
+ }
+ state.bankQuestion=Math.max(0,index);
+ state.mode=index===0?'worked':'question';
+ if(assessment.mode!=='practice')switchMode('practice');
+ selectQuestion(number);assessmentConfigChanged();
+}
+function syncQuickSelectors(){
+ const type=$('factorSelect');
+ const types=factorTypes.concat(beyondChoices);
+ type.replaceChildren(...types.map(([v,t])=>new Option(t,v)),new Option('Mixed','mixed'));
+ type.value=state.factorRandom?'mixed':state.type;type.disabled=assessment.started;
+ type.onchange=()=>{
+  state.factorRandom=type.value==='mixed';
+  if(!state.factorRandom){state.type=type.value;state.coreType=state.type}
+  state.signHigh=null;state.signLow=null;refreshSelectedQuestion();assessmentConfigChanged();
+ };
+ const difficulty=$('coefficientSelect');
+ difficulty.value=state.manual?'manual':String(state.level);difficulty.disabled=assessment.started;
+ difficulty.onchange=()=>{
+  state.manual=difficulty.value==='manual';
+  if(!state.manual){state.level=Number(difficulty.value);refreshSelectedQuestion();assessmentConfigChanged()}
+  else render();
+ };
+ const one=$('unitSelect');one.replaceChildren(...oneModes.map(([v,t])=>new Option(t,v)));
+ one.value=state.oneMode;one.disabled=assessment.started;
+ one.onchange=()=>{state.oneMode=one.value;refreshSelectedQuestion();assessmentConfigChanged()};
+ const zero=$('zeroSelect');zero.replaceChildren(...zeroModes.map(([v,t])=>new Option(t,v)));
+ zero.value=state.zeroMode;zero.disabled=assessment.started;
+ zero.onchange=()=>{state.zeroMode=zero.value;refreshSelectedQuestion();assessmentConfigChanged()};
+ const hcf=$('hcfSelect'),hnum=$('hcfNumber');
+ hcf.value=state.hcfMode;hnum.value=state.hcfNumber;
+ hcf.disabled=assessment.started;hnum.disabled=assessment.started||state.hcfMode==='off';
+ hcf.onchange=()=>{state.hcfMode=hcf.value;state.constantOn=hcf.value!=='off';refreshSelectedQuestion();assessmentConfigChanged()};
+ hnum.onchange=()=>{state.hcfNumber=hnum.value;refreshSelectedQuestion();assessmentConfigChanged()};
+ const sizes=factorSizes[state.type]||[3,2];
+ [['signHigh',sizes[0],state.signHigh],['signLow',sizes[1],state.signLow]].forEach(([id,length,current])=>{
+  const select=$(id),mono=monomialTypes.includes(state.type)&&id==='signLow',options=mono?['']:signPatterns(length);
+  select.replaceChildren(new Option('Any','any'),...options.map(pattern=>new Option(pattern||'—',pattern||'none')));
+  select.value=mono?'none':current|| (state.sign==='positive'?'+'.repeat(length-1):state.sign==='negative'?'−'.repeat(length-1):'any');
+  select.disabled=assessment.started||mono;
+  select.onchange=()=>{
+   state.signHigh=$('signHigh').value;
+   state.signLow=$('signLow').value==='none'?null:$('signLow').value;
+   state.sign='custom';refreshSelectedQuestion();assessmentConfigChanged();
+  };
+ });
+ const exercise=$('exerciseSelect');
+ exercise.replaceChildren(...bankProfiles.map((p,i)=>new Option('Exercise '+(i+1)+' · '+p.name,String(i))),new Option('Custom / Random','fresh'));
+ exercise.value=Number.isInteger(state.slot)?String(state.slot):'fresh';exercise.disabled=assessment.started;
+ exercise.onchange=()=>exercise.value==='fresh'?freshQuestion():applyExerciseChoice(Number(exercise.value),0);
+ const nav=$('exerciseNav');nav.replaceChildren();
+ const inExercise=Number.isInteger(state.slot);
+ const back=el('button','‹');back.type='button';back.disabled=!inExercise||state.bankQuestion===0||assessment.started;
+ back.title='Previous question';back.onclick=()=>applyExerciseChoice(state.slot,state.bankQuestion-1);
+ const label=el('span',inExercise?(state.bankQuestion===0?'Worked example 1':'Your turn · Q '+(state.bankQuestion+1)):'Random question','exercise-position');
+ const next=el('button','Next question →');next.type='button';next.disabled=assessment.started;
+ next.onclick=()=>inExercise?applyExerciseChoice(state.slot,state.bankQuestion+1):freshQuestion();
+ nav.append(back,label,next);
+ const nextExercise=$('nextExercise');nextExercise.disabled=assessment.started;
+ nextExercise.onclick=()=>applyExerciseChoice(inExercise?(state.slot+1)%bankProfiles.length:0,0);
+ const display=$('displaySix');display.disabled=assessment.started;
+ display.onclick=()=>{boardState.columns=3;boardState.rows=2;boardState.offset=0;switchMode('board')};
+ const activity=$('activitySelect');activity.value=assessment.mode;activity.onchange=()=>switchMode(activity.value);
+}
+
 function renderSelectors(){
  const method=$('methodSelect');method.value=state.method;method.onchange=()=>{state.method=method.value;render()};
  const q=[];for(let i=0;i<6;i++)q.push([i,String(i+1)]);
@@ -1120,9 +1196,10 @@ function renderSelectors(){
  steps.setAttribute('aria-label',state.mode==='step'?'Restart guided working from step one':'Start step-by-step working');
  steps.onclick=()=>{if(assessment.mode!=='practice')switchMode('practice');state.mode='step';state.step=0;state.helpStage=-1;state.showInvestigation=false;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render()};
  host.append(steps,toggle);
+ syncQuickSelectors();
 }
 function coefficientInputs(){
- const host=$('coefficients');host.replaceChildren();
+ const host=$('coefficients');host.replaceChildren();host.hidden=!state.manual;
  (state.question.a.length>state.question.b.length?[['First factor','b'],['Second factor','a']]:[['First factor','a'],['Second factor','b']]).forEach(([title,key])=>{
   const group=document.createElement('div');group.className='factor-fields';
   state.question[key].forEach((v,i)=>{
@@ -1146,7 +1223,8 @@ function coefficientInputs(){
     update(Number(raw));
    });
    input.addEventListener('blur',()=>{input.value=String(state.question[key][i]);input.removeAttribute('aria-invalid')});
-   input.addEventListener('keydown',e=>{if(e.key==='ArrowUp'||e.key==='ArrowDown'){
+   input.addEventListener('wheel',e=>{if(!state.manual)return;e.preventDefault();update(state.question[key][i]+(e.deltaY<0?1:-1))},{passive:false});
+    input.addEventListener('keydown',e=>{if(e.key==='ArrowUp'||e.key==='ArrowDown'){
     e.preventDefault();update(state.question[key][i]+(e.key==='ArrowUp'?1:-1));
    }});
    [['▲',1,'Increase'],['▼',-1,'Decrease']].forEach(([glyph,delta,action])=>{
@@ -1568,12 +1646,13 @@ function assessmentTypes(){
 function assessmentSigns(){
  const core=['positive','negative','mixed'];
  if(state.sign==='random')return core;
+ if(state.sign==='custom')return ['custom'];
  if(assessment.signScope==='upto')return core.slice(0,core.indexOf(state.sign)+1);
  return [state.sign];
 }
 function assessmentConfigChanged(){if((assessment.mode==='quiz'||assessment.mode==='test')&&!assessment.started)drawTest()}
 function setAssessmentControlsLocked(){
- document.querySelectorAll('.settings-top button').forEach(b=>{b.disabled=assessment.started});
+ document.querySelectorAll('.settings-top button,.settings-top select').forEach(b=>{b.disabled=assessment.started});
  $('randomQuestion').disabled=assessment.started;
 }
 function initialiseTest(source){
@@ -1606,7 +1685,7 @@ function drawTest(){
  if(!assessment.started){
   const cfg=el('section',undefined,'assessment-setup');
   cfg.append(el('h2',quiz?'Configure your quiz':'Configure your test'));
-  const synopsis=el('p','Choose factor pattern, level, signs, Constant, Monic and Challenge above. Changes here take effect until you press Start.');
+  const synopsis=el('p','Choose factors, coefficient level, signs, unit coefficients, zeros and HCF in the settings above.');
   cfg.append(synopsis);
   const options=el('div',undefined,'quiz-toggle');
   [['only','Selected sign pattern only'],['upto','Up to selected signs']].forEach(([value,label])=>{
@@ -2007,7 +2086,7 @@ function fitBoardQuestions(){
 function drawBoard(){
  const host=$('boardPanel');host.replaceChildren();
  const controls=el('div',undefined,'board-controls');
- const heading=el('strong',Number.isInteger(state.slot)?'Bank '+(state.slot+1)+' · Q '+(state.bankQuestion+1)+'/12':'New questions');
+ const heading=el('strong',Number.isInteger(state.slot)?'Exercise '+(state.slot+1)+' · Q '+(state.bankQuestion+1):'New questions');
  controls.append(heading);
  [[1,1],[1,2],[1,3],[3,2],[2,4],[5,3]].forEach(([columns,rows])=>{
   const btn=el('button',columns+' × '+rows);btn.type='button';
@@ -2158,9 +2237,9 @@ function drawWorksheetPreview(){
 }
 
 function worksheetTitle(){
- const names={ll:'Linear × Linear',ql:'Linear × Quadratic',qq:'Quadratic × Quadratic',l3:'Linear × Cubic',l4:'Linear × Quartic',l5:'Linear × Quintic',q3:'Quadratic × Cubic',q4:'Quadratic × Quartic','44':'Quartic × Quartic',any:'Mixed factors'};
+ const names=Object.fromEntries(factorTypes.concat(beyondChoices).map(([v,t])=>[v,t]));names.any='Mixed factors';
  const type=state.factorRandom?'any':state.type;
- const signs={positive:'Positive only',negative:'Negative non-leading',mixed:'Mixed signs',progressive:'Progressive mix'};
+ const signs={positive:'Positive only',negative:'Negative non-leading',mixed:'Mixed signs',custom:'Selected signs',progressive:'Progressive mix'};
  return 'Expanding Brackets · Worksheet '+ws.sheet+' (Version '+(ws.use==='classwork'?'A':'B')+') · '+signs[ws.category]+' · '+(names[type]||'Mixed factors')+' · Level '+state.level;
 }
 function worksheetLetter(i){return String.fromCharCode(97+i%26)}
@@ -2540,6 +2619,7 @@ function switchMode(mode){
  $('gamePanel').hidden=mode!=='game';
  if(previous==='instruction'&&mode!=='instruction'&&document.fullscreenElement===$('instructionPanel'))document.exitFullscreen?.().catch(()=>{});
  $('practiceQuickControls').hidden=false;
+ $('activitySelect').value=mode;
  for(const [key,value] of [['practiceMode','practice'],['instructionMode','instruction'],['gameMode','game'],['quizMode','quiz'],['testMode','test'],['worksheetMode','worksheet'],['boardMode','board']]){
   $(key).setAttribute('aria-pressed',String(key==='practiceMode'?mode==='practice'&&state.slot==='fresh':mode===value));
  }
@@ -2551,6 +2631,7 @@ function switchMode(mode){
   assessment.configureRequested=false;initialiseTest('random');
  }
 }
+$('activitySelect').onchange=()=>switchMode($('activitySelect').value);
 $('practiceMode').onclick=()=>{switchMode('practice');freshQuestion()};
 $('instructionMode').onclick=()=>switchMode('instruction');
 $('gameMode').onclick=()=>switchMode('game');
@@ -2583,7 +2664,7 @@ function render(){
 window.addEventListener('resize',connectTableOperands);
 $('focusNext').onclick=()=>{
  if(assessment.started)return;
- if(Number.isInteger(state.slot)){state.bankQuestion++;selectQuestion(state.slot)}
+ if(Number.isInteger(state.slot))applyExerciseChoice(state.slot,state.bankQuestion+1);
  else freshQuestion();
  state.mode='worked';render();
 };
