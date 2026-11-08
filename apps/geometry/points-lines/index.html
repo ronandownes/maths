@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Points and Lines — Maths Apps</title>
+<link rel="stylesheet" href="../shared/site.css">
+<style>
+:root{
+  --ink:#202936; --blue:#1565c0; --red:#c62828; --green:#2e7d32;
+  --muted:#657084; --border:#c9d1dc; --bg:#f5f7fa; --plane:#ffffff;
+  --pink:#ffd5df;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:980px;margin:auto;padding:24px 18px 60px}
+h1{font-size:clamp(2.3rem,7vw,4.2rem);margin:.08em 0 .16em}
+.kicker{margin:0;color:var(--muted);font-weight:800}
+.lead{max-width:850px;font-size:1.12rem;line-height:1.55;color:#4f5968}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0}
+button{min-height:42px;padding:8px 13px;border:1px solid #aab5c3;border-radius:9px;background:#fff;color:var(--ink);font:inherit;font-weight:780;cursor:pointer}
+button:hover,button:focus-visible{outline:2px solid #8db2df;outline-offset:2px}
+button.restart{background:var(--pink)}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-top:15px}
+.card h2{margin:.05em 0 .4em;font-size:clamp(1.45rem,4vw,1.9rem)}
+.card p{font-size:1.06rem;line-height:1.5;margin:.45em 0}
+.note{padding:12px 14px;background:#eef5ff;border-left:6px solid var(--blue);border-radius:8px;line-height:1.5;margin-top:14px}
+svg{width:100%;display:block;background:var(--plane);border:2px solid var(--border);border-radius:12px;touch-action:none;user-select:none}
+.plane-label{font-size:24px;font-weight:850;fill:#8b95a5}
+.line{stroke:var(--ink);stroke-width:5;stroke-linecap:round}
+.line-hit{stroke:transparent;stroke-width:30;pointer-events:stroke;cursor:grab}
+.geo-point{stroke:#111;stroke-width:3}
+.geo-point.selected{stroke:#fff;stroke-width:5}
+.point-red{fill:var(--red)}
+.point-green{fill:var(--green)}
+.touch-target{fill:transparent;stroke:none;pointer-events:all;cursor:grab}
+.point-label{font-size:28px;font-weight:900;fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:5px}
+.line-label{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:36px;font-weight:700;fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:6px}
+.status{text-align:center;font-weight:850;font-size:1.05rem;line-height:1.45;margin:10px 0 0}
+.math-letter{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:1.15em}
+.build-panel{display:none;margin-top:12px;background:#fff;border:2px solid var(--blue);border-radius:10px;padding:12px 15px}
+.build-panel.show{display:block}
+.build-panel p{margin:.3em 0;line-height:1.5}
+.memory-strip{display:flex;align-items:center;gap:14px;margin:.7rem 0 1rem;font-size:clamp(1.05rem,3vw,1.3rem);font-weight:900;color:var(--blue)}
+.memory-strip::before,.memory-strip::after{content:"";height:1px;background:#c8d4e3;flex:1}
+.memory-strip span{white-space:nowrap}
+@media(max-width:640px){
+  .point-label{font-size:24px}.line-label{font-size:31px}.plane-label{font-size:20px}
+}
+</style>
+</head>
+<body>
+<header class="site-shell">
+  <div class="site-shell-inner">
+    <a class="site-brand" href="../../../index.html"><span class="site-logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Maths Apps</span></a>
+    <nav class="site-nav"><a href="../../../index.html">Home</a><a href="../">Geometry</a><a href="../terms/">Terms</a></nav>
+  </div>
+</header>
+
+<main>
+  <p class="kicker">Notation 1 · Undefined terms</p>
+  <h1>Points and Lines</h1>
+  <p class="lead">Take a fixed <strong>plane</strong> and consider points and lines that lie in it. The plane and the lines are <strong>sets of points</strong>. Each line is a <strong>subset of the plane</strong>: every point on the line is also a point of the plane.</p>
+
+  <div class="toolbar">
+    <button id="newExample">New example</button>
+    <button id="turnLine">Turn line</button>
+    <button id="buildBtn">Build your own</button>
+    <button id="restartBtn" class="restart">Restart</button>
+  </div>
+
+  <svg id="board" viewBox="0 0 900 480" aria-label="Interactive plane containing two points and an independently movable line">
+    <defs>
+      <marker id="arrowStart" markerWidth="8" markerHeight="8" refX="1.8" refY="4" orient="auto" markerUnits="strokeWidth">
+        <path d="M7.2,1 L1.2,4 L7.2,7" fill="none" stroke="#202936" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+      </marker>
+      <marker id="arrowEnd" markerWidth="8" markerHeight="8" refX="6.2" refY="4" orient="auto" markerUnits="strokeWidth">
+        <path d="M0.8,1 L6.8,4 L0.8,7" fill="none" stroke="#202936" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+      </marker>
+    </defs>
+
+    <text class="plane-label" x="28" y="42">plane</text>
+
+    <line id="lineHit" class="line-hit"></line>
+    <line id="lineVisual" class="line" marker-start="url(#arrowStart)" marker-end="url(#arrowEnd)"></line>
+    <text id="lineLabel" class="line-label"></text>
+
+    <circle id="p1" class="geo-point point-red" r="13"></circle>
+    <circle id="p1h" class="touch-target" r="29"></circle>
+    <text id="p1Label" class="point-label"></text>
+
+    <circle id="p2" class="geo-point point-green" r="13"></circle>
+    <circle id="p2h" class="touch-target" r="29"></circle>
+    <text id="p2Label" class="point-label"></text>
+  </svg>
+
+  <p id="status" class="status" aria-live="polite"></p>
+
+  <div id="buildPanel" class="build-panel">
+    <p><strong>Build your own:</strong> move the two points anywhere in the plane. Then drag the line itself. The line moves independently of the points.</p>
+    <p>Try making <strong>one point lie on the line</strong> while the other point stays off it.</p>
+  </div>
+
+  <section class="card">
+    <h2>Notation 1</h2>
+    <p>We denote points by <strong>Roman capital letters</strong> <em>A, B, C,</em> etc., and lines by <strong>lower-case Roman letters</strong> <span class="math-letter">l</span>, <span class="math-letter">m</span>, <span class="math-letter">n</span>, etc.</p>
+    <div class="memory-strip"><span>point → capital · line → lower-case</span></div>
+    <p id="notationExample"></p>
+  </section>
+
+  <section class="card">
+    <h2>What to notice</h2>
+    <p>A <strong>line is a set of points</strong>, and it is a <strong>subset of the plane</strong>.</p>
+    <p>Each line is <strong>endless</strong>, extending forever in both directions, and each line has <strong>infinitely many points</strong>.</p>
+    <p>The two coloured points are <strong>not being used to define the line</strong>. They and the line can be moved independently. A point may lie on the line, or it may lie elsewhere in the plane.</p>
+  </section>
+
+  <div class="note"><strong>Key language:</strong> a point is an element of the plane; a line is a set of points and a subset of the plane.</div>
+</main>
+
+<script>
+const W=900,H=480,pad=28;
+const board=document.getElementById('board');
+const lineVisual=document.getElementById('lineVisual');
+const lineHit=document.getElementById('lineHit');
+const lineLabel=document.getElementById('lineLabel');
+const p1=document.getElementById('p1'),p1h=document.getElementById('p1h'),p1Label=document.getElementById('p1Label');
+const p2=document.getElementById('p2'),p2h=document.getElementById('p2h'),p2Label=document.getElementById('p2Label');
+const status=document.getElementById('status');
+const notationExample=document.getElementById('notationExample');
+const buildPanel=document.getElementById('buildPanel');
+
+const POINT_POOL=['A','B','C','D','E','F','G','H'];
+const LINE_POOL=['l','m','n','o','p','q','r','s','t','u','v'];
+
+const defaults={
+  names:{p1:'A',p2:'B',line:'l'},
+  p1:{x:245,y:145},
+  p2:{x:625,y:350},
+  line:{x:455,y:245,angle:-15}
+};
+
+let names={...defaults.names};
+let pts={p1:{...defaults.p1},p2:{...defaults.p2}};
+let line={...defaults.line};
+let active=null;
+let dragOffset={x:0,y:0};
+let buildMode=false;
+
+function displayLineName(name){return name==='l'?'l':name}
+function pointFromEvent(e){
+  const r=board.getBoundingClientRect();
+  return {x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height};
+}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function shuffle(a){
+  const x=[...a];
+  for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}
+  return x;
+}
+function lineEnds(){
+  const a=line.angle*Math.PI/180;
+  const dx=Math.cos(a),dy=Math.sin(a);
+  const candidates=[];
+  function add(t){
+    const x=line.x+t*dx,y=line.y+t*dy;
+    if(x>=pad-0.1&&x<=W-pad+0.1&&y>=pad-0.1&&y<=H-pad+0.1)candidates.push({t,x,y});
+  }
+  if(Math.abs(dx)>1e-8){add((pad-line.x)/dx);add((W-pad-line.x)/dx)}
+  if(Math.abs(dy)>1e-8){add((pad-line.y)/dy);add((H-pad-line.y)/dy)}
+  candidates.sort((a,b)=>a.t-b.t);
+  return [candidates[0],candidates[candidates.length-1]];
+}
+function distanceToLine(p){
+  const a=line.angle*Math.PI/180;
+  const dx=Math.cos(a),dy=Math.sin(a);
+  return Math.abs((p.x-line.x)*dy-(p.y-line.y)*dx);
+}
+function relationshipText(){
+  const on1=distanceToLine(pts.p1)<17;
+  const on2=distanceToLine(pts.p2)<17;
+  const ln=`<span class="math-letter">${displayLineName(names.line)}</span>`;
+  if(on1&&on2)return `Points <strong>${names.p1}</strong> and <strong>${names.p2}</strong> lie on line ${ln}.`;
+  if(on1)return `Point <strong>${names.p1}</strong> lies on line ${ln}; point <strong>${names.p2}</strong> does not.`;
+  if(on2)return `Point <strong>${names.p2}</strong> lies on line ${ln}; point <strong>${names.p1}</strong> does not.`;
+  return `Points <strong>${names.p1}</strong> and <strong>${names.p2}</strong> do not lie on line ${ln}.`;
+}
+function render(){
+  const [a,b]=lineEnds();
+  for(const el of [lineVisual,lineHit]){
+    el.setAttribute('x1',a.x);el.setAttribute('y1',a.y);el.setAttribute('x2',b.x);el.setAttribute('y2',b.y);
+  }
+  const t=.76;
+  const lx=a.x+(b.x-a.x)*t,ly=a.y+(b.y-a.y)*t;
+  const rad=line.angle*Math.PI/180;
+  lineLabel.setAttribute('x',lx-18*Math.sin(rad));
+  lineLabel.setAttribute('y',ly+18*Math.cos(rad));
+  lineLabel.textContent=displayLineName(names.line);
+
+  p1.setAttribute('cx',pts.p1.x);p1.setAttribute('cy',pts.p1.y);
+  p1h.setAttribute('cx',pts.p1.x);p1h.setAttribute('cy',pts.p1.y);
+  p1Label.setAttribute('x',pts.p1.x-31);p1Label.setAttribute('y',pts.p1.y-18);p1Label.textContent=names.p1;
+
+  p2.setAttribute('cx',pts.p2.x);p2.setAttribute('cy',pts.p2.y);
+  p2h.setAttribute('cx',pts.p2.x);p2h.setAttribute('cy',pts.p2.y);
+  p2Label.setAttribute('x',pts.p2.x+18);p2Label.setAttribute('y',pts.p2.y-12);p2Label.textContent=names.p2;
+
+  status.innerHTML=relationshipText()+` Drag the points or drag line <span class="math-letter">${displayLineName(names.line)}</span>.`;
+  notationExample.innerHTML=`In this diagram the points are <strong>${names.p1}</strong> and <strong>${names.p2}</strong>, and the line is <span class="math-letter"><strong>${displayLineName(names.line)}</strong></span>.`;
+}
+function startPointDrag(key,dot,e){
+  active=key;dot.classList.add('selected');board.setPointerCapture?.(e.pointerId);e.preventDefault();
+}
+p1h.addEventListener('pointerdown',e=>startPointDrag('p1',p1,e));
+p2h.addEventListener('pointerdown',e=>startPointDrag('p2',p2,e));
+lineHit.addEventListener('pointerdown',e=>{
+  const p=pointFromEvent(e);active='line';dragOffset={x:p.x-line.x,y:p.y-line.y};board.setPointerCapture?.(e.pointerId);e.preventDefault();
+});
+board.addEventListener('pointermove',e=>{
+  if(!active)return;
+  const p=pointFromEvent(e);
+  if(active==='p1'||active==='p2'){
+    pts[active].x=clamp(p.x,pad,W-pad);pts[active].y=clamp(p.y,pad,H-pad);
+  }else if(active==='line'){
+    line.x=clamp(p.x-dragOffset.x,110,W-110);line.y=clamp(p.y-dragOffset.y,90,H-90);
+  }
+  render();
+});
+function stopDrag(){p1.classList.remove('selected');p2.classList.remove('selected');active=null}
+board.addEventListener('pointerup',stopDrag);board.addEventListener('pointercancel',stopDrag);
+
+function randomExample(){
+  const p=shuffle(POINT_POOL);const l=LINE_POOL[Math.floor(Math.random()*LINE_POOL.length)];
+  names={p1:p[0],p2:p[1],line:l};
+  line={x:380+Math.random()*150,y:190+Math.random()*100,angle:-38+Math.random()*76};
+  let tries=0;
+  do{
+    pts={
+      p1:{x:100+Math.random()*700,y:80+Math.random()*320},
+      p2:{x:100+Math.random()*700,y:80+Math.random()*320}
+    };
+    tries++;
+  }while((distanceToLine(pts.p1)<42||distanceToLine(pts.p2)<42)&&tries<80);
+  render();
+}
+
+document.getElementById('newExample').addEventListener('click',randomExample);
+document.getElementById('turnLine').addEventListener('click',()=>{line.angle=(line.angle+15)%180;render()});
+document.getElementById('buildBtn').addEventListener('click',e=>{
+  buildMode=!buildMode;buildPanel.classList.toggle('show',buildMode);e.currentTarget.textContent=buildMode?'Hide build task':'Build your own';
+});
+document.getElementById('restartBtn').addEventListener('click',()=>{
+  names={...defaults.names};pts={p1:{...defaults.p1},p2:{...defaults.p2}};line={...defaults.line};
+  buildMode=false;buildPanel.classList.remove('show');document.getElementById('buildBtn').textContent='Build your own';render();
+});
+
+render();
+</script>
+</body>
+</html>
