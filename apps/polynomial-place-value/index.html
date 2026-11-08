@@ -1373,6 +1373,7 @@ function assessmentSigns(){
 function assessmentConfigChanged(){if((assessment.mode==='quiz'||assessment.mode==='test')&&!assessment.started)drawTest()}
 function setAssessmentControlsLocked(){
  document.querySelectorAll('.settings-top button').forEach(b=>{b.disabled=assessment.started});
+ $('randomQuestion').disabled=assessment.started;
 }
 function initialiseTest(source){
  assessment.started=true;assessment.source=source;assessment.run++;
