@@ -118,6 +118,11 @@
     "introduction": "Shapes, measurement, constructions, proof and trigonometric relationships.",
     "topics": [
       {
+        "slug": "appendix-b",
+        "title": "Appendix B: definitions, axioms and proof",
+        "ready": true
+      },
+      {
         "slug": "rectangle-variables",
         "title": "Rectangle dimensions, perimeter and area",
         "ready": true
