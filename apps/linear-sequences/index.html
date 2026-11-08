@@ -5,6 +5,7 @@
 <main>
 <nav class="modes" aria-label="Activity modes">
 <button type="button" data-mode="learn" aria-pressed="true">Learn</button><button type="button" data-mode="quiz" aria-pressed="false">Quiz</button><button type="button" data-mode="test" aria-pressed="false">Test</button>
+<a class="app-link" href="graph.html">Graph Explorer ↗</a>
 <button type="button" id="optionsBtn" class="options" aria-controls="settings" aria-expanded="false">⚙ Options</button>
 </nav>
 <aside id="settings" class="settings" hidden aria-label="App settings">
@@ -16,7 +17,7 @@
 <p class="small">Two attempts per question, in both Quiz and Test. Your answers stay on this device.</p>
 <button id="closeSettings" type="button" class="primary">Close</button>
 </aside>
-<section id="learn"><p class="lead">Draw under-arcs, subtract, box term zero, and develop the general term. Then solve missing-term problems and investigate sums. Click Next, use keyboard arrows, or select a teaching stage.</p>
+<section id="learn"><p class="lead">Draw under-arcs, subtract, box term zero, and develop the general term. Then solve missing-term problems and investigate sums. Click Next, use keyboard arrows, or select a teaching stage. <a href="graph.html">Open the Graph Explorer</a> to investigate changes in the first term, common difference and sum.</p>
 <details style="margin:10px 0;border:1px solid #c5d7e8;border-radius:8px;padding:8px 12px;background:#f9fcff">
 <summary style="cursor:pointer;color:#185c9b;font-weight:700">Starter puzzle: Why did two cicada broods emerge together in 2024?</summary>
 <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px">
@@ -53,7 +54,7 @@
 </div><div id="results" hidden></div>
 </section>
 <nav class="quicknav" aria-label="Related sequence apps">
-<a href="../linear-sequences/index.html">Linear</a><a href="../quadratic-sequences/index.html">Quadratic</a><a href="../geometric-sequences/index.html">Geometric</a><a href="../../number/sequences/index.html">Maths lessons</a>
+<a href="../linear-sequences/index.html">Linear</a><a href="graph.html">Graph Explorer</a><a href="../quadratic-sequences/index.html">Quadratic</a><a href="../geometric-sequences/index.html">Geometric</a><a href="../../number/sequences/index.html">Maths lessons</a>
 </nav>
 </main>
 <script src="../shared/assessment.js"></script><script src="../shared/sequences.js"></script>
