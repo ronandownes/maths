@@ -923,12 +923,13 @@ function applyOnePattern(a,b,mode,next){
  // A zero coefficient is a structural hole; it must never be turned into 1.
  const active=row=>row.map((v,i)=>[row,i]).filter(([r,i])=>r[i]!==0);
  const first=active(b),second=active(a),all=[...first,...second];
- const mark=([row,i])=>{row[i]=1};
+ const mark=([row,i])=>{if(row[i]!==0)row[i]=1};
  const leading=items=>items[0],trailing=items=>items[items.length-1];
+ const trailFirst=[b,b.length-1],trailSecond=[a,a.length-1];
  if(mode==='firsts'){mark(leading(first));mark(leading(second))}
- else if(mode==='lasts'){mark(trailing(first));mark(trailing(second))}
- else if(mode==='inner'){mark(trailing(first));mark(leading(second))}
- else if(mode==='outer'){mark(leading(first));mark(trailing(second))}
+ else if(mode==='lasts'){mark(trailFirst);mark(trailSecond)}
+ else if(mode==='inner'){mark(trailFirst);mark(leading(second))}
+ else if(mode==='outer'){mark(leading(first));mark(trailSecond)}
  else if(mode==='factorFirst')first.forEach(mark)
  else if(mode==='factorSecond')second.forEach(mark)
  else if(mode==='onlyOne'){
@@ -1092,8 +1093,10 @@ function syncQuickSelectors(){
  zero.value=state.zeroMode;zero.disabled=assessment.started;
  zero.onchange=()=>{state.zeroMode=zero.value;refreshSelectedQuestion();assessmentConfigChanged()};
  const hcf=$('hcfSelect'),hnum=$('hcfNumber');
- const note=$('configurationNote');note.hidden=state.oneMode==='off'||!['first','second','both'].includes(state.hcfMode);
- note.textContent='Unit coefficients are chosen before distributing the HCF. The visible coefficients may therefore change.';
+ const note=$('configurationNote');const unitHcf=state.oneMode!=='off'&&['first','second','both'].includes(state.hcfMode);
+ const unitZero=state.zeroMode==='trailing'&&['lasts','inner','outer','all','allExcept','triple','threeLast'].includes(state.oneMode);
+ note.hidden=!unitHcf&&!unitZero;
+ note.textContent=[unitHcf?'Unit coefficients are chosen before HCF distribution, so visible coefficients may change.':'',unitZero?'A coefficient cannot be both zero and a unit: the zero takes precedence.':''].filter(Boolean).join(' ');
  hcf.value=state.hcfMode;hnum.value=state.hcfNumber;
  hcf.disabled=assessment.started;hnum.disabled=assessment.started||state.hcfMode==='off';
  hcf.onchange=()=>{state.hcfMode=hcf.value;state.constantOn=hcf.value!=='off';refreshSelectedQuestion();assessmentConfigChanged()};
