@@ -6,6 +6,22 @@
   <title>Set List and Notation | Maths Apps</title>
   <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
   <link rel="stylesheet" href="foundations.css">
+  <style>
+    .set-preview{margin:12px 0 16px;padding:12px 16px;background:#fff;border:1px solid var(--line);border-radius:10px}
+    .set-preview-label{margin:0 0 4px;color:var(--muted);font-size:.82rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+    .set-live-set{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:center;justify-items:center;gap:.12em;min-height:76px;padding:4px 8px;color:#173c57}
+    .set-live-prefix{font:700 clamp(1.5rem,4vw,2.2rem) "Cambria Math",Cambria,Georgia,serif}
+    .set-live-brace{display:inline-block;color:var(--blue-dark);font:400 clamp(3rem,9vw,5rem)/.85 "Cambria Math",Cambria,Georgia,serif;transition:transform .2s ease,color .2s ease}
+    .set-live-elements{display:flex;min-width:0;width:100%;align-items:center;justify-content:center;flex-wrap:wrap;font:700 clamp(1.6rem,5vw,2.5rem)/1.3 "Cambria Math",Cambria,Georgia,serif}
+    .set-live-set.has-elements .set-live-brace{transform:scaleY(1.16);color:#286590}
+    .set-live-comma{white-space:pre}
+    .set-live-token{display:inline-block;padding:0 .02em;animation:setTokenEnter .24s ease-out both}
+    .set-live-token.is-static{animation:none}
+    .set-preview .small-note{margin:2px 0 0;text-align:center}
+    .set-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @keyframes setTokenEnter{from{opacity:0;transform:translateY(-7px) scale(.86)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @media(prefers-reduced-motion:reduce){.set-live-brace,.set-live-token{transition:none;animation:none}}
+  </style>
 </head>
 <body>
   <header class="foundation-header">
@@ -56,12 +72,22 @@
             <option value="three">multiples of 3 in D</option>
           </select>
         </div>
-        <p>The candidate list is <span class="foundation-math">D = {1, 2, 3, 4, 5, 6, 7, 8}</span>. Tap each element that belongs to S.</p>
+        <p>The candidate list is <span class="foundation-math">D = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}</span>. Tap each element that belongs to S.</p>
         <div class="element-bank" id="elementBank" role="group" aria-label="Choose elements for S"></div>
+        <div class="set-preview">
+          <p class="set-preview-label">Your set is forming</p>
+          <div class="set-live-set" id="listAnswer" aria-live="polite" aria-atomic="true">
+            <span class="set-live-prefix" aria-hidden="true">S =</span>
+            <span class="set-live-brace" aria-hidden="true">{</span>
+            <span class="set-live-elements" id="liveSetElements" aria-hidden="true"></span>
+            <span class="set-live-brace" aria-hidden="true">}</span>
+            <span class="set-sr-only" id="listAnswerText">S is empty. No elements have been selected.</span>
+          </div>
+          <p id="listCardinality" class="small-note">Current count: #S = 0.</p>
+        </div>
         <div class="foundation-controls"><button type="button" id="checkList" class="primary-button">Check my list</button><button type="button" id="clearList">Clear choices</button></div>
         <p class="feedback-box" id="listFeedback" role="status" aria-live="polite"></p>
-        <p class="answer-box" id="listAnswer" aria-live="polite">S = { }</p>
-        <p id="listCardinality" class="small-note"></p>
+        <p id="listCorrection" class="small-note" hidden></p>
       </div>
     </section>
 
@@ -121,37 +147,50 @@
 
     const selected=new Set();
     const rules={
-      even:{name:"even numbers",values:[2,4,6,8]},
-      odd:{name:"odd numbers",values:[1,3,5,7]},
-      prime:{name:"prime numbers",values:[2,3,5,7]},
-      three:{name:"multiples of 3",values:[3,6]}
+      even:{name:"even numbers",values:[2,4,6,8,10]},
+      odd:{name:"odd numbers",values:[1,3,5,7,9,11]},
+      prime:{name:"prime numbers",values:[2,3,5,7,11]},
+      three:{name:"multiples of 3",values:[3,6,9]}
     };
     function ruleNow(){return rules[$("ruleChoice").value];}
-    function renderBank(){
+    function renderLiveSet(newValue=null){
+      const host=$("liveSetElements"), values=Array.from(selected).sort((a,b)=>a-b);
+      host.innerHTML="";
+      values.forEach((value,index)=>{
+        if(index>0){const comma=document.createElement("span");comma.className="set-live-comma";comma.textContent=", ";host.appendChild(comma);}
+        const token=document.createElement("span");token.className="set-live-token"+(value===newValue?"":" is-static");token.textContent=String(value);host.appendChild(token);
+      });
+      $("listAnswer").classList.toggle("has-elements",values.length>0);
+      $("listAnswerText").textContent=values.length?"S contains "+values.join(", ")+".":"S is empty. No elements have been selected.";
+      $("listCardinality").textContent="Current count: #S = "+selected.size+".";
+    }
+    function renderBank(newValue=null){
       $("elementBank").innerHTML="";
-      for(let value=1;value<=8;value++){
+      for(let value=1;value<=11;value++){
         const b=document.createElement("button");b.type="button";b.textContent=String(value);
         b.setAttribute("aria-pressed",String(selected.has(value)));
         b.addEventListener("click",()=>{
-          if(selected.has(value))selected.delete(value);else selected.add(value);
+          const added=!selected.has(value);
+          if(added)selected.add(value);else selected.delete(value);
           b.setAttribute("aria-pressed",String(selected.has(value)));
-          $("listFeedback").textContent="";
+          $("listFeedback").textContent="";$("listFeedback").className="feedback-box";
+          $("listCorrection").hidden=true;
+          renderLiveSet(added?value:null);
         });
         $("elementBank").appendChild(b);
       }
-      $("listAnswer").textContent="S = {"+Array.from(selected).sort((a,b)=>a-b).join(", ")+"}";
-      $("listCardinality").textContent="Current count: #S = "+selected.size+".";
+      renderLiveSet(newValue);
     }
-    $("ruleChoice").addEventListener("change",()=>{selected.clear();renderBank();$("listFeedback").textContent="";});
-    $("clearList").addEventListener("click",()=>{selected.clear();renderBank();$("listFeedback").textContent="Choices cleared.";});
+    $("ruleChoice").addEventListener("change",()=>{selected.clear();renderBank();$("listFeedback").textContent="";$("listCorrection").hidden=true;});
+    $("clearList").addEventListener("click",()=>{selected.clear();renderBank();$("listFeedback").textContent="Choices cleared.";$("listFeedback").className="feedback-box";$("listCorrection").hidden=true;});
     $("checkList").addEventListener("click",()=>{
       const expected=ruleNow().values;
       const actual=Array.from(selected).sort((a,b)=>a-b);
       const correct=expected.length===actual.length&&expected.every((v,i)=>v===actual[i]);
       $("listFeedback").textContent=correct?"Correct. Your list contains exactly the elements that satisfy the rule.":"Check each number against the rule. A list has each correct element once, and no others.";
       $("listFeedback").className="feedback-box "+(correct?"correct":"incorrect");
-      $("listAnswer").textContent="S = {"+expected.join(", ")+"}";
-      $("listCardinality").textContent="So #S = "+expected.length+".";
+      $("listCorrection").textContent=correct?"":"The complete set for this rule is S = {"+expected.join(", ")+"}, so #S = "+expected.length+".";
+      $("listCorrection").hidden=correct;
     });
     renderBank();
 
