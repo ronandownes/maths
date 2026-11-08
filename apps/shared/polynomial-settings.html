@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en-IE">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shared Polynomial Settings · Maths Apps</title>
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#25374c;background:#f0f3f7}
+*{box-sizing:border-box}body{margin:0;padding:22px}
+main{max-width:900px;margin:auto;background:white;border:1px solid #dbe4ed;border-radius:12px;padding:clamp(14px,3vw,30px)}
+h1{margin:0 0 7px;font-size:1.55rem}p{color:#54677c;line-height:1.55;margin:0 0 20px}
+a{color:#185fab} .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.control{display:grid;gap:7px;padding:13px;background:#f8fbff;border:1px solid #dce6f0;border-radius:8px}
+label,strong{font-size:.86rem;color:#476079}select{padding:9px;font-size:1rem;border:1px solid #b5c4d3;background:white;border-radius:6px;max-width:100%}
+.toggle{display:flex;align-items:center;gap:8px;font-size:.98rem;color:#243b50}
+.actions{margin-top:23px;display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+.actions a{display:inline-block;padding:10px 16px;background:#215f9b;color:#fff;border-radius:6px;text-decoration:none;font-weight:700}
+#status{font-size:.9rem;color:#306648}
+</style></head><body>
+<main><h1>Polynomial question settings</h1>
+<p>Choose default question settings here. They are stored in this browser and used by Maths Apps that connect to the shared polynomial generator. Split Brackets is connected; other expansion and factorisation apps can use the same settings when integrated.</p>
+<div class="grid">
+<div class="control"><label for="pattern">Factors</label><select id="pattern"><option value="mb">Mono × Bin</option><option value="mt">Mono × Tri</option><option value="ll">Lin × Lin</option><option value="lq">Lin × Quad</option><option value="qq">Quad × Quad</option><option value="lc">Lin × Cubic</option><option value="qc">Quad × Cubic (Challenge)</option><option value="cc">Cubic × Cubic (Challenge)</option></select></div>
+<div class="control"><label for="variableMode">Variables</label><select id="variableMode"><option value="same">1 variable</option><option value="different">2 variables</option></select></div>
+<div class="control"><label for="level">Coefficient difficulty</label><select id="level"><option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3</option></select></div>
+<div class="control"><label for="onesMode">Coefficients equal to 1</label><select id="onesMode"><option value="off">Off</option><option value="lead">Single: Lead</option><option value="middle">Single: Middle</option><option value="trail">Single: Trail</option><option value="double">Double</option><option value="triple">Triple</option></select></div>
+<div class="control"><label for="doublePattern">Double pattern</label><select id="doublePattern"><option value="lead">Lead pair</option><option value="trail">Trail pair</option><option value="inner">Inner pair</option><option value="outer">Outer pair</option><option value="first">First factor</option><option value="second">Second factor</option></select></div>
+<div class="control"><label for="signA">First factor signs</label><select id="signA"></select></div>
+<div class="control"><label for="signB">Second factor signs</label><select id="signB"></select></div>
+<div class="control"><strong>Options</strong>
+<label class="toggle"><input id="hcfEnabled" type="checkbox"> HCF</label>
+<label class="toggle"><input id="centralZero" type="checkbox"> Central 0</label>
+<label class="toggle"><input id="manual" type="checkbox"> Manual coefficient editors</label></div>
+</div>
+<div class="actions"><a href="../split-brackets/index.html">Open Split Brackets</a><span id="status" aria-live="polite">Settings loaded</span></div>
+</main>
+<script src="./polynomial-question-config.js"></script>
+<script>
+(()=>{
+ 'use strict';
+ const api=window.PolynomialQuestionSettings, settings=api.read(),$=id=>document.getElementById(id);
+ const patterns={mb:[0,1],mt:[0,2],ll:[1,1],lq:[1,2],qq:[2,2],lc:[1,3],qc:[2,3],cc:[3,3]};
+ function populate(id,degree){
+  const el=$(id),value=settings[id];
+  el.replaceChildren();
+  const choices=degree===0?[['','—']]:[['positive','All +'],['negative','All −'],['random','Random'],...api.signOptions(degree).map(x=>[x,x])];
+  for(const [v,label] of choices){const opt=document.createElement('option');opt.value=v;opt.textContent=label;el.append(opt)}
+  if(!choices.some(c=>c[0]===value))settings[id]=degree===0?'':'positive';
+  el.value=settings[id];
+ }
+ function signControls(){const [a,b]=patterns[settings.pattern]||patterns.ll;populate('signA',a);populate('signB',b)}
+ function changed(){
+  for(const k of ['pattern','variableMode','onesMode','doublePattern','signA','signB'])settings[k]=$(k).value;
+  settings.level=Number($('level').value);
+  for(const k of ['hcfEnabled','centralZero','manual'])settings[k]=$(k).checked;
+  if(!['qc','cc'].includes(settings.pattern))settings.basePattern=settings.pattern;
+  api.save(settings);
+  $('status').textContent='Saved — open an app to apply';
+ }
+ for(const id of ['pattern','variableMode','onesMode','doublePattern','level','hcfEnabled','centralZero','manual']){
+  const el=$(id);el.type==='checkbox'?el.checked=Boolean(settings[id]):el.value=String(settings[id]);
+ }
+ signControls();
+ for(const id of ['pattern','variableMode','onesMode','doublePattern','level','signA','signB','hcfEnabled','centralZero','manual']){
+  $(id).addEventListener('change',()=>{
+   if(id==='pattern'){settings.pattern=$('pattern').value;signControls()}
+   changed();
+  });
+ }
+})();
+</script></body></html>
