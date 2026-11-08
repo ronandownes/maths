@@ -12,7 +12,7 @@
 
   const strands = [
     { label: "Number", home: "number/index.html", topics: [
-      T("Sets and subsets", "number/sets/index.html", [
+      T("Sets", "number/sets/index.html", [
         L("Sets explorer", "apps/sets/index.html"),
         L("Explore two sets", "number/sets/explorer.html"),
         L("Set rule builder", "apps/sets/rule-builder.html"),
@@ -239,7 +239,7 @@
       return;
     }
 
-    element.append(link(L("← All " + strand.label, strand.home), "maths-back-link"));
+    // Topic sidebars show only sections. Other topics are in the strand dropdown.
     element.append(caption("Sections"));
     const sectionsSlot = document.createElement("div");
     sectionsSlot.className = "maths-side-list maths-section-links";
@@ -247,22 +247,22 @@
     sectionsSlot.append(intro);
     element.append(sectionsSlot);
 
-    if (topic.activities.length) {
-      element.append(caption("Interactive activities"));
-      element.append(list(topic.activities, "maths-activity-links"));
-    }
 
     const renderSections = doc => {
       const sections = extractSections(doc);
-      for (const item of sections) {
-        const a = link(L(item.title, topic.home + "#" + encodeURIComponent(item.id)), "maths-section-link");
+      if (topic.home === "number/sets/index.html") sectionsSlot.replaceChildren();
+      for (const [index, item] of sections.entries()) {
+        const label = topic.home === "number/sets/index.html"
+          ? "2." + (index + 1) + " " + item.title : item.title;
+        const a = link(L(label, topic.home + "#" + encodeURIComponent(item.id)), "maths-section-link");
         a.dataset.sectionId = item.id;
         sectionsSlot.append(a);
       }
       const markActive = () => {
         sectionsSlot.querySelectorAll("a").forEach(a => {
           const selected = a.dataset.sectionId
-            ? path === topic.home && location.hash === "#" + encodeURIComponent(a.dataset.sectionId)
+            ? path === topic.home && (location.hash === "#" + encodeURIComponent(a.dataset.sectionId)
+              || (!location.hash && topic.home === "number/sets/index.html" && a === sectionsSlot.querySelector("a")))
             : path === topic.home && !location.hash;
           a.classList.toggle("maths-current", selected);
           if (selected) a.setAttribute("aria-current", "location");

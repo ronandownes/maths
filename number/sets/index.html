@@ -2,126 +2,34 @@
 <!doctype html>
 <html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Numbers, sets, operations, proportional reasoning and numerical structure."><meta name="theme-color" content="#ffffff">
-<title>Sets and subsets | Maths</title><link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<title>Sets | Maths</title><link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <link rel="stylesheet" href="../../assets/styles.css"><link rel="stylesheet" href="../../assets/sets-learning.css"></head>
 <body><a href="#main" class="skip">Skip to content</a>
 <header class="topbar"><a class="brand" href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths, four coloured dots"></a>
 <button class="menu-toggle" id="menu-toggle" aria-controls="main-menu" aria-expanded="false">☰ Topics</button>
 <nav id="main-menu" class="menu" aria-label="Main mathematics menu"><a href="../../number/index.html" class="active">Number</a><a href="../../algebra/index.html" class="">Algebra</a><a href="../../functions/index.html" class="">Functions</a><a href="../../geometry/index.html" class="">Geometry</a><a href="../../trigonometry/index.html" class="">Trigonometry</a><a href="../../statistics/index.html" class="">Statistics</a><a href="../../probability/index.html" class="">Probability</a></nav></header>
-<div class="stage"><aside class="sidebar" aria-label="Topic sidebar"><a href="../../unifying/index.html" class="submenu-link">Unifying Strand: six ways of thinking</a><h2>Number topics</h2><a href="../../number/index.html" class="">Overview</a><a href="../../number/sets/index.html" class="active">Sets and subsets</a><a href="../../number/sequences/index.html" class="">Sequences</a><a href="../../number/complex-numbers/index.html" class="">Complex numbers</a><a href="../../number/fractions/index.html" class="">Fractions and decimals</a><a href="../../number/sets/explorer.html" class=" submenu-link">↳ Explore two sets</a><span class="aside-caption">Later topics</span><span class="pending">Number systems</span><span class="pending">Percentages</span><span class="pending">Ratio and proportion</span><span class="pending">Indices and surds</span><span class="pending">Financial mathematics</span></aside>
-<div><main class="paper" id="main"><p class="kicker">Number</p><h1>Sets and subsets</h1>
+<div class="stage"><aside class="sidebar" aria-label="Topic sidebar"><a href="../../unifying/index.html" class="submenu-link">Unifying Strand: six ways of thinking</a><h2>Number topics</h2><a href="../../number/index.html" class="">Overview</a><a href="../../number/sets/index.html" class="active">Sets</a><a href="../../number/sequences/index.html" class="">Sequences</a><a href="../../number/complex-numbers/index.html" class="">Complex numbers</a><a href="../../number/fractions/index.html" class="">Fractions and decimals</a><a href="../../number/sets/explorer.html" class=" submenu-link">↳ Explore two sets</a><span class="aside-caption">Later topics</span><span class="pending">Number systems</span><span class="pending">Percentages</span><span class="pending">Ratio and proportion</span><span class="pending">Indices and surds</span><span class="pending">Financial mathematics</span></aside>
+<div><main class="paper" id="main"><p class="kicker">Number</p><h1>Sets</h1>
 <p class="intro">Numbers, sets, operations, proportional reasoning and numerical structure.</p><div class="toolbar"><span class="breadcrumb"><a href="../../index.html">Maths</a> / <a href="../../number/index.html">Number</a></span><button type="button" data-print>Print / save PDF</button></div>
 <div class="lesson"><div id="sets-learning">
   <div class="level-cues"><span>Junior Cycle N.5</span><span>Learn · explore · explain</span><span>Formulae and Tables p. 23</span></div>
   <p class="lead">A <strong>set</strong> is a well-defined collection of distinct elements.</p>
-  <nav class="sets-jump" aria-label="Sections in Sets">
-    <a href="#sets-start">Introduction</a><a href="#sets-venn">Venn diagrams</a>
-    <a href="#sets-list">List notation</a><a href="#sets-rule">Rule notation</a>
-    <a href="#sets-union">Union</a><a href="#sets-intersection">Intersection</a>
-    <a href="#sets-universal">Universal set</a><a href="#sets-complement">Complement</a>
-    <a href="#sets-number-sets">Number sets</a>
-  </nav>
-
-  <section id="sets-start">
-    <h2>Introducing sets</h2>
+<section id="sets-start">
+    <h2>Introduction</h2>
     <p><span class="math">A = {2, 4, 6}</span> is a set. Its <strong>elements</strong> are 2, 4 and 6.</p>
     <p><span class="math">2 ∈ A</span> means 2 belongs to A. <span class="math">3 ∉ A</span> means 3 does not belong to A. <span class="math">#A = 3</span>.</p>
     <div class="sets-think"><div class="sets-question-label">Think</div><p>Is “the three nicest numbers” a well-defined set? What about “the even numbers between 1 and 7”?</p>
       <details><summary>Check</summary><p>Only the second description is unambiguous. Its elements are {2, 4, 6}.</p></details></div>
-  </section>
-
-  <section id="sets-venn">
-    <h2>Venn diagrams</h2>
-    <p>Draw one <strong>oval</strong>, label it <span class="math">A</span>, and put its elements inside. Start with one set; add a second only when needed.</p>
-    <figure style="margin:15px 0;text-align:center">
-      <svg viewBox="0 0 540 285" width="100%" style="max-width:540px;background:#fff" role="img" aria-label="One oval labelled A, containing the elements 2, 4 and 6">
-        <ellipse cx="260" cy="150" rx="175" ry="107" fill="#f0f7ff" stroke="#285e93" stroke-width="4"/>
-        <text x="120" y="90" font-family="Arial,sans-serif" font-size="28" font-weight="700" fill="#174d7f">A</text>
-        <g font-family="Cambria,Georgia,serif" text-anchor="middle" font-size="38" fill="#1e3248">
-          <text x="200" y="156">2</text><text x="265" y="205">4</text><text x="330" y="140">6</text>
-        </g>
-      </svg>
-      <figcaption class="small-note">One set. No universal set is needed yet.</figcaption>
-    </figure>
-    <p>When two ovals overlap, some elements may belong to both sets.</p>
-    <div class="sets-action"><div><strong>Explore two sets</strong><p>Drag, separate and overlap the sets. Describe what you see.</p></div>
-      <a class="button-link primary" href="explorer.html">Open Venn explorer</a></div>
-    <p><a href="../../apps/sets/number-venn.html">Investigate number Venn diagrams →</a></p>
-  </section>
-
-  <section id="sets-list">
-    <h2>List notation</h2>
-    <p>Write the elements inside braces: <span class="math">B = {1, 3, 5, 7}</span>.</p>
-    <p><span class="math">{1, 3, 5} = {5, 1, 3}</span>. Order does not matter. Repeating an element makes no difference.</p>
-    <div class="sets-think"><div class="sets-question-label">Try</div><p>List the multiples of 3 from 1 to 15.</p>
-      <details><summary>Answer</summary><p><span class="math">{3, 6, 9, 12, 15}</span>.</p></details></div>
-    <p><a href="../../apps/sets/list-and-notation.html">Practise list notation →</a></p>
-  </section>
-
-  <section id="sets-rule">
-    <h2>Rule notation</h2>
-    <p>Instead of listing every element, describe what each element must satisfy.</p>
-    <p class="formula">A = {x ∈ ℕ : x is even and x &lt; 10}</p>
-    <p>Read: “A is the set of natural numbers x such that x is even and less than 10.”</p>
-    <p>In list notation, <span class="math">A = {2, 4, 6, 8}</span>.</p>
-    <p class="small-note">The colon means “such that”. Since the log tables start ℕ at 1, zero is not included here. However, zero is a multiple of 2.</p>
-    <p><a href="../../apps/sets/rule-builder.html">Build sets from rules →</a></p>
-  </section>
-
-  <section id="sets-union">
-    <h2>Union</h2>
-    <p><span class="math">A ∪ B</span> means elements in <strong>A or B or both</strong>.</p>
-    <p>Let <span class="math">A = {1, 2, 3}</span> and <span class="math">B = {3, 4, 5}</span>.</p>
-    <p class="formula">A ∪ B = {1, 2, 3, 4, 5}</p>
-    <p>List the shared element 3 only once.</p>
-    <details class="answer-toggle"><summary>Try: {2, 4, 6} ∪ {4, 8}</summary><div class="answer"><span class="math">{2, 4, 6, 8}</span>.</div></details>
-  </section>
-
-  <section id="sets-intersection">
-    <h2>Intersection</h2>
-    <p><span class="math">A ∩ B</span> means elements in <strong>both</strong> A and B.</p>
-    <p>For <span class="math">A = {1, 2, 3}</span> and <span class="math">B = {3, 4, 5}</span>:</p>
-    <p class="formula">A ∩ B = {3}</p>
-    <p>If there are no common elements, the intersection is the empty set <span class="math">∅</span>.</p>
-    <details class="answer-toggle"><summary>Try: {2, 4, 6} ∩ {4, 8}</summary><div class="answer"><span class="math">{4}</span>.</div></details>
-  </section>
-
-  <section id="sets-universal">
-    <h2>Universal set</h2>
-    <p>The <strong>universal set</strong> <span class="math">U</span> contains every element under consideration.</p>
-    <p>For example, let <span class="math">U = {1, 2, 3, 4, 5, 6}</span> and <span class="math">A = {2, 4, 6}</span>.</p>
-    <p>In a Venn diagram, draw the rectangle for U only when the universal set is relevant.</p>
-    <p><a href="../../apps/sets/universal-complement.html">Investigate a universal set →</a></p>
-  </section>
-
-  <section id="sets-complement">
-    <h2>Complement</h2>
-    <p><span class="math">Aᶜ</span> is everything in <strong>U but not A</strong>.</p>
-    <p>With <span class="math">U = {1, 2, 3, 4, 5, 6}</span> and <span class="math">A = {2, 4, 6}</span>:</p>
-    <p class="formula">Aᶜ = {1, 3, 5}</p>
-    <p><strong>The complement depends on the universal set.</strong></p>
-    <details class="answer-toggle"><summary>Try: U = {1, 2, 3, 4, 5, 6, 7}, A = {1, 3, 5}. Find Aᶜ.</summary><div class="answer"><span class="math">Aᶜ = {2, 4, 6, 7}</span>.</div></details>
-    <p><a href="../../apps/sets/universal-complement.html">Explore complement visually →</a></p>
-  </section>
-
-  <section id="sets-subsets">
-    <h2>Subsets</h2>
+  <div class="sets-subsection" id="sets-subsets">
+    <h3>Subsets</h3>
     <p><span class="math">A ⊂ B</span> means <strong>every element of A belongs to B</strong>, using the Formulae and Tables convention.</p>
     <p>For <span class="math">A = {2, 4}</span> and <span class="math">B = {2, 4, 6}</span>, we have <span class="math">A ⊂ B</span>.</p>
     <p><span class="math">2 ∈ B</span> says that 2 is an element. <span class="math">{2} ⊂ B</span> says a set is a subset.</p>
     <p>The empty set <span class="math">∅</span> is a subset of every set, including itself.</p>
-  </section>
+  </div>
 
-  <section id="sets-difference">
-    <h2>Set difference</h2>
-    <p><span class="math">A \ B</span> contains elements in A but not B.</p>
-    <p>If <span class="math">A = {1, 2, 3}</span> and <span class="math">B = {3, 4}</span>, then <span class="math">A \ B = {1, 2}</span> but <span class="math">B \ A = {4}</span>.</p>
-    <p>Therefore, changing the order can change the answer.</p>
-    <p><a href="../../apps/sets/venn-problem-solving.html">Solve Venn problems →</a></p>
-  </section>
-
-  <section id="sets-number-sets">
-    <h2>Number sets investigation</h2>
+<div class="sets-subsection" id="sets-number-sets">
+    <h3>Number Sets Investigation</h3>
     <p><strong>Open Formulae and Tables, page 23:</strong> <a href="https://mathsgrinds.ie/wp-content/uploads/2021/04/BI-EX-7266997.pdf#page=24" target="_blank" rel="noopener">Sets and logic — Number sets</a>. Compare these definitions with the table below.</p>
     <p class="small-note">Five of the six rows come directly from the number-set names on p. 23. Irrational numbers (ℝ \ ℚ) are added to make the distinction explicit.</p>
     <div class="sets-table-wrap">
@@ -149,10 +57,129 @@
     <div class="sets-think"><div class="sets-question-label">Investigation 3 · an extra challenge</div>
       <p>Is <span class="math">√9</span> irrational? Is <span class="math">√−9</span> real?</p>
       <details><summary>Reasoning</summary><p>√9 = 3 is natural, not irrational. √−9 = 3i is complex but not real.</p></details></div>
+  </div>
+</section>
+
+<section id="sets-venn">
+    <h2>Venn Diagrams</h2>
+    <p>Draw one <strong>oval</strong>, label it <span class="math">A</span>, and put its elements inside. Start with one set; add a second only when needed.</p>
+    <figure style="margin:15px 0;text-align:center">
+      <svg viewBox="0 0 540 285" width="100%" style="max-width:540px;background:#fff" role="img" aria-label="One oval labelled A, containing the elements 2, 4 and 6">
+        <ellipse cx="260" cy="150" rx="175" ry="107" fill="#f0f7ff" stroke="#285e93" stroke-width="4"/>
+        <text x="120" y="90" font-family="Arial,sans-serif" font-size="28" font-weight="700" fill="#174d7f">A</text>
+        <g font-family="Cambria,Georgia,serif" text-anchor="middle" font-size="38" fill="#1e3248">
+          <text x="200" y="156">2</text><text x="265" y="205">4</text><text x="330" y="140">6</text>
+        </g>
+      </svg>
+      <figcaption class="small-note">One set. No universal set is needed yet.</figcaption>
+    </figure>
+    <p>When two ovals overlap, some elements may belong to both sets.</p>
+    <div class="sets-action"><div><strong>Explore two sets</strong><p>Drag, separate and overlap the sets. Describe what you see.</p></div>
+      <a class="button-link primary" href="explorer.html">Open Venn explorer</a></div>
+    <p><a href="../../apps/sets/number-venn.html">Investigate number Venn diagrams →</a></p>
   </section>
 
-  <section id="sets-check">
-    <h2>Check your understanding</h2>
+<section id="sets-list">
+    <h2>List Notation</h2>
+    <p>Write the elements inside braces: <span class="math">B = {1, 3, 5, 7}</span>.</p>
+    <p><span class="math">{1, 3, 5} = {5, 1, 3}</span>. Order does not matter. Repeating an element makes no difference.</p>
+    <div class="sets-think"><div class="sets-question-label">Try</div><p>List the multiples of 3 from 1 to 15.</p>
+      <details><summary>Answer</summary><p><span class="math">{3, 6, 9, 12, 15}</span>.</p></details></div>
+    <p><a href="../../apps/sets/list-and-notation.html">Practise list notation →</a></p>
+  </section>
+
+<section id="sets-rule">
+    <h2>Rule Notation</h2>
+    <p>Instead of listing every element, describe what each element must satisfy.</p>
+    <p class="formula">A = {x ∈ ℕ : x is even and x &lt; 10}</p>
+    <p>Read: “A is the set of natural numbers x such that x is even and less than 10.”</p>
+    <p>In list notation, <span class="math">A = {2, 4, 6, 8}</span>.</p>
+    <p class="small-note">The colon means “such that”. Since the log tables start ℕ at 1, zero is not included here. However, zero is a multiple of 2.</p>
+    <p><a href="../../apps/sets/rule-builder.html">Build sets from rules →</a></p>
+  </section>
+
+<section id="sets-union">
+    <h2>Union</h2>
+    <p><span class="math">A ∪ B</span> means elements in <strong>A or B or both</strong>.</p>
+    <p>Let <span class="math">A = {1, 2, 3}</span> and <span class="math">B = {3, 4, 5}</span>.</p>
+    <p class="formula">A ∪ B = {1, 2, 3, 4, 5}</p>
+    <p>List the shared element 3 only once.</p>
+    <details class="answer-toggle"><summary>Try: {2, 4, 6} ∪ {4, 8}</summary><div class="answer"><span class="math">{2, 4, 6, 8}</span>.</div></details>
+  </section>
+
+<section id="sets-intersection">
+    <h2>Intersection</h2>
+    <p><span class="math">A ∩ B</span> means elements in <strong>both</strong> A and B.</p>
+    <p>For <span class="math">A = {1, 2, 3}</span> and <span class="math">B = {3, 4, 5}</span>:</p>
+    <p class="formula">A ∩ B = {3}</p>
+    <p>If there are no common elements, the intersection is the empty set <span class="math">∅</span>.</p>
+    <details class="answer-toggle"><summary>Try: {2, 4, 6} ∩ {4, 8}</summary><div class="answer"><span class="math">{4}</span>.</div></details>
+  </section>
+
+<section id="sets-cardinality">
+<h2>Cardinality</h2>
+<p><strong>Cardinality</strong> is the number of distinct elements. Write <span class="math">#A</span> for the number of elements in <span class="math">A</span>.</p>
+<p>Suppose 18 students play football, 13 play music and 5 do both. How many play at least one?</p>
+<div class="sets-feature">
+  <span class="sets-feature-title">Count the overlap only once</span>
+  <div class="sets-feature-math">#(A ∪ B) = #A + #B − #(A ∩ B)</div>
+  <p>18 + 13 − 5 = <strong>26</strong>. The five students in both sets were counted twice when we added 18 and 13.</p>
+</div>
+<div class="sets-think"><div class="sets-question-label">Try</div>
+<p>In a class, 17 study French, 14 study German and 6 study both. How many study at least one language?</p>
+<details><summary>Answer</summary><p>17 + 14 − 6 = <strong>25</strong>.</p></details></div>
+<p><a href="../../apps/sets/venn-problem-solving.html">Explore cardinality and counting in the Venn app →</a></p>
+</section>
+
+<section id="sets-universal">
+    <h2>Universal Set</h2>
+    <p>The <strong>universal set</strong> <span class="math">U</span> contains every element under consideration.</p>
+    <p>For example, let <span class="math">U = {1, 2, 3, 4, 5, 6}</span> and <span class="math">A = {2, 4, 6}</span>.</p>
+    <p>In a Venn diagram, draw the rectangle for U only when the universal set is relevant.</p>
+    <p><a href="../../apps/sets/universal-complement.html">Investigate a universal set →</a></p>
+  </section>
+
+<section id="sets-complement">
+    <h2>Complement</h2>
+    <p><span class="math">Aᶜ</span> is everything in <strong>U but not A</strong>.</p>
+    <p>With <span class="math">U = {1, 2, 3, 4, 5, 6}</span> and <span class="math">A = {2, 4, 6}</span>:</p>
+    <p class="formula">Aᶜ = {1, 3, 5}</p>
+    <p><strong>The complement depends on the universal set.</strong></p>
+    <details class="answer-toggle"><summary>Try: U = {1, 2, 3, 4, 5, 6, 7}, A = {1, 3, 5}. Find Aᶜ.</summary><div class="answer"><span class="math">Aᶜ = {2, 4, 6, 7}</span>.</div></details>
+    <p><a href="../../apps/sets/universal-complement.html">Explore complement visually →</a></p>
+  </section>
+
+<section id="sets-difference">
+    <h2>Set Difference</h2>
+    <p><span class="math">A \ B</span> contains elements in A but not B.</p>
+    <p>If <span class="math">A = {1, 2, 3}</span> and <span class="math">B = {3, 4}</span>, then <span class="math">A \ B = {1, 2}</span> but <span class="math">B \ A = {4}</span>.</p>
+    <p>Therefore, changing the order can change the answer.</p>
+    <p><a href="../../apps/sets/venn-problem-solving.html">Solve Venn problems →</a></p>
+  </section>
+
+<section id="sets-disjoint">
+<h2>Disjoint Sets</h2>
+<p><strong>Disjoint sets</strong> have no common elements, so <span class="math">A ∩ B = ∅</span>.</p>
+<p>In a standard pack of cards, the spades and hearts form disjoint sets. They are <strong>not</strong> complements because clubs and diamonds are outside both.</p>
+<p>The red and black cards are disjoint <strong>and</strong> complementary, if the universal set is the whole pack.</p>
+<div class="sets-think"><div class="sets-question-label">Test the distinction</div>
+<p>Let <span class="math">U = {1, 2, 3, 4, 5}</span>, <span class="math">A = {1, 2}</span> and <span class="math">B = {4, 5}</span>. Are A and B disjoint? Are they complements?</p>
+<details><summary>Answer</summary><p>They are disjoint, since A ∩ B = ∅, but not complements: 3 belongs to neither set.</p></details></div>
+</section>
+
+<section id="sets-problem-solving">
+<h2>Problem Solving</h2>
+<p>Start with two sets. Put the shared elements into the overlap <strong>first</strong>, then work out the elements in each outer region.</p>
+<div class="sets-think"><div class="sets-question-label">Two-set problem</div>
+<p>Of 32 students, 19 like football, 16 like music, and 7 like both. Find the number who like neither.</p>
+<details><summary>Solution</summary><p>At least one: 19 + 16 − 7 = 28. Neither: 32 − 28 = <strong>4</strong>.</p></details></div>
+<div class="sets-think"><div class="sets-question-label">Three-set extension</div>
+<p>Of 40 students, 20 are in A, 18 in B and 15 in C. Exactly 5 belong to A and B only, 4 to A and C only, 3 to B and C only, and 2 to all three. Find the number in the union.</p>
+<details><summary>Solution</summary><p>A only = 20 − 5 − 4 − 2 = 9. B only = 18 − 5 − 3 − 2 = 8. C only = 15 − 4 − 3 − 2 = 6. Union = 9 + 8 + 6 + 5 + 4 + 3 + 2 = <strong>37</strong>.</p></details></div>
+<p><a href="../../apps/sets/venn-problem-solving.html">Open interactive Venn problem solving →</a></p>
+<p class="small-note">For examination practice, record the examination year, paper, level, question and marks alongside each verified source question.</p>
+<div class="sets-subsection" id="sets-check">
+    <h3>Check Understanding</h3>
     <p>Work through the questions one at a time. Choose an answer to get <strong>specific feedback</strong>, then explain your reasoning before moving on. You can retry a question without penalty.</p>
     <div class="sets-assessment" data-sets-quiz>
       <div class="sets-assessment-top"><span id="sets-quiz-stage">Concept check</span><span id="sets-progress">Question 1 of 12</span></div>
@@ -164,9 +191,10 @@
       <div class="sets-quiz-nav"><button type="button" id="sets-quiz-back">← Previous</button><button type="button" id="sets-quiz-next">Next question →</button><button type="button" id="sets-quiz-reset">Start again</button></div>
       <p class="small-note">Your answers stay on this page. No account, tracking or personal details are required.</p>
     </div>
-  </section>
-  <section id="sets-reason">
-    <h2>Prove it, disprove it or find a counterexample</h2>
+  </div>
+
+<div class="sets-subsection" id="sets-reason">
+    <h3>Reasoning</h3>
     <p>Strong mathematical thinking means making an argument that works <em>in every case</em>, or finding one counterexample that proves a claim is false.</p>
     <div class="sets-reason-grid">
       <article class="sets-think"><div class="sets-question-label">Reasoning 1</div><p>If A ⊂ B and B ⊂ A, must A = B?</p><details><summary>Reveal a proof</summary><p>Yes. Choose any element x of A; because A ⊂ B, x ∈ B. Conversely, choose any y ∈ B; because B ⊂ A, y ∈ A. Thus both sets have precisely the same elements.</p></details></article>
@@ -174,9 +202,10 @@
       <article class="sets-think"><div class="sets-question-label">Reasoning 3</div><p>Is A \ B always equal to B \ A?</p><details><summary>Reveal a counterexample</summary><p>No. With A = {1} and B = {2}, A \ B = {1}, whereas B \ A = {2}. Set difference is not generally commutative.</p></details></article>
       <article class="sets-think"><div class="sets-question-label">Reasoning 4</div><p>Can A ⊂ B and A ∩ B = ∅ both be true?</p><details><summary>Reveal the subtle case</summary><p>Yes, but only if A = ∅. Since A ⊂ B, the intersection is A. For it to be empty, A itself must be empty.</p></details></article>
     </div>
-  </section>
-  <section id="sets-exit">
-    <h2>Exit ticket</h2>
+  </div>
+
+<div class="sets-subsection" id="sets-exit">
+    <h3>Exit Ticket</h3>
     <p>Try these without consulting the explanations. Each answer should contain a mathematical reason, not just a symbol.</p>
     <ol class="sets-exit-items">
       <li>Explain the difference between <span class="math">3 ∈ A</span> and <span class="math">{3} ⊂ A</span>.</li>
@@ -187,7 +216,8 @@
       <ol><li>3 is an element; {3} is a singleton set whose only element is in A.</li><li>A ∪ B = {1, 3, 5, 7}; A ∩ B = {3, 5}.</li><li>False: {1, 2} and {3, 4} have equal cardinalities but different elements.</li></ol>
     </details>
     <p class="sets-outcome">Learning-outcome connection: <strong>Junior Cycle Mathematics N.5</strong> (sets, notation, representations and operations), supported by the Unifying strand's emphasis on explanation and mathematical reasoning. <a href="https://www.curriculumonline.ie/junior-cycle/junior-cycle-subjects/mathematics/expectations-for-students/" target="_blank" rel="noopener">Read the official specification</a>.</p>
-  </section>
+  </div>
+</section>
 </div>
 </div></main><footer class="site-footer">Maths · Ronan Downes · One collection, organised by topic</footer></div></div>
 <script src="../../assets/site.js"></script><script src="../../assets/sets-learning.js"></script></body></html>
