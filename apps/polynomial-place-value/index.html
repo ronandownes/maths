@@ -961,9 +961,7 @@ function renderSelectors(){
   else {state.type=state.coreType;state.beyondOpen=false}
   refreshSelectedQuestion();assessmentConfigChanged();
  };
- const challenge=$('challengeBtn');challenge.textContent=state.beyondOpen?'Challenge on':'Challenge off';
- challenge.setAttribute('aria-pressed',String(state.beyondOpen));challenge.setAttribute('aria-expanded',String(state.beyondOpen));
- challenge.onclick=()=>{if(assessment.started)return;state.beyondOpen=!state.beyondOpen;if(!state.beyondOpen&&challengeOnlyTypes.includes(state.type))state.type=state.coreType;refreshSelectedQuestion();assessmentConfigChanged()};
+ // Challenge controls are handled by the factor selector; the retired button must not be dereferenced.
  const constant=$('constantBtn');constant.textContent=state.constantOn?'On':'Off';constant.setAttribute('aria-pressed',String(state.constantOn));constant.title='Independent common numerical factor; both monic factors can retain an HCF outside the brackets.';
  constant.onclick=()=>{if(assessment.started)return;state.constantOn=!state.constantOn;refreshSelectedQuestion();assessmentConfigChanged()};
  // Numbered homework questions follow fixed signs; the sign buttons must
