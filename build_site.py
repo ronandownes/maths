@@ -99,6 +99,8 @@ def build():
         planned=''.join(f'<li>{e(t["title"])}</li>' for t in data['topics'] if not t['ready'])
         book_link='<p class="note"><a href="https://ronandownes.github.io/book/chapter-trigonometry.html#trig-intro">Book section: Right-angled triangles</a></p>' if category == 'Trigonometry' else ''
         overview=f'<p class="lead">{e(data["introduction"])}</p>{book_link}<h2>Ready lessons and apps</h2><div class="tile-grid">{tiles}</div><h2>Other topics in this section</h2><p>These have a place in the structure but have not yet been written:</p><ul>{planned}</ul>'
+        if category == 'Probability':
+            overview = (ROOT/'content'/'pages'/'probability-outline.html').read_text(encoding='utf-8')
         output(ROOT/slug/'index.html',frame(category,category,category,data['introduction'],overview,depth=1))
         for t in data['topics']:
             if not t['ready'] or t.get('app'):continue

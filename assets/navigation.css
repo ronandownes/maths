@@ -79,3 +79,19 @@ body.maths-standalone-page button.primary,body.maths-standalone-page button.acti
 
 /* Closed strand menus must stay hidden, regardless of app or browser CSS. */
 .maths-strand:not([open]) > .maths-dropdown{display:none!important}
+
+/* Collapsible, textbook-grounded source outlines in strand dropdowns. */
+.maths-reference-group{border-top:1px solid #eaedf0;margin-top:6px;padding-top:5px}
+.maths-reference-group>summary{list-style:none;cursor:pointer;font:700 .78rem/1.3 Arial,sans-serif;color:#576474;padding:10px 12px}
+.maths-reference-group>summary::-webkit-details-marker{display:none}
+.maths-reference-group>summary::after{content:" ▾";float:right}
+.maths-reference-group[open]>summary::after{content:" ▴"}
+.maths-reference-links{display:grid;gap:2px;padding:0 4px 7px}
+.maths-reference-links>a{font-size:.82rem!important;font-weight:500!important;display:flex!important;justify-content:space-between;gap:8px;text-align:left!important}
+.maths-lc-marker,.toc-lc-marker{display:inline-block;border:1px solid #bac2ca;border-radius:3px;padding:1px 5px;font:700 .66rem/1.5 Arial,sans-serif;color:#384252;background:#f4f6f8;vertical-align:middle;white-space:nowrap}
+.toc-lc-marker{margin-left:8px}
+.toc-source-page{color:#65727e;font-size:.87rem!important;margin:4px 0}
+.toc-reference-section{border-top:1px solid #e2e8ef;padding:8px 0 18px}
+.toc-reference-section h2,.toc-probability-section h2{scroll-margin-top:115px}
+.maths-dropdown{max-width:370px;min-width:270px;width:max-content}
+@media(max-width:700px){.maths-dropdown{min-width:0;width:100%;max-width:none}}
