@@ -83,7 +83,7 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
 <body>
 <main class="app-shell">
 <header class="app-head">
-<div class="brandline"><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Maths · Geometry</span></div>
+<div class="brandline"><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Maths · Geometry</span><a href="../../apps/index.html">All Apps</a><a href="index.html">Lesson</a></div>
 <div class="literacy-bar" role="group" aria-label="Language level"><span>Language</span><button type="button" data-literacy="maths" aria-pressed="true">Maths</button><button type="button" data-literacy="eal" aria-pressed="false">EAL</button><button type="button" data-literacy="simple" aria-pressed="false">Simple</button><button type="button" id="open-glossary" title="Definitions of mathematical words">Words</button></div>
 <h1>Rectangle Explorer</h1>
 <p id="app-intro">Change the dimensions. Compare perimeter and area.</p>
@@ -154,7 +154,7 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
 </article>
 </section>
 <section class="card question-card" aria-labelledby="prediction-title">
-<h2 id="prediction-title">Predict before you move a side</h2>
+<h2 id="prediction-title">Try without the diagram</h2>
 <p id="prediction-question">A square has side length 5 cm. What is its perimeter?</p>
 <div class="choice-row" id="prediction-choices" role="group" aria-label="Choose a predicted perimeter"></div>
 <p id="prediction-feedback" aria-live="polite">Choose an answer first. This is a starting point, not a mark.</p>
@@ -209,10 +209,10 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
   function clamp(value){ return Math.max(2, Math.min(12, Math.round(value))); }
 
   function setQuestion(){
-    var options = squareMode ? [15,20,25] : [13,26,40];
+    var options = squareMode ? [18,24,36] : [11,22,28];
     predictionQuestion.textContent = squareMode
-      ? 'A square has side length ' + width + ' cm. What is its perimeter?'
-      : 'A rectangle has width ' + width + ' cm and height ' + height + ' cm. What is its perimeter?';
+      ? 'Without using the diagram: a square has side 6 cm. Find its perimeter.'
+      : 'Without using the diagram: a rectangle has width 7 cm and height 4 cm. Find its perimeter.';
     choicesBox.innerHTML = '';
     options.forEach(function(value){
       var button = document.createElement('button');
@@ -224,7 +224,7 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
       choicesBox.appendChild(button);
     });
     feedback.className = '';
-    feedback.textContent = 'Optional check: choose an answer, or move a side.';
+    feedback.textContent = 'Choose your answer before checking the formula.';
     document.getElementById('measurement-controls').hidden = false;
     document.getElementById('result-grid').hidden = false;
     document.getElementById('change-note').hidden = false;
@@ -353,7 +353,7 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
     var button = event.target.closest('button[data-answer]');
     if(!button){ return; }
     var chosen = Number(button.getAttribute('data-answer'));
-    var correct = squareMode ? 20 : 26; // Fixed starter question, independent of current drag position
+    var correct = squareMode ? 24 : 22; // Independent exit check, not the dimensions shown
     Array.from(choicesBox.querySelectorAll('button')).forEach(function(item){
       item.setAttribute('aria-pressed', item===button ? 'true' : 'false');
     });
@@ -364,8 +364,8 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
     [widthHandle,heightHandle].forEach(function(handle){ handle.setAttribute('visibility','visible'); handle.setAttribute('tabindex','0'); handle.setAttribute('aria-hidden','false'); });
     if(chosen===correct){
       feedback.className = 'correct';
-      feedback.textContent = 'Correct. Now compare your prediction with the changing diagram and formula.';
-    } else if(chosen===(squareMode ? 25 : 40)){
+      feedback.textContent = 'Correct. Explain how you found the perimeter.';
+    } else if(chosen===(squareMode ? 36 : 28)){
       feedback.className = '';
       feedback.textContent = 'That number is the area in square centimetres. Perimeter counts the outside boundary in centimetres.';
     } else {
