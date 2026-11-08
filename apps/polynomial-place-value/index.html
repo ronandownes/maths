@@ -842,7 +842,7 @@ const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\n
 const beyondChoices=[['l4','2 × 5'],['l5','2 × 6'],['q3','3 × 4'],['q4','3 × 5'],['44','5 × 5'],['q5','3 × 6'],['m3','1 × 3'],['m4','1 × 4'],['m5','1 × 5']];
 const challengeOnlyTypes=beyondChoices.map(item=>item[0]);
 const beyondTypes=['l3',...challengeOnlyTypes];
-const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
+const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs'],['custom','Chosen signs']];
 const signChoices=[['positive','All +'],['negative','Non-leading −'],['mixed','Mixed + / −'],['random','Random']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 // Equivalent inner/outer and first/second factor cases alternate randomly.
@@ -868,7 +868,7 @@ const bankProfiles=[
  {type:'ql',level:2,sign:'random',oneMode:'off',mixed:true,name:'Mixed review'}
 ];
 
-const state={method:'place-value',type:'ql',factorRandom:false,coreType:'ql',beyondOpen:false,constantOn:false,hcfMode:'off',hcfNumber:'random',zeroMode:'off',signHigh:null,signLow:null,manual:false,oneMode:'off',sign:'positive',level:2,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
+const state={method:'place-value',type:'ql',factorRandom:false,coreType:'ql',beyondOpen:false,constantOn:false,hcfMode:'off',hcfNumber:'random',zeroMode:'off',signHigh:null,signLow:null,manual:false,oneMode:'off',sign:'positive',level:2,levelRandom:false,mode:'worked',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -896,62 +896,104 @@ function seedFor(slot){const typeIndex=state.factorRandom?3:factorTypes.findInde
 function seeded(seed){let x=seed>>>0;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))}}
 function chooseSign(next){return ['positive','negative','mixed'][next(0,2)]}
 // Apply the magnitude-one pattern before signs. Do not mix sign and HCF rules.
+
 function applyOnePattern(a,b,mode,next){
- const ends=[[a,0],[a,a.length-1],[b,0],[b,b.length-1]];
- const mark=([arr,i])=>{arr[i]=1};
- if(mode==='firsts'){[ends[0],ends[2]].forEach(mark);return}
- if(mode==='lasts'){[ends[1],ends[3]].forEach(mark);return}
- if(mode==='cross'){(next(0,1)===0?[ends[1],ends[2]]:[ends[0],ends[3]]).forEach(mark);return}
- if(mode==='factor'){(next(0,1)===0?a:b).fill(1);return}
- const places=[...a.map((_,i)=>[a,i]),...b.map((_,i)=>[b,i])];
- if(mode==='all'){places.forEach(mark);return}
- if(mode==='triple'){
-  for(let i=0;i<Math.min(3,places.length);i++){
-   const j=next(i,places.length-1);[places[i],places[j]]=[places[j],places[i]];mark(places[i]);
+ // The factors are displayed in ascending degree: b first, a second.
+ // A zero coefficient is a structural hole; it must never be turned into 1.
+ const active=row=>row.map((v,i)=>[row,i]).filter(([r,i])=>r[i]!==0);
+ const first=active(b),second=active(a),all=[...first,...second];
+ const mark=([row,i])=>{row[i]=1};
+ const leading=items=>items[0],trailing=items=>items[items.length-1];
+ if(mode==='firsts'){mark(leading(first));mark(leading(second))}
+ else if(mode==='lasts'){mark(trailing(first));mark(trailing(second))}
+ else if(mode==='inner'){mark(trailing(first));mark(leading(second))}
+ else if(mode==='outer'){mark(leading(first));mark(trailing(second))}
+ else if(mode==='factorFirst')first.forEach(mark)
+ else if(mode==='factorSecond')second.forEach(mark)
+ else if(mode==='onlyOne'){
+  // An existing unit coefficient in a one-term factor counts as that one.
+  const existing=all.filter(([r,i])=>Math.abs(r[i])===1);
+  if(!existing.length)mark(all[next(0,all.length-1)]);
+ }
+ else if(mode==='allExcept'){
+  const exception=next(0,all.length-1);
+  all.forEach((p,i)=>{if(i!==exception)mark(p)});
+ }
+ else if(mode==='all')all.forEach(mark);
+ else if(['triple','threeFirst','threeLast'].includes(mode)){
+  const pool=all.filter(([r,i])=>Math.abs(r[i])!==1);
+  let count=all.length-pool.length;
+  if(mode!=='triple'){
+   const p=mode==='threeFirst'?leading(first):trailing(first);
+   if(Math.abs(p[0][p[1]])!==1){mark(p);const idx=pool.findIndex(item=>item[0]===p[0]&&item[1]===p[1]);if(idx>=0)pool.splice(idx,1);count++}
   }
+  while(count<3&&pool.length){const pos=next(0,pool.length-1);mark(pool.splice(pos,1)[0]);count++}
  }
 }
+function applyZeroPattern(a,b,mode,next){
+ if(mode==='off')return;
+ // Never omit a leading term: the factor's degree must remain unchanged.
+ let positions=[a,b].flatMap(row=>row.map((v,i)=>[row,i]).filter(([r,i])=>i>0&&r[i]!==0));
+ if(mode==='middle')positions=positions.filter(([r,i])=>i<r.length-1);
+ if(mode==='trailing')positions=positions.filter(([r,i])=>i===r.length-1);
+ if(!positions.length)return;
+ const count=mode==='multiple'?Math.min(3,positions.length):1;
+ for(let t=0;t<count;t++){
+  const j=next(0,positions.length-1),[r,i]=positions.splice(j,1)[0];
+  r[i]=0;
+ }
+}
+function applySignPattern(arr,selected,sign,next){
+ const alternatives=signPatterns(arr.length);
+ const pattern=selected&&selected!=='any'?selected:
+  sign==='positive'?'+'.repeat(arr.length-1):
+  sign==='negative'?'−'.repeat(arr.length-1):alternatives[next(0,alternatives.length-1)];
+ for(let i=1;i<arr.length;i++)if(arr[i]!==0)arr[i]=Math.abs(arr[i])*(pattern[i-1]==='−'?-1:1);
+}
+function placeHcf(a,b,next){
+ const k=state.hcfNumber==='random'?next(2,11):Number(state.hcfNumber);
+ const scale=row=>row.forEach((v,i)=>{row[i]=v*k});
+ const first=b,second=a;
+ if(state.hcfMode==='outside')return k;
+ if(state.hcfMode==='first'||state.hcfMode==='both')scale(first);
+ if(state.hcfMode==='second'||state.hcfMode==='both')scale(second);
+ return 1;
+}
 function makeQuestion(next,signOverride=null){
- const type=state.factorRandom?factorTypes[next(0,factorTypes.length-1)][0]:state.type;
- const [na,nb]=({ll:[2,2],ql:[3,2],qq:[3,3],cl:[2,1],l3:[4,2],l4:[5,2],l5:[6,2],q3:[4,3],q4:[5,3],'44':[5,5]})[type]||[3,2];
+ const type=state.factorRandom?['ll','ql','qq'][next(0,2)]:state.type;
+ const sizes=factorSizes[type]||[3,2],na=sizes[0],nb=sizes[1];
  const sign=signOverride||(state.sign==='random'?chooseSign(next):state.sign);
- const level=state.level,pick=values=>values[next(0,values.length-1)];
- const pool=level===1?[2,2,2,3,3,3,4,4,5,5]:level===2
-  ?[2,3,4,5,6,7,8,9,10,11,12,13,14,15]
-  :[2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,19,23,29,31,37,41];
- for(let trial=0;trial<3500;trial++){
-  const a=Array.from({length:na},()=>pick(pool)),b=Array.from({length:nb},()=>pick(pool));
-  applyOnePattern(a,b,state.oneMode||'off',next);
-  for(const arr of [a,b])for(let i=1;i<arr.length;i++){
-   if(sign==='negative'||(sign==='mixed'&&next(0,1)===1))arr[i]=-Math.abs(arr[i]);
-  }
-  if(sign==='mixed'){
-   const all=a.slice(1).concat(b.slice(1));
-   if(all.every(v=>v>0))b[b.length-1]=-Math.abs(b[b.length-1]);
-   if(all.every(v=>v<0))a[a.length-1]=Math.abs(a[a.length-1]);
-  }
-  if(!primitive(a)||(type!=='cl'&&!primitive(b)))continue;
-  if(type==='cl'&&Math.abs(b[0])===1)continue;
+ const level=state.level,pick=items=>items[next(0,items.length-1)];
+ const pool=level===1?[2,2,3,3,4,5]:level===2?[2,3,4,5,6,7,8,9,10,11,12,13,14,15]:
+  [2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,19,23,29,31,37,41];
+ for(let trial=0;trial<2500;trial++){
+  const a=Array.from({length:na},()=>pick(pool));
+  const b=Array.from({length:nb},()=>pick(pool));
+  if(monomialTypes.includes(type)){b[0]=1;b[1]=0}
+  applyZeroPattern(a,b,state.zeroMode,next);
+  applyOnePattern(a,b,state.oneMode,next);
+  applySignPattern(a,state.signHigh,sign,next);
+  applySignPattern(b,state.signLow,sign,next);
+  if(!primitive(a)||!primitive(b))continue;
   if(!beyondTypes.includes(type)&&level===1&&product(a,b).some(v=>Math.abs(v)>120))continue;
   if(!beyondTypes.includes(type)&&level===2&&product(a,b).some(v=>Math.abs(v)>650))continue;
-  // Independent external multiplier preserves the chosen coefficient-one pattern.
-  return {a,b,type,sign,scalar:state.constantOn?pick([2,3,4,5]):1};
+  return {a,b,type,sign,scalar:placeHcf(a,b,next),hcfMode:state.hcfMode};
  }
- const a=Array(na).fill(2),b=Array(nb).fill(3);
- applyOnePattern(a,b,state.oneMode||'off',next);
- if(sign==='negative'){a[na-1]*=-1;b[nb-1]*=-1;}
- else if(sign==='mixed')b[nb-1]*=-1;
- return {a,b,type,sign,scalar:state.constantOn?2:1};
+ // Fallback keeps the requested factor lengths and zero pattern.
+ const a=Array.from({length:na},(_,i)=>i===0?1:2);
+ const b=Array.from({length:nb},(_,i)=>i===0?1:3);
+ if(monomialTypes.includes(type))b[1]=0;
+ applyZeroPattern(a,b,state.zeroMode,next);
+ applyOnePattern(a,b,state.oneMode,next);
+ applySignPattern(a,state.signHigh,sign,next);
+ applySignPattern(b,state.signLow,sign,next);
+ return {a,b,type,sign,scalar:placeHcf(a,b,next),hcfMode:state.hcfMode};
 }
 function chosenQuestion(){
  const rng=state.slot==='fresh'
   ?seeded(seedFor(state.freshCount+1000)^((Math.random()*0xffffffff)>>>0))
   :seeded(seedFor(17+state.slot*123+state.bankQuestion*891));
- // Six reproducible questions in each of six ordered banks.
- // Respect the teacher's current factor/sign/level overrides after bank selection.
- if(state.slot===0&&state.bankQuestion===0&&state.type==='ll'&&state.level===1&&state.sign==='positive'&&!state.factorRandom&&state.oneMode==='off'){
-  return {a:state.constantOn?[2,2]:[1,1],b:[2,1],type:'ll',sign:'positive',scalar:1};
- }
+ // All questions, including the first example, respect the current settings.
  return makeQuestion(rng);
 }
 function selectQuestion(slot){
@@ -2187,7 +2229,7 @@ function worksheetQuestions(countOverride){
  const out=[],count=countOverride||worksheetTotal(),selected=state.type;
  const types=state.factorRandom?['ll','ql','qq']:[selected];
  const levelBase=Math.max(1,Math.min(3,state.level));
- const signFor=i=>ws.category==='progressive'?['positive','positive','negative','mixed'][Math.min(3,Math.floor(4*i/count))]:ws.category;
+ const signFor=i=>state.sign==='custom'?'custom':ws.category==='progressive'?['positive','positive','negative','mixed'][Math.min(3,Math.floor(4*i/count))]:ws.category;
  try{
   state.slot='fresh';state.factorRandom=false;
   for(let i=0;i<count;i++){
@@ -2198,11 +2240,11 @@ function worksheetQuestions(countOverride){
    state.oneMode=old.oneMode; // Preserve teacher's coefficient-one pattern in sheets.
    const seed=seedFor(50000+ws.sheet*1103+i*97+(ws.use==='homework'?10007:0));
    const q=makeQuestion(seeded(seed),sign);
-   if(state.oneMode==='off'&&!state.constantOn&&ws.sheet>=3&&progress>.6&&i%4===1){
+   if(state.oneMode==='off'&&!state.constantOn&&!monomialTypes.includes(type)&&ws.sheet>=3&&progress>.6&&i%4===1){
     const arr=i%2?q.a:q.b;
     arr[arr.length-1]=(arr[arr.length-1]<0?-1:1)*[21,31,41][i%3];
    }
-   if(ws.sheet===4&&progress>.75&&ws.category==='progressive'){
+   if(state.sign!=='custom'&&ws.sheet===4&&progress>.75&&ws.category==='progressive'){
     const review=['positive','negative','mixed'][i%3];
     if(review==='positive'){q.a=q.a.map(Math.abs);q.b=q.b.map(Math.abs)}
     else if(review==='negative'){q.a=q.a.map((v,j)=>j?-Math.abs(v):Math.abs(v));q.b=q.b.map((v,j)=>j?-Math.abs(v):Math.abs(v))}
