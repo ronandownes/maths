@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exploring Angles v39</title>
+<style>
+:root{
+--ink:#202936; --blue:#1565c0; --red:#c62828; --green:#2e7d32;
+--muted:#657084; --border:#aab5c3; --bg:#f3f6fa; --inside:#dcecff;
+--warn:#8a5a00; --warn-bg:#fff3cd;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:980px;margin:auto;padding:18px}
+.kicker,.instruction,.status{text-align:center;font-weight:850}
+.kicker{margin:0;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+h1{text-align:center;font-size:clamp(2.4rem,7vw,4.5rem);margin:.1em 0 .25em}
+.instruction{font-size:clamp(1.05rem,3vw,1.4rem);margin:0 0 12px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+button{min-height:42px;padding:8px 12px;border:1px solid var(--border);border-radius:9px;background:#fff;font:inherit;font-weight:750;cursor:pointer}
+svg{width:100%;display:block;background:#fff;border:2px solid var(--border);border-radius:12px;touch-action:none;user-select:none}
+.wedge{fill:var(--inside)}
+svg.full-angle{background:#dbeafe}
+.ray{stroke:var(--ink);stroke-width:6;stroke-linecap:round}
+.vertex,.arm-point,.test-point{stroke:#fff;stroke-width:4}
+.vertex{fill:var(--red);cursor:grab}
+.arm-point{fill:var(--green);cursor:grab}
+.arm-point.selected{stroke:#111;stroke-width:6}
+.test-point{fill:var(--blue);cursor:grab}
+.test-line{stroke:var(--ink);stroke-width:6;stroke-linecap:round}
+.label{font-size:28px;font-weight:900;fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:5px}
+.status{color:var(--green);font-size:clamp(2rem,6vw,4rem);line-height:1.05;margin:14px 0 2px;font-weight:950}
+.definition{margin-top:14px;background:#fff;border-left:8px solid var(--blue);padding:14px 16px;border-radius:10px}
+.definition strong{display:block;margin-bottom:4px}
+.boundary{
+margin:12px auto 0;max-width:720px;padding:12px 16px;border-radius:10px;
+background:#eef5ff;color:var(--ink);border:2px solid #9bbce8;
+font-weight:900;text-align:center
+}
+.hidden{display:none!important}
+.flash{animation:flash .55s ease}
+@keyframes flash{0%{transform:scale(1)}25%{transform:scale(1.018)}55%{transform:scale(.992)}100%{transform:scale(1)}}
+.definition.hot{animation:defhot .75s ease}
+@keyframes defhot{0%,100%{transform:scale(1)}35%{transform:scale(1.025)}}
+.classification{
+margin:.25rem 0 .35rem;
+font-size:clamp(1.35rem,4vw,2rem);
+font-weight:900;
+}
+.definition-words{
+margin:.45rem 0 .65rem;
+font-size:clamp(1.25rem,3.5vw,1.75rem);
+line-height:1.35;
+font-weight:800;
+}
+.representation-label{
+margin-top:.35rem;
+color:var(--muted);
+font-size:.9rem;
+font-weight:900;
+letter-spacing:.06em;
+text-transform:uppercase;
+}
+.big-maths{
+margin:.2rem 0 .35rem;
+font-size:clamp(2.2rem,6.2vw,4.8rem);
+line-height:1.05;
+font-weight:950;
+letter-spacing:.003em;
+white-space:nowrap;
+text-align:center;
+}
+.definition-stack{display:grid;gap:14px}
+.sub-definition{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff}
+.sub-definition.hidden{display:none}
+.sub-definition .mini-number{font-size:1.35rem;font-weight:900;color:var(--blue);line-height:1.05;margin-bottom:4px}
+.sub-definition .mini-title{display:block;font-size:1.25rem;font-weight:900;margin-bottom:6px}
+.sub-definition .mini-words{font-size:1.04rem}
+.remark{
+display:grid;
+gap:4px;
+margin-top:14px;
+padding-top:12px;
+border-top:1px solid #d9dee7;
+font-size:1rem;
+line-height:1.45;
+color:var(--muted);
+}
+.remark strong{
+color:var(--ink);
+font-size:.92rem;
+letter-spacing:.05em;
+text-transform:uppercase;
+}
+.learning-note{
+margin-top:14px;
+background:#fff;
+border-left:8px solid #6a1b9a;
+border-radius:10px;
+padding:14px 16px;
+}
+.learning-note-head{
+margin-bottom:10px;
+font-size:1.08rem;
+}
+.learning-grid,
+.angle-def-list{
+display:grid;
+gap:8px;
+}
+.learning-grid > div,
+.angle-def-list > div{
+display:grid;
+gap:2px;
+padding:9px 0;
+border-top:1px solid #e3e7ee;
+}
+.learning-grid > div:first-child,
+.angle-def-list > div:first-child{
+border-top:0;
+}
+.learning-grid span,
+.angle-def-list span{
+color:var(--muted);
+line-height:1.4;
+}
+.angle-def-list{
+margin-top:12px;
+padding-top:4px;
+border-top:2px solid #e3e7ee;
+}
+.angle-def-list .current{
+padding:10px;
+border-radius:8px;
+background:#eef5ff;
+}
+@media(max-width:600px){button{flex:1 1 45%}}
+.exploration-intro{
+margin:14px 0;
+padding:16px 18px;
+background:#fff;
+border-left:8px solid #2f6fdd;
+border-radius:10px;
+font-size:clamp(1.35rem,3.5vw,1.9rem);
+line-height:1.35;
+}
+.exploration-intro strong{
+display:block;
+font-size:clamp(1.7rem,4vw,2.4rem);
+margin-bottom:4px;
+}
+.exploration-sub{
+margin-top:5px;
+font-weight:800;
+}
+.definition > strong{
+font-size:clamp(1.45rem,3.4vw,2rem);
+}
+.representation-label{
+font-size:clamp(1.15rem,2.6vw,1.45rem) !important;
+}
+.remark,
+.remark strong,
+.learning-note,
+.learning-note-head,
+.learning-grid span,
+.angle-def-list span{
+font-size:clamp(1.15rem,2.5vw,1.4rem) !important;
+}
+button{
+font-size:clamp(1.05rem,2.4vw,1.25rem);
+min-height:48px;
+}
+.angle-mark{
+stroke:#2563eb;
+stroke-width:5;
+stroke-linecap:round;
+stroke-linejoin:round;
+pointer-events:none;
+}
+.frame-class{
+font-size:38px;
+font-weight:950;
+fill:#202936;
+pointer-events:none;
+}
+.frame-note{
+font-size:24px;
+font-weight:780;
+fill:#2563eb;
+pointer-events:none;
+}
+.boundary{
+font-size:clamp(1.35rem,3.2vw,1.9rem);
+line-height:1.35;
+}
+.definition-number{
+margin-top:.2rem;
+font-size:clamp(2.4rem,7vw,4.5rem);
+line-height:1.02;
+font-weight:950;
+}
+.definition-title{
+display:block;
+margin-top:.15rem;
+font-size:clamp(1.55rem,3.7vw,2.25rem);
+line-height:1.1;
+}
+.convex-text{
+font-size:22px;
+font-weight:850;
+fill:#202936;
+paint-order:stroke;
+stroke:#fff;
+stroke-width:4px;
+}
+.inside-prompt{
+font-size:26px;
+font-weight:850;
+fill:#2563eb;
+opacity:.9;
+pointer-events:none;
+}
+.reveal-controls{
+display:flex;
+flex-direction:column;
+align-items:flex-start;
+gap:.55rem;
+margin:.6rem 0 .8rem;
+}
+.reveal-controls button{
+min-width:190px;
+}
+.term-link{
+border:0; padding:0; min-height:0; background:transparent; color:var(--blue);
+font:inherit; font-weight:900; text-decoration:underline; cursor:pointer;
+}
+.term-dialog{
+max-width:560px; border:2px solid var(--border); border-radius:14px; padding:0;
+color:var(--ink);
+}
+.term-dialog::backdrop{background:rgba(20,30,45,.42)}
+.term-dialog form{padding:22px 24px}
+.term-dialog h2{margin-top:0}
+.term-dialog p{font-size:1.08rem; line-height:1.45}
+</style>
+<link rel="stylesheet" href="../shared/site.css">
+</head>
+<body><header class="site-shell"><div class="site-shell-inner"><a class="site-brand" href="../../../index.html"><span class="site-logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Maths Apps</span></a><nav class="site-nav"><a href="../../../index.html">Home</a><a href="../../../geometry/index.html">Geometry</a></nav></div></header>
+<main>
+<h1>Exploring Angles</h1>
+<div class="toolbar">
+<button id="toggleLabels">Show labels</button>
+<button id="toggleConvexity">Show convex test</button>
+<button id="hideAll">Hide all</button>
+<button id="reset">Reset</button>
+</div>
+<svg id="svg" viewBox="0 0 900 470" aria-label="Interactive angle exploration">
+<defs>
+<marker id="arrow" markerWidth="6" markerHeight="6" refX="5.4" refY="3" orient="auto" markerUnits="strokeWidth">
+<path d="M0.5,0.7 L5.3,3 L0.5,5.3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+</marker>
+</defs>
+<path id="wedge" class="wedge"></path>
+<line id="rayB" class="ray" marker-end="url(#arrow)"></line>
+<line id="rayC" class="ray" marker-end="url(#arrow)"></line>
+<path id="angleArc" class="angle-mark" fill="none"></path>
+<path id="rightMark" class="angle-mark hidden" fill="none"></path>
+<text id="frameClass" class="frame-class" x="450" y="52" text-anchor="middle">Ordinary angle</text>
+<text id="frameNote" class="frame-note" x="690" y="84" text-anchor="middle"></text>
+<g id="labels" class="hidden">
+<text id="aLabel" class="label">A</text>
+<text id="bLabel" class="label">B</text>
+<text id="cLabel" class="label">C</text>
+</g>
+<circle id="A" class="vertex" r="13"></circle>
+<circle id="B" class="arm-point" r="11"></circle>
+<circle id="C" class="arm-point" r="11"></circle>
+<text id="insidePrompt" class="inside-prompt" x="560" y="250" text-anchor="middle">Inside of angle</text>
+<g id="convexity" class="hidden">
+<line id="pq" class="test-line"></line>
+<circle id="P" class="test-point" r="14"></circle>
+<circle id="Q" class="test-point" r="14"></circle>
+<text id="pLabel" class="label">P</text>
+<text id="qLabel" class="label">Q</text>
+<text id="convexText" class="convex-text" x="450" y="445" text-anchor="middle"></text>
+</g>
+</svg>
+<p id="status" class="status"></p>
+<p id="boundary" class="boundary hidden" aria-live="polite"></p>
+<div class="reveal-controls">
+<button id="toggleDefinition">Hide definition</button>
+<button id="toggleNote">Show note</button>
+</div>
+<section id="definition" class="definition">
+<div class="definition-stack">
+<div id="ordinaryLead" class="sub-definition hidden">
+<div class="mini-number">Definition 8</div>
+<strong class="mini-title">Ordinary Angle</strong>
+<div class="mini-words">An angle is an ordinary angle if its arms are not on one line, and its inside is a convex set.</div>
+</div>
+<div id="currentDefinition" class="sub-definition">
+<div id="definitionNumber" class="definition-number">Definition 15</div>
+<strong id="definitionTitle" class="definition-title">Acute Angle</strong>
+<div id="classification" class="classification">Acute angle</div>
+<div id="definitionWords" class="definition-words">
+An acute angle is an ordinary angle with measure less than 90°.
+</div>
+<div class="representation-label">Degree representation</div>
+<div id="definitionMaths" class="big-maths">0° &lt; |∠BAC| &lt; 90°</div>
+<div id="angleRemark" class="remark">
+<strong>Remark</strong>
+<span id="remarkLine1">An acute angle is an ordinary angle.</span>
+<span id="remarkLine2"></span>
+</div>
+</div>
+</div>
+</section>
+<section id="learningNote" class="learning-note hidden" aria-label="Angles learning note">
+<div class="learning-note-head">
+<strong>Angles — local learning note</strong>
+</div>
+<div class="learning-grid">
+<div><strong><button id="primitiveHelp" class="term-link" type="button">Primitive</button> — Angle</strong><span>Angle is a primitive term in geometry. An angle has a vertex, two arms and an inside (interior).</span></div>
+<div><strong>Angle as a subset of the plane</strong><span>The inside of an angle is a subset of the plane: it is a set of points in the plane.</span></div>
+<div><strong>Convex</strong><span>For <b>any</b> two points in the set, the whole segment joining them stays in the set.</span></div>
+<div><strong>Non-convex</strong><span>There are two points in the set for which part of the segment joining them lies outside the set.</span></div>
+<div><strong>Default meaning</strong><span>Unless otherwise stated, angle means ordinary angle.</span></div>
+<div id="currentAngleNote"><strong>Current angle</strong><span>An acute angle is an ordinary angle.</span></div>
+</div>
+<div class="angle-def-list">
+<div id="defList7"><strong>Definition 7 — Null Angle</strong><span>0°. The two arms coincide.</span></div>
+<div id="defList8"><strong>Definition 8 — Ordinary Angle</strong><span>Arms not on one line; inside convex.</span></div>
+<div id="defList9"><strong>Definition 9 — Straight Angle</strong><span>180°. Its arms form a straight line.</span></div>
+<div id="defList10"><strong>Definition 10 — Reflex Angle</strong><span>Between 180° and 360°; inside non-convex.</span></div>
+<div id="defList11"><strong>Definition 11 — Full Angle</strong><span>360°. The arms of a full angle coincide. The inside of a full angle is the whole plane.</span></div>
+<div id="defList12"><strong>Definition 12 — Angle Notation</strong><span>∠ABC; vertex is the middle letter; α, β, γ.</span></div>
+<div id="defList14"><strong>Definition 14 — Right Angle</strong><span>90°.</span></div>
+<div id="defList15"><strong>Definition 15 — Acute / Obtuse</strong><span>Acute: &lt;90°. Obtuse: between 90° and 180°.</span></div>
+</div>
+</section>
+</main>
+<dialog id="primitiveDialog" class="term-dialog">
+<form method="dialog">
+<h2>Primitive term</h2>
+<p>A primitive term is a basic mathematical word that is accepted without being defined from earlier geometric terms.</p>
+<p>We use primitive terms such as <strong>point</strong>, <strong>line</strong>, <strong>plane</strong> and <strong>angle</strong> to build later definitions.</p>
+<button>Close</button>
+</form>
+</dialog>
+<script>
+const svg = document.getElementById('svg');
+const wedge = document.getElementById('wedge');
+const angleArc = document.getElementById('angleArc');
+const rightMark = document.getElementById('rightMark');
+const frameClass = document.getElementById('frameClass');
+const frameNote = document.getElementById('frameNote');
+const rayB = document.getElementById('rayB');
+const rayC = document.getElementById('rayC');
+const Ael = document.getElementById('A');
+const Bel = document.getElementById('B');
+const Cel = document.getElementById('C');
+const labels = document.getElementById('labels');
+const status = document.getElementById('status');
+const boundary = document.getElementById('boundary');
+const definition = document.getElementById('definition');
+const classification = document.getElementById('classification');
+const definitionNumber = document.getElementById('definitionNumber');
+const definitionTitle = document.getElementById('definitionTitle');
+const definitionWords = document.getElementById('definitionWords');
+const definitionMaths = document.getElementById('definitionMaths');
+const remarkLine1 = document.getElementById('remarkLine1');
+const remarkLine2 = document.getElementById('remarkLine2');
+const currentAngleNote = document.getElementById('currentAngleNote');
+const primitiveHelp = document.getElementById('primitiveHelp');
+const primitiveDialog = document.getElementById('primitiveDialog');
+const defListEls = [7,8,9,10,11,12,14,15].map(n=>document.getElementById(`defList${n}`));
+const learningNote = document.getElementById('learningNote');
+const convexity = document.getElementById('convexity');
+const Pel = document.getElementById('P');
+const Qel = document.getElementById('Q');
+const pq = document.getElementById('pq');
+const W=900,H=470, EPS=0.7;
+const defaults={
+A:{x:450,y:300},
+B:{x:750.0,y:300.0},
+C:{x:709.8,y:150.0},
+P:{x:555,y:272},
+Q:{x:625,y:225}
+};
+let pts=JSON.parse(JSON.stringify(defaults));
+let active=null, dragStart=null;
+let prevRawAngle=null, turnAccum=0, fullMoment=false, fullConsumed=false;
+let selectedArm=null;
+let keyboardAngle=null;
+let hasInteracted=false;
+const LETTER_POOL=['A','B','C','D','E','F','G','H'];
+let names={A:'A',B:'B',C:'C'};
+function pickNames(){
+const pool=[...LETTER_POOL];
+for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+names={A:pool[0],B:pool[1],C:pool[2]};
+refreshNames();
+}
+function angleNotation(){return `∠${names.B}${names.A}${names.C}`}
+function refreshNames(){
+aLabel.textContent=names.A; bLabel.textContent=names.B; cLabel.textContent=names.C;
+const d12=document.querySelector('#defList12 span');
+if(d12)d12.textContent=`${angleNotation()}; ${names.A} is the middle letter and the vertex; α, β, γ may also be used.`;
+}
+function pointer(evt){
+const r=svg.getBoundingClientRect();
+return {x:(evt.clientX-r.left)*W/r.width,y:(evt.clientY-r.top)*H/r.height};
+}
+function clampPoint(p,pad=28){
+return {
+x:Math.max(pad,Math.min(W-pad,p.x)),
+y:Math.max(pad,Math.min(H-pad,p.y))
+};
+}
+function distPointToSegment(p,a,b){
+const vx=b.x-a.x, vy=b.y-a.y;
+const wx=p.x-a.x, wy=p.y-a.y;
+const vv=vx*vx+vy*vy || 1;
+const t=Math.max(0,Math.min(1,(wx*vx+wy*vy)/vv));
+const q={x:a.x+t*vx,y:a.y+t*vy};
+return Math.hypot(p.x-q.x,p.y-q.y);
+}
+function bestLabelPosition(point, others=[]){
+const offsets=[
+{x:18,y:-18},{x:18,y:30},{x:-34,y:-18},{x:-34,y:30},
+{x:0,y:-34},{x:0,y:42}
+];
+let best=null,bestScore=-Infinity;
+for(const o of offsets){
+const p={x:point.x+o.x,y:point.y+o.y};
+if(p.x<22||p.x>W-22||p.y<28||p.y>H-20) continue;
+let score=Math.min(
+distPointToSegment(p,pts.A,rayEnd(pts.B)),
+distPointToSegment(p,pts.A,rayEnd(pts.C))
+);
+for(const q of others) score=Math.min(score,Math.hypot(p.x-q.x,p.y-q.y));
+if(score>bestScore){bestScore=score;best=p}
+}
+return best || {x:point.x+16,y:point.y-16};
+}
+function smartFramePosition(){
+const candidates=[
+{x:450,y:52},{x:190,y:70},{x:710,y:70},
+{x:190,y:320},{x:710,y:320}
+];
+let best=candidates[0], bestScore=-Infinity;
+const eb=rayEnd(pts.B), ec=rayEnd(pts.C);
+for(const p of candidates){
+const score=Math.min(
+distPointToSegment(p,pts.A,eb),
+distPointToSegment(p,pts.A,ec),
+Math.hypot(p.x-pts.A.x,p.y-pts.A.y),
+Math.hypot(p.x-pts.B.x,p.y-pts.B.y),
+Math.hypot(p.x-pts.C.x,p.y-pts.C.y)
+);
+if(score>bestScore){bestScore=score;best=p}
+}
+best.x=Math.max(245,Math.min(655,best.x));
+best.y=Math.max(52,Math.min(320,best.y));
+return best;
+}
+function angleOf(p){
+let a=Math.atan2(pts.A.y-p.y,p.x-pts.A.x)*180/Math.PI;
+if(a<0)a+=360;
+return a;
+}
+function directedAngle(){
+return (angleOf(pts.C)-angleOf(pts.B)+360)%360;
+}
+function rawRelativeAngle(){
+return directedAngle();
+}
+function shortestDelta(a,b){
+let d=b-a;
+if(d>180)d-=360;
+if(d<-180)d+=360;
+return d;
+}
+const SNAP_DEG = 3;
+const FULL_RELEASE_DEG = 3;
+function circularDistance(a,b){
+let d=Math.abs(a-b)%360;
+return Math.min(d,360-d);
+}
+function snapCritical(raw){
+if(circularDistance(raw,0)<=SNAP_DEG) return 0;
+if(Math.abs(raw-90)<=SNAP_DEG) return 90;
+if(Math.abs(raw-180)<=SNAP_DEG) return 180;
+return raw;
+}
+function placeArmAt(name,relativeDeg){
+const base=angleOf(pts.B);
+const r=Math.max(90,radius(pts[name]));
+if(name==='C'){
+pts.C=pointAtSafe(base+relativeDeg,r,30);
+}else if(name==='B'){
+const c=angleOf(pts.C);
+pts.B=pointAtSafe(c-relativeDeg,r,30);
+}
+}
+function setSelectedArm(name){
+selectedArm=name;
+Bel.classList.toggle('selected',name==='B');
+Cel.classList.toggle('selected',name==='C');
+if(name==='C'){
+keyboardAngle = fullMoment ? 360 : Math.round(rawRelativeAngle());
+}else{
+keyboardAngle = null;
+}
+}
+function angleClass(d){
+const rounded=Math.round(d);
+if(rounded===0 || rounded===360) return 'null';
+if(rounded===180) return 'straight';
+if(d>180) return 'reflex';
+return 'ordinary';
+}
+function radius(p){return Math.hypot(p.x-pts.A.x,p.y-pts.A.y)}
+function pointAt(angleDeg,r){
+const a=angleDeg*Math.PI/180;
+return {x:pts.A.x+r*Math.cos(a),y:pts.A.y-r*Math.sin(a)};
+}
+function maxRadiusInside(angleDeg,pad=30){
+const a=angleDeg*Math.PI/180;
+const ux=Math.cos(a), uy=-Math.sin(a);
+const limits=[];
+if(ux>1e-9) limits.push((W-pad-pts.A.x)/ux);
+if(ux<-1e-9) limits.push((pad-pts.A.x)/ux);
+if(uy>1e-9) limits.push((H-pad-pts.A.y)/uy);
+if(uy<-1e-9) limits.push((pad-pts.A.y)/uy);
+return Math.max(60,Math.min(...limits.filter(v=>v>0)));
+}
+function pointAtSafe(angleDeg,r,pad=30){
+return pointAt(angleDeg,Math.min(r,maxRadiusInside(angleDeg,pad)));
+}
+function rayEnd(p){
+const dx=p.x-pts.A.x,dy=p.y-pts.A.y, hits=[], e=1e-9;
+if(Math.abs(dx)>e){
+for(const x of [0,W]){
+const t=(x-pts.A.x)/dx;
+if(t>0){const y=pts.A.y+t*dy;if(y>=0&&y<=H)hits.push({x,y,t})}
+}
+}
+if(Math.abs(dy)>e){
+for(const y of [0,H]){
+const t=(y-pts.A.y)/dy;
+if(t>0){const x=pts.A.x+t*dx;if(x>=0&&x<=W)hits.push({x,y,t})}
+}
+}
+hits.sort((u,v)=>u.t-v.t);
+return hits[0]||p;
+}
+function wedgePath(){
+const ab=angleOf(pts.B), d=directedAngle(), R=2200;
+if(Math.round(d)===0 || Math.round(d)===180) return "";
+const arr=[pts.A];
+const steps=Math.max(24,Math.ceil(d/6));
+for(let i=0;i<=steps;i++){
+arr.push(pointAt(ab+d*(i/steps),R));
+}
+return "M "+arr.map(p=>`${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" L ")+" Z";
+}
+function insideAngle(p){
+const ab=angleOf(pts.B);
+const ap=(angleOf(p)-ab+360)%360;
+return ap>=0 && ap<=directedAngle();
+}
+function segmentLeavesInside(p,q){
+for(let i=1;i<40;i++){
+const t=i/40;
+const m={x:p.x+(q.x-p.x)*t,y:p.y+(q.y-p.y)*t};
+if(!insideAngle(m)) return true;
+}
+return false;
+}
+function squeezeTestPoints(){
+const d=directedAngle(), ab=angleOf(pts.B);
+const cls=fullMoment ? 'full' : angleClass(d);
+if(cls==='ordinary'){
+const margin=Math.min(14,Math.max(5,d*.10));
+const usable=Math.max(1,d-2*margin);
+pts.P=pointAtSafe(ab+margin+usable*.30,210,38);
+pts.Q=pointAtSafe(ab+margin+usable*.72,285,38);
+}else if(cls==='reflex'){
+const fractions=[.025,.05,.08,.12,.18,.25,.35,.5,.65,.75,.82,.88,.92,.95,.975];
+const radii=[165,205,245,285,325];
+let found=null;
+outer: for(const f1 of fractions){
+for(const f2 of fractions){
+if(f2<=f1+.15) continue;
+for(const r1 of radii){
+for(const r2 of radii){
+const p=pointAtSafe(ab+d*f1,r1,38);
+const q=pointAtSafe(ab+d*f2,r2,38);
+if(insideAngle(p)&&insideAngle(q)&&segmentLeavesInside(p,q)){
+found=[p,q]; break outer;
+}
+}
+}
+}
+}
+if(found){[pts.P,pts.Q]=found;}
+else{
+const margin=Math.min(20,Math.max(8,(360-d)*.18));
+pts.P=pointAtSafe(ab+margin,235,38);
+pts.Q=pointAtSafe(ab+d-margin,235,38);
+}
+}
+}
+function formatAngle(d){
+const n=Math.round(d);
+return `${n===360?0:n}°`;
+}
+function arcPath(radiusPx,startDeg,sweepDeg){
+const p1=pointAt(startDeg,radiusPx);
+const p2=pointAt(startDeg+sweepDeg,radiusPx);
+const large=sweepDeg>180?1:0;
+return `M ${p1.x} ${p1.y} A ${radiusPx} ${radiusPx} 0 ${large} 0 ${p2.x} ${p2.y}`;
+}
+function updateDefinition(kind){
+const defs={
+acute:{num:15,title:'Acute Angle',classText:'Acute angle',words:'An acute angle is an ordinary angle with measure less than 90°.',maths:'0° < |∠BAC| < 90°',r1:'An acute angle is an ordinary angle.',r2:'',list:15,note:'An acute angle is an ordinary angle.',showOrdinary:true},
+right:{num:14,title:'Right Angle',classText:'Right angle',words:'A right angle is an ordinary angle with measure 90°.',maths:'|∠BAC| = 90°',r1:'A right angle is an ordinary angle.',r2:'It is half a straight angle or a quarter of a full angle.',list:14,note:'A right angle is an ordinary angle.',showOrdinary:true},
+obtuse:{num:15,title:'Obtuse Angle',classText:'Obtuse angle',words:'An obtuse angle is an ordinary angle with measure greater than 90° and less than 180°.',maths:'90° < |∠BAC| < 180°',r1:'An obtuse angle is an ordinary angle.',r2:'',list:15,note:'An obtuse angle is an ordinary angle.',showOrdinary:true},
+ordinary:{num:8,title:'Ordinary Angle',classText:'Ordinary angle',words:'An angle is an ordinary angle if its arms are not on one line, and its inside is a convex set.',maths:'0° < |∠BAC| < 180°',r1:'Default meaning: unless otherwise stated, an angle means an ordinary angle.',r2:'',list:8,note:'This is an ordinary angle.',showOrdinary:false},
+reflex:{num:10,title:'Reflex Angle',classText:'Reflex angle',words:'A reflex angle has measure greater than 180° and less than 360°.',maths:'180° < |∠BAC| < 360°',r1:'A reflex angle is not an ordinary angle. Its inside is not a convex set.',r2:'Together with its corresponding ordinary angle, it makes a full angle of 360°.',list:10,note:'A reflex angle is not an ordinary angle.',showOrdinary:false},
+straight:{num:9,title:'Straight Angle',classText:'Straight angle',words:'A straight angle has measure 180°.',maths:'|∠BAC| = 180°',r1:'A straight angle is not an ordinary angle.',r2:'Its arms are on one line and point in opposite directions.',list:9,note:'A straight angle is not an ordinary angle.',showOrdinary:false},
+full:{num:11,title:'Full Angle',classText:'Full angle',words:'A full angle has measure 360°.',maths:'|∠BAC| = 360°',r1:'The arms of a full angle coincide.',r2:'The inside of a full angle is the whole plane.',list:11,note:'A full angle is not an ordinary angle.',showOrdinary:false},
+null:{num:7,title:'Null Angle',classText:'Null angle',words:'A null angle has measure 0°.',maths:'|∠BAC| = 0°',r1:'A null angle is not an ordinary angle.',r2:'Its two arms coincide. There are no points in its inside.',list:7,note:'A null angle is not an ordinary angle.',showOrdinary:false}
+};
+const x=defs[kind]||defs.ordinary;
+ordinaryLead.classList.toggle('hidden', !x.showOrdinary);
+currentDefinition.classList.remove('hidden');
+definitionNumber.textContent=`Definition ${x.num}`;
+definitionTitle.textContent=x.title;
+classification.textContent=x.classText;
+definitionWords.textContent=x.words;
+definitionMaths.textContent=x.maths.replace('∠BAC',angleNotation());
+remarkLine1.textContent=x.r1;
+remarkLine2.textContent=x.r2||'';
+remarkLine2.classList.toggle('hidden',!x.r2);
+currentAngleNote.querySelector('span').textContent=x.note;
+document.querySelectorAll('.angle-def-list > div').forEach(el=>el.classList.remove('active'));
+const active=document.getElementById('defList'+x.list);
+if(active) active.classList.add('active');
+}
+function render(){
+const eB=rayEnd(pts.B), eC=rayEnd(pts.C);
+const d=directedAngle();
+const cls=fullMoment ? 'full' : angleClass(d);
+const rounded=fullMoment ? 360 : Math.round(d);
+wedge.setAttribute('d',wedgePath());
+wedge.classList.toggle('hidden', cls==='null' || cls==='straight' || cls==='full');
+svg.classList.toggle('full-angle',cls==='full');
+if(cls==='full'){
+wedge.setAttribute('d',`M 0 0 H ${W} V ${H} H 0 Z`);
+wedge.classList.remove('hidden');
+}
+insidePrompt.classList.toggle('hidden',hasInteracted || cls==='full' || cls==='null' || cls==='straight');
+if(!insidePrompt.classList.contains('hidden')){
+insidePrompt.setAttribute('x', pts.A.x + 110);
+insidePrompt.setAttribute('y', pts.A.y - 35);
+}
+for(const [line,end] of [[rayB,eB],[rayC,eC]]){
+line.setAttribute('x1',pts.A.x);line.setAttribute('y1',pts.A.y);
+line.setAttribute('x2',end.x);line.setAttribute('y2',end.y);
+}
+for(const [el,key] of [[Ael,'A'],[Bel,'B'],[Cel,'C'],[Pel,'P'],[Qel,'Q']]){
+el.setAttribute('cx',pts[key].x);el.setAttribute('cy',pts[key].y);
+}
+refreshNames();
+const la=bestLabelPosition(pts.A,[pts.B,pts.C]);
+const lb=bestLabelPosition(pts.B,[pts.A,pts.C]);
+const lc=bestLabelPosition(pts.C,[pts.A,pts.B]);
+aLabel.setAttribute('x',la.x);aLabel.setAttribute('y',la.y);
+bLabel.setAttribute('x',lb.x);bLabel.setAttribute('y',lb.y);
+cLabel.setAttribute('x',lc.x);cLabel.setAttribute('y',lc.y);
+const fp=smartFramePosition();
+frameClass.setAttribute('x',fp.x);
+frameClass.setAttribute('y',fp.y);
+const noteX=fp.x;
+const noteY=fp.y+36;
+const finalNoteY=Math.max(96,Math.min(392,noteY));
+frameNote.setAttribute('x',noteX);
+frameNote.setAttribute('text-anchor','middle');
+frameNote.setAttribute('y',finalNoteY);
+pq.setAttribute('x1',pts.P.x);pq.setAttribute('y1',pts.P.y);
+pq.setAttribute('x2',pts.Q.x);pq.setAttribute('y2',pts.Q.y);
+pLabel.setAttribute('x',pts.P.x-27);pLabel.setAttribute('y',pts.P.y-10);
+qLabel.setAttribute('x',pts.Q.x+12);qLabel.setAttribute('y',pts.Q.y-8);
+if(cls==='ordinary'){
+convexText.textContent='For any two points in the inside, the whole segment joining them stays inside.';
+pq.style.stroke='#217a3c';
+}else if(cls==='reflex'){
+convexText.innerHTML='<tspan x="450" dy="0">There are positions for two points inside a reflex angle</tspan><tspan x="450" dy="27">where part of the line segment joining them lies outside the angle.</tspan>';
+pq.style.stroke='#b42318';
+}else{
+convexText.textContent='';
+pq.style.stroke='';
+}
+angleArc.classList.add('hidden');
+rightMark.classList.add('hidden');
+frameNote.textContent='';
+const base=angleOf(pts.B);
+if(cls==='ordinary' && rounded===90){
+const s=48;
+const p1=pointAt(base,s);
+const p3=pointAt(base+90,s);
+const ux=(p1.x-pts.A.x)/s, uy=(p1.y-pts.A.y)/s;
+const vx=(p3.x-pts.A.x)/s, vy=(p3.y-pts.A.y)/s;
+const p2={x:pts.A.x+s*(ux+vx),y:pts.A.y+s*(uy+vy)};
+rightMark.setAttribute('d',`M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} L ${p3.x} ${p3.y}`);
+rightMark.classList.remove('hidden');
+} else if(cls==='reflex' && rounded===270){
+angleArc.setAttribute('d',arcPath(72,base,d));
+angleArc.classList.remove('hidden');
+const s=42;
+const p1=pointAt(base,s);
+const p3=pointAt(base-90,s);
+const ux=(p1.x-pts.A.x)/s, uy=(p1.y-pts.A.y)/s;
+const vx=(p3.x-pts.A.x)/s, vy=(p3.y-pts.A.y)/s;
+const p2={x:pts.A.x+s*(ux+vx),y:pts.A.y+s*(uy+vy)};
+rightMark.setAttribute('d',`M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} L ${p3.x} ${p3.y}`);
+rightMark.classList.remove('hidden');
+} else if(cls==='ordinary' || cls==='reflex'){
+angleArc.setAttribute('d',arcPath(72,base,d));
+angleArc.classList.remove('hidden');
+}
+if(cls==='ordinary'){
+const isRight = rounded===90;
+const isAcute = rounded>0 && rounded<90;
+const isObtuse = rounded>90 && rounded<180;
+if(isAcute){
+frameClass.textContent='Acute angle';
+frameNote.textContent='An acute angle is an ordinary angle.';
+updateDefinition('acute');
+}else if(isRight){
+frameClass.textContent='Right angle';
+frameNote.textContent='A right angle is an ordinary angle.';
+updateDefinition('right');
+}else if(isObtuse){
+frameClass.textContent='Obtuse angle';
+frameNote.textContent='An obtuse angle is an ordinary angle.';
+updateDefinition('obtuse');
+}else{
+frameClass.textContent='Ordinary angle';
+frameNote.textContent='This is an ordinary angle.';
+updateDefinition('ordinary');
+}
+status.textContent=`Angle ${formatAngle(d)}`;
+boundary.classList.add('hidden');
+}else if(cls==='reflex'){
+frameClass.textContent='Reflex angle';
+status.textContent=`Angle ${formatAngle(d)}`;
+frameNote.textContent='A reflex angle is not an ordinary angle.';
+updateDefinition('reflex');
+boundary.classList.add('hidden');
+}else if(cls==='straight'){
+frameClass.textContent='Straight angle';
+status.textContent='Angle 180°';
+frameNote.textContent='A straight angle is not an ordinary angle.';
+updateDefinition('straight');
+boundary.innerHTML='<strong>Definition 9 — Straight Angle</strong><br>The arms are on one line and point in opposite directions.';
+boundary.classList.remove('hidden');
+}else if(cls==='full'){
+frameClass.textContent='Full angle';
+status.textContent='360°';
+frameNote.textContent='A full angle is not an ordinary angle.';
+updateDefinition('full');
+boundary.innerHTML='<strong>Definition 11 — Full Angle</strong><br>The arms of a full angle coincide. The inside of a full angle is the whole plane.';
+boundary.classList.remove('hidden');
+}else{
+frameClass.textContent='Null angle';
+status.textContent='Angle 0°';
+frameNote.textContent='A null angle is not an ordinary angle.';
+updateDefinition('null');
+boundary.innerHTML='<strong>Definition 7 — Null Angle</strong><br>The arms coincide and are on one line.';
+boundary.classList.remove('hidden');
+}
+}
+function start(name,evt){
+active=name;
+hasInteracted=true;
+if(name==='B'||name==='C') setSelectedArm(name);
+if(name==='C'){
+prevRawAngle=rawRelativeAngle();
+turnAccum=0;
+fullMoment=false;
+fullConsumed=false;
+}
+if(name==='A'){
+dragStart={pointer:pointer(evt),A:{...pts.A},B:{...pts.B},C:{...pts.C},P:{...pts.P},Q:{...pts.Q}};
+}
+evt.currentTarget.setPointerCapture(evt.pointerId);
+}
+Ael.addEventListener('pointerdown',e=>start('A',e));
+Bel.addEventListener('pointerdown',e=>start('B',e));
+Cel.addEventListener('pointerdown',e=>start('C',e));
+Pel.addEventListener('pointerdown',e=>start('P',e));
+Qel.addEventListener('pointerdown',e=>start('Q',e));
+svg.addEventListener('pointermove',evt=>{
+if(!active)return;
+const p=clampPoint(pointer(evt),30);
+if(active==='A'){
+let dx=p.x-dragStart.pointer.x,dy=p.y-dragStart.pointer.y;
+const pad=30;
+const originals=[dragStart.A,dragStart.B,dragStart.C,dragStart.P,dragStart.Q];
+const minDx=Math.max(...originals.map(q=>pad-q.x));
+const maxDx=Math.min(...originals.map(q=>W-pad-q.x));
+const minDy=Math.max(...originals.map(q=>pad-q.y));
+const maxDy=Math.min(...originals.map(q=>H-pad-q.y));
+dx=Math.max(minDx,Math.min(maxDx,dx));
+dy=Math.max(minDy,Math.min(maxDy,dy));
+pts.A={x:dragStart.A.x+dx,y:dragStart.A.y+dy};
+for(const k of ['B','C','P','Q']){
+pts[k]={x:dragStart[k].x+dx,y:dragStart[k].y+dy};
+}
+render();return;
+}
+if(active==='B'||active==='C'){
+pts[active]=p;
+if(active==='C'){
+let nowRaw=rawRelativeAngle();
+if(prevRawAngle!==null){
+turnAccum+=shortestDelta(prevRawAngle,nowRaw);
+}
+const nearCoincident = circularDistance(nowRaw,0) <= SNAP_DEG;
+if(!fullConsumed && Math.abs(turnAccum)>=300 && nearCoincident){
+placeArmAt('C',0);
+nowRaw=0;
+fullMoment=true;
+fullConsumed=true;
+} else if(fullMoment){
+const away=circularDistance(nowRaw,0);
+if(away <= FULL_RELEASE_DEG){
+placeArmAt('C',0);
+nowRaw=0;
+fullMoment=true;
+} else {
+fullMoment=false;
+turnAccum=0;
+}
+}
+if(!fullMoment){
+nowRaw=rawRelativeAngle();
+const snapped=snapCritical(nowRaw);
+if(snapped!==nowRaw){
+placeArmAt('C',snapped);
+nowRaw=snapped;
+}
+}
+prevRawAngle=nowRaw;
+} else {
+fullMoment=false;
+fullConsumed=false;
+prevRawAngle=null;
+turnAccum=0;
+const raw=rawRelativeAngle();
+const snapped=snapCritical(raw);
+if(snapped!==raw) placeArmAt('B',snapped);
+}
+if(active==='C'){
+keyboardAngle = fullMoment ? 360 : Math.round(rawRelativeAngle());
+}
+squeezeTestPoints();
+render();
+return;
+}
+if(active==='P'||active==='Q'){
+if(!insideAngle(p))return;
+pts[active]=p;render();
+}
+});
+svg.addEventListener('pointerup',()=>{
+active=null;
+dragStart=null;
+prevRawAngle=null;
+turnAccum=0;
+});
+svg.addEventListener('pointercancel',()=>{active=null;dragStart=null});
+toggleLabels.addEventListener('click',()=>{
+const show=labels.classList.contains('hidden');
+labels.classList.toggle('hidden',!show);
+toggleLabels.textContent=show?'Hide labels':'Show labels';
+});
+toggleConvexity.addEventListener('click',()=>{
+const show=convexity.classList.contains('hidden');
+convexity.classList.toggle('hidden',!show);
+toggleConvexity.textContent=show?'Hide convex test':'Show convex test';
+if(show) squeezeTestPoints();
+render();
+});
+toggleDefinition.addEventListener('click',()=>{
+const hide=!definition.classList.contains('hidden');
+definition.classList.toggle('hidden',hide);
+toggleDefinition.textContent=hide?'Show definition':'Hide definition';
+});
+toggleNote.addEventListener('click',()=>{
+const show=learningNote.classList.contains('hidden');
+learningNote.classList.toggle('hidden',!show);
+toggleNote.textContent=show?'Hide note':'Show note';
+});
+hideAll.addEventListener('click',()=>{
+const everythingHidden =
+labels.classList.contains('hidden') &&
+convexity.classList.contains('hidden') &&
+definition.classList.contains('hidden') &&
+learningNote.classList.contains('hidden');
+if(everythingHidden){
+labels.classList.remove('hidden');
+convexity.classList.remove('hidden');
+definition.classList.remove('hidden');
+learningNote.classList.remove('hidden');
+toggleLabels.textContent='Hide labels';
+toggleConvexity.textContent='Hide convex test';
+toggleDefinition.textContent='Hide definition';
+toggleNote.textContent='Hide note';
+hideAll.textContent='Hide all';
+squeezeTestPoints();
+}else{
+labels.classList.add('hidden');
+convexity.classList.add('hidden');
+definition.classList.add('hidden');
+learningNote.classList.add('hidden');
+toggleLabels.textContent='Show labels';
+toggleConvexity.textContent='Show convex test';
+toggleDefinition.textContent='Show definition';
+toggleNote.textContent='Show note';
+hideAll.textContent='Show all';
+}
+render();
+});
+reset.addEventListener('click',()=>{
+pts=JSON.parse(JSON.stringify(defaults));
+convexity.classList.add('hidden');
+toggleConvexity.textContent='Show convex test';
+boundary.classList.add('hidden');
+definition.classList.remove('hidden');
+toggleDefinition.textContent='Hide definition';
+learningNote.classList.add('hidden');
+toggleNote.textContent='Show note';
+labels.classList.add('hidden');
+toggleLabels.textContent='Show labels';
+hideAll.textContent='Hide all';
+hasInteracted=false;
+fullMoment=false;
+fullConsumed=false;
+prevRawAngle=null;
+turnAccum=0;
+selectedArm=null;
+keyboardAngle=null;
+pickNames();
+Bel.classList.remove('selected');
+Cel.classList.remove('selected');
+svg.classList.remove('full-angle');
+render();
+});
+document.addEventListener('keydown',evt=>{
+if(selectedArm!=='C') return;
+hasInteracted=true;
+if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(evt.key)) return;
+evt.preventDefault();
+const forward = evt.key==='ArrowRight' || evt.key==='ArrowUp';
+const amount = evt.shiftKey ? 10 : 1;
+const step = forward ? amount : -amount;
+if(keyboardAngle===null){
+keyboardAngle = fullMoment ? 360 : Math.round(rawRelativeAngle());
+}
+let next = keyboardAngle + step;
+if(step>0){
+if(next===360){
+keyboardAngle=360;
+fullMoment=true;
+fullConsumed=true;
+placeArmAt('C',0);
+prevRawAngle=0;
+turnAccum=360;
+render();
+return;
+}
+if(next>360){
+next=1;
+fullMoment=false;
+fullConsumed=true;
+turnAccum=0;
+}
+}
+if(step<0){
+if(keyboardAngle===360){
+next=359;
+fullMoment=false;
+}else if(next<0){
+next=359;
+}
+}
+keyboardAngle=next;
+if(next===0){
+fullMoment=false;
+placeArmAt('C',0);
+prevRawAngle=0;
+turnAccum=0;
+render();
+return;
+}
+fullMoment=false;
+placeArmAt('C',next);
+prevRawAngle=next;
+render();
+});
+primitiveHelp.addEventListener('click',()=>primitiveDialog.showModal());
+primitiveDialog.addEventListener('click',e=>{
+if(e.target===primitiveDialog) primitiveDialog.close();
+});
+pickNames();
+render();
+</script>
+</body>
+</html>
