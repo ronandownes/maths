@@ -3,11 +3,25 @@
 const $=id=>document.getElementById(id),T=window.TriangleMath,Assess=window.MathsAssessment;
 const kind=document.body.dataset.app,pyth=kind==='pythagoras';
 const fixedRatio=['sin','cos','tan'].includes(document.body.dataset.ratio)?document.body.dataset.ratio:null;
-const cfg={mode:'instruction',ratio:fixedRatio||'sin',route:'ratio',find:'num',bank:pyth?'triples':'decimal',precision:1,angle:35,hyp:10,step:0,slide:0,reveal:false,question:0,activeQuestion:null,showRays:false,sound:true,attempts:0,wrong:[],chosen:null,quizIndex:0,quizQuestions:[],testQuestions:[],testAnswers:[],submitted:false,testType:'any'};
+const cfg={mode:'practice',ratio:fixedRatio||'sin',route:'ratio',find:'num',familyId:fixedRatio==='cos'?4:fixedRatio==='tan'?7:1,bank:pyth?'triples':'decimal',precision:1,angle:35,hyp:10,step:0,slide:0,reveal:false,question:0,activeQuestion:null,showRays:false,sound:true,attempts:0,wrong:[],chosen:null,quizIndex:0,quizScore:0,quizQuestions:[],testQuestions:[],testAnswers:[],submitted:false,testType:'any'};
 const ratioSides={sin:['opp','hyp'],cos:['adj','hyp'],tan:['opp','adj']},round=v=>T.round(v,cfg.precision),fmt=v=>String(round(v));
 const sideNames={opp:'opposite',adj:'adjacent',hyp:'hypotenuse'};
 const tripleList=T.bank();
-function makeQuestion(n=cfg.question,vary=false){
+const familyBanks={
+ sin:[{id:1,ratio:'sin',find:'num',omitted:'adj',included:'unmarked',title:'Find opposite x'},{id:2,ratio:'sin',find:'den',omitted:'adj',included:'unmarked',title:'Find hypotenuse x'},{id:3,ratio:'sin',find:'angle',omitted:'adj',included:'unmarked',title:'Find marked angle θ'}],
+ cos:[{id:4,ratio:'cos',find:'num',omitted:'opp',included:'marked',title:'Find adjacent x'},{id:5,ratio:'cos',find:'den',omitted:'opp',included:'marked',title:'Find hypotenuse x'},{id:6,ratio:'cos',find:'angle',omitted:'opp',included:'marked',title:'Find marked angle θ'}],
+ tan:[{id:7,ratio:'tan',find:'num',omitted:'hyp',included:'right',title:'Find opposite x'},{id:8,ratio:'tan',find:'den',omitted:'hyp',included:'right',title:'Find adjacent x'},{id:9,ratio:'tan',find:'angle',omitted:'hyp',included:'right',title:'Find marked angle θ'}]
+};
+const allFamilies=[...familyBanks.sin,...familyBanks.cos,...familyBanks.tan];
+const familyById=id=>allFamilies.find(f=>f.id===Number(id))||allFamilies[0];
+function availableFamilies(){return fixedRatio?familyBanks[fixedRatio]:allFamilies}
+function renderFamilyBanks(){
+ const host=$('familyBanks');if(!host)return;host.replaceChildren();
+ const label=document.createElement('strong');label.className='family-heading';label.textContent='Question families';host.append(label);
+ availableFamilies().forEach(f=>{const b=document.createElement('button');b.type='button';b.dataset.family=String(f.id);b.setAttribute('aria-pressed',String(cfg.familyId===f.id));b.setAttribute('aria-label','Family '+f.id+': '+ratioInfo[f.ratio]?.title+' — '+f.title);b.innerHTML='<span class="family-number">'+f.id+'</span><span class="family-name">'+f.title+'</span>';b.onclick=()=>selectFamily(f.id);host.append(b)});
+}
+function selectFamily(id){const f=familyById(id);cfg.familyId=f.id;cfg.ratio=f.ratio;cfg.find=f.find;cfg.route='unknown';cfg.question=0;cfg.step=0;cfg.activeQuestion=null;renderFamilyBanks();renderToolbar();if(cfg.mode==='practice'||cfg.mode==='display')practice();if(cfg.mode==='quiz'||cfg.mode==='test')startAssessment(cfg.mode)}
+function makeQuestion(n=cfg.question,vary=false,familyId=cfg.familyId){
  if(pyth){
   const entry=tripleList[n%tripleList.length],useTriple=cfg.bank==='triples'||cfg.bank==='mixed'&&n%2===0;
   let a=useTriple?entry.a:4+n%6,b=useTriple?entry.b:n%3===0?10:7+n%5;
@@ -25,31 +39,52 @@ function makeQuestion(n=cfg.question,vary=false){
    Math.sqrt(Math.max(0,given.hyp**2-given.adj**2));
   return {a,b,h,given,answer,find,angle:Math.atan2(a,b)*180/Math.PI,exact:useTriple,triplet:entry};
  }
- const entry=tripleList[n%tripleList.length],useTriple=cfg.bank==='triples';
- const variedAngle=Math.max(5,Math.min(85,cfg.angle+(n%3-1)*4));
- const rawAngle=useTriple?entry.angle:cfg.bank==='surds'?[30,45,60][n%3]:vary?variedAngle:cfg.angle;
- const variedHyp=Math.max(3,Math.min(20,Math.round((cfg.hyp+(n%3-1)*1.5)*2)/2));
- const h=useTriple?entry.c:vary?variedHyp:cfg.hyp,original=T.sides(rawAngle,h);
- const given={opp:round(original.opp),adj:round(original.adj),hyp:round(original.hyp)};
- const find=cfg.route==='unknown'?cfg.find:['num','den','angle'][n%3],[num,den]=ratioSides[cfg.ratio];
- const displayAngle=round(rawAngle),value=T.trig(cfg.ratio,displayAngle),ratio=given[num]/given[den];
- const answer=find==='angle'?
-  (cfg.ratio==='sin'?Math.asin(Math.min(1,Math.max(-1,ratio))):
-   cfg.ratio==='cos'?Math.acos(Math.min(1,Math.max(-1,ratio))):Math.atan(ratio))*180/Math.PI:
-  find==='num'?given[den]*value:given[num]/value;
- return {...given,hyp:original.hyp,angle:find==='angle'?answer:displayAngle,find,answer,ratio:cfg.ratio};
+ const family=familyById(familyId),r=family.ratio,[num,den]=ratioSides[r],step=n%17;
+ const first=step===0;let angle=first?33:22+((step*9+family.id*5)%37),knownNum=first?7:4+((step*3+family.id)%6),knownDen=first?11:9+((step*5+family.id)%8);
+ let values={opp:0,adj:0,hyp:0},answer=0;
+ if(family.find==='num'){
+  const base=first?11:8+((step*5+family.id)%9);
+  if(r==='sin'||r==='cos'){
+   values.hyp=base;values.opp=base*Math.sin(angle*Math.PI/180);values.adj=base*Math.cos(angle*Math.PI/180);
+  }else{values.adj=base;values.opp=base*Math.tan(angle*Math.PI/180);values.hyp=T.hyp(values.opp,values.adj)}
+  values[den]=round(base);answer=values[den]*T.trig(r,angle);
+ }else if(family.find==='den'){
+  const givenNumerator=first?7:5+((step*3+family.id)%7),v=T.trig(r,angle);
+  values[num]=givenNumerator;values[den]=givenNumerator/v;
+  if(r==='sin'){values.hyp=values[den];values.opp=givenNumerator;values.adj=Math.sqrt(Math.max(0,values.hyp**2-values.opp**2))}
+  else if(r==='cos'){values.hyp=values[den];values.adj=givenNumerator;values.opp=Math.sqrt(Math.max(0,values.hyp**2-values.adj**2))}
+  else{values.opp=givenNumerator;values.adj=values[den];values.hyp=T.hyp(values.opp,values.adj)}
+  values[num]=round(givenNumerator);answer=values[num]/v;
+ }else{
+  if(first){knownNum=7;knownDen=11}
+  else if(r==='tan'){knownNum=5+((step*2+family.id)%8);knownDen=7+((step*5+family.id)%9)}
+  else{knownNum=4+((step*2+family.id)%5);knownDen=knownNum+5+((step+family.id)%5)}
+  values[num]=knownNum;values[den]=knownDen;
+  if(r==='sin'){values.hyp=knownDen;values.opp=knownNum;values.adj=Math.sqrt(Math.max(0,knownDen**2-knownNum**2))}
+  else if(r==='cos'){values.hyp=knownDen;values.adj=knownNum;values.opp=Math.sqrt(Math.max(0,knownDen**2-knownNum**2))}
+  else{values.opp=knownNum;values.adj=knownDen;values.hyp=T.hyp(knownNum,knownDen)}
+  const ratio=round(knownNum)/round(knownDen);
+  angle=(r==='sin'?Math.asin(Math.min(1,ratio)):r==='cos'?Math.acos(Math.min(1,ratio)):Math.atan(ratio))*180/Math.PI;
+  answer=angle;
+ }
+ const given={opp:round(values.opp),adj:round(values.adj),hyp:round(values.hyp)};
+ if(family.find==='num')answer=given[den]*T.trig(r,angle);
+ if(family.find==='den')answer=given[num]/T.trig(r,angle);
+ return {...given,angle,find:family.find,answer,ratio:r,omitted:family.omitted,included:family.included,familyId:family.id,num,den};
 }
 function correctAnswer(q){return q.answer}
 function questionText(q){
  if(pyth)return q.find==='hyp'?'Find the hypotenuse.':q.find==='adj'?'Find the missing horizontal side.':'Find the missing vertical side.';
- const [num,den]=ratioSides[q.ratio];return q.find==='angle'?'Find θ using the two marked sides.':q.find==='num'?'Find the '+sideNames[num]+' side.':'Find the '+sideNames[den]+' side.';
+ const [num,den]=ratioSides[q.ratio];return q.find==='angle'?'Find the marked angle θ from the two given sides.':q.find==='num'?'Find x, the '+sideNames[num]+' side.':'Find x, the '+sideNames[den]+' side.';
 }
 function questionTriangle(q,answers=false){
- if(pyth){const marks={adj:q.find==='adj'?'?':fmt(q.given.adj),opp:q.find==='opp'?'?':fmt(q.given.opp),hyp:q.find==='hyp'?'?':fmt(q.given.hyp)};
+ if(pyth){const marks={adj:q.find==='adj'?'x':fmt(q.given.adj),opp:q.find==='opp'?'x':fmt(q.given.opp),hyp:q.find==='hyp'?'x':fmt(q.given.hyp)};
   return T.triangle({angle:q.angle,hypotenuse:q.h,marks,highlight:cfg.showRays?['adj','opp','hyp']:[]});}
- const [num,den]=ratioSides[q.ratio];let marks={opp:'O',adj:'A',hyp:'H'};
- for(const k of [num,den])marks[k]=q.find==='angle'?fmt(q[k]):q.find==='num'&&k===num?'?':q.find==='den'&&k===den?'?':fmt(q[k]);
- return T.triangle({angle:q.angle,hypotenuse:q.hyp,angleLabel:q.find==='angle'&&!answers?'?°':fmt(q.angle)+'°',marks,highlight:cfg.showRays?[num,den]:[]});
+ const [num,den]=ratioSides[q.ratio],marks={opp:'',adj:'',hyp:''};
+ if(q.find==='angle'){marks[num]=fmt(q[num]);marks[den]=fmt(q[den])}
+ else if(q.find==='num'){marks[num]='x';marks[den]=fmt(q[den])}
+ else{marks[num]=fmt(q[num]);marks[den]='x'}
+ return T.triangle({angle:q.angle,hypotenuse:q.hyp,angleLabel:q.find==='angle'?'θ':fmt(q.angle)+'°',marks,highlight:cfg.showRays?[num,den]:[],arrows:[num,den],included:q.included});
 }
 function equation(q,worked=false){
  if(pyth){
@@ -63,11 +98,11 @@ function equation(q,worked=false){
   const squared=h*h-known*known,exact=Number.isInteger(squared)?T.surd(squared):null;
   return worked?k+' = √('+h+'² − '+known+'²)'+(exact?' = '+exact:'')+' ≈ '+fmt(q.answer):k+'² = '+h+'² − '+known+'²';
  }
- const r=q.ratio,[num,den]=ratioSides[r],value=T.trig(r,q.angle);
- if(!worked)return r+(q.find==='angle'?' θ':' '+fmt(q.angle)+'°')+' = '+num+' / '+den;
- if(q.find==='angle')return 'θ = '+r+'⁻¹('+fmt(q[num])+' / '+fmt(q[den])+') = '+fmt(q.answer)+'°';
- if(q.find==='num')return num+' = '+fmt(q[den])+' × '+r+'('+fmt(q.angle)+'°) = '+fmt(q.answer);
- return den+' = '+fmt(q[num])+' ÷ '+r+'('+fmt(q.angle)+'°) = '+fmt(q.answer);
+ const r=q.ratio,[num,den]=ratioSides[r];
+ if(q.find==='angle')return worked?'θ = '+r+'⁻¹('+fmt(q[num])+' / '+fmt(q[den])+') = '+fmt(q.answer)+'°':r+' θ = '+fmt(q[num])+' / '+fmt(q[den]);
+ if(!worked)return r+' '+fmt(q.angle)+'° = '+(q.find==='num'?'x / '+fmt(q[den]):fmt(q[num])+' / x');
+ if(q.find==='num')return 'x = '+fmt(q[den])+' × '+r+'('+fmt(q.angle)+'°) = '+fmt(q.answer);
+ return 'x = '+fmt(q[num])+' ÷ '+r+'('+fmt(q.angle)+'°) = '+fmt(q.answer);
 }
 function prediction(q){
  if(pyth)return q.find==='hyp'?'Predict: the hypotenuse must be longer than either shorter side.':'Predict: the missing shorter side must be less than the hypotenuse.';
@@ -78,21 +113,19 @@ function renderToolbar(question=cfg.activeQuestion){
  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(cfg.mode===b.dataset.mode)));
  document.querySelectorAll('[data-ratio]').forEach(b=>b.setAttribute('aria-pressed',String(cfg.ratio===b.dataset.ratio)));
  document.querySelectorAll('[data-route]').forEach(b=>b.setAttribute('aria-pressed',String(cfg.route===b.dataset.route)));
- $('ratioControls').hidden=pyth||Boolean(fixedRatio);
- $('routeControls').hidden=pyth;
+ $('ratioControls').hidden=true;
+ $('routeControls').hidden=true;
  $('bank').value=cfg.bank;$('find').value=question?question.find:cfg.find;
- $('find').disabled=cfg.route==='ratio'||cfg.mode==='quiz'||cfg.mode==='test';
- $('trigFind').hidden=pyth||cfg.mode==='test';
+ $('find').disabled=true;
+ $('trigFind').hidden=true;
  $('pythFind').value=cfg.testType;
  $('precision').value=String(cfg.precision);
  $('bank').disabled=cfg.mode==='quiz'||cfg.mode==='test';$('precision').disabled=cfg.mode==='quiz'||cfg.mode==='test';
  const exactBank=cfg.bank==='triples',specialBank=cfg.bank==='surds';
- $('angleControl').hidden=pyth||exactBank||specialBank||cfg.mode==='test'||Boolean(question&&question.find==='angle');
- $('hypControl').hidden=pyth||exactBank||cfg.mode==='test'||Boolean(question&&(question.ratio==='tan'||question.find==='den'&&ratioSides[question.ratio][1]==='hyp'));
- if(question&&!pyth){
-  if(!$('angleControl').hidden){cfg.angle=Number(question.angle);$('angle').value=cfg.angle;$('angleOut').textContent=cfg.angle+'°';}
-  if(!$('hypControl').hidden){cfg.hyp=Number(question.hyp);$('hyp').value=cfg.hyp;$('hypOut').textContent=String(cfg.hyp);}
- }
+ $('angleControl').hidden=true;$('hypControl').hidden=true;
+ $('pythBank').hidden=!pyth;
+ if(!pyth){$('bank').parentElement.hidden=true;$('routeControls').hidden=true;$('ratioControls').hidden=true;}
+ if(!pyth)renderFamilyBanks();
 }
 function setOptionsOpen(open){
  const panel=$('optionsPanel'),toggle=$('optionsToggle'),backdrop=$('optionsBackdrop');
@@ -102,13 +135,17 @@ function setOptionsOpen(open){
 }
 function mode(mode){cfg.mode=mode;cfg.showRays=false;cfg.step=0;cfg.reveal=false;
  setOptionsOpen(false);
- for(const m of ['instruction','practice','display','quiz','test','sheets'])$(m+'Panel').hidden=m!==mode;
- $('assessmentPanel').hidden=mode!=='quiz'&&mode!=='test';
+ for(const m of ['instruction','practice','display','graph','sheets']){const panel=$(m+'Panel');if(panel)panel.hidden=m!==mode;}
+ if($('quizPanel'))$('quizPanel').hidden=true;
+ if($('testPanel'))$('testPanel').hidden=true;
+ if($('assessmentPanel'))$('assessmentPanel').hidden=mode!=='quiz'&&mode!=='test';
+ const sinePathways=$('sinePathways');if(sinePathways)sinePathways.hidden=mode!=='instruction';
  renderToolbar();
  if(mode==='instruction')instruction();
  if(mode==='practice'||mode==='display')practice();
+ if(mode==='graph')ratioGraph();
  if(mode==='quiz'||mode==='test')startAssessment(mode);
- if(mode==='sheets')$('sheetsPanel').hidden=false;
+ if(mode==='sheets'&&$('sheetsPanel'))$('sheetsPanel').hidden=false;
 }
 const generalSlides=pyth?[
 ['What makes a right triangle?','Identify the right angle, then find the hypotenuse: it is opposite the right angle. The shorter sides meet at 90°.','The hypotenuse is the longest side.'],
@@ -119,21 +156,21 @@ const generalSlides=pyth?[
 ['Non-triples and surds','The sides 26 and 10 may be two legs or a hypotenuse and a leg. Their roles change the expression.','If both are legs: √776 = 2√194 ≈ 27.9; if 26 is the hypotenuse: √576 = 24.'],
 ['Reflection','An exact surd should not be rounded until required. When measurements are rounded, do not imply that the derived result is exact.','The bank lets you choose exact triples, non-triples, mixed and surds.']
 ]:[
-['See the two sides first','Identify the marked acute reference angle and the two relevant sides. Imagine each side as a ray. Which angle lies between them?','The INCLUDED angle may be the marked angle, the other acute angle, or the right angle.'],
-['Pre-teach the language','Side, ray, right angle, acute angle, opposite, adjacent, hypotenuse, reference angle, included angle, ratio, numerator and denominator.','Opposite and adjacent depend on your chosen acute reference angle.'],
-['Discover sine','Opposite and hypotenuse meet at the OTHER acute angle. The reference angle θ is not their included angle.','sin θ = opposite / hypotenuse.'],
-['Discover cosine','Adjacent and hypotenuse meet at the marked acute reference angle.','cos θ = adjacent / hypotenuse.'],
-['Discover tangent','The two shorter sides, opposite and adjacent, meet at the right angle.','tan θ = opposite / adjacent.'],
-['Find three different unknowns','Find numerator by multiplying ratio and denominator. Find denominator by dividing numerator by ratio. Find θ by using the inverse function.','O = H sin θ; H = O / sin θ; θ = sin⁻¹(O/H).'],
-['How the ratio changes','As θ increases with hypotenuse fixed, sine rises and cosine falls. Tangent increases and passes 1 at 45°.','For θ from 0° to 90°, sin rises from 0 to 1, cos falls from 1 to 0 and tan grows without bound.'],
-['Proportionality needs a constant','At fixed θ, O is directly proportional to H. At fixed O, H is inversely proportional to sine. At fixed H, adjacent is directly proportional to cosine.','Do not call adjacent inversely proportional to cos; A = H cos θ.']
+['Mark one acute angle','The common term is reference angle. We will quickly call it the marked angle, θ. The other acute angle is the unmarked angle.','Mark θ first. Opposite and adjacent are named from θ.'],
+['Name the sides','The side opposite θ is opposite (red); the leg beside θ is adjacent (blue); the side opposite 90° is the hypotenuse (green). Every diagram marks the right angle.','Use lower-case o, a and h only as side symbols.'],
+['Find the included angle','Put an arrow on each of the two sides in the ratio. Their shared vertex is the included angle. You can also start with the side left out and look at the angle opposite it.','The included angle can be marked, unmarked, or 90°.'],
+['The unmarked side gives the cue','There is a one-to-one correspondence. Leave out adjacent a: the angle between the other two sides is unmarked, so use sine. Leave out opposite o: that angle is marked θ, so use cosine. Leave out hypotenuse h: that angle is 90°, so use tangent.','The unmarked side identifies the ratio; calculate with the marked angle θ in all three cases.'],
+['Why sine uses the marked angle','For sine, the included angle between o and h is the unmarked angle. That identifies the ratio; it is not the angle used in the calculation. Keep θ marked and use sin θ = o/h.','Example: sin 33° = x/11.'],
+['The nine question families','Each ratio has three families: find its numerator side, find its denominator side, or find θ. Sine: find o, h, θ. Cosine: find a, h, θ. Tangent: find o, a, θ.','Choose a family bank, then practise the same question structure with fresh values.'],
+['Ratios change with the marked angle','As θ rises from 0° towards 90°, sine rises from 0 towards 1, cosine falls from 1 towards 0, and tangent rises without bound. Tangent is not a wave: it has a vertical asymptote at 90°.','A right triangle is non-degenerate for 0° < θ < 90°. Endpoints are limits. Open Graph to explore.'],
+['Proportion and scale','For a fixed θ, similar right triangles have the same ratios. With h fixed, o is proportional to sin θ and a is proportional to cos θ. With o fixed, h is proportional to 1/sin θ.','The inverse sine function is different from inverse proportion.']
 ];
 const ratioInfo={
- sin:{title:'Sine',numerator:'opposite',denominator:'hypotenuse',formula:'sin θ = O ÷ H',findNumerator:'O = H × sin θ',findDenominator:'H = O ÷ sin θ',findAngle:'θ = sin⁻¹(O ÷ H)',trend:'As the acute angle θ increases, sine increases.',limits:'As θ approaches 0°, sin θ approaches 0. As θ approaches 90°, sin θ approaches 1. Therefore 0 < sin θ < 1.',
+ sin:{title:'Sine',numerator:'opposite',denominator:'hypotenuse',formula:'sin θ = o ÷ h',findNumerator:'o = h × sin θ',findDenominator:'h = o ÷ sin θ',findAngle:'θ = sin⁻¹(o ÷ h)',trend:'As the acute angle θ increases, sine increases.',limits:'As θ approaches 0°, sin θ approaches 0. As θ approaches 90°, sin θ approaches 1. Therefore 0 < sin θ < 1.',
   valueText:(a,v)=>'sin '+a+'° = '+v.toPrecision(3)+'; the value stays below 1 for every acute angle.'},
- cos:{title:'Cosine',numerator:'adjacent',denominator:'hypotenuse',formula:'cos θ = A ÷ H',findNumerator:'A = H × cos θ',findDenominator:'H = A ÷ cos θ',findAngle:'θ = cos⁻¹(A ÷ H)',trend:'As the acute angle θ increases, cosine decreases.',limits:'As θ approaches 0°, cos θ approaches 1. As θ approaches 90°, cos θ approaches 0. Therefore 0 < cos θ < 1.',
+ cos:{title:'Cosine',numerator:'adjacent',denominator:'hypotenuse',formula:'cos θ = a ÷ h',findNumerator:'a = h × cos θ',findDenominator:'h = a ÷ cos θ',findAngle:'θ = cos⁻¹(a ÷ h)',trend:'As the acute angle θ increases, cosine decreases.',limits:'As θ approaches 0°, cos θ approaches 1. As θ approaches 90°, cos θ approaches 0. Therefore 0 < cos θ < 1.',
   valueText:(a,v)=>'cos '+a+'° = '+v.toPrecision(3)+'; the value stays between 0 and 1 for every acute angle.'},
- tan:{title:'Tangent',numerator:'opposite',denominator:'adjacent',formula:'tan θ = O ÷ A',findNumerator:'O = A × tan θ',findDenominator:'A = O ÷ tan θ',findAngle:'θ = tan⁻¹(O ÷ A)',trend:'As the acute angle θ increases, tangent increases. At 45°, opposite and adjacent are equal, so tan θ = 1.',limits:'As θ approaches 0°, tan θ approaches 0. As θ approaches 90° from below, tan θ grows without bound. Tangent has no upper limit.',
+ tan:{title:'Tangent',numerator:'opposite',denominator:'adjacent',formula:'tan θ = o ÷ a',findNumerator:'o = a × tan θ',findDenominator:'a = o ÷ tan θ',findAngle:'θ = tan⁻¹(o ÷ a)',trend:'As the acute angle θ increases, tangent increases. At 45°, opposite and adjacent are equal, so tan θ = 1.',limits:'As θ approaches 0°, tan θ approaches 0. As θ approaches 90° from below, tan θ grows without bound. Tangent has no upper limit.',
   valueText:(a,v)=>'tan '+a+'° = '+v.toPrecision(3)+'; tangent has no upper bound as θ approaches 90°.'}
 };
 function focusedRatioSlides(ratio){
@@ -147,7 +184,7 @@ function focusedRatioSlides(ratio){
   ['Watch the ratio change',info.trend+' Move the slider to see the triangle and ratio value change. '+info.limits+' The endpoints are limits; a non-degenerate right triangle has 0° < θ < 90°.',info.limits]
  ];
 }
-const slides=fixedRatio?focusedRatioSlides(fixedRatio):generalSlides;
+const slides=generalSlides;
 function ratioExplorer(ratio){
  const info=ratioInfo[ratio],area=document.createElement('div');area.className='ratio-explorer';
  const controls=document.createElement('div');controls.className='ratio-explorer-controls';
@@ -160,9 +197,34 @@ function ratioExplorer(ratio){
   const degrees=Number(slider.value),value=T.trig(ratio,degrees);
   angle.textContent=degrees+'°';
   readout.textContent=info.valueText(degrees,value);
-  diagram.innerHTML=T.triangle({angle:degrees,hypotenuse:10,angleLabel:degrees+'°',marks:{adj:'A',opp:'O',hyp:'H'}});
+  diagram.innerHTML=T.triangle({angle:degrees,hypotenuse:10,angleLabel:degrees+'°',marks:{adj:'a',opp:'o',hyp:'h'}});
  }
  slider.addEventListener('input',update);update();area.append(controls,diagram);return area;
+}
+function ratioGraph(){
+ const host=$('graphPanel');if(!host)return;host.replaceChildren();
+ const heading=document.createElement('h2');heading.textContent='Watch the ratios change';
+ const intro=document.createElement('p');intro.className='graph-intro';intro.textContent='Move θ from 1° towards 90°. Sine rises, cosine falls, and tangent rises towards a vertical asymptote; tangent is not a wave. Red: sine / opposite. Blue: cosine / adjacent. Dark: tangent. The right-hand scale shows tan θ up to 5; the readout gives its full value.';
+ const controls=document.createElement('div');controls.className='graph-controls';
+ const label=document.createElement('label');label.textContent='Marked angle θ';
+ const slider=document.createElement('input');slider.type='range';slider.min='1';slider.max='89';slider.step='1';slider.value='35';slider.setAttribute('aria-label','Marked angle theta in degrees');
+ const degrees=document.createElement('output');degrees.textContent='35°';label.append(degrees);controls.append(label,slider);
+ const values=document.createElement('p');values.className='graph-values';values.setAttribute('aria-live','polite');controls.append(values);
+ const svgWrap=document.createElement('div');svgWrap.className='ratio-graph';
+ const x0=58,y0=282,w=650,h=226,yTop=y0-h,yMaxTan=5;
+ const xOf=d=>x0+w*d/90, yUnit=v=>y0-h*v, yTan=v=>y0-h*Math.min(v/yMaxTan,1);
+ const pathFor=(fn,yMap,limit=Infinity)=>{const parts=[];for(let i=0;i<180;i++){const d=i*.5,v=fn(d*Math.PI/180);if(v>limit)break;parts.push((i?'L':'M')+xOf(d).toFixed(2)+' '+yMap(v).toFixed(2))}return parts.join(' ')};
+ let ticks='';
+ [0,.25,.5,.75,1].forEach(v=>{const y=yUnit(v);ticks+='<line x1="'+x0+'" y1="'+y.toFixed(1)+'" x2="'+(x0+w)+'" y2="'+y.toFixed(1)+'" stroke="#e2e8ef"/><text x="'+(x0-10)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" font-size="12" fill="#53677c">'+v.toFixed(v===0||v===1?0:2)+'</text>'});
+ [0,15,30,45,60,75,90].forEach(d=>{const x=xOf(d);ticks+='<line x1="'+x.toFixed(1)+'" y1="'+yTop+'" x2="'+x.toFixed(1)+'" y2="'+y0+'" stroke="#f0f3f7"/><text x="'+x.toFixed(1)+'" y="'+(y0+22)+'" text-anchor="middle" font-size="12" fill="#53677c">'+d+'°</text>'});
+ const tangentTicks=[0,2.5,5].map(v=>'<text x="'+(x0+w+10)+'" y="'+(yTan(v)+4).toFixed(1)+'" font-size="12" fill="#53677c">'+(v===5?'↑':v)+'</text>').join('');
+ svgWrap.innerHTML='<svg viewBox="0 0 780 355" role="img" aria-label="Graph of sine increasing from zero to one, cosine decreasing from one to zero, and tangent rising off the separate right-hand scale towards a vertical asymptote at 90 degrees. Sine and cosine use the left scale from zero to one; tangent uses a right scale from zero to five."><defs><clipPath id="ratio-graph-clip"><rect x="'+x0+'" y="'+yTop+'" width="'+w+'" height="'+h+'"/></clipPath></defs>'+ticks+'<line x1="'+x0+'" y1="'+y0+'" x2="'+(x0+w)+'" y2="'+y0+'" stroke="#243d55" stroke-width="2"/><line x1="'+x0+'" y1="'+yTop+'" x2="'+x0+'" y2="'+y0+'" stroke="#243d55" stroke-width="2"/><line x1="'+(x0+w)+'" y1="'+yTop+'" x2="'+(x0+w)+'" y2="'+y0+'" stroke="#243d55" stroke-width="2"/><line x1="'+xOf(90)+'" y1="'+yTop+'" x2="'+xOf(90)+'" y2="'+y0+'" stroke="#30343b" stroke-dasharray="7 6" stroke-width="2"/><g clip-path="url(#ratio-graph-clip)"><path d="'+pathFor(Math.sin,yUnit)+'" fill="none" stroke="#c63d43" stroke-width="4"/><path d="'+pathFor(Math.cos,yUnit)+'" fill="none" stroke="#2369d1" stroke-width="4"/><path d="'+pathFor(Math.tan,yTan,yMaxTan)+'" fill="none" stroke="#252b33" stroke-width="3.5"/><path d="M'+xOf(78.5)+' '+(yTop+20)+' L'+xOf(78.5)+' '+(yTop+3)+' M'+(xOf(78.5)-5)+' '+(yTop+9)+' L'+xOf(78.5)+' '+(yTop+3)+' L'+(xOf(78.5)+5)+' '+(yTop+9)+'" fill="none" stroke="#252b33" stroke-width="2.5"/><text x="'+(xOf(78.5)+9)+'" y="'+(yTop+17)+'" font-size="12" font-weight="700" fill="#252b33">tan &gt; 5</text><line id="graph-cursor" x1="'+xOf(35)+'" y1="'+yTop+'" x2="'+xOf(35)+'" y2="'+y0+'" stroke="#75869a" stroke-dasharray="4 5"/><circle id="graph-sin-dot" cx="'+xOf(35)+'" cy="'+yUnit(Math.sin(35*Math.PI/180))+'" r="6" fill="#c63d43"/><circle id="graph-cos-dot" cx="'+xOf(35)+'" cy="'+yUnit(Math.cos(35*Math.PI/180))+'" r="6" fill="#2369d1"/><circle id="graph-tan-dot" cx="'+xOf(35)+'" cy="'+yTan(Math.tan(35*Math.PI/180))+'" r="6" fill="#252b33"/></g>'+tangentTicks+'<text x="'+(x0+w/2)+'" y="'+(y0+47)+'" text-anchor="middle" font-size="14" font-weight="700" fill="#243d55">Marked angle θ</text><text x="16" y="'+(yTop+h/2)+'" transform="rotate(-90 16 '+(yTop+h/2)+')" text-anchor="middle" font-size="13" fill="#243d55">sin θ, cos θ</text><text x="'+(x0+w+46)+'" y="'+(yTop+h/2)+'" transform="rotate(-90 '+(x0+w+46)+' '+(yTop+h/2)+')" text-anchor="middle" font-size="13" fill="#243d55">tan θ</text></svg>';
+ const legend=document.createElement('div');legend.className='graph-legend';legend.innerHTML='<span class="legend-sin">● sin θ</span><span class="legend-cos">● cos θ</span><span class="legend-tan">● tan θ</span><span class="legend-angle">⋮ 90° asymptote</span>';
+ const lower=document.createElement('div');lower.className='graph-lower';
+ const read=document.createElement('p');read.className='graph-limit';read.textContent='As θ → 0°: sin θ → 0, cos θ → 1, tan θ → 0. As θ → 90°⁻: sin θ → 1, cos θ → 0, tan θ → ∞. A right triangle itself requires 0° < θ < 90°.';
+ const diagram=document.createElement('div');diagram.className='graph-triangle';
+ function update(){const d=Number(slider.value),s=T.trig('sin',d),c=T.trig('cos',d),t=T.trig('tan',d);degrees.textContent=d+'°';values.textContent='sin '+d+'° = '+s.toFixed(3)+'   ·   cos '+d+'° = '+c.toFixed(3)+'   ·   tan '+d+'° = '+t.toFixed(3);const cursor=$('graph-cursor'),sd=$('graph-sin-dot'),cd=$('graph-cos-dot'),td=$('graph-tan-dot');if(cursor){cursor.setAttribute('x1',xOf(d));cursor.setAttribute('x2',xOf(d));sd.setAttribute('cx',xOf(d));sd.setAttribute('cy',yUnit(s));cd.setAttribute('cx',xOf(d));cd.setAttribute('cy',yUnit(c));td.setAttribute('cx',xOf(d));td.setAttribute('cy',yTan(t))}diagram.innerHTML=T.triangle({angle:d,hypotenuse:10,angleLabel:d+'°',marks:{opp:'o',adj:'a',hyp:'h'}})}
+ slider.addEventListener('input',update);lower.append(read,diagram);host.append(heading,intro,controls,svgWrap,legend,lower);update();
 }
 function instruction(){
  const host=$('instructionPanel');host.replaceChildren();
@@ -171,11 +233,12 @@ function instruction(){
  const slide=document.createElement('article');slide.className='slide';
  const heading=document.createElement('h2');heading.textContent=title;const text=document.createElement('p');text.textContent=body;
  slide.append(heading,text);
- if(cfg.slide===0||cfg.slide===1){
+ if(!pyth&&(cfg.slide===0||cfg.slide===1||cfg.slide===2||cfg.slide===3)){
   const drawing=document.createElement('div');drawing.style.maxWidth='410px';drawing.style.margin='auto';
-  drawing.innerHTML=T.triangle({angle:35,hypotenuse:10,angleLabel:'35°',marks:{adj:'A',opp:'O',hyp:'H'},highlight:[]});slide.append(drawing)
+  const f=familyById(cfg.familyId),[num,den]=ratioSides[f.ratio];drawing.innerHTML=T.triangle({angle:35,hypotenuse:10,angleLabel:'35°',marks:{adj:'a',opp:'o',hyp:'h'},arrows:[num,den],included:f.included});slide.append(drawing)
  }
- if(fixedRatio&&cfg.slide===slides.length-1)slide.append(ratioExplorer(fixedRatio));
+ if(!pyth&&cfg.slide===3){const map=document.createElement('div');map.className='included-map';map.innerHTML='<div><b>Unmarked adjacent side a</b><span>opposite angle: unmarked</span><strong>sin θ = o/h</strong></div><div><b>Unmarked opposite side o</b><span>opposite angle: marked θ</span><strong>cos θ = a/h</strong></div><div><b>Unmarked hypotenuse h</b><span>opposite angle: right angle</span><strong>tan θ = o/a</strong></div>';slide.append(map)}
+ if(!pyth&&cfg.slide===5){const map=document.createElement('div');map.className='included-map nine-families';map.innerHTML='<div><b>1 · sin</b><span>find opposite x</span></div><div><b>2 · sin</b><span>find hypotenuse x</span></div><div><b>3 · sin</b><span>find θ</span></div><div><b>4 · cos</b><span>find adjacent x</span></div><div><b>5 · cos</b><span>find hypotenuse x</span></div><div><b>6 · cos</b><span>find θ</span></div><div><b>7 · tan</b><span>find opposite x</span></div><div><b>8 · tan</b><span>find adjacent x</span></div><div><b>9 · tan</b><span>find θ</span></div>';slide.append(map)}
  if(cfg.reveal){const reveal=document.createElement('div');reveal.className='notice math';reveal.textContent=answer;slide.append(reveal)}
  const nav=document.createElement('div');nav.className='slide-nav';
  const previous=document.createElement('button');previous.textContent='← Previous';previous.disabled=cfg.slide===0;previous.onclick=()=>{cfg.slide--;cfg.reveal=false;instruction()};
@@ -193,12 +256,13 @@ function practice(){
   return;
  }
  $('triangle').innerHTML=questionTriangle(q);
- $('questionTitle').textContent='Question '+(cfg.question+1);
+ $('questionTitle').textContent=pyth?'Question '+(cfg.question+1):'Family '+q.familyId+' · Example '+(cfg.question+1);
  $('questionText').textContent=questionText(q);
  $('prediction').textContent=prediction(q);
  $('ratioEquation').textContent=equation(q,display?cfg.step>0:cfg.step>=3);
- $('included').textContent=pyth?'Right angle marked':cfg.ratio==='sin'?'Included angle: other acute angle':cfg.ratio==='cos'?'Included angle: reference angle':'Included angle: right angle';
- const labels=pyth?['Identify the longest side','Predict the missing side','Choose addition or subtraction of squares','Calculate and check']:['Mark the reference angle','Identify the two needed sides','Find their included angle','Write the correct ratio','Rearrange and calculate'];
+ const includedNames={unmarked:'unmarked acute angle',marked:'marked angle θ',right:'right angle 90°'};
+ $('included').textContent=pyth?'Right angle marked':'Arrows meet at the '+includedNames[q.included]+'. The omitted side is '+sideNames[q.omitted]+'. Keep θ marked in the calculation.';
+ const labels=pyth?['Identify the longest side','Predict the missing side','Choose addition or subtraction of squares','Calculate and check']:['Mark θ','Read the two arrowed sides','Name their included angle','Check the omitted-side cue','Write the ratio and find x or θ'];
  const container=$('steps');container.replaceChildren();
  if(display)container.hidden=true;else{
   container.hidden=false;
@@ -210,8 +274,8 @@ function practice(){
  
 }
 function startAssessment(type){
- cfg.attempts=0;cfg.wrong=[];cfg.chosen=null;cfg.quizIndex=0;cfg.submitted=false;
- cfg.quizQuestions=Array.from({length:4},(_,i)=>makeQuestion(cfg.question+i,true));
+ cfg.attempts=0;cfg.wrong=[];cfg.chosen=null;cfg.quizIndex=0;cfg.quizScore=0;cfg.testScore=0;cfg.submitted=false;
+ cfg.quizQuestions=Array.from({length:4},(_,i)=>makeQuestion(cfg.question+i,true,cfg.familyId));
  cfg.testAnswers=Array(4).fill('');
  assessment();
 }
@@ -222,53 +286,42 @@ function matchesAnswer(value,q){
 }
 function assessment(){
  const host=$('assessmentPanel');host.replaceChildren();
- if(cfg.mode==='quiz'&&cfg.quizIndex<4){cfg.activeQuestion=cfg.quizQuestions[cfg.quizIndex];renderToolbar(cfg.activeQuestion)}
- else if(cfg.mode==='test'){cfg.activeQuestion=null;renderToolbar(null)}
- if(cfg.mode==='quiz'){
-  if(cfg.quizIndex===4){
-   const done=document.createElement('div');done.className='assessment';done.innerHTML='<h2>Quiz complete</h2><p>Four questions completed.</p>';host.append(done);return;
-  }
-  const q=cfg.quizQuestions[cfg.quizIndex],answer=correctAnswer(q),box=document.createElement('section');box.className='assessment';
-  const title=document.createElement('h2');title.textContent='Quiz · Question '+(cfg.quizIndex+1)+' / 4';
-  const question=document.createElement('p');question.textContent=questionText(q);
-  const pic=document.createElement('div');pic.className='triangle';pic.innerHTML=questionTriangle(q);
-  const choices=document.createElement('div');choices.className='cards';
-  const spread=Math.max(.8,Math.abs(answer)*.16);
-  const values=[answer,answer+spread,Math.max(.1,answer-spread),answer+2*spread];
-  const order=[[2,0,3,1],[1,3,0,2],[3,1,2,0],[0,2,1,3]][cfg.quizIndex];
-  const correctIndex=order.indexOf(0);
-  order.forEach((choice,j)=>{const value=values[choice],b=document.createElement('button');b.textContent=fmt(value)+(pyth||q.find!=='angle'?'':'°');b.disabled=cfg.chosen!==null||cfg.wrong.includes(j);if(cfg.wrong.includes(j))b.className='wrong';
-   if(cfg.chosen!==null&&j===correctIndex)b.className='right';
-   b.onclick=()=>{if(cfg.chosen!==null||cfg.wrong.includes(j))return;
-    const ok=choice===0;cfg.attempts++;if(!ok)cfg.wrong.push(j);
-    const finished=ok||cfg.attempts>=2;
-    if(finished)cfg.chosen=j;
-    Assess.playSound(ok?true:finished?'final-wrong':false,cfg.sound);assessment();
-   };choices.append(b)});
-  const feedback=document.createElement('p');feedback.className='feedback';
-  feedback.textContent=cfg.attempts===0?'Choose an answer. Sound is on by default.':cfg.chosen===null?'One more chance. Your next answer is final.':cfg.chosen===correctIndex?'Correct.':'Two incorrect attempts. Correct answer: '+fmt(answer);
-  const next=document.createElement('button');next.className='primary';next.textContent=cfg.quizIndex===3?'Finish quiz':'Next →';next.disabled=cfg.chosen===null;next.onclick=()=>{cfg.quizIndex++;cfg.attempts=0;cfg.chosen=null;cfg.wrong=[];assessment()};
-  const sound=document.createElement('button');sound.textContent='Sound '+(cfg.sound?'On':'Off');sound.onclick=()=>{cfg.sound=!cfg.sound;assessment()};
-  box.append(title,question,pic,choices,feedback,next,sound);host.append(box);return;
+ if(cfg.quizIndex===4){
+  const done=document.createElement('section');done.className='assessment';done.innerHTML='<h2>'+(cfg.mode==='quiz'?'Quiz':'Test')+' complete</h2><p>Score: '+(cfg.mode==='quiz'?cfg.quizScore:cfg.testScore)+' / 4</p><button class="primary" id="assessmentDone">Back to practice</button>';host.append(done);$('assessmentDone').onclick=()=>mode('practice');return;
  }
+ const q=cfg.quizQuestions[cfg.quizIndex],answer=correctAnswer(q);cfg.activeQuestion=q;renderToolbar(q);
  const box=document.createElement('section');box.className='assessment';
- const title=document.createElement('h2');title.textContent='Test · Write your answers';box.append(title);
- cfg.quizQuestions.forEach((q,i)=>{
-  const row=document.createElement('div');row.className='test-question';
-  const label=document.createElement('label');label.textContent=(i+1)+'. '+questionText(q)+' ';
-  const pic=document.createElement('div');pic.className='triangle';pic.style.maxWidth='320px';pic.innerHTML=questionTriangle(q);row.append(pic);
-  const input=document.createElement('input');input.className='input-answer';input.type='number';input.step='any';input.value=cfg.testAnswers[i];input.disabled=cfg.submitted;
-  input.setAttribute('aria-label','Answer for question '+(i+1));input.oninput=()=>{cfg.testAnswers[i]=input.value};label.append(input);row.append(label);
-  if(cfg.submitted){
-   const answer=correctAnswer(q),ok=matchesAnswer(cfg.testAnswers[i],q);
-   const feedback=document.createElement('p');feedback.className='feedback'+(ok?' correct':'');feedback.textContent=ok?'Correct.':'Expected '+fmt(answer);row.append(feedback)
-  }
-  box.append(row);
- });
- if(!cfg.submitted){const submit=document.createElement('button');submit.className='primary';submit.textContent='Submit test';submit.onclick=()=>{cfg.submitted=true;assessment()};box.append(submit)}
- else {const count=cfg.quizQuestions.filter((q,i)=>matchesAnswer(cfg.testAnswers[i],q)).length;
-  const summary=document.createElement('h3');summary.textContent='Score: '+count+' / 4';box.append(summary)}
- host.append(box)
+ const top=document.createElement('div');top.className='assessment-topbar';
+ const status=document.createElement('div');status.className='assessment-status';
+ const title=document.createElement('strong');title.textContent=(cfg.mode==='quiz'?'Quiz':'Test')+(pyth?' · Pythagoras':' · Family '+q.familyId);
+ const progress=document.createElement('div');progress.className='question-progress';
+ for(let i=0;i<4;i++){const mark=document.createElement('span');mark.className='question-chip'+(i===cfg.quizIndex?' current':'')+(i<cfg.quizIndex?' complete':'');mark.textContent=String(i+1);progress.append(mark)}
+ const score=document.createElement('span');score.className='running-score';score.textContent='Score: '+(cfg.mode==='quiz'?cfg.quizScore:cfg.testScore)+' / 4';
+ status.append(title,progress,score);
+ const next=document.createElement('button');next.className='primary assessment-next';
+ if(cfg.mode==='quiz'){
+  next.textContent=cfg.quizIndex===3?'Finish quiz':'Next →';next.disabled=cfg.chosen===null;
+  next.onclick=()=>{cfg.quizIndex++;cfg.attempts=0;cfg.chosen=null;cfg.wrong=[];assessment()};
+ }else{
+  next.textContent=cfg.submitted?(cfg.quizIndex===3?'Finish test':'Next →'):'Check answer';next.disabled=cfg.submitted===false&&cfg.testAnswers[cfg.quizIndex]==='';
+  next.onclick=()=>{if(!cfg.submitted){cfg.submitted=true;if(matchesAnswer(cfg.testAnswers[cfg.quizIndex],q))cfg.testScore++;assessment()}else{cfg.quizIndex++;cfg.submitted=false;assessment()}};
+ }
+ top.append(status,next);box.append(top);
+ const question=document.createElement('p');question.className='assessment-question';question.textContent=questionText(q);box.append(question);
+ const pic=document.createElement('div');pic.className='triangle assessment-triangle';pic.innerHTML=questionTriangle(q);box.append(pic);
+ if(cfg.mode==='quiz'){
+  const choices=document.createElement('div');choices.className='cards';
+  const spread=Math.max(.8,Math.abs(answer)*.16),values=[answer,answer+spread,Math.max(.1,answer-spread),answer+2*spread];
+  const order=[[2,0,3,1],[1,3,0,2],[3,1,2,0],[0,2,1,3]][cfg.quizIndex],correctIndex=order.indexOf(0);
+  order.forEach((choice,j)=>{const value=values[choice],b=document.createElement('button');b.textContent=fmt(value)+(q.find==='angle'?'°':'');b.disabled=cfg.chosen!==null||cfg.wrong.includes(j);if(cfg.wrong.includes(j))b.className='wrong';if(cfg.chosen!==null&&j===correctIndex)b.className='right';b.onclick=()=>{if(cfg.chosen!==null||cfg.wrong.includes(j))return;const ok=choice===0;cfg.attempts++;if(!ok)cfg.wrong.push(j);if(ok){cfg.chosen=j;cfg.quizScore++}else if(cfg.attempts>=2)cfg.chosen=j;Assess.playSound(ok?true:cfg.attempts>=2?'final-wrong':false,cfg.sound);assessment()};choices.append(b)});
+  const feedback=document.createElement('p');feedback.className='feedback';feedback.textContent=cfg.attempts===0?'Choose an answer.':cfg.chosen===null?'One more attempt.':cfg.chosen===correctIndex?'Correct.':'Two attempts used. Correct answer: '+fmt(answer)+(q.find==='angle'?'°':'');box.append(choices,feedback);
+  const sound=document.createElement('button');sound.className='sound-toggle';sound.textContent='Sound '+(cfg.sound?'On':'Off');sound.onclick=()=>{cfg.sound=!cfg.sound;assessment()};box.append(sound);
+ }else{
+  const label=document.createElement('label');label.className='test-answer-label';label.textContent=q.find==='angle'?'θ =':'x =';
+  const input=document.createElement('input');input.className='input-answer';input.type='number';input.step='any';input.value=cfg.testAnswers[cfg.quizIndex];input.disabled=cfg.submitted;input.setAttribute('aria-label','Answer for question '+(cfg.quizIndex+1));input.oninput=()=>{cfg.testAnswers[cfg.quizIndex]=input.value;next.disabled=input.value===''};input.onkeydown=event=>{if(event.key==='Enter'&&!cfg.submitted&&input.value!==''){cfg.submitted=true;if(matchesAnswer(cfg.testAnswers[cfg.quizIndex],q))cfg.testScore++;assessment()}};label.append(input);box.append(label);
+  if(cfg.submitted){const ok=matchesAnswer(cfg.testAnswers[cfg.quizIndex],q),feedback=document.createElement('p');feedback.className='feedback'+(ok?' correct':'');feedback.textContent=ok?'Correct.':'Expected '+fmt(answer)+(q.find==='angle'?'°':'');box.append(feedback)}
+ }
+ host.append(box);
 }
 function sheet(){
  const questions=Array.from({length:6},(_,i)=>makeQuestion(cfg.question+i,true)),title=(pyth?'Pythagoras':fixedRatio?ratioInfo[fixedRatio].title+' Ratio':'Right-Angled Trigonometry')+' · Six questions';
@@ -297,8 +350,8 @@ $('newQuestion').onclick=()=>{cfg.question++;cfg.step=0;practice()};
 $('displayAnswer').onclick=()=>{cfg.step=cfg.step?0:5;practice()};
 $('displayNew').onclick=()=>{cfg.question++;cfg.step=0;practice()};
 $('sheetOpen').onclick=sheet;
-$('questionRoute').textContent=pyth?'Identify the hypotenuse and choose squares':fixedRatio?ratioInfo[fixedRatio].formula+' · calculate either side or the angle':'Find two marked sides and their included angle';
-$('pythBank').hidden=!pyth;$('trigFind').hidden=pyth;
+$('pythBank').hidden=!pyth;if($('questionRoute'))$('questionRoute').textContent=pyth?'Identify the hypotenuse and choose squares':fixedRatio?ratioInfo[fixedRatio].formula+' · calculate either side or the angle':'Find two marked sides and their included angle';
+$('trigFind').hidden=true;
  $('angleControl').hidden=pyth;$('hypControl').hidden=pyth;
-mode('instruction');
+mode(pyth?'instruction':'practice');
 })();

@@ -26,3 +26,74 @@ body[data-app="trigonometry"] .options{display:flex}body[data-app="trigonometry"
 @media(max-width:760px){body[data-app="trigonometry"] .mobile-settings-toggle{display:block;position:fixed;z-index:1150;right:max(9px,env(safe-area-inset-right));top:calc(env(safe-area-inset-top) + 9px);min-height:41px;padding:7px 12px;border-radius:22px;color:#145191;background:#eef6ff;border:2px solid #7baddc;box-shadow:0 2px 9px #0002;font-weight:700;font-size:.87rem}body[data-app="trigonometry"] .mobile-settings-toggle[aria-expanded="true"]{background:#215aa0;color:white}body[data-app="trigonometry"] .mobile-settings-backdrop:not([hidden]){display:block;position:fixed;inset:0;z-index:1100;width:100%;height:100%;border:0;border-radius:0;background:rgba(18,31,49,.20);cursor:default}body[data-app="trigonometry"] #optionsPanel{position:fixed;z-index:1120;top:calc(env(safe-area-inset-top) + 56px);right:max(7px,env(safe-area-inset-right));left:auto;bottom:auto;display:flex;flex-direction:column;flex-wrap:nowrap;gap:8px;align-items:stretch;width:min(340px,calc(100vw - 14px));max-height:calc(100dvh - env(safe-area-inset-top) - 66px);overflow-y:auto;overscroll-behavior:contain;padding:12px;background:white;border:1px solid #a7bbd1;border-radius:14px;box-shadow:0 13px 36px #13233e44}body[data-app="trigonometry"] #optionsPanel:not(.open){display:none!important}body[data-app="trigonometry"] #optionsPanel .mobile-settings-close{display:block;align-self:flex-start;min-height:35px;padding:5px 13px;border-radius:16px;color:#285477;font-weight:600}body[data-app="trigonometry"] #optionsPanel .settings-heading{font-size:.8rem}body[data-app="trigonometry"] #optionsPanel .controls{width:100%;align-items:flex-start;padding:4px 0}body[data-app="trigonometry"] #optionsPanel .controls span{display:flex;flex-wrap:wrap;gap:6px}body[data-app="trigonometry"] #optionsPanel label{width:100%;justify-content:space-between}body[data-app="trigonometry"] .activity-switch{padding-top:52px;align-items:flex-start;flex-direction:column;gap:6px}body[data-app="trigonometry"] .activity-actions{width:100%}body[data-app="trigonometry"] .activity-actions button{flex:1 1 29%}}
 @media(max-width:600px){.ratio-explorer{grid-template-columns:1fr}.ratio-explorer-diagram svg{max-height:210px}}
 @media(max-width:590px){main{padding:7px}header img{width:78px}header h1{font-size:1.08rem}header small{display:none}.slide{min-height:270px}.triangle svg{max-height:270px}.panel{padding:10px}}
+
+/* Trigonometry: a compact family-first layout. */
+body[data-app="trigonometry"] header{max-width:1220px;margin:0 auto;padding:6px 16px;gap:18px;align-items:center}
+body[data-app="trigonometry"] .brand-stack{display:flex;flex:0 0 112px;flex-direction:column;align-items:center;gap:0;color:var(--ink);text-decoration:none}
+body[data-app="trigonometry"] .brand-stack img{width:106px;max-width:100%}
+body[data-app="trigonometry"] .brand-stack span{font-size:.86rem;font-weight:800;line-height:1.05}
+body[data-app="trigonometry"] .head-main{min-width:0}
+body[data-app="trigonometry"] .app-links{font-size:.78rem;gap:6px}
+body[data-app="trigonometry"] header h1{font-size:1.25rem;line-height:1.15}
+body[data-app="trigonometry"] header small{display:none}
+body[data-app="trigonometry"] main{max-width:1220px;margin:8px auto 28px;padding:10px 14px;min-height:70vh}
+body[data-app="trigonometry"] .menu{padding:5px 0 9px}
+body[data-app="trigonometry"] .activity-switch{display:flex;align-items:center;gap:12px;margin:0}
+body[data-app="trigonometry"] .activity-title,.family-heading{font-size:.76rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#60768a}
+body[data-app="trigonometry"] .activity-actions{display:flex;flex-wrap:wrap;gap:6px}
+body[data-app="trigonometry"] .activity-actions button{padding:7px 11px;font-weight:700}
+body[data-app="trigonometry"] .activity-actions button[aria-pressed="true"]{background:#e7f1ff;border-color:var(--blue)}
+body[data-app="trigonometry"] #optionsToggle{position:static;display:inline-block;min-height:0;padding:7px 10px;border-radius:8px;box-shadow:none;font-size:.86rem}
+body[data-app="trigonometry"] .options{display:none;max-width:100%;margin:8px 0;padding:10px}
+body[data-app="trigonometry"] .options.open{display:flex}
+body[data-app="trigonometry"] .family-banks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:8px 0 12px;padding:9px 10px;background:#f7faff;border:1px solid var(--line);border-radius:10px}
+body[data-app="trigonometry"] .family-heading{grid-column:1/-1}
+body[data-app="trigonometry"] .family-banks button{display:flex;gap:9px;align-items:center;min-height:42px;text-align:left;padding:6px 10px}
+body[data-app="trigonometry"] .family-banks button[aria-pressed="true"]{background:#e7f1ff;border-color:var(--blue);font-weight:750}
+body[data-app="trigonometry"] .family-number{display:grid;place-items:center;flex:0 0 26px;height:26px;border-radius:50%;background:#eaf0f7;color:#324e68;font-weight:800}
+body[data-app="trigonometry"] .family-name{line-height:1.2}
+body[data-app="trigonometry"] .stage{margin-top:8px;grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr);gap:11px}
+body[data-app="trigonometry"] .triangle{padding:4px}
+body[data-app="trigonometry"] .triangle svg{max-height:390px}
+body[data-app="trigonometry"] #practicePanel .triangle-tools{align-items:center;padding:0 5px 5px}
+body[data-app="trigonometry"] .panel{gap:9px;padding:13px}
+body[data-app="trigonometry"] .panel h2{font-size:1.13rem}
+body[data-app="trigonometry"] .panel p{line-height:1.35}
+body[data-app="trigonometry"] #questionText{font-weight:650}
+body[data-app="trigonometry"] .math{font-size:clamp(1.35rem,2.5vw,1.9rem)}
+body[data-app="trigonometry"] .progress-steps{display:grid;gap:5px}
+body[data-app="trigonometry"] .progress-steps button{padding:6px 9px;text-align:left}
+body[data-app="trigonometry"] .progress-steps button.done{background:#eef8f2;border-color:#9ac9a9}
+body[data-app="trigonometry"] .included-map{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+body[data-app="trigonometry"] .included-map>div{display:grid;gap:5px;padding:11px;border:1px solid var(--line);border-radius:8px;background:#fff}
+body[data-app="trigonometry"] .included-map span{font-size:.9rem;color:#52677b}
+body[data-app="trigonometry"] .included-map strong{font:1.18rem Cambria,Georgia,serif}
+body[data-app="trigonometry"] .nine-families{grid-template-columns:repeat(3,minmax(0,1fr))}
+body[data-app="trigonometry"] #graphPanel{display:grid;gap:10px;margin-top:10px;padding:16px;border:1px solid var(--line);border-radius:11px;background:#fff}
+body[data-app="trigonometry"] #graphPanel h2{margin:0;font-size:1.35rem}
+body[data-app="trigonometry"] .graph-intro,body[data-app="trigonometry"] .graph-limit{margin:0;line-height:1.45}
+body[data-app="trigonometry"] .graph-controls{display:grid;grid-template-columns:minmax(180px,1fr) minmax(240px,2fr);gap:8px 18px;align-items:center;padding:12px;background:#f7faff;border-radius:9px}
+body[data-app="trigonometry"] .graph-controls label{display:flex;justify-content:space-between;gap:8px;font-weight:700}
+body[data-app="trigonometry"] .graph-controls input{width:100%;accent-color:var(--blue)}
+body[data-app="trigonometry"] .graph-values{grid-column:2;margin:0;font-variant-numeric:tabular-nums}
+body[data-app="trigonometry"] .ratio-graph{width:100%;overflow-x:auto}
+body[data-app="trigonometry"] .ratio-graph svg{display:block;width:100%;min-width:560px;max-height:360px}
+body[data-app="trigonometry"] .graph-legend{display:flex;flex-wrap:wrap;gap:14px;font-weight:700}
+body[data-app="trigonometry"] .legend-sin{color:#c63d43}body[data-app="trigonometry"] .legend-cos{color:#2369d1}body[data-app="trigonometry"] .legend-tan{color:#252b33}
+body[data-app="trigonometry"] .graph-lower{display:grid;grid-template-columns:minmax(240px,1fr) minmax(260px,.8fr);gap:16px;align-items:center}
+body[data-app="trigonometry"] .graph-triangle svg{display:block;width:100%;max-height:250px}
+body[data-app="trigonometry"] .assessment{max-width:980px;margin:10px auto;padding:13px}
+body[data-app="trigonometry"] .assessment-topbar{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px;background:#fff;border-bottom:1px solid var(--line)}
+body[data-app="trigonometry"] .assessment-status{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+body[data-app="trigonometry"] .question-progress{display:flex;gap:5px}
+body[data-app="trigonometry"] .question-chip{display:grid;place-items:center;width:27px;height:27px;border:1px solid #b4c6d7;border-radius:50%;font-size:.84rem;font-weight:700}
+body[data-app="trigonometry"] .question-chip.current{background:#e7f1ff;border-color:var(--blue)}
+body[data-app="trigonometry"] .question-chip.complete{background:#e8f5ec;border-color:#8bc39b}
+body[data-app="trigonometry"] .running-score{font-weight:750;font-variant-numeric:tabular-nums}
+body[data-app="trigonometry"] .assessment-next{white-space:nowrap}
+body[data-app="trigonometry"] .assessment-question{font-size:1.1rem;font-weight:700}
+body[data-app="trigonometry"] .assessment-triangle{max-width:720px}
+body[data-app="trigonometry"] .test-answer-label{display:flex;align-items:center;gap:8px;font-weight:700}
+body[data-app="trigonometry"] .footer{line-height:1.5;border-top:1px solid var(--line)}
+body[data-app="trigonometry"] .footer .side-opposite{color:#c63d43;font-weight:700}body[data-app="trigonometry"] .footer .side-adjacent{color:#2369d1;font-weight:700}body[data-app="trigonometry"] .footer .side-hypotenuse{color:#18834b;font-weight:700}
+@media(max-width:760px){body[data-app="trigonometry"] header{gap:9px;padding:5px 8px}body[data-app="trigonometry"] .brand-stack{flex-basis:84px}body[data-app="trigonometry"] .brand-stack img{width:82px}body[data-app="trigonometry"] main{margin:5px auto;padding:7px}body[data-app="trigonometry"] .activity-switch{align-items:flex-start;flex-direction:column;gap:6px}body[data-app="trigonometry"] .activity-actions{width:100%}body[data-app="trigonometry"] .activity-actions button{flex:1 1 26%;padding:7px 6px}body[data-app="trigonometry"] .family-banks{grid-template-columns:1fr}body[data-app="trigonometry"] .family-heading{grid-column:1}body[data-app="trigonometry"] .stage{grid-template-columns:1fr}body[data-app="trigonometry"] .included-map,body[data-app="trigonometry"] .nine-families{grid-template-columns:1fr}body[data-app="trigonometry"] .graph-controls{grid-template-columns:1fr}body[data-app="trigonometry"] .graph-values{grid-column:1}body[data-app="trigonometry"] .graph-lower{grid-template-columns:1fr}body[data-app="trigonometry"] .assessment-topbar{align-items:flex-start;flex-direction:column}body[data-app="trigonometry"] .assessment-status{gap:8px}}
