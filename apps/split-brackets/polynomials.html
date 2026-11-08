@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Split the Brackets · Polynomial Products | Irish School Maths Apps</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#233044;background:#f2f4f6}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer;background:white;border:1px solid #b9c6d5;border-radius:7px;padding:9px 12px;color:#253b51}button:hover{background:#eef4fb}button[aria-pressed="true"],button.primary{background:#205e92;color:white;border-color:#205e92}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #6ba6de;outline-offset:2px}
+.top{background:white;border-bottom:1px solid #d8dfe7;display:flex;align-items:center;gap:16px;padding:8px max(13px,calc((100% - 1170px)/2));flex-wrap:wrap}
+.top img{width:205px;height:auto;display:block}.top a{color:#205b8d;text-decoration:none;font-size:.88rem}.top h1{font-size:1.27rem;margin:2px 0}
+main{max-width:1110px;margin:15px auto;background:white;border:1px solid #dde4eb;padding:clamp(14px,3vw,31px);min-height:78vh}
+h2{font-size:1.15rem;margin:18px 0 9px}.lead{line-height:1.55;margin:4px 0 14px;color:#506276}
+.controls{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;padding:12px;background:#f6f9fc;border:1px solid #e0e7ef;border-radius:9px}
+.controls label{font-size:.84rem;font-weight:700;display:flex;gap:7px;align-items:center}
+.controls select{padding:8px;border:1px solid #b7c8d6;border-radius:5px;background:white}
+.buttons{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.factor-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:15px 0}
+.factor{border:1px solid #dce5ed;border-radius:9px;padding:13px}.factor h2{margin:0 0 8px}.factor label{display:inline-flex;align-items:center;gap:4px;margin:5px;font-size:.89rem}.factor input{width:62px;text-align:center;padding:6px;border:1px solid #b9c6d5;border-radius:5px}
+.math{font-family:"Cambria Math",Cambria,Georgia,serif}.statement{font-size:clamp(1.32rem,3vw,2rem);line-height:1.5;text-align:center;overflow-wrap:anywhere;margin:16px auto}
+.progress{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:#516980;font-size:.9rem}
+.step{padding:13px 15px;border:1px solid #d6e2ed;border-radius:8px;margin:9px 0;overflow-wrap:anywhere}
+.step h3{font-size:.9rem;margin:0 0 7px;color:#445c73}.step .math{font-size:clamp(1.18rem,2.5vw,1.7rem);line-height:1.55}
+.step.active{border:2px solid #216da4;background:#f5faff}.step.future{opacity:.45}.step:last-child{background:#f4f8fa}
+.products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:12px auto}
+.cell{border:1px solid #d5e1ea;border-radius:6px;padding:12px 4px;text-align:center;min-width:0;background:#fbfdff}
+.cell strong{font-size:.76rem;color:#607183;display:block;margin-bottom:4px}.cell .math{font-size:clamp(1rem,2.1vw,1.42rem)}
+.cell.pending{opacity:.3}.cell.active{outline:2px solid #2375a9;background:#e7f3fc}
+.note{font-size:.91rem;color:#53677c;line-height:1.55;border-left:3px solid #7f9aaf;padding:9px 14px;margin:16px 0}
+#feedback{font-size:.88rem;color:#465f76;min-height:1.2em}#steps{min-height:180px}
+@media(max-width:650px){.factor-inputs{grid-template-columns:1fr}.products{grid-template-columns:repeat(2,minmax(0,1fr))}.top img{width:170px}}
+@media print{.top,.buttons,.controls,.factor-inputs{display:none}main{border:0;margin:0}.step.future{opacity:1}}
+</style>
+</head>
+<body>
+<header class="top">
+<a href="../../index.html"><img src="../../assets/maths-logo.svg" alt="Irish School Maths Apps"></a>
+<div><a href="../../algebra/expansions/index.html">Algebra · Expanding brackets</a> · <a href="index.html">Original Split the Brackets</a><h1>Split the Brackets · Polynomial Products</h1></div>
+</header>
+<main>
+<p class="lead">See the distributive law before choosing the most efficient written method. Each term in one bracket multiplies the whole of the other bracket. Reveal the products, then collect like terms.</p>
+<div class="controls">
+<label>Product <select id="shape"><option value="2,2">Binomial × binomial (2 × 2)</option><option value="2,3">Binomial × quadratic trinomial (2 × 3)</option><option value="3,3">Quadratic trinomial × quadratic trinomial (3 × 3)</option></select></label>
+<label>Split <select id="orientation"><option value="left">First bracket</option><option value="right">Second bracket</option></select></label>
+<button type="button" id="new">New example</button>
+</div>
+<div class="factor-inputs">
+<section class="factor"><h2>First bracket</h2><div id="leftInputs"></div></section>
+<section class="factor"><h2>Second bracket</h2><div id="rightInputs"></div></section>
+</div>
+<p class="statement math" id="expression"></p>
+<div class="progress"><strong id="progress"></strong><span>Each pairing appears once; degree determines which products can be collected.</span></div>
+<div class="buttons"><button id="previous" type="button">← Previous</button><button id="next" type="button" class="primary">Reveal next →</button><button id="showAll" type="button">Show all</button><button id="reset" type="button">Reset</button></div>
+<div id="steps" aria-live="polite"></div>
+<h2>Individual products</h2>
+<div class="products" id="products"></div>
+<p class="note"><strong>Strategic competence:</strong> this representation explains why the algorithm works. Once understood, a column or place-value method is usually more economical for 2 × 3 and 3 × 3 products. Use the <a href="../polynomial-place-value/index.html">place-value multiplication app</a> to compare.</p>
+<p id="feedback" role="status"></p>
+</main>
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+let left=[1,2], right=[1,3], stage=0, count=0;
+function make(degree){return degree===2?[1,2]:[1,3,2]}
+const nfmt=n=>String(n).replace(/-/g,'−');
+const pow=p=>p===0?'':p===1?'x':'x'+['','', '²','³','⁴'][p];
+function term(value,exp,first=false){
+ const v=Math.abs(value),body=(exp>0&&v===1?'':v)+pow(exp);
+ return (value<0?(first?'−':' − '):(first?'':' + '))+body;
+}
+function polynomial(a){return a.map((v,i)=>term(v,a.length-i-1,i===0)).join('')||'0'}
+function factor(a){return '('+polynomial(a)+')'}
+function productRows(){
+ const result=[],first=$('orientation').value==='left'?left:right,second=$('orientation').value==='left'?right:left;
+ for(let i=0;i<first.length;i++){
+  const a=first[i],d=first.length-i-1;
+  for(let j=0;j<second.length;j++){
+   const b=second[j],e=second.length-j-1;
+   result.push({a,d,b,e,coeff:a*b,power:d+e,group:i});
+  }
+ }
+ return result;
+}
+function combined(rows){
+ const sums=new Map();
+ for(const r of rows)sums.set(r.power,(sums.get(r.power)||0)+r.coeff);
+ const powers=[...sums.keys()].sort((a,b)=>b-a);
+ const filtered=powers.filter(p=>sums.get(p)!==0);
+ return filtered.length?filtered.map((p,i)=>term(sums.get(p),p,i===0)).join(''):'0';
+}
+function inputs(id,data,set){
+ const host=$(id);host.replaceChildren();
+ data.forEach((v,i)=>{
+  const power=data.length-i-1,label=document.createElement('label'),input=document.createElement('input');
+  label.append(document.createTextNode(power===0?'Constant':power===1?'x':'x²'));
+  input.type='number';input.step='1';input.min='-12';input.max='12';input.value=v;input.setAttribute('aria-label',(id==='leftInputs'?'First':'Second')+' bracket coefficient of '+(power===0?'constant':power===1?'x':'x squared'));
+  input.addEventListener('change',()=>{
+   const val=Number(input.value);
+   if(!Number.isInteger(val)||Math.abs(val)>12||(i===0&&val===0)){input.value=String(data[i]);$('feedback').textContent='Use integer coefficients from −12 to 12; the leading coefficient cannot be zero.';return}
+   data[i]=val;set(data);stage=0;render();
+  });
+  label.append(input);host.append(label);
+ });
+}
+function render(){
+ inputs('leftInputs',left,v=>left=v);inputs('rightInputs',right,v=>right=v);
+ $('expression').textContent=factor(left)+factor(right);
+ const rows=productRows(),lead=$('orientation').value==='left'?left:right,other=$('orientation').value==='left'?right:left;
+ const total=rows.length+2;
+ stage=Math.max(0,Math.min(stage,total));
+ $('progress').textContent='Step '+stage+' of '+total;
+ $('previous').disabled=stage===0;$('next').disabled=stage===total;
+ const parent=$('steps');parent.replaceChildren();
+ function add(title,math,index,active=false){
+  const node=document.createElement('div');node.className='step'+(index>stage?' future':active?' active':'');
+  const h=document.createElement('h3');h.textContent=title;
+  const v=document.createElement('div');v.className='math';v.textContent=math;
+  node.append(h,v);parent.append(node);
+ }
+ const groups=lead.map((v,i)=>{
+  const p=lead.length-i-1;
+  return (i===0?'':v<0?' − ':' + ')+(Math.abs(v)===1&&p>0?'':Math.abs(v))+pow(p)+factor(other);
+ }).join('');
+ const signedGroups=lead.map((v,i)=> {
+  const p=lead.length-i-1;
+  return (i===0?(v<0?'−':''):(v<0?' − ':' + '))+(Math.abs(v)===1&&p>0?'':Math.abs(v))+pow(p)+factor(other);
+ }).join('');
+ add('1. Split into intact groups',signedGroups,1,stage===1);
+ const productNodes=$('products');productNodes.replaceChildren();
+ rows.forEach((r,i)=>{
+   const el=document.createElement('div');el.className='cell'+(stage<i+2?' pending':stage===i+2?' active':'');
+   const heading=document.createElement('strong');heading.textContent='Product '+(i+1);
+   const math=document.createElement('div');math.className='math';
+   math.textContent=term(r.a,r.d,true)+' × ('+term(r.b,r.e,true)+') = '+term(r.coeff,r.power,true);
+   el.append(heading,math);productNodes.append(el);
+ });
+ let done=[];
+ rows.forEach((r,i)=>{
+  done.push(r);
+  const sequence=done.map((q,j)=>term(q.coeff,q.power,j===0)).join('');
+  add('Product '+(i+1)+' of '+rows.length,sequence,i+2,stage===i+2);
+ });
+ add('Collect like powers',combined(rows),total,stage===total);
+ $('feedback').textContent=stage===total?'All '+rows.length+' pairwise products are included. Check the powers before collecting like terms.':'';
+}
+$('shape').addEventListener('change',()=>{
+ const [a,b]=$('shape').value.split(',').map(Number);
+ left=make(a);right=make(b);stage=0;render();
+});
+$('orientation').addEventListener('change',()=>{stage=0;render()});
+$('previous').addEventListener('click',()=>{stage--;render()});
+$('next').addEventListener('click',()=>{stage++;render()});
+$('showAll').addEventListener('click',()=>{stage=productRows().length+2;render()});
+$('reset').addEventListener('click',()=>{stage=0;render()});
+$('new').addEventListener('click',()=>{
+ count++;
+ const shape=$('shape').value.split(',').map(Number);
+ function random(n){return Array.from({length:n},(_,i)=>{let v=0;while(v===0)v=Math.floor(Math.random()*11)-5;return v})}
+ left=random(shape[0]);right=random(shape[1]);stage=0;render();
+});
+render();
+})();
+</script>
+<script src="../../assets/navigation.js" defer></script>
+</body>
+</html>
