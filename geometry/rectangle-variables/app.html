@@ -67,22 +67,27 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
  #shape{max-height:300px}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+.literacy-bar{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:8px 0 10px;font:600 .83rem Arial,sans-serif;color:#466078}
+.literacy-bar button{border:1px solid #bdcde0;background:#fff;color:#174a76;padding:6px 10px;border-radius:7px;cursor:pointer;font:inherit}
+.literacy-bar button[aria-pressed=true]{background:#174a76;color:#fff}
+.literacy-bar #open-glossary{margin-left:auto}
+.term-button{font:inherit;border:0;background:transparent;color:inherit;padding:0;cursor:pointer}
+.term-button span{font-size:.65em;color:#306695}
+#glossary-dialog{border:1px solid #b4c7d8;border-radius:12px;max-width:min(95vw,450px);padding:22px;color:#182536;line-height:1.45}
+#glossary-dialog::backdrop{background:rgba(9,32,53,.58)}
+#glossary-dialog dt{font-weight:700;margin-top:8px}#glossary-dialog dd{margin:1px 0 8px}
+#close-glossary{border:0;background:#174a76;color:white;padding:10px 18px;border-radius:6px;cursor:pointer}
 </style>
 </head>
 <body>
 <main class="app-shell">
 <header class="app-head">
 <div class="brandline"><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Maths · Geometry</span></div>
+<div class="literacy-bar" role="group" aria-label="Language level"><span>Language</span><button type="button" data-literacy="maths" aria-pressed="true">Maths</button><button type="button" data-literacy="eal" aria-pressed="false">EAL</button><button type="button" data-literacy="simple" aria-pressed="false">Simple</button><button type="button" id="open-glossary" title="Definitions of mathematical words">Words</button></div>
 <h1>Rectangle Explorer</h1>
-<p>Start with the shape and its measured sides. Then notice the expressions that describe its perimeter and area.</p>
+<p id="app-intro">Change the dimensions. Compare perimeter and area.</p>
 </header>
-
-<section class="card question-card" aria-labelledby="prediction-title">
-<h2 id="prediction-title">Predict before you move a side</h2>
-<p id="prediction-question">A square has side length 5 cm. What is its perimeter?</p>
-<div class="choice-row" id="prediction-choices" role="group" aria-label="Choose a predicted perimeter"></div>
-<p id="prediction-feedback" aria-live="polite">Choose an answer first. This is a starting point, not a mark.</p>
-</section>
 
 <section class="card controls" aria-label="Choose and change the shape">
 <div class="mode-row" role="group" aria-label="Choose a shape">
@@ -138,16 +143,24 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
 
 <section class="result-grid" id="result-grid" aria-live="polite" hidden>
 <article class="result-card">
-<h2>Perimeter</h2>
+<h2><button class="term-button" type="button" data-term="Perimeter">Perimeter <span aria-hidden="true">ⓘ</span></button></h2>
 <p class="result-value" id="perimeter-value">20 cm</p>
 <p class="result-work" id="perimeter-work">P = 4s = 4 × 5 = 20 cm</p>
 </article>
 <article class="result-card">
-<h2>Area</h2>
+<h2><button class="term-button" type="button" data-term="Area">Area <span aria-hidden="true">ⓘ</span></button></h2>
 <p class="result-value" id="area-value">25 cm²</p>
 <p class="result-work" id="area-work">A = s² = 5² = 25 cm²</p>
 </article>
 </section>
+<section class="card question-card" aria-labelledby="prediction-title">
+<h2 id="prediction-title">Predict before you move a side</h2>
+<p id="prediction-question">A square has side length 5 cm. What is its perimeter?</p>
+<div class="choice-row" id="prediction-choices" role="group" aria-label="Choose a predicted perimeter"></div>
+<p id="prediction-feedback" aria-live="polite">Choose an answer first. This is a starting point, not a mark.</p>
+</section>
+
+
 <p class="change-note" id="change-note" hidden>All four sides of the square have the same length. Try changing s and compare the perimeter with the area.</p>
 
 <section class="card" id="reflection-panel" aria-labelledby="reflection-title" hidden>
@@ -161,6 +174,7 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
 <p id="confidence-feedback" aria-live="polite">Choose the statement that best matches your thinking.</p>
 </section>
 
+<dialog id="glossary-dialog" aria-labelledby="word-title"><h2 id="word-title">Mathematical words</h2><dl id="word-definitions"><dt>Perimeter</dt><dd>Distance around the outside of a shape. Measured in cm here.</dd><dt>Area</dt><dd>Amount of surface inside a shape. Measured in cm² here.</dd><dt>Width</dt><dd>The horizontal side length of this rectangle.</dd><dt>Height</dt><dd>The vertical side length of this rectangle.</dd><dt>Dimension</dt><dd>A measurement such as width or height.</dd></dl><button id="close-glossary" type="button">Close</button></dialog>
 <a class="book-link" href="https://ronandownes.github.io/book/algebra-words.html#variables-geometric-models" target="_blank" rel="noopener">Read the matching Book section: Variables represent measurements</a>
 </main>
 
@@ -210,12 +224,12 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
       choicesBox.appendChild(button);
     });
     feedback.className = '';
-    feedback.textContent = 'Choose an answer first. This is a starting point, not a mark.';
-    document.getElementById('measurement-controls').hidden = true;
-    document.getElementById('result-grid').hidden = true;
-    document.getElementById('change-note').hidden = true;
-    document.getElementById('reflection-panel').hidden = true;
-    [widthHandle,heightHandle].forEach(function(handle){ handle.setAttribute('visibility','hidden'); handle.setAttribute('tabindex','-1'); handle.setAttribute('aria-hidden','true'); });
+    feedback.textContent = 'Optional check: choose an answer, or move a side.';
+    document.getElementById('measurement-controls').hidden = false;
+    document.getElementById('result-grid').hidden = false;
+    document.getElementById('change-note').hidden = false;
+    document.getElementById('reflection-panel').hidden = false;
+    [widthHandle,heightHandle].forEach(function(handle){ handle.setAttribute('visibility','visible'); handle.setAttribute('tabindex','0'); handle.setAttribute('aria-hidden','false'); });
   }
 
   function render(){
@@ -320,8 +334,8 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
       var delta = 0;
       if(event.key==='ArrowRight' || event.key==='ArrowUp'){ delta = 1; }
       else if(event.key==='ArrowLeft' || event.key==='ArrowDown'){ delta = -1; }
-      else if(event.key==='Home'){ delta = 2-width; }
-      else if(event.key==='End'){ delta = 12-width; }
+      else if(event.key==='Home'){ delta = 2-(handle===widthHandle?width:height); }
+      else if(event.key==='End'){ delta = 12-(handle===widthHandle?width:height); }
       else { return; }
       event.preventDefault();
       if(handle===widthHandle){
@@ -339,7 +353,7 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
     var button = event.target.closest('button[data-answer]');
     if(!button){ return; }
     var chosen = Number(button.getAttribute('data-answer'));
-    var correct = squareMode ? 4*width : 2*width+2*height;
+    var correct = squareMode ? 20 : 26; // Fixed starter question, independent of current drag position
     Array.from(choicesBox.querySelectorAll('button')).forEach(function(item){
       item.setAttribute('aria-pressed', item===button ? 'true' : 'false');
     });
@@ -351,7 +365,7 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
     if(chosen===correct){
       feedback.className = 'correct';
       feedback.textContent = 'Correct. Now compare your prediction with the changing diagram and formula.';
-    } else if(chosen===(squareMode ? width*width : width*height)){
+    } else if(chosen===(squareMode ? 25 : 40)){
       feedback.className = '';
       feedback.textContent = 'That number is the area in square centimetres. Perimeter counts the outside boundary in centimetres.';
     } else {
@@ -404,8 +418,32 @@ input[type="range"]{width:100%;accent-color:#2d7dd2;min-height:30px}
     });
   });
 
+
+  var glossary=document.getElementById('glossary-dialog');
+  function showGlossary(term){
+    if(term){ var entry=Array.from(glossary.querySelectorAll('dt')).find(function(node){return node.textContent.toLowerCase()===term.toLowerCase()}); if(entry){entry.scrollIntoView({block:'nearest'});} }
+    if(typeof glossary.showModal==='function'){glossary.showModal();} else {glossary.setAttribute('open','');}
+  }
+  document.getElementById('open-glossary').addEventListener('click',function(){showGlossary()});
+  document.querySelectorAll('[data-term]').forEach(function(button){button.addEventListener('click',function(){showGlossary(button.getAttribute('data-term'))})});
+  document.getElementById('close-glossary').addEventListener('click',function(){glossary.close ? glossary.close():glossary.removeAttribute('open')});
+  var messages={
+    maths:{intro:'Vary the dimensions. Compare perimeter and area.',key:'Each grid square represents 1 cm². Dimensions remain proportional.'},
+    eal:{intro:'Width means across. Height means up. Change each length and compare the results.',key:'One small square has an area of 1 cm². Drag the red dots to change the side lengths.'},
+    simple:{intro:'Move a side. Watch what changes.',key:'Each small square is 1 cm². Drag a red dot.'}
+  };
+  function chooseLiteracy(mode){
+    if(!messages[mode])mode='maths';
+    document.getElementById('app-intro').textContent=messages[mode].intro;
+    document.querySelector('.scale-key').textContent=messages[mode].key;
+    document.querySelectorAll('[data-literacy]').forEach(function(button){button.setAttribute('aria-pressed',String(button.getAttribute('data-literacy')===mode))});
+    try{localStorage.setItem('maths-literacy',mode)}catch(e){}
+  }
+  document.querySelectorAll('[data-literacy]').forEach(function(button){button.addEventListener('click',function(){chooseLiteracy(button.getAttribute('data-literacy'))})});
   render();
   setQuestion();
+  var saved='maths';try{saved=localStorage.getItem('maths-literacy')||'maths'}catch(e){}
+  chooseLiteracy(saved);
 })();
 </script>
 </body>
