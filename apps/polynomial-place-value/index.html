@@ -640,21 +640,24 @@ main{margin:5px auto;padding:10px 19px 18px}
 .game-panel>.primary{display:block;margin:12px auto;font-size:1.15rem}
 @media(prefers-reduced-motion:reduce){.race-bubble{animation:none;transition:none}.race-fill{transition:none}}
 
-/* Light-touch, optional reading aids alongside the selected step.
-   No blue action styling, borders or coloured backgrounds. */
+/* One unobtrusive literacy choice, preserving mathematics and the selected step. */
 .step-row{display:flex;align-items:center;flex-wrap:wrap;gap:0 6px;width:100%;min-width:0;border-bottom:1px solid #e6eaf0}
-.step-row .checklist-item{flex:1 1 180px;min-width:0;width:auto;border-bottom:0}
+.step-row .checklist-item{flex:1 1 170px;min-width:0;width:auto;border-bottom:0}
 .step-row .checklist-item:last-child{border-bottom:0}
-.step-row .step-support-controls{display:inline-flex;flex:0 0 auto;align-items:center;gap:8px;margin:0 0 0 auto;padding:0 0 2px}
-.step-row .step-support-controls button,
-.step-row .step-support-controls .step-explain-button,
-.step-row .step-support-controls .step-rephrase-button{font:400 .75rem/1.2 Arial,Helvetica,sans-serif;letter-spacing:0;color:#737d89;background:transparent;border:0;border-radius:2px;box-shadow:none;min-height:27px;margin:0;padding:4px 2px;text-decoration:none}
-.step-row .step-support-controls button:hover{background:transparent;color:#404a56;text-decoration:underline}
-.step-row .step-support-controls button:focus-visible{outline:2px solid #5f7185;outline-offset:1px}
-.step-row .step-support-controls button[aria-expanded=true],
-.step-row .step-support-controls button[aria-pressed=true]{background:transparent;color:#49535e;border:0;text-decoration:underline;font-weight:400}
-.step-checklist .step-current-tip{display:block;margin:0 0 12px 37px;padding:5px 0 5px 11px;max-width:48ch;border:0;border-left:3px solid #a1c3e5;border-radius:0;background:transparent;color:#324761;font-size:1.02rem;line-height:1.42}
-@media(max-width:390px){.step-row .step-support-controls{gap:6px}.step-row .step-support-controls button{font-size:.74rem}.step-checklist .step-current-tip{margin-left:29px}}
+.step-row .step-literacy-button{flex:0 0 auto;align-self:center;margin:0 0 0 auto;min-height:30px;padding:4px 2px;border:0;border-radius:3px;box-shadow:none;background:transparent;color:#667382;font:400 .76rem/1.2 Arial,Helvetica,sans-serif}
+.step-row .step-literacy-button:hover{color:#36404c;background:transparent;text-decoration:underline}
+.step-row .step-literacy-button[aria-expanded=true]{color:#4b5867;background:transparent;text-decoration:underline}
+.step-row .step-literacy-button:focus-visible,.step-literacy-options button:focus-visible,.step-literacy-options a:focus-visible{outline:2px solid #627f9c;outline-offset:2px}
+.step-literacy-options{display:grid;gap:8px;margin:2px 0 12px 36px;padding:9px 0 10px 10px;border-left:2px solid #cbd5e1;background:transparent;color:#465260;font:400 .88rem/1.4 Arial,Helvetica,sans-serif}
+.step-literacy-options .literacy-intro{margin:0;color:#606d7b;font-size:.83rem}
+.step-literacy-options .literacy-options{display:flex;gap:5px;flex-wrap:wrap}
+.step-literacy-options .literacy-option{padding:6px 10px;min-height:35px;border:1px solid #cbd5e1;background:transparent;color:#4c5866;border-radius:5px;font:500 .85rem Arial,Helvetica,sans-serif}
+.step-literacy-options .literacy-option[aria-pressed=true]{background:#f1f3f5;border-color:#9eabba;color:#303a47;font-weight:650}
+.step-literacy-options .literacy-explanation-button{justify-self:start;min-height:30px;padding:4px 1px;background:transparent;border:0;color:#576576;font:400 .85rem Arial,Helvetica,sans-serif;text-decoration:underline}
+.step-literacy-options .step-current-tip{margin:0;padding:4px 0 4px 9px;border:0;border-left:2px solid #cbd5e1;background:transparent;color:#354457;font:400 .95rem/1.45 Arial,Helvetica,sans-serif;max-width:51ch}
+.step-literacy-options .literacy-eal{margin:4px 0 0;font-size:.79rem;line-height:1.4;color:#647082;max-width:50ch}
+.step-literacy-options .literacy-reference{font-size:.79rem;color:#536477;justify-self:start}
+@media(max-width:390px){.step-row .step-literacy-button{font-size:.72rem}.step-literacy-options{margin-left:29px}.step-literacy-options .literacy-options{gap:4px}}
 </style>
 </head>
 <body>
@@ -747,6 +750,24 @@ const everydayActions=[
  'Write and box the final answer',
  'Check what you have learned'
 ];
+const shortEnglishActions=[
+ 'Make columns: #, x, x², ...',
+ 'Write one bracket on each row',
+ 'Multiply. Put each answer in its column',
+ 'Add the numbers in each column',
+ 'Write x, x², ... beside the numbers',
+ 'Check the signs. Box the answer',
+ 'Try a new question'
+];
+const shortEnglishInstructions=[
+ 'Start with #, x, x². If the other factor is linear, add one column. If it is quadratic, add two.',
+ 'Write one bracket on each row. Line up the numbers under the same powers of x.',
+ 'Multiply numbers from the two rows. Put each answer in the matching column.',
+ 'Add the numbers in each column. Do not mix different powers of x.',
+ 'Write x or x² beside each total. Keep the correct column order.',
+ 'Write the + and − signs. Draw a box around your answer.',
+ 'Try again without help. Check your steps. Come back to practise another day.'
+];
 const everydayInstructions=[
  'Start with #, x, x² and so on. Add one extra column when multiplying by a linear factor, or two for a quadratic.',
  'Use one row for each bracket. Start at the right, putting the last numbers under #. Put the x numbers under x.',
@@ -783,7 +804,7 @@ const bankProfiles=[
  {type:'qq',level:3,sign:'mixed',name:'Quad × Quad · double-digit prime challenge'}
 ];
 
-const state={type:'ll',factorRandom:false,coreType:'ll',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:1,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,rephrasedStep:-1,showInvestigation:false,question:null,bankQuestion:0};
+const state={type:'ll',factorRandom:false,coreType:'ll',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:1,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,literacyMode:'mathematical',literacyOpen:false,showInvestigation:false,question:null,bankQuestion:0};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -856,16 +877,16 @@ function chosenQuestion(){
  return makeQuestion(rng);
 }
 function selectQuestion(slot){
- state.slot=slot;state.question=chosenQuestion();state.helpStage=-1;state.rephrasedStep=-1;state.showInvestigation=false;state.investigationOffset=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
+ state.slot=slot;state.question=chosenQuestion();state.helpStage=-1;state.literacyOpen=false;state.showInvestigation=false;state.investigationOffset=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
 }
 function freshQuestion(){
  boardState.offset=0;
  const previous=state.question;
  for(let attempt=0;attempt<16;attempt++){
   state.freshCount++;const next=(()=>{state.slot='fresh';return chosenQuestion()})();
-  if(!previous||JSON.stringify(next)!==JSON.stringify(previous)){state.question=next;state.helpStage=-1;state.rephrasedStep=-1;state.showInvestigation=false;state.investigationOffset=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();return}
+  if(!previous||JSON.stringify(next)!==JSON.stringify(previous)){state.question=next;state.helpStage=-1;state.literacyOpen=false;state.showInvestigation=false;state.investigationOffset=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();return}
  }
- state.question=chosenQuestion();state.helpStage=-1;state.rephrasedStep=-1;state.showInvestigation=false;state.investigationOffset=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
+ state.question=chosenQuestion();state.helpStage=-1;state.literacyOpen=false;state.showInvestigation=false;state.investigationOffset=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
 }
 
 function refreshSelectedQuestion(){boardState.offset=0;if(state.slot==='fresh')freshQuestion();else selectQuestion(state.slot)}
@@ -998,7 +1019,7 @@ function renderSelectors(){
  steps.textContent=state.mode==='step'?'Restart steps':'Step by step';
  steps.setAttribute('aria-pressed',String(state.mode==='step'));
  steps.setAttribute('aria-label',state.mode==='step'?'Restart guided working from step one':'Start step-by-step working');
- steps.onclick=()=>{if(assessment.mode!=='practice')switchMode('practice');state.mode='step';state.step=0;state.helpStage=-1;state.rephrasedStep=-1;state.showInvestigation=false;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render()};
+ steps.onclick=()=>{if(assessment.mode!=='practice')switchMode('practice');state.mode='step';state.step=0;state.helpStage=-1;state.literacyOpen=false;state.showInvestigation=false;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render()};
  host.append(steps,toggle);
 }
 function coefficientInputs(){
@@ -1072,7 +1093,7 @@ function draw(){
   checklist.replaceChildren();
   const caption=document.createElement('div');caption.className='step-checklist-title';caption.textContent='Steps';checklist.append(caption);
   actions.forEach((mathematicalAction,i)=>{
-   const action=state.rephrasedStep===i?everydayActions[i]:mathematicalAction;
+   const action=state.literacyMode==='short'?shortEnglishActions[i]:state.literacyMode==='everyday'?everydayActions[i]:mathematicalAction;
    const entry=document.createElement('button');entry.type='button';
    entry.className='checklist-item '+(i<step?'step-complete':i===step?'step-current':'step-upcoming');
    entry.setAttribute('aria-current',i===step?'step':'false');
@@ -1081,34 +1102,53 @@ function draw(){
    const label=document.createElement('span');label.textContent=action;
    entry.append(marker,label);
    entry.onclick=()=>{
-    state.step=i+1;state.helpStage=-1;state.rephrasedStep=-1;
+    state.step=i+1;state.helpStage=-1;state.literacyOpen=false;
     if(i!==6)state.showInvestigation=false;
     // Every main stage defaults to the complete result; drill-down is optional.
     state.partialCount=individualProducts(a,b).length;state.partialAll=true;
     state.groupCount=n;state.groupAll=true;
     render();
    };
-   // Keep optional reading aids beside the step, not in a separate prominent row.
+   // Literacy choice is optional: no supporting text appears until it is selected.
    const stepRow=el('div',undefined,'step-row');
    stepRow.append(entry);checklist.append(stepRow);
-   // Once a step has been selected, give two optional, independent supports.
-   if(step>0&&i===step-1&&i<6){
-    const controls=el('div',undefined,'step-support-controls');
-    controls.setAttribute('role','group');controls.setAttribute('aria-label','Options for step '+(i+1));
-    const explanationOpen=state.helpStage===i;
-    const explain=el('button',explanationOpen?'Hide explanation':'Explain','step-explain-button');
-    explain.type='button';explain.setAttribute('aria-expanded',String(explanationOpen));
-    explain.title='Show or hide why this step works';
-    explain.onclick=()=>{state.helpStage=explanationOpen?-1:i;render()};
-    const rephrased=state.rephrasedStep===i;
-    const rephrase=el('button',rephrased?'Original wording':'Rephrase','step-rephrase-button');
-    rephrase.type='button';rephrase.setAttribute('aria-pressed',String(rephrased));
-    rephrase.title='Change the way this step is worded, not the mathematics';
-    rephrase.onclick=()=>{state.rephrasedStep=rephrased?-1:i;render()};
-    controls.append(explain,rephrase);stepRow.append(controls);
-    if(explanationOpen){
-     const tip=el('p',rephrased?everydayInstructions[i]:instructions[i],'step-current-tip');
-     tip.setAttribute('role','note');checklist.append(tip);
+   if(step>0&&i===step-1){
+    const trigger=el('button',state.literacyOpen?'Close literacy choice':'Literacy choice','step-literacy-button');
+    trigger.type='button';trigger.setAttribute('aria-expanded',String(state.literacyOpen));
+    trigger.setAttribute('aria-controls','stepLiteracyOptions');
+    trigger.title='Choose your preferred wording; the mathematics stays the same';
+    trigger.onclick=()=>{state.literacyOpen=!state.literacyOpen;render()};
+    stepRow.append(trigger);
+    if(state.literacyOpen){
+     const panel=el('section',undefined,'step-literacy-options');panel.id='stepLiteracyOptions';
+     panel.setAttribute('aria-label','Optional wording and explanation for this step');
+     panel.append(el('p','Choose wording. The maths and your progress stay the same.','literacy-intro'));
+     const buttons=el('div',undefined,'literacy-options');
+     [['mathematical','Mathematical'],['everyday','Everyday'],['short','Short English']].forEach(([value,label])=>{
+      const btn=el('button',label,'literacy-option');btn.type='button';
+      btn.setAttribute('aria-pressed',String(state.literacyMode===value));
+      btn.onclick=()=>{state.literacyMode=value;state.literacyOpen=false;state.helpStage=-1;render()};
+      buttons.append(btn);
+     });
+     panel.append(buttons);
+     if(i<6){
+      const shown=state.helpStage===i;
+      const explain=el('button',shown?'Hide explanation':'Explain this step','literacy-explanation-button');
+      explain.type='button';explain.setAttribute('aria-expanded',String(shown));
+      explain.onclick=()=>{state.helpStage=shown?-1:i;render()};panel.append(explain);
+      if(shown){
+       const copy=state.literacyMode==='short'?shortEnglishInstructions[i]:state.literacyMode==='everyday'?everydayInstructions[i]:instructions[i];
+       const tip=el('p',copy,'step-current-tip');tip.setAttribute('role','note');panel.append(tip);
+      }
+     }
+     const context=el('p',undefined,'literacy-eal');
+     context.append(el('strong','EAL / CEFR: '));
+     context.append(document.createTextNode('English as an Additional Language; CEFR levels A1–C2. Short English offers language support, not a certified CEFR level or a maths grade.'));
+     panel.append(context);
+     const ref=el('a','CEFR language levels','literacy-reference');
+     ref.href='https://www.coe.int/en/web/common-european-framework-reference-languages/level-descriptions';
+     ref.target='_blank';ref.rel='noopener noreferrer';panel.append(ref);
+     checklist.append(panel);
     }
    }
    if(i===2&&step===3){
