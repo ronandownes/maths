@@ -6,21 +6,22 @@ const L=(label,path)=>({label,path}),T=(label,home,rest=[])=>({label,home,items:
 const strands=[
 {label:"Number",home:"number/index.html",topics:[
  T("Sets","number/sets/index.html",[L("Sets explorer","apps/sets/index.html"),L("Listing and notation","apps/sets/list-and-notation.html"),L("Number sets","apps/sets/number-sets.html"),L("Venn diagrams","apps/sets/number-venn.html"),L("Universal set and complement","apps/sets/universal-complement.html"),L("Problem solving","apps/sets/venn-problem-solving.html")]),
- T("Sequences","number/sequences/index.html",[L("Linear sequences","apps/linear-sequences/index.html"),L("Graph explorer","apps/linear-sequences/graph.html"),L("Quadratic sequences","apps/quadratic-sequences/index.html"),L("Geometric sequences","apps/geometric-sequences/index.html"),L("Sequence challenges","apps/sequence-challenges/index.html"),L("Farey sequences","apps/farey-sequences/index.html")]),
+ T("Sequences","number/sequences/index.html",[L("Linear sequences","apps/linear-sequences/index.html"),L("Graph explorer","apps/linear-sequences/graph.html"),L("Algebra sequences","algebra/sequences/index.html"),L("Quadratic sequences","apps/quadratic-sequences/index.html"),L("Geometric sequences","apps/geometric-sequences/index.html"),L("Sequence challenges","apps/sequence-challenges/index.html"),L("Farey sequences","apps/farey-sequences/index.html")]),
  T("Fractions and decimals","number/fractions/index.html",[L("Farey fractions","apps/farey-sequences/index.html")]),
  T("Complex numbers","number/complex-numbers/index.html",[L("Complex Numbers Explorer","apps/complex-numbers/index.html")])]},
 {label:"Algebra",home:"algebra/index.html",topics:[
  T("Expanding brackets","algebra/expansions/index.html",[L("Split the brackets","apps/split-brackets/index.html"),L("Place-value method","apps/polynomial-place-value/index.html"),L("Vertical FOIL","apps/vertical-foil/index.html"),L("Inline rainbow FOIL","apps/inline-rainbow/index.html"),L("Other FOIL representations","apps/foil/index.html"),L("Linear right margin","apps/linear-right-margin/index.html")]),
  T("Factorising","algebra/factorising/index.html",[L("Factorising frame","apps/factorising-frame/index.html")])]},
 {label:"Functions",home:"functions/index.html",topics:[T("Quadratic functions","functions/quadratic-functions/index.html")]},
-{label:"Geometry",home:"geometry/index.html",topics:[T("Squares and rectangles","geometry/rectangle-variables/index.html"),T("Pythagoras","apps/pythagoras/index.html")]},
+{label:"Geometry",home:"geometry/index.html",topics:[T("Squares and rectangles","geometry/rectangle-variables/index.html",[L("Rectangle explorer","geometry/rectangle-variables/app.html")]),T("Pythagoras","apps/pythagoras/index.html")]},
 {label:"Trigonometry",home:"trigonometry/index.html",topics:[
  T("Right-angled triangles","apps/right-angle-ratios/index.html",[L("Sine","apps/trigonometry/sine/index.html"),L("Cosine","apps/trigonometry/cosine/index.html"),L("Tangent","apps/trigonometry/tangent/index.html")]),
- T("Sine and cosine rules","trigonometry/triangle-rules/index.html",[L("Triangle explorer","apps/triangle-rules/index.html")])]},
+ T("Sine and cosine rules","trigonometry/triangle-rules/index.html",[L("Triangle explorer","apps/triangle-rules/index.html"),L("Geometry triangle rules","geometry/triangle-rules/index.html")])]},
 {label:"Statistics",home:"statistics/index.html",topics:[T("Describing data","statistics/describing-data/index.html")]},
 {label:"Probability",home:"probability/index.html",topics:[T("Probability experiments","probability/theoretical-experimental/index.html"),T("Tree diagrams","probability/tree-diagrams/index.html"),T("Counting principles","probability/counting/index.html")]},
 {label:"Combinatorics",home:"combinatorics/index.html",topics:[T("Counting","combinatorics/counting/index.html")]}];
-const path=decodeURIComponent(location.pathname).replace(root.pathname,"").replace(/^\/+/,"")||"index.html";
+const relative=decodeURIComponent(location.pathname).replace(root.pathname,"").replace(/^\/+/,"");
+const path=!relative?"index.html":relative.endsWith("/")?relative+"index.html":relative;
 let selected=null,section=null;
 for(const s of strands){for(const t of s.topics){if(path===t.home||t.items.some(i=>i.path===path)){selected=t;section=s;break;}}if(selected)break;}
 if(!section)section=strands.find(s=>path===s.home||path.startsWith(s.home.split("/")[0]+"/"))||null;

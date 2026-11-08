@@ -52,3 +52,6 @@ body.maths-standalone-page>header.local-top>a[aria-label="Maths home"]{display:n
  .stage>.sidebar{position:static;max-height:none}
 }
 @media print{.maths-unified-top,.maths-unified-side{display:none!important}body.maths-standalone-page{padding-left:0}}
+
+/* Consistent neutral activity-state controls across standalone Maths apps. */
+body.maths-standalone-page button.primary,body.maths-standalone-page button.active,body.maths-standalone-page button[aria-pressed="true"]{background:#202124!important;color:#fff!important;border-color:#202124!important}
