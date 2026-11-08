@@ -126,4 +126,5 @@ $("blank").onclick=()=>{state.blank=true;$("blank").setAttribute("aria-pressed",
 $("submit").onclick=submit;$("advance").onclick=advance;
 document.addEventListener("keydown",e=>{const t=e.target;if(t.closest("input,textarea,select,button,summary,[contenteditable]"))return;if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "||e.key==="Enter"){e.preventDefault();if(!["game","quiz","test"].includes(state.mode))$("next").click()}else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();if(!["game","quiz","test"].includes(state.mode))$("previous").click()}else if(e.key==="Home"){e.preventDefault();state.step=0;render()}else if(e.key==="End"){e.preventDefault();state.step=8;render()}else if(e.key==="Escape"){$("settings").hidden=true}});
 changeOrder("general");
-</script></body></html>
+</script><script src="../../assets/navigation.js" defer></script>
+</body></html>
