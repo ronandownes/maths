@@ -15,8 +15,8 @@
 .stage>.sidebar a.maths-current,.maths-unified-side a.maths-current{background:#f2f3f4!important;color:#202124!important;border-left:4px solid #202124}
 .stage>.sidebar a.maths-back-link,.maths-unified-side a.maths-back-link{font-weight:700;color:#414448;background:#fafafa}
 .maths-unified-top{position:sticky;top:0;z-index:990;display:flex;align-items:stretch;min-height:63px;padding:0 13px;border-bottom:1px solid #dfe1e3;background:white;font-family:Arial,sans-serif}
-.maths-unified-brand{flex:0 0 135px;display:flex;align-items:center;padding-right:12px}
-.maths-unified-brand img{width:125px;display:block}
+.maths-unified-brand{flex:0 0 239px;display:flex;align-items:center;padding-right:12px}
+.maths-unified-brand img{width:228px;display:block}
 .maths-unified-toggle{display:none;background:white;border:1px solid #c5c7c9;color:#202124;padding:9px;border-radius:6px;font-weight:700;cursor:pointer;margin:auto 0 auto auto}
 .maths-unified-side{position:fixed;left:0;top:63px;bottom:0;width:220px;z-index:800;overflow:auto;background:white;border-right:1px solid #dfe1e3;padding:15px 0;font:600 .88rem/1.4 Arial,sans-serif}
 .maths-unified-side h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#50555a;margin:5px 16px 12px}
@@ -95,3 +95,8 @@ body.maths-standalone-page button.primary,body.maths-standalone-page button.acti
 .toc-reference-section h2,.toc-probability-section h2{scroll-margin-top:115px}
 .maths-dropdown{max-width:370px;min-width:270px;width:max-content}
 @media(max-width:700px){.maths-dropdown{min-width:0;width:100%;max-width:none}}
+
+/* Small, unobtrusive book cross-links shared across every strand. */
+.maths-dropdown a.maths-book-link,.topbar .menu .maths-dropdown a.maths-book-link{border-top:1px solid #e7eaee;border-radius:0;margin-top:3px;padding-top:12px;color:#225780;font-size:.83rem}
+.maths-side-book-link{font-size:.86rem!important;color:#225780!important;border-bottom:1px solid #e7eaee;margin-bottom:6px}
+@media(max-width:700px){.maths-unified-brand{flex:0 0 207px}.maths-unified-brand img{width:199px}}
