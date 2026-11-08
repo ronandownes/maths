@@ -304,7 +304,7 @@ function expansionLines(q){
  const common=binomial(q.c,'y',q.d);
  const sign=q.b<0?' − ':' + ';
  const first=fmtTerm(q.a,'x',true)+common;
- const second=fmtTerm(Math.abs(q.b),'',true)+common;
+ const second=(Math.abs(q.b)===1?'':String(Math.abs(q.b)))+common;
  const p=products(q),bAbs=Math.abs(q.b);
  const firstPair=fmtTerm(p[0],'xy',true)+fmtTerm(p[1],'x',false);
  const secondPair=fmtTerm(bAbs*q.c,'y',true)+fmtTerm(bAbs*q.d,'',false);
