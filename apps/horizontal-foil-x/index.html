@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Horizontal FOIL in x | Expanding Brackets | Maths</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#252b32;background:#f2f3f5}
+*{box-sizing:border-box}body{margin:0;line-height:1.5}
+header{background:white;border-bottom:1px solid #d9dce0;padding:14px clamp(16px,3vw,30px)}
+header a{color:#345b81;text-decoration:none;font-size:.9rem}
+header h1{font-size:1.5rem;margin:4px 0}
+main{width:min(850px,calc(100% - 24px));margin:18px auto;background:white;padding:clamp(16px,3vw,32px);border:1px solid #dde2e8;border-radius:9px}
+p{margin:9px 0 18px}h2{font-size:1.18rem;margin:20px 0 10px}
+.controls{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0}.controls label{font-weight:650;font-size:.88rem}
+.controls input{display:block;width:92px;margin-top:5px;border:1px solid #aeb7c0;border-radius:6px;padding:9px;font:1.15rem Cambria,Georgia,serif}
+.maths{font:clamp(1.35rem,4vw,2rem)/1.45 Cambria,"Cambria Math",serif;text-align:center}
+.expression{padding:17px 8px;border:1px solid #dae2ed;border-radius:7px;background:#f8fafc}
+.routes{display:grid;gap:9px;margin:16px 0}.route{padding:10px 14px;border:1px solid #e2e6eb;border-radius:7px;display:grid;grid-template-columns:90px 1fr;align-items:center;gap:7px}
+.route[hidden]{display:none}.route strong{font-size:.93rem}.route span{font:1.28rem Cambria,Georgia,serif}
+.actions{display:flex;gap:9px;flex-wrap:wrap}button{border:1px solid #babfc5;border-radius:7px;background:white;color:#262d34;padding:10px 15px;font:700 .95rem Arial,sans-serif;cursor:pointer}
+button.primary{background:#202124;border-color:#202124;color:white}button:hover{filter:brightness(.97)}
+button:disabled{opacity:.4;cursor:default}
+.result{margin-top:17px;padding:16px;border-left:4px solid #333e49;background:#f4f6f8}
+.result[hidden]{display:none}
+.help{font-size:.91rem;color:#546172}
+@media(max-width:600px){.controls{gap:8px}.controls label{flex:1 1 75px}.controls input{width:100%}.route{grid-template-columns:75px 1fr}}
+@media print{header,.actions{display:none}main{border:0}}
+</style>
+</head>
+<body>
+<header><a href="../../algebra/expansions/index.html">Algebra → Expanding Brackets</a><h1>Horizontal Binomial × Binomial — FOIL in x</h1></header>
+<main>
+<p>Start with <strong>two binomials in x</strong>. Trace four products, then collect the two like terms in <em>x</em>.</p>
+<div class="controls">
+<label>First x coefficient (a)<input id="a" type="number" step="1" value="3"></label>
+<label>First constant (b)<input id="b" type="number" step="1" value="2"></label>
+<label>Second x coefficient (c)<input id="c" type="number" step="1" value="5"></label>
+<label>Second constant (d)<input id="d" type="number" step="1" value="4"></label>
+</div>
+<div class="maths expression" id="expression" aria-live="polite"></div>
+<h2>Four products</h2>
+<p class="help">Predict each product before selecting <strong>Next product</strong>. Keep Outer and Inner separate until the final step.</p>
+<div class="routes" aria-live="polite">
+<div class="route" id="r1" hidden><strong>First</strong><span id="p1"></span></div>
+<div class="route" id="r2" hidden><strong>Outer</strong><span id="p2"></span></div>
+<div class="route" id="r3" hidden><strong>Inner</strong><span id="p3"></span></div>
+<div class="route" id="r4" hidden><strong>Last</strong><span id="p4"></span></div>
+</div>
+<div class="actions"><button id="next" class="primary">Next product</button><button id="all">Show all</button><button id="reset">Reset</button><button id="random">New example</button></div>
+<section class="result" id="result" hidden><h2>Collect like terms</h2><div class="maths" id="working"></div><div class="maths" id="answer"></div><p class="help">The middle coefficient is the sum of the Outer and Inner coefficients. FOIL is an arrangement of the distributive law.</p></section>
+</main>
+<script>
+(() => {
+"use strict";
+const $=id=>document.getElementById(id);
+let step=0;
+const sup=n=>n===2?"x²":n===1?"x":"";
+function term(k,p){if(k===0)return "0";const v=p===0?String(k):((Math.abs(k)===1?(k<0?"−":""):String(k).replace("-","−"))+sup(p));return v;}
+function poly(parts){const t=parts.filter(z=>z[0]!==0);if(!t.length)return "0";return t.map(([k,p],i)=>{const mag=Math.abs(k),v=p?((mag===1?"":mag)+sup(p)):String(mag);return (k<0?(i?" − ":"−"):(i?" + ":""))+v;}).join("");}
+function vals(){return ["a","b","c","d"].map(k=>{const v=Number($(k).value);return Number.isFinite(v)?Math.max(-99,Math.min(99,Math.trunc(v))):0;});}
+function render(){const [a,b,c,d]=vals(),coeff=[a*c,a*d,b*c,b*d];
+$("expression").textContent="("+poly([[a,1],[b,0]])+")("+poly([[c,1],[d,0]])+")";
+[2,1,1,0].forEach((p,i)=>{$("p"+(i+1)).textContent=term(coeff[i],p);$("r"+(i+1)).hidden=step<i+1;});
+$("result").hidden=step<5;
+$("working").textContent=poly([[coeff[0],2],[coeff[1],1],[coeff[2],1],[coeff[3],0]]);
+$("answer").textContent="= "+poly([[coeff[0],2],[coeff[1]+coeff[2],1],[coeff[3],0]]);
+$("next").disabled=step===5;$("next").textContent=step<4?"Next product":"Collect like terms";
+}
+$("next").addEventListener("click",()=>{step=Math.min(5,step+1);render();});
+$("all").addEventListener("click",()=>{step=5;render();});
+$("reset").addEventListener("click",()=>{step=0;render();});
+$("random").addEventListener("click",()=>{for(const k of ["a","b","c","d"]){let n=0;while(!n)n=Math.floor(Math.random()*13)-6;$(k).value=n;}step=0;render();});
+for(const k of ["a","b","c","d"])$(k).addEventListener("input",()=>{step=0;render();});
+render();
+})();
+</script>
+<script src="../../assets/navigation.js" defer></script>
+</body></html>
