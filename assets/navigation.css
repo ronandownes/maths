@@ -76,3 +76,6 @@ body.maths-standalone-page button.primary,body.maths-standalone-page button.acti
  .maths-unified-side .maths-side-caption{width:100%}
  .maths-unified-side .maths-side-list{overflow-x:auto}
 }
+
+/* Closed strand menus must stay hidden, regardless of app or browser CSS. */
+.maths-strand:not([open]) > .maths-dropdown{display:none!important}
