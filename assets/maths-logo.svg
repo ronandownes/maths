@@ -1,5 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 205 64" role="img" aria-labelledby="title desc">
- <title id="title">Maths</title><desc id="desc">Maths with four coloured dots: red, green, blue and black</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 274 64" role="img" aria-labelledby="title desc">
+ <title id="title">Irish School Maths · Apps</title>
+ <desc id="desc">Four coloured dots; Irish School Maths apps for Junior Cert and Leaving Cert</desc>
  <g transform="translate(4 8)"><circle cx="10" cy="10" r="9" fill="#E63329"/><circle cx="34" cy="10" r="9" fill="#3FAE49"/><circle cx="10" cy="34" r="9" fill="#2D7DD2"/><circle cx="34" cy="34" r="9" fill="#1A1A1A"/></g>
- <text x="63" y="38" font-family="Arial, Helvetica, sans-serif" font-size="33" font-weight="700" fill="#202124">Maths</text>
+ <text x="61" y="27" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" fill="#202124">Irish School Maths</text>
+ <text x="62" y="45" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="600" letter-spacing=".3" fill="#606b75">APPS · JUNIOR CERT &amp; LEAVING CERT</text>
 </svg>
