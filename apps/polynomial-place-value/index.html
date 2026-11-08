@@ -350,9 +350,11 @@ main{margin:5px auto;padding:10px 19px 18px}
 .ws-preview-question{font:clamp(14px,1.35vw,21px)/1.4 Cambria,"Cambria Math",Georgia,serif;margin:12px 0;text-align:center}
 .ws-preview-answer{color:#a2aab6;font:15px Cambria,Georgia,serif;text-align:center}
 .ws-answer-note{font-weight:650}
-.brand-link{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:0;flex:0 0 auto}
+.brand-link{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:0;flex:0 0 auto}
 .brand-link img{width:122px;max-width:100%}
-.brand-link .apps-name{display:block;font-size:.94rem;font-weight:700;line-height:1;margin:-3px 0 0;color:#202124;letter-spacing:.01em}
+/* The SVG's “Maths” begins 63 units into its 205-unit width. Align Apps to that word, not to the right of the whole logo. */
+.brand-link .apps-name{display:block;font-size:.94rem;font-weight:700;line-height:1;margin:-3px 0 0 38px;color:#202124;letter-spacing:.01em}
+@media(max-width:680px){.brand-link img{width:92px}.brand-link .apps-name{margin-left:28px}}
 .ws-preview-inline-grid{min-height:unset;gap:5px}
 .ws-preview-inline-grid .ws-preview-inline{min-height:unset;padding:5px 7px;display:flex;gap:6px;align-items:baseline;border:0}
 .ws-preview-inline-grid .ws-preview-question{margin:0;font-size:clamp(14px,1.3vw,19px);text-align:left}
