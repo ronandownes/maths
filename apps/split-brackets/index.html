@@ -356,25 +356,21 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 <script src="../shared/classroom-fullscreen.js"></script>
 <script>window.MathJax={startup:{typeset:false},svg:{fontCache:'global'},options:{enableMenu:false}};</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-svg.js" onload="document.dispatchEvent(new Event('maths-tex-ready'))"></script>
+<script src="../shared/polynomial-question-config.js"></script>
 <script>
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id);
  const classroom=MathsClassroomFullscreen.attach({target:'#splitMain',button:'#classroomFullscreenBtn'});
-const state={level:1,sign:'positive',pattern:'ll',variableMode:'different',hcfEnabled:false,monicEnabled:false,slot:0,questionIndex:0,seq:0,direction:'expand',mode:'practice',view:'step',step:0,group:'intact',q:null};
+const prefs=window.PolynomialQuestionSettings;
+if(!prefs)throw new Error('Shared polynomial settings module missing');
+const state={...prefs.read(),slot:0,questionIndex:0,seq:0,direction:'expand',mode:'practice',view:'step',step:0,group:'intact',q:null};
+const savePreferences=()=>prefs.save(state);
 const board={cols:1,rows:1,offset:0,answers:false,cache:[]};
 const assessment={mode:null,questions:[],selected:[],completed:false,quizIndex:0};
 const positions=[['First group, first product','ax × cy'],['First group, second product','ax × d'],['Second group, first product','b × cy'],['Second group, second product','b × d']];
 function rand(seed){let x=(seed>>>0)||1234567;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))};}
-const PATTERNS={mb:[0,1],mt:[0,2],ll:[1,1],lq:[1,2],qq:[2,2],lc:[1,3]};
-const BANKS=[
- {pattern:'ll',level:1,sign:'positive'},
- {pattern:'ll',level:1,sign:'negative'},
- {pattern:'lq',level:2,sign:'mixed'},
- {pattern:'qq',level:2,sign:'mixed'},
- {pattern:'lc',level:3,sign:'random'},
- {pattern:'any',level:3,sign:'random'}
-];
+const PATTERNS={mb:[0,1],mt:[0,2],ll:[1,1],lq:[1,2],qq:[2,2],lc:[1,3],qc:[2,3],cc:[3,3]};
 function gcd(a,b){
  a=Math.abs(a);b=Math.abs(b);
  while(b){const remainder=a%b;a=b;b=remainder}
@@ -399,23 +395,14 @@ function primitiveCoefficients(degree,range,next){
 function randomSign(next){return ['positive','negative','mixed'][next(0,2)]}
 function generator(index=0,offset=0){
  const slot=typeof state.slot==='number'?state.slot:17;
- const seed=(91931+state.level*7717+slot*6217+(typeof state.slot==='number'?0:state.seq)*10333+
-  offset*50077+index*8819)>>>0,next=rand(seed);
- const pattern=state.pattern==='any'?['ll','lq','qq','lc'][index%4]:state.pattern;
- const [degreeA,degreeB]=PATTERNS[pattern];
- const range=state.level===1?5:state.level===2?15:41;
- let A=primitiveCoefficients(degreeA,range,next),B=primitiveCoefficients(degreeB,range,next);
- const sign=state.sign==='random'?randomSign(next):state.sign;
- if(sign==='negative'){A[A.length-1]*=-1;B[B.length-1]*=-1}
- else if(sign==='mixed'){if(next(0,1))A[A.length-1]*=-1;else B[B.length-1]*=-1}
- if(state.monicEnabled&&!state.hcfEnabled){if(degreeA>0)A[0]=1;if(degreeB>0)B[0]=1;}
- if(state.hcfEnabled){
-  const style=(index+slot+state.seq)%3;const kA=style===1?1:2+next(0,1);
-  const kB=style===0?1:2+next(0,1);
-  A=A.map(x=>x*kA);B=B.map(x=>x*kB);
- }
+ const seed=(91931+state.level*7717+slot*6217+(typeof state.slot==='number'?0:state.seq)*10333+offset*50077+index*8819)>>>0,next=rand(seed);
+ const pattern=PATTERNS[state.pattern]?state.pattern:'ll', [degreeA,degreeB]=PATTERNS[pattern];
+ const generated=prefs.generate({degreeA,degreeB,level:state.level,onesMode:state.onesMode,
+  doublePattern:state.doublePattern,signA:state.signA,signB:state.signB,
+  hcfEnabled:state.hcfEnabled,centralZero:state.centralZero,next});
+ const A=generated.A,B=generated.B;
  return {a:A[0],b:A[A.length-1],c:B[0],d:B[B.length-1],
-  polyA:A,polyB:B,pattern,variableMode:state.variableMode};
+  polyA:A,polyB:B,scalar:generated.scalar,pattern,variableMode:state.variableMode};
 }
 function monomial(x,y){
  let out='';
@@ -430,7 +417,7 @@ function formatPolynomial(a,letter){
 function binomial(a,letter,b){return '('+fmtTerm(a,letter,true)+fmtTerm(b,'',false)+')'}
 function factored(q){
  const A=q.polyA||[q.a,q.b],B=q.polyB||[q.c,q.d];
- return '('+formatPolynomial(A,'x')+')('+formatPolynomial(B,q.variableMode==='same'?'x':'y')+')';
+ return (q.scalar>1?String(q.scalar):'')+'('+formatPolynomial(A,'x')+')('+formatPolynomial(B,q.variableMode==='same'?'x':'y')+')';
 }
 function pairTerms(q){
  const A=q.polyA||[q.a,q.b],B=q.polyB||[q.c,q.d];
@@ -438,7 +425,7 @@ function pairTerms(q){
  const rows=[];
  A.forEach((a,i)=>B.forEach((b,j)=>{
   const px=A.length-1-i,py=B.length-1-j;
-  rows.push({value:a*b,x:px+(same?py:0),y:same?0:py,group:i});
+  rows.push({value:a*b*(q.scalar||1),x:px+(same?py:0),y:same?0:py,group:i});
  }));
  return rows;
 }
@@ -501,38 +488,57 @@ function setMode(mode){
  if(mode==='display')renderBoard();
  if(mode==='worksheets'){}
 }
+function signSelect(id,degree,field){
+ const select=$(id),entries=degree===0?[['','—']]:[
+  ['positive','All +'],['negative','All −'],['random','Random'],...prefs.signOptions(degree).map(v=>[v,v])];
+ const signature=entries.map(e=>e[0]).join('|');
+ if(select.dataset.signature!==signature){select.replaceChildren();for(const [value,label] of entries){
+  const option=document.createElement('option');option.value=value;option.textContent=label;select.append(option)}
+  select.dataset.signature=signature;}
+ if(!entries.some(e=>e[0]===state[field]))state[field]=degree===0?'':'positive';
+ select.value=state[field];
+}
 function renderToolbar(){
- for(const button of document.querySelectorAll('[data-slot]'))button.setAttribute('aria-pressed',String(String(state.slot)===button.dataset.slot));
- for(const button of document.querySelectorAll('[data-pattern]'))button.setAttribute('aria-pressed',String(state.pattern===button.dataset.pattern));
- $('sameVarBtn').setAttribute('aria-pressed',String(state.variableMode==='same'));
- $('differentVarBtn').setAttribute('aria-pressed',String(state.variableMode==='different'));
- $('hcfBtn').setAttribute('aria-pressed',String(state.hcfEnabled));
- $('hcfBtn').textContent=state.hcfEnabled?'HCF On':'HCF Off';
- $('monicBtn').setAttribute('aria-pressed',String(state.monicEnabled));
- $('monicBtn').textContent=state.monicEnabled?'Monic On':'Monic Off';
- $('bankPosition').textContent=typeof state.slot==='number'?'Q '+(state.questionIndex+1)+' / 6':'Random';
+ for(const b of document.querySelectorAll('[data-bank-set]'))
+  b.setAttribute('aria-pressed',String(Number(b.dataset.bankSet)===state.slot&&Number(b.dataset.bankQuestion)===state.questionIndex));
+ $('bankSummary').textContent=typeof state.slot==='number'?'Set '+(state.slot+1)+' · Q '+(state.questionIndex+1):'Select set / Q';
  $('bankPrevious').disabled=typeof state.slot!=='number'||state.questionIndex===0;
  $('bankNext').disabled=typeof state.slot!=='number'||state.questionIndex===5;
- for(const button of document.querySelectorAll('[data-level]'))button.setAttribute('aria-pressed',String(state.level===Number(button.dataset.level)));
- for(const button of document.querySelectorAll('[data-sign]'))button.setAttribute('aria-pressed',String(state.sign===button.dataset.sign));
- $('expandBtn').setAttribute('aria-pressed',String(state.direction==='expand'));
- $('factorBtn').setAttribute('aria-pressed',String(state.direction==='factor'));
+ for(const b of document.querySelectorAll('[data-pattern]'))b.setAttribute('aria-pressed',String(state.pattern===b.dataset.pattern));
+ $('challengeSelect').value=['qc','cc'].includes(state.pattern)?state.pattern:'none';
+ $('sameVarBtn').setAttribute('aria-pressed',String(state.variableMode==='same'));
+ $('differentVarBtn').setAttribute('aria-pressed',String(state.variableMode==='different'));
+ $('hcfCheck').checked=state.hcfEnabled;$('centralZeroCheck').checked=state.centralZero;$('manualCheck').checked=state.manual;
+ $('doublePattern').value=state.onesMode==='double'?state.doublePattern:'';
+ for(const b of document.querySelectorAll('[data-ones]'))b.setAttribute('aria-pressed',String(state.onesMode===b.dataset.ones));
+ for(const b of document.querySelectorAll('[data-level]'))b.setAttribute('aria-pressed',String(state.level===Number(b.dataset.level)));
+ const [da,db]=PATTERNS[state.pattern]||PATTERNS.ll;signSelect('signA',da,'signA');signSelect('signB',db,'signB');
+ $('expandBtn').setAttribute('aria-pressed',String(state.direction==='expand'));$('factorBtn').setAttribute('aria-pressed',String(state.direction==='factor'));
  for(const [id,mode] of [['practiceBtn','practice'],['displayBtn','display'],['quizBtn','quiz'],['testBtn','test'],['worksheetsBtn','worksheets']])$(id).setAttribute('aria-pressed',String(state.mode===mode));
  $('instructionBtn').setAttribute('aria-pressed',String(state.mode==='practice'&&state.view==='step'));
  $('gameBtn').setAttribute('aria-pressed',String(state.mode==='quiz'));
- $('stepsBtn').setAttribute('aria-pressed',String(state.view==='step'));
- $('workedBtn').setAttribute('aria-pressed',String(state.view==='worked'));
- for(const button of document.querySelectorAll('[data-group]'))button.setAttribute('aria-pressed',String(state.group===button.dataset.group));
+ $('stepsBtn').setAttribute('aria-pressed',String(state.view==='step'));$('workedBtn').setAttribute('aria-pressed',String(state.view==='worked'));
+ for(const b of document.querySelectorAll('[data-group]'))b.setAttribute('aria-pressed',String(state.group===b.dataset.group));
 }
-
+function renderBankGrid(){
+ const grid=$('bankGrid');grid.replaceChildren();
+ for(let set=-1;set<6;set++)for(let q=-1;q<6;q++){
+  if(set<0||q<0){const axis=document.createElement('span');axis.className='bank-axis';axis.textContent=set<0?(q<0?'S/Q':q+1):set+1;grid.append(axis);continue}
+  const button=document.createElement('button');button.type='button';button.textContent=String(set*6+q+1);
+  button.dataset.bankSet=String(set);button.dataset.bankQuestion=String(q);
+  button.title='Set '+(set+1)+', question '+(q+1);
+  button.onclick=()=>{state.slot=set;state.questionIndex=q;$('bankPicker').open=false;refreshQuestion()};grid.append(button);
+ }
+}
 function expansionWorking(q){
  const A=q.polyA||[q.a,q.b],B=q.polyB||[q.c,q.d];
  const bracket='('+formatPolynomial(B,q.variableMode==='same'?'x':'y')+')';
  const split=A.map((value,i)=>{
   if(value===0)return null;
   const variable=monomial(A.length-1-i,0);
-  const term=(Math.abs(value)===1?'':String(Math.abs(value)))+variable+bracket;
-  return {value,term};
+  const weighted=value*(q.scalar||1);
+  const term=(Math.abs(weighted)===1?'':String(Math.abs(weighted)))+variable+bracket;
+  return {value:weighted,term};
  }).filter(Boolean).map((item,i)=>(item.value<0?(i?' − ':'−'):(i?' + ':''))+item.term).join('')||'0';
  const distributed=sumTerms(pairTerms(q),false);
  const collected=expanded(q);
@@ -545,15 +551,16 @@ function expansionSteps(q){
   ...(expansionWorking(q).hasCollection?['Collect like terms']:[]),
   'Box the answer'];
 }
-function factorisationLines(q){
- const swapped=state.group==='swapped';
- return [
-  swapped?expanded(q,true):expanded(q),
-  grouping(q,swapped),
-  groupsFactored(q,swapped),
-  swapped?binomial(q.c,'y',q.d)+binomial(q.a,'x',q.b):factored(q)
- ];
+function factorisationWorking(q){
+ const simple=expanded(q),uncollected=sumTerms(pairTerms(q),false);
+ const extra=simple!==uncollected;
+ return {lines:[simple,...(extra?[uncollected]:[]),expansionWorking(q).lines[1],factored(q)],extra};
 }
+function factorisationLines(q){return factorisationWorking(q).lines}
+function factorisationSteps(q){
+ return [...(factorisationWorking(q).extra?['Separate product terms']:[]),'Group by common factor','Factor the common bracket','Box the answer'];
+}
+function procedureSteps(q){return state.direction==='expand'?expansionSteps(q):factorisationSteps(q)}
 function latexMath(s){
  return String(s).replace(/−/g,'-');
 }
@@ -561,7 +568,7 @@ function safeMathHTML(s){
  return safeText(s).replace(/([xy])/g,'<i>$1</i>');
 }
 function diagramHTML(q){
- const limit=state.direction==='expand'?expansionSteps(q).length:4;
+ const limit=procedureSteps(q).length;
  const step=state.view==='worked'?limit:Math.min(limit,state.step);
  const allLines=state.direction==='expand'?expansionLines(q):factorisationLines(q);
  const complete=step===limit;
@@ -599,13 +606,7 @@ document.addEventListener('maths-tex-ready',()=>{
 });
 function renderStepSidebar(){
  const host=$('stepItems');
- const expansion=state.direction==='expand';
- const labels=expansion?expansionSteps(state.q):[
-  'Group the terms',
-  'Factor each group',
-  'Identify the common bracket',
-  'Box the answer'
- ];
+ const labels=procedureSteps(state.q);
  const limit=labels.length;
  const current=state.view==='worked'?limit:state.step;
  host.replaceChildren();
@@ -628,10 +629,11 @@ function renderStepSidebar(){
 function renderPractice(){
  const q=state.q;
  if(!q)return;
- $('questionNumber').textContent=typeof state.slot==='number'?'Classwork '+(state.slot+1):'New question';
+ $('questionNumber').textContent=typeof state.slot==='number'?'Set '+(state.slot+1)+' · Question '+(state.questionIndex+1):'New question';
 
  $('prompt').hidden=true;
  const editors=$('coefficientEditors'),A=q.polyA,B=q.polyB;
+ editors.hidden=!state.manual;
  if(editors.dataset.pattern!==q.pattern||editors.dataset.variableMode!==q.variableMode){
   editors.replaceChildren();
   editors.dataset.pattern=q.pattern;editors.dataset.variableMode=q.variableMode;
@@ -657,15 +659,13 @@ function renderPractice(){
    const arr=input.dataset.factor==='A'?A:B;input.value=String(arr[Number(input.dataset.index)]);
   });
  }
- $('groupOptions').hidden=state.direction!=='factor';
- const limit=state.direction==='expand'?expansionSteps(q).length:4;
+ $('groupOptions').hidden=true;
+ const limit=procedureSteps(q).length;
  const step=state.view==='worked'?limit:state.step;
  $('diagram').innerHTML=diagramHTML(q);
  $('partials').hidden=true;$('partials').replaceChildren();
  $('working').hidden=true;$('working').replaceChildren();
- const directions=state.direction==='expand'
-  ?['Use the distributive property.',...expansionSteps(q).map(label=>label+'.')]
-  :['Reverse the distributive property.','Group the terms.','Factor each group.','Identify the common bracket.','Box the answer.'];
+ const directions=[state.direction==='expand'?'Use the distributive property.':'Reverse the distributive property.',...procedureSteps(q).map(v=>v+'.')];
  $('status').textContent=directions[Math.min(step,limit)];
  renderStepSidebar();
  typesetDiagram();
@@ -832,23 +832,23 @@ function worksheet(){
  w.document.open();w.document.write(doc);w.document.close();
 }
 function render(){renderToolbar();if(state.mode==='practice')renderPractice();else if(state.mode==='display')renderBoard()}
-for(const btn of document.querySelectorAll('[data-level]'))btn.onclick=()=>{state.level=Number(btn.dataset.level);refreshQuestion()};
-for(const btn of document.querySelectorAll('[data-sign]'))btn.onclick=()=>{state.sign=btn.dataset.sign;state.slot='random';refreshQuestion()};
-for(const btn of document.querySelectorAll('[data-slot]'))btn.onclick=()=>{
- if(btn.dataset.slot==='random'){state.slot='random';state.seq++;state.questionIndex=0;}
- else{state.slot=Number(btn.dataset.slot);state.questionIndex=0;
-  const bank=BANKS[state.slot];state.pattern=bank.pattern==='any'?'ll':bank.pattern;
-  state.level=bank.level;state.sign=bank.sign;
- }
- refreshQuestion();
-};
+function updateQuestions(){savePreferences();refreshQuestion()}
+for(const btn of document.querySelectorAll('[data-level]'))btn.onclick=()=>{state.level=Number(btn.dataset.level);updateQuestions()};
+for(const btn of document.querySelectorAll('[data-pattern]'))btn.onclick=()=>{state.pattern=btn.dataset.pattern;state.basePattern=state.pattern;updateQuestions()};
+$('challengeSelect').onchange=()=>{state.pattern=$('challengeSelect').value==='none'?(state.basePattern||'ll'):$('challengeSelect').value;updateQuestions()};
+$('sameVarBtn').onclick=()=>{state.variableMode='same';updateQuestions()};
+$('differentVarBtn').onclick=()=>{state.variableMode='different';updateQuestions()};
+for(const btn of document.querySelectorAll('[data-ones]'))btn.onclick=()=>{state.onesMode=btn.dataset.ones;updateQuestions()};
+$('doublePattern').onchange=()=>{if($('doublePattern').value){state.onesMode='double';state.doublePattern=$('doublePattern').value}else state.onesMode='off';updateQuestions()};
+$('signA').onchange=()=>{state.signA=$('signA').value;updateQuestions()};
+$('signB').onchange=()=>{state.signB=$('signB').value;updateQuestions()};
+$('hcfCheck').onchange=()=>{state.hcfEnabled=$('hcfCheck').checked;updateQuestions()};
+$('centralZeroCheck').onchange=()=>{state.centralZero=$('centralZeroCheck').checked;updateQuestions()};
+$('manualCheck').onchange=()=>{state.manual=$('manualCheck').checked;savePreferences();renderPractice()};
+$('settingsToggle').onclick=()=>{const hidden=$('splitMain').classList.toggle('controls-hidden');$('settingsToggle').textContent=hidden?'Show controls':'Hide controls'};
+$('bankRandom').onclick=()=>{state.slot='random';state.seq++;state.questionIndex=0;refreshQuestion()};
 $('bankPrevious').onclick=()=>{if(typeof state.slot==='number'){state.questionIndex=Math.max(0,state.questionIndex-1);refreshQuestion()}};
 $('bankNext').onclick=()=>{if(typeof state.slot==='number'){state.questionIndex=Math.min(5,state.questionIndex+1);refreshQuestion()}};
-for(const btn of document.querySelectorAll('[data-pattern]'))btn.onclick=()=>{state.pattern=btn.dataset.pattern;refreshQuestion()};
-$('sameVarBtn').onclick=()=>{state.variableMode='same';refreshQuestion()};
-$('differentVarBtn').onclick=()=>{state.variableMode='different';refreshQuestion()};
-$('hcfBtn').onclick=()=>{state.hcfEnabled=!state.hcfEnabled;refreshQuestion()};
-$('monicBtn').onclick=()=>{state.monicEnabled=!state.monicEnabled;refreshQuestion()};
 $('expandBtn').onclick=()=>{state.direction='expand';state.step=0;state.view='step';resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');else render()};
 $('factorBtn').onclick=()=>{state.direction='factor';state.step=0;state.view='step';resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');else render()};
 $('instructionBtn').onclick=()=>{state.step=0;state.view='step';setMode('practice')};
@@ -862,7 +862,7 @@ $('stepsBtn').onclick=()=>{state.view='step';setMode('practice')};
 $('workedBtn').onclick=()=>{state.view='worked';setMode('practice')};
 $('resetBtn').onclick=()=>{state.view='step';state.step=0;setMode('practice')};
 $('backStep').onclick=()=>{state.view='step';state.step=Math.max(0,state.step-1);renderPractice()};
-$('nextStep').onclick=()=>{state.view='step';state.step=Math.min(state.direction==='expand'?expansionSteps(state.q).length:4,state.step+1);renderPractice()};
+$('nextStep').onclick=()=>{state.view='step';state.step=Math.min(procedureSteps(state.q).length,state.step+1);renderPractice()};
 $('allSteps').onclick=()=>{state.view='worked';renderPractice()};
 $('newQuestion').onclick=newQuestion;
 for(const btn of document.querySelectorAll('[data-group]'))btn.onclick=()=>{state.group=btn.dataset.group;state.step=0;state.view='step';renderPractice()};
@@ -877,6 +877,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('fullscreenchange',()=>requestAnimationFrame(fitBoard));
 window.addEventListener('resize',()=>{if(state.mode==='display')requestAnimationFrame(fitBoard)});
+renderBankGrid();
 state.q=generator(state.questionIndex);
 render();
 })();
