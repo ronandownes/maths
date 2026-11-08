@@ -484,6 +484,9 @@ main{margin:5px auto;padding:10px 19px 18px}
 .bank-question-nav{display:flex;align-items:center;gap:3px;white-space:nowrap}
 .bank-question-nav .bank-question-arrow{font-size:1.2rem;padding:0 6px;min-width:25px;height:29px}
 .bank-question-nav .bank-question-position{font-size:.79rem;min-width:54px;text-align:center;font-variant-numeric:tabular-nums;color:#42546b}
+.homework-controls .random-question-button{border:1px solid #8ba9d2;border-radius:7px;color:#174ea6;background:#f2f7ff;font-size:.82rem;font-weight:700;min-height:31px;padding:5px 12px;white-space:nowrap}
+.homework-controls .random-question-button:hover:not(:disabled){background:#e4efff}
+.homework-controls .random-question-button:disabled{opacity:.42;cursor:not-allowed}
 @media(max-width:1230px){.activity-switch{grid-template-columns:1fr 1fr}.activity-switch>.homework-controls{grid-column:1/-1}}
 
 /* Six-minute direct instruction. One clear mathematical idea per slide. */
@@ -657,14 +660,14 @@ main{margin:5px auto;padding:10px 19px 18px}
 <button id="mobileSettingsBackdrop" class="mobile-settings-backdrop" type="button" aria-label="Close question settings" hidden></button>
 <div class="settings settings-top common-settings" id="mobileSettingsPanel" aria-label="Question settings">
 <button id="mobileSettingsClose" type="button" class="mobile-settings-close" aria-label="Close settings">✕ Close</button>
-<div class="setting"><span class="caption">Factor pattern</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor pattern"></div><select id="challengeSelect" aria-label="Optional higher degree factor patterns"><option value="">Challenge…</option><option value="l3">Linear × Cubic</option><option value="l4">Linear × Quartic</option><option value="l5">Linear × Quintic</option><option value="q3">Quadratic × Cubic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select></div></div>
+<div class="setting"><span class="caption">Factor pattern</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor pattern"></div><select id="challengeSelect" aria-label="Optional higher degree factor patterns"><option value="">Challenge…</option><option value="l4">Linear × Quartic</option><option value="l5">Linear × Quintic</option><option value="q3">Quadratic × Cubic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 <div class="setting"><span class="caption">Signs within factors</span><div class="button-group" id="signs" aria-label="Choose signs"></div></div>
 <div class="setting setting--advanced"><span class="caption">Options</span><div class="advanced-buttons"><button type="button" id="constantBtn" aria-pressed="false" title="HCF Off gives a primitive expansion (coefficient HCF 1); HCF On gives a common numerical factor.">HCF Off</button><button type="button" id="monicBtn" aria-pressed="false" title="Advanced: leading coefficient 1">Monic off</button><button type="button" id="challengeBtn" hidden aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false">Challenge off</button></div></div>
 <div class="beyond-choices" id="beyondPanel" hidden><div class="button-group" id="beyondChoices"></div><span id="beyondNote"></span></div>
 </div>
 <div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
- <div class="homework-controls"><span class="homework-label">Question banks</span><nav class="top-questions" id="questions" aria-label="Six question banks containing six questions each"></nav><div id="bankQuestionNav" class="bank-question-nav" aria-label="Browse questions within the selected bank"></div></div>
+ <div class="homework-controls"><span class="homework-label">Question banks</span><nav class="top-questions" id="questions" aria-label="Six question banks containing six questions each"></nav><div id="bankQuestionNav" class="bank-question-nav" aria-label="Browse questions within the selected bank"></div><button type="button" id="randomQuestion" class="random-question-button" aria-label="Generate a new random question using the current settings" title="New question with the selected factor pattern, level, signs and HCF">Random</button></div>
  <div class="activity-section activities-section"><span class="activity-title">Activities</span><div class="activity-actions" aria-label="Choose activity">
   <button id="instructionMode" type="button" aria-pressed="false">Instruction</button>
   <button id="boardMode" type="button" aria-pressed="false">Display</button>
@@ -738,10 +741,11 @@ function phaseOf(question,step){
  if(!hcfData(question).needed)return step;
  return step<=1?0:step<=6?step-1:step-2;
 }
-const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
-const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\nQuad'],['any','Rand']];
-const beyondChoices=[['l3','Linear × Cubic'],['l4','Linear × Quartic'],['l5','Linear × Quintic'],['q3','Quadratic × Cubic'],['q4','Quadratic × Quartic'],['44','Quartic × Quartic']];
-const beyondTypes=beyondChoices.map(item=>item[0]);
+const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad'],['l3','Lin × Cubic']];
+const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\nQuad'],['l3','Lin ×\nCubic']];
+const beyondChoices=[['l4','Linear × Quartic'],['l5','Linear × Quintic'],['q3','Quadratic × Cubic'],['q4','Quadratic × Quartic'],['44','Quartic × Quartic']];
+const challengeOnlyTypes=beyondChoices.map(item=>item[0]);
+const beyondTypes=['l3',...challengeOnlyTypes];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
 const signChoices=[['positive','All +'],['negative','Non-leading −'],['mixed','Mixed + / −'],['random','Random']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
@@ -896,18 +900,25 @@ function renderSelectors(){
  previous.onclick=()=>openBankQuestion(state.slot,state.bankQuestion-1);
  next.onclick=()=>openBankQuestion(state.slot,state.bankQuestion+1);
  nav.append(previous,position,next);
- function filter(key,value){if(assessment.started)return;state[key]=value;refreshSelectedQuestion();assessmentConfigChanged()}
- chooseButtons('types',factorChoices,state.factorRandom?'any':(beyondTypes.includes(state.type)?state.coreType:state.type),v=>{
+ const randomQuestion=$('randomQuestion');
+ randomQuestion.disabled=assessment.started;
+ randomQuestion.onclick=()=>{
   if(assessment.started)return;
-  if(v==='any'){state.factorRandom=true;state.type=state.coreType;state.freshCount++}
-  else{state.coreType=v;state.type=v;state.factorRandom=false}
+  if(assessment.mode!=='practice')switchMode('practice');
+  state.mode='step';state.step=0;
+  freshQuestion();
+ };
+ function filter(key,value){if(assessment.started)return;state[key]=value;refreshSelectedQuestion();assessmentConfigChanged()}
+ chooseButtons('types',factorChoices,challengeOnlyTypes.includes(state.type)?state.coreType:state.type,v=>{
+  if(assessment.started)return;
+  state.coreType=v;state.type=v;state.factorRandom=false;
   state.beyondOpen=false;refreshSelectedQuestion();assessmentConfigChanged();
  });
  const beyondPanel=$('beyondPanel');beyondPanel.hidden=true;
- $('beyondNote').textContent=beyondTypes.includes(state.type)?'The selected pattern is available in Classwork, Display, Quiz, Test and Worksheets.':'Choose a higher-degree factor pattern.';
+ $('beyondNote').textContent=challengeOnlyTypes.includes(state.type)?'The selected pattern is available in Classwork, Display, Quiz, Test and Worksheets.':'Choose a higher-degree factor pattern.';
  chooseButtons('beyondChoices',beyondChoices,state.type,v=>{if(assessment.started)return;state.type=v;state.beyondOpen=true;state.factorRandom=false;refreshSelectedQuestion();assessmentConfigChanged()});
  const challengeSelect=$('challengeSelect');
- challengeSelect.value=beyondTypes.includes(state.type)?state.type:'';
+ challengeSelect.value=challengeOnlyTypes.includes(state.type)?state.type:'';
  challengeSelect.disabled=assessment.started;
  challengeSelect.onchange=()=>{
   if(assessment.started)return;
@@ -918,7 +929,7 @@ function renderSelectors(){
  };
  const challenge=$('challengeBtn');challenge.textContent=state.beyondOpen?'Challenge on':'Challenge off';
  challenge.setAttribute('aria-pressed',String(state.beyondOpen));challenge.setAttribute('aria-expanded',String(state.beyondOpen));
- challenge.onclick=()=>{if(assessment.started)return;state.beyondOpen=!state.beyondOpen;if(!state.beyondOpen&&beyondTypes.includes(state.type))state.type=state.coreType;refreshSelectedQuestion();assessmentConfigChanged()};
+ challenge.onclick=()=>{if(assessment.started)return;state.beyondOpen=!state.beyondOpen;if(!state.beyondOpen&&challengeOnlyTypes.includes(state.type))state.type=state.coreType;refreshSelectedQuestion();assessmentConfigChanged()};
  const constant=$('constantBtn');constant.textContent=state.constantOn?'HCF On':'HCF Off';constant.setAttribute('aria-pressed',String(state.constantOn));constant.title='HCF On: every coefficient of the product shares a factor greater than 1. Monic will be switched off.';
  constant.onclick=()=>{if(assessment.started)return;state.constantOn=!state.constantOn;if(state.constantOn)state.monic=false;refreshSelectedQuestion();assessmentConfigChanged()};
  // Numbered homework questions follow fixed signs; the sign buttons must
@@ -968,7 +979,6 @@ function renderSelectors(){
  const monicButton=$('monicBtn');monicButton.setAttribute('aria-pressed',String(state.monic));monicButton.textContent=state.monic?'Monic on':'Monic off';
  monicButton.title=state.monic?'Both factors have leading coefficient 1 (where applicable). Click to switch off.':'Require leading coefficients of 1, including numbered banks and Challenge.';
  monicButton.onclick=()=>{if(assessment.started)return;state.monic=!state.monic;if(state.monic)state.constantOn=false;refreshSelectedQuestion();assessmentConfigChanged()};
- const randomFactor=$('types').children[factorTypes.length];randomFactor.className='level-random';randomFactor.title='Randomly choose linear or quadratic factors';randomFactor.setAttribute('aria-label','Random factors');
  const randomSign=$('signs').children[3];randomSign.className='level-random';randomSign.title='Randomly choose a sign pattern';randomSign.setAttribute('aria-label','Random signs');
  setAssessmentControlsLocked();
  const practiceButton=$('practiceMode');practiceButton.setAttribute('aria-pressed',String(assessment.mode==='practice'&&state.slot==='fresh'));
