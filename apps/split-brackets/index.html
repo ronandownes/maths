@@ -305,7 +305,7 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 <div class="setting"><strong>Variables</strong><button id="sameVarBtn">1 var</button><button id="differentVarBtn">2 vars</button></div>
 <div class="setting"><strong>Method</strong><button id="expandBtn">Expand</button><button id="factorBtn">Factorise</button></div>
 <div class="setting"><strong>1s</strong><button data-ones="off" title="No selected coefficients equal to 1">Off</button><button data-ones="lead">Lead</button><button data-ones="middle">Middle</button><button data-ones="trail">Trail</button><select id="doublePattern" aria-label="Two coefficients equal to 1"><option value="">2 ×</option><option value="lead">2 · Lead</option><option value="trail">2 · Trail</option><option value="inner">2 · Inner</option><option value="outer">2 · Outer</option><option value="first">2 · First</option><option value="second">2 · Second</option></select><button data-ones="triple">3 ×</button></div>
-<div class="setting"><strong>Level</strong><button data-level="1">1</button><button data-level="2">2</button><button data-level="3">3</button></div>
+<div class="setting"><strong>Level</strong><button data-level="1">1</button><button data-level="2">2</button><button data-level="3">3</button><select id="advancedLevel" aria-label="Coefficient challenge difficulty"><option value="0">More</option><option value="4">Ch 1 · ≤99</option><option value="5">Ch 2 · ≤999</option></select></div>
 <div class="setting"><strong>Signs</strong><label class="compact-select-label">1st <select id="signA" aria-label="First factor signs"></select></label><label class="compact-select-label">2nd <select id="signB" aria-label="Second factor signs"></select></label></div>
 <div class="setting"><strong>Challenge</strong><select id="challengeSelect"><option value="none">Off</option><option value="qc">Quad × Cubic</option><option value="cc">Cubic × Cubic</option></select></div>
 <div class="setting options-setting"><strong>More</strong><details class="options-menu"><summary>Options</summary><div class="options-content"><label><input id="hcfCheck" type="checkbox"> HCF</label><label><input id="centralZeroCheck" type="checkbox"> Central 0</label><label><input id="manualCheck" type="checkbox"> Manual</label><a href="../shared/polynomial-settings.html">Shared settings</a></div></details></div>
@@ -512,6 +512,7 @@ function renderToolbar(){
  $('doublePattern').value=state.onesMode==='double'?state.doublePattern:'';
  for(const b of document.querySelectorAll('[data-ones]'))b.setAttribute('aria-pressed',String(state.onesMode===b.dataset.ones));
  for(const b of document.querySelectorAll('[data-level]'))b.setAttribute('aria-pressed',String(state.level===Number(b.dataset.level)));
+ $('advancedLevel').value=state.level>=4?String(state.level):'0';
  const [da,db]=PATTERNS[state.pattern]||PATTERNS.ll;signSelect('signA',da,'signA');signSelect('signB',db,'signB');
  $('expandBtn').setAttribute('aria-pressed',String(state.direction==='expand'));$('factorBtn').setAttribute('aria-pressed',String(state.direction==='factor'));
  for(const [id,mode] of [['practiceBtn','practice'],['displayBtn','display'],['quizBtn','quiz'],['testBtn','test'],['worksheetsBtn','worksheets']])$(id).setAttribute('aria-pressed',String(state.mode===mode));
@@ -834,6 +835,7 @@ function worksheet(){
 function render(){renderToolbar();if(state.mode==='practice')renderPractice();else if(state.mode==='display')renderBoard()}
 function updateQuestions(){savePreferences();refreshQuestion()}
 for(const btn of document.querySelectorAll('[data-level]'))btn.onclick=()=>{state.level=Number(btn.dataset.level);updateQuestions()};
+$('advancedLevel').onchange=()=>{if(Number($('advancedLevel').value)>0){state.level=Number($('advancedLevel').value);updateQuestions()}};
 for(const btn of document.querySelectorAll('[data-pattern]'))btn.onclick=()=>{state.pattern=btn.dataset.pattern;state.basePattern=state.pattern;updateQuestions()};
 $('challengeSelect').onchange=()=>{state.pattern=$('challengeSelect').value==='none'?(state.basePattern||'ll'):$('challengeSelect').value;updateQuestions()};
 $('sameVarBtn').onclick=()=>{state.variableMode='same';updateQuestions()};
