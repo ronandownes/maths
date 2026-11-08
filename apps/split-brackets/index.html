@@ -512,21 +512,25 @@ function renderToolbar(){
  for(const button of document.querySelectorAll('[data-group]'))button.setAttribute('aria-pressed',String(state.group===button.dataset.group));
 }
 
-function expansionLines(q){
- const common=binomial(q.c,'y',q.d);
- const sign=q.b<0?' − ':' + ';
- const first=fmtTerm(q.a,'x',true)+common;
- const second=(Math.abs(q.b)===1?'':String(Math.abs(q.b)))+common;
- const p=products(q),bAbs=Math.abs(q.b);
- const firstPair=fmtTerm(p[0],'xy',true)+fmtTerm(p[1],'x',false);
- const secondPair=fmtTerm(bAbs*q.c,'y',true)+fmtTerm(bAbs*q.d,'',false);
- return [
-  factored(q),
-  first+sign+second,
-  '('+firstPair+')'+sign+second,
-  '('+firstPair+')'+sign+'('+secondPair+')',
-  expanded(q)
- ];
+function expansionWorking(q){
+ const A=q.polyA||[q.a,q.b],B=q.polyB||[q.c,q.d];
+ const bracket='('+formatPolynomial(B,q.variableMode==='same'?'x':'y')+')';
+ const split=A.map((value,i)=>{
+  if(value===0)return null;
+  const variable=monomial(A.length-1-i,0);
+  const term=(Math.abs(value)===1?'':String(Math.abs(value)))+variable+bracket;
+  return {value,term};
+ }).filter(Boolean).map((item,i)=>(item.value<0?(i?' − ':'−'):(i?' + ':''))+item.term).join('')||'0';
+ const distributed=sumTerms(pairTerms(q),false);
+ const collected=expanded(q);
+ const hasCollection=distributed!==collected;
+ return {lines:[factored(q),split,distributed,...(hasCollection?[collected]:[])],hasCollection};
+}
+function expansionLines(q){return expansionWorking(q).lines}
+function expansionSteps(q){
+ return ['Split into two groups','Expand both groups',
+  ...(expansionWorking(q).hasCollection?['Collect like terms']:[]),
+  'Box the answer'];
 }
 function factorisationLines(q){
  const swapped=state.group==='swapped';
@@ -544,7 +548,7 @@ function safeMathHTML(s){
  return safeText(s).replace(/([xy])/g,'<i>$1</i>');
 }
 function diagramHTML(q){
- const limit=state.direction==='expand'?5:4;
+ const limit=state.direction==='expand'?expansionSteps(q).length:4;
  const step=state.view==='worked'?limit:Math.min(limit,state.step);
  const allLines=state.direction==='expand'?expansionLines(q):factorisationLines(q);
  const complete=step===limit;
@@ -583,13 +587,7 @@ document.addEventListener('maths-tex-ready',()=>{
 function renderStepSidebar(){
  const host=$('stepItems');
  const expansion=state.direction==='expand';
- const labels=expansion?[
-  'Split into two groups',
-  'Expand the first group',
-  'Expand the second group',
-  'Remove brackets',
-  'Box the answer'
- ]:[
+ const labels=expansion?expansionSteps(state.q):[
   'Group the terms',
   'Factor each group',
   'Identify the common bracket',
@@ -647,13 +645,13 @@ function renderPractice(){
   });
  }
  $('groupOptions').hidden=state.direction!=='factor';
- const limit=state.direction==='expand'?5:4;
+ const limit=state.direction==='expand'?expansionSteps(q).length:4;
  const step=state.view==='worked'?limit:state.step;
  $('diagram').innerHTML=diagramHTML(q);
  $('partials').hidden=true;$('partials').replaceChildren();
  $('working').hidden=true;$('working').replaceChildren();
  const directions=state.direction==='expand'
-  ?['Use the distributive property.','Split into two groups.','Expand the first group.','Expand the second group.','Remove the brackets.','Box the answer.']
+  ?['Use the distributive property.',...expansionSteps(q).map(label=>label+'.')]
   :['Reverse the distributive property.','Group the terms.','Factor each group.','Identify the common bracket.','Box the answer.'];
  $('status').textContent=directions[Math.min(step,limit)];
  renderStepSidebar();
@@ -851,7 +849,7 @@ $('stepsBtn').onclick=()=>{state.view='step';setMode('practice')};
 $('workedBtn').onclick=()=>{state.view='worked';setMode('practice')};
 $('resetBtn').onclick=()=>{state.view='step';state.step=0;setMode('practice')};
 $('backStep').onclick=()=>{state.view='step';state.step=Math.max(0,state.step-1);renderPractice()};
-$('nextStep').onclick=()=>{state.view='step';state.step=Math.min(state.direction==='expand'?5:4,state.step+1);renderPractice()};
+$('nextStep').onclick=()=>{state.view='step';state.step=Math.min(state.direction==='expand'?expansionSteps(state.q).length:4,state.step+1);renderPractice()};
 $('allSteps').onclick=()=>{state.view='worked';renderPractice()};
 $('newQuestion').onclick=newQuestion;
 for(const btn of document.querySelectorAll('[data-group]'))btn.onclick=()=>{state.group=btn.dataset.group;state.step=0;state.view='step';renderPractice()};
