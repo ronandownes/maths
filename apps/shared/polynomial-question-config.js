@@ -5,7 +5,7 @@
 const KEY='maths.polynomial.question-settings.v1';
 const defaults=Object.freeze({
  level:1,pattern:'ll',basePattern:'ll',variableMode:'different',
- onesMode:'off',doublePattern:'inner',signA:'+',signB:'+',
+ onesMode:'off',doublePattern:'inner',signA:'positive',signB:'positive',
  hcfEnabled:false,centralZero:false,manual:false
 });
 function read(){
@@ -38,7 +38,10 @@ function signOptions(degree){
 }
 function signPattern(pattern,degree,next){
  const choices=signOptions(degree);
- if(pattern==='random'||!choices.includes(pattern))return choices[next(0,choices.length-1)];
+ if(pattern==='positive')return '+'.repeat(degree);
+ if(pattern==='negative')return '−'.repeat(degree);
+ if(pattern==='random')return choices[next(0,choices.length-1)];
+ if(!choices.includes(pattern))return '+'.repeat(degree);
  return pattern;
 }
 function chooseSlots(A,B,mode,doublePattern,next){
@@ -73,7 +76,8 @@ function chooseSlots(A,B,mode,doublePattern,next){
  }
  const unique=[];
  for(const s of selected){if(s&&!unique.some(v=>v.factor===s.factor&&v.index===s.index))unique.push(s)}
- if(mode==='triple'&&unique.length<3)for(const s of slots){if(unique.length>=3)break;
+ const needed=mode==='double'?2:mode==='triple'?3:unique.length;
+ if(unique.length<needed)for(const s of slots){if(unique.length>=needed)break;
   if(!unique.some(v=>v.factor===s.factor&&v.index===s.index))unique.push(s);}
  return unique;
 }
@@ -95,12 +99,10 @@ function generate({degreeA,degreeB,level=1,onesMode='off',doublePattern='inner',
    (slot.factor?B:A)[slot.index]=0;}
  }
  for(const slot of chosen)(slot.factor?B:A)[slot.index]=1;
- if(hcfEnabled){
-  const multiplierA=2+next(0,1),multiplierB=2+next(0,1);
-  // Global HCF intentionally applies after coefficient-1 selections.
-  A=A.map(v=>v*multiplierA);B=B.map(v=>v*multiplierB);
- }
- return {A,B,signPatternA,signPatternB};
+ // Keep coefficient-1 choices intact. HCF is an exterior scalar so the two
+ // factors can remain monic while the total expression has a common factor.
+ const scalar=hcfEnabled?2+next(0,2):1;
+ return {A,B,scalar,signPatternA,signPatternB};
 }
 root.PolynomialQuestionSettings=Object.freeze({
  KEY,defaults,read,save,signOptions,chooseSlots,generate
