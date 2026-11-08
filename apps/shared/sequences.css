@@ -10,6 +10,7 @@ button:hover{background:#edf4fb}button:focus-visible,input:focus-visible,select:
 button[aria-pressed=true],button.primary{background:#185c9b;color:#fff;border-color:#185c9b}
 button:disabled{opacity:.45;cursor:default}.modes,.toolbar,.actions,.quicknav{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
 .modes{border-bottom:1px solid #e0e7f0;padding-bottom:10px}.modes button{font-weight:700}
+.modes .app-link{display:inline-flex;align-items:center;padding:9px 12px;text-decoration:none;border:1px solid #8fb4cf;border-radius:7px;font-weight:700;color:#185c9b;background:#f0f7ff;min-height:40px}.modes .app-link:hover{background:#e0effb}.modes .app-link:focus-visible{outline:3px solid #83b1e6;outline-offset:2px}
 .options{margin-left:auto}h2{font-size:1.2rem;margin:14px 0 5px}
 .lead{line-height:1.5;color:#41556b;margin:12px 0}
 .diagram{border:1px solid #d9e4ee;border-radius:9px;padding:7px;background:#fbfdff;margin-top:12px}
