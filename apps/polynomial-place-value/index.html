@@ -2,7 +2,7 @@
 <html lang="en-IE">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Place Value Expansions of Polynomials | Maths Apps</title>
+<title>Expanding Algebraic Expressions | Maths Apps</title>
 <link rel="stylesheet" href="../shared/assessment.css">
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <style>
@@ -684,16 +684,37 @@ body.maths-only #mathsOnlyToggle{background:#e9f2ff;border-color:#86acde}
 body.maths-only .focus-tools{position:sticky;top:2px;z-index:100;justify-content:flex-end}
 body.maths-only .focus-tools button{font-size:.72rem;opacity:.8}
 @media print{.focus-tools{display:none!important}}
+
+/* Visual prominence on classroom touch screens and a persistent next-example action. */
+.focus-tools{position:fixed!important;right:14px;bottom:14px;top:auto!important;z-index:2100!important;display:flex;gap:8px;justify-content:flex-end!important;margin:0!important}
+.focus-tools button{min-height:48px!important;padding:10px 14px!important;border-radius:12px!important;background:#e9f1fb!important;border:2px solid #7695bb!important;color:#173d68!important;font-size:.9rem!important;font-weight:700!important;opacity:1!important;box-shadow:0 3px 14px #21345136}
+#focusNext{background:#1b5e98!important;color:#fff!important;border-color:#1b5e98!important}
+body.maths-only .focus-tools button{opacity:1!important;font-size:.84rem!important}
+body:not(.maths-only) #focusNext{display:none!important}
+.method-select{display:flex;flex-direction:column;align-items:center;gap:4px}
+.method-select label{font-size:.78rem;font-weight:700;color:#526276}
+#methodSelect{border:1px solid #abbdd0;border-radius:8px;min-height:42px;padding:8px 12px;font:600 .9rem Arial,sans-serif;background:#fff;color:#203854;max-width:220px}
+.alt-method-heading{text-align:center;font-size:1.2rem;color:#344861}
+.alt-method-work{max-width:100%;margin:12px auto;padding:12px;display:flex;flex-direction:column;gap:12px;align-items:center;font:clamp(1.15rem,2.3vw,2.1rem)/1.45 "Cambria Math",Cambria,serif}
+.alt-method-work p,.alt-method-insight{font:.9rem/1.55 Arial,sans-serif;color:#49617a;text-align:center;margin:0}
+.alt-method-line{display:flex;align-items:center;justify-content:space-between;gap:20px;width:min(100%,850px);padding:8px 10px;border-bottom:1px solid #dae5ee;flex-wrap:wrap}
+.alt-method-side{margin-right:auto}
+.alt-rainbow-pairs{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
+.alt-rainbow-item{padding:10px 14px;border:1px solid #d4dfea;border-radius:12px}
+.alt-method-insight{padding:10px 14px}
+@media(max-width:640px){.focus-tools{right:5px;bottom:8px;gap:5px}.focus-tools button{padding:8px!important;min-height:44px!important;font-size:.74rem!important}}
+@media print{.focus-tools{display:none!important}}
 </style>
 </head>
 <body>
 <header>
 <a href="../../index.html" class="brand-link" aria-label="Maths Apps home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"><span class="apps-name">Apps</span></a>
-<div class="app-heading"><nav class="app-breadcrumb" aria-label="Mathematics location"><a href="../../algebra/index.html">Algebra</a><span aria-hidden="true">›</span><a href="../../algebra/expansions/index.html">Expansions</a></nav><h1 title="Expand polynomials by arranging coefficients in place-value columns">Place Value Expansions of Polynomials</h1></div>
+<div class="app-heading"><nav class="app-breadcrumb" aria-label="Mathematics location"><a href="../../algebra/index.html">Algebra</a><span aria-hidden="true">›</span><a href="../../algebra/expansions/index.html">Expansions</a></nav><h1 title="The distributive property of multiplication over addition and subtraction">Expanding Algebraic Expressions</h1></div>
 </header>
 <main>
 <div class="focus-tools" role="toolbar" aria-label="Classroom view controls">
-<button id="mathsOnlyToggle" type="button" aria-pressed="false" title="Hide settings and show only the mathematics">▣ Maths only</button>
+<button id="mathsOnlyToggle" type="button" aria-pressed="false" title="Show only the maths, or return to all controls">▣ Maths only</button>
+<button id="focusNext" type="button" title="Go to the next numbered question">Next example →</button>
 <button id="mathsFullScreen" type="button" title="Full-screen maths presentation">⛶ Full screen</button>
 </div>
 <button id="mobileSettingsToggle" class="mobile-settings-toggle" type="button" aria-expanded="false" aria-controls="mobileSettingsPanel" aria-label="Open question settings">⚙ Settings</button>
@@ -707,7 +728,8 @@ body.maths-only .focus-tools button{font-size:.72rem;opacity:.8}
 
 <div class="beyond-choices" id="beyondPanel" hidden><div class="button-group" id="beyondChoices"></div><span id="beyondNote"></span></div>
 </div>
-<div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
+<div class="activity-switch" aria-label="Exercises, methods and activities">
+<div class="method-select"><label for="methodSelect">Method</label><select id="methodSelect" aria-label="Choose expansion method"><option value="place-value">Place value</option><option value="stacked-margin">Stacked margin</option><option value="horizontal-rainbow">Horizontal rainbow</option><option value="split-brackets">Split brackets</option></select></div>
  <div class="homework-controls"><span class="homework-label">Question banks</span><nav class="top-questions" id="questions" aria-label="Six question banks containing six questions each"></nav><div id="bankQuestionNav" class="bank-question-nav" aria-label="Browse questions within the selected bank"></div><button type="button" id="randomQuestion" class="random-question-button" aria-label="Generate a new random question using the current settings" title="New question with the selected factor pattern, level, signs and HCF">Random</button></div>
  <div class="activity-section activities-section"><span class="activity-title">Activities</span><div class="activity-actions" aria-label="Choose activity">
   <button id="instructionMode" type="button" aria-pressed="false">Instruction</button>
@@ -803,7 +825,7 @@ const bankProfiles=[
  {type:'qq',level:3,sign:'mixed',name:'Quad × Quad · double-digit prime challenge'}
 ];
 
-const state={type:'ll',factorRandom:false,coreType:'ll',beyondOpen:false,constantOn:false,oneMode:'off',sign:'positive',level:1,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
+const state={method:'place-value',type:'ll',factorRandom:false,coreType:'ll',beyondOpen:false,constantOn:false,oneMode:'off',sign:'positive',level:1,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -924,6 +946,7 @@ function individualProducts(a,b){
  return products;
 }
 function renderSelectors(){
+ const method=$('methodSelect');method.value=state.method;method.onchange=()=>{state.method=method.value;render()};
  const q=[];for(let i=0;i<6;i++)q.push([i,String(i+1)]);
  function openBankQuestion(bank,index){
   if(assessment.started)return;
@@ -1134,7 +1157,59 @@ function drawReflection(hcf){
  section.append(thought);
  return section;
 }
+
+// The distributive property is common to every expansion method.
+function drawAlternativeMethod(){
+ const q=state.question,root=$('canvas');root.replaceChildren();
+ const factors=q.a.length>q.b.length?[q.b,q.a]:[q.a,q.b];
+ const [first,second]=factors;
+ const scalar=q.scalar||1;
+ $('factorExpression').innerHTML=(scalar!==1?'<span class="scalar-prefix">'+scalar+'</span>':'')+factors.map(f=>'<span class="factor">('+poly(f)+')</span>').join(' ');
+ const heading=document.createElement('h3');heading.textContent=({ 'stacked-margin':'Stacked margin','horizontal-rainbow':'Horizontal rainbow','split-brackets':'Split brackets'})[state.method];
+ heading.className='alt-method-heading';root.append(heading);
+ const terms=arr=>arr.map((coefficient,i)=>({coefficient,power:arr.length-1-i})).filter(t=>t.coefficient!==0);
+ const power=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
+ const signedTerm=(coefficient,k,withPlus=false)=>(coefficient<0?'−':withPlus?'+':'')+(Math.abs(coefficient)===1&&k?'':Math.abs(coefficient))+power(k);
+ const pairs=[];
+ terms(first).forEach((u,i)=>terms(second).forEach((v,j)=>pairs.push({i,j,left:u,right:v,value:u.coefficient*v.coefficient,power:u.power+v.power})));
+ const worked=document.createElement('div');worked.className='alt-method-work';
+ if(state.method==='split-brackets'){
+  const label=document.createElement('p');label.textContent='Distribute each term of the first factor across every term of the second.';worked.append(label);
+  terms(first).forEach(t=>{
+   const line=document.createElement('div');line.className='alt-method-line';
+   line.innerHTML='<span class="alt-method-side">'+signedTerm(t.coefficient,t.power)+' × ('+poly(second)+')</span><span>=</span><span>'+poly(product([t.coefficient],second).concat(Array(t.power).fill(0)))+'</span>';
+   // Use explicit powers for the individual partial product rather than index padding.
+   line.lastElementChild.innerHTML=poly(second.map(v=>v*t.coefficient).concat(Array(t.power).fill(0)));
+   worked.append(line);
+  });
+ }else if(state.method==='stacked-margin'){
+  const instruction=document.createElement('p');instruction.textContent='Stack each distributive row and align equal powers, as in vertical multiplication.';worked.append(instruction);
+  terms(second).reverse().forEach(t=>{
+   const line=document.createElement('div');line.className='alt-method-line alt-stacked-row';
+   line.innerHTML='<span class="alt-method-side">'+signedTerm(t.coefficient,t.power)+' × ('+poly(first)+')</span><span>=</span><span>'+poly(first.map(v=>v*t.coefficient).concat(Array(t.power).fill(0)))+'</span>';
+   worked.append(line);
+  });
+ }else{
+  const instruction=document.createElement('p');instruction.textContent='Follow every arc: each term multiplies every term in the other factor.';worked.append(instruction);
+  const block=document.createElement('div');block.className='alt-rainbow-pairs';
+  pairs.forEach(p=>{
+   const item=document.createElement('span');item.className='alt-rainbow-item';
+   item.innerHTML='('+signedTerm(p.left.coefficient,p.left.power)+')('+signedTerm(p.right.coefficient,p.right.power)+') = '+signedTerm(p.value,p.power);
+   block.append(item);
+  });
+  worked.append(block);
+ }
+ root.append(worked);
+ const result=document.createElement('div');result.className='equation worked-conclusion';result.innerHTML='= '+poly(expanded(q));root.append(result);
+ const insight=document.createElement('p');insight.className='alt-method-insight';
+ insight.textContent='Multiplying by 1 leaves a value unchanged. A minus sign changes the sign of a partial product; combining terms uses addition and subtraction.';
+ root.append(insight);
+ const hcf=hcfData(q);
+ root.append(drawReflection(hcf));
+}
+
 function draw(){
+ if(state.method!=='place-value'){drawAlternativeMethod();return}
  const hcf=hcfData(state.question),{a,b}=hcf;
  const final=product(a,b),expanded=final.map(v=>v*hcf.factor),n=final.length,degree=n-1;
  const mode=state.mode,displayStep=state.step;
@@ -2463,6 +2538,12 @@ function render(){
  if(assessment.mode==='board')drawBoard();else if(assessment.mode==='worksheet')wsStatus();
 }
 window.addEventListener('resize',connectTableOperands);
+$('focusNext').onclick=()=>{
+ if(assessment.started)return;
+ if(Number.isInteger(state.slot)){state.bankQuestion++;selectQuestion(state.slot)}
+ else freshQuestion();
+ state.mode='worked';render();
+};
 const focusToggle=$('mathsOnlyToggle');
 focusToggle.onclick=()=>{
  const enabled=document.body.classList.toggle('maths-only');
@@ -2473,7 +2554,7 @@ focusToggle.onclick=()=>{
 };
 $('mathsFullScreen').onclick=()=>{
  if(document.fullscreenElement)document.exitFullscreen?.();
- else document.documentElement.requestFullscreen?.().catch(()=>{});
+ else {document.body.classList.add('maths-only');focusToggle.setAttribute('aria-pressed','true');focusToggle.textContent='◧ Show controls';document.documentElement.requestFullscreen?.().catch(()=>{});}
 };
 document.addEventListener('fullscreenchange',()=>{
  $('mathsFullScreen').textContent=document.fullscreenElement?'↙ Exit full screen':'⛶ Full screen';
