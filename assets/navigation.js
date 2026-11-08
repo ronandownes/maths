@@ -7,6 +7,34 @@
   if (!script) return;
   const root = new URL("../", script.src);
   const url = path => new URL(path, root).href;
+  const bookRoot = new URL("../book/", root);
+  // These IDs correspond to stable xml:id values in the PreTeXt source.
+  const bookPart = {
+    Number: "part-number", Algebra: "part-algebra",
+    Functions: "part-functions", Geometry: "part-geometry",
+    Trigonometry: "part-trigonometry", Statistics: "part-statistics",
+    Probability: "part-probability", Combinatorics: "part-combinatorics"
+  };
+  const bookChapter = {
+    "number/sets/index.html": "chapter-sets",
+    "number/sequences/index.html": "chapter-sequences",
+    "number/complex-numbers/index.html": "chapter-complex",
+    "algebra/factorising/index.html": "chapter-factorisation",
+    "functions/quadratic-functions/index.html": "chapter-functions",
+    "geometry/rectangle-variables/index.html": "chapter-geometry",
+    "apps/right-angle-ratios/index.html": "chapter-trigonometry",
+    "trigonometry/triangle-rules/index.html": "chapter-trigonometry",
+    "statistics/describing-data/index.html": "chapter-statistics",
+    "probability/index.html": "chapter-probability",
+    "combinatorics/counting/index.html": "chapter-counting"
+  };
+  function bookLink(label, id) {
+    const a = document.createElement("a");
+    a.href = new URL(id + ".html", bookRoot).href;
+    a.className = "maths-book-link";
+    a.textContent = label;
+    return a;
+  }
   const L = (label, path) => ({ label, path });
   const T = (label, home, activities = []) => ({ label, home, activities });
 
@@ -148,6 +176,7 @@
       dropdown.className = "maths-dropdown";
       dropdown.append(link(L("All " + s.label, s.home), "maths-all-topics"));
       s.topics.filter(t => !t.source).forEach(t => dropdown.append(link(L(t.label, t.home), "", t === topic)));
+      if (bookPart[s.label]) dropdown.append(bookLink("Read " + s.label + " in the Book", bookPart[s.label]));
       for (const book of ["am1", "am2", "am3"]) {
         const refs = s.topics.filter(t => t.source === book);
         if (!refs.length) continue;
@@ -226,6 +255,11 @@
     const heading = document.createElement("h2");
     heading.textContent = topic ? topic.label : strand ? strand.label : "Explore Maths";
     element.append(heading);
+    if (topic && bookChapter[topic.home]) {
+      const read = bookLink("Read this topic in the Book", bookChapter[topic.home]);
+      read.classList.add("maths-side-book-link");
+      element.append(read);
+    }
 
     if (!topic) {
       if (strand) element.append(link(L("← Maths home", "index.html"), "maths-back-link"));
