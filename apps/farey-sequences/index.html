@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Interactive Farey sequences: order fractions, explore a number line, find new terms, investigate mediants and discover sequence patterns.">
+<title>Farey Sequences Explorer · Maths Apps</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#162438;background:#edf2f7;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;line-height:1.48}
+a{color:#15568f}a:hover{text-decoration-thickness:2px}button,input,select{font:inherit}
+button{cursor:pointer;border-radius:9px;border:1px solid #b6c8d9;padding:.58rem .92rem;background:white;color:#17344d;font-weight:650}
+button:hover{background:#eaf4fd}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #f7a521;outline-offset:2px}
+button.primary{background:#16639d;color:white;border-color:#16639d}button.primary:hover{background:#104e7d}
+button:disabled{opacity:.5;cursor:default}.top{background:#fff;border-bottom:1px solid #cad7e3;padding:12px max(24px,calc((100vw - 1230px)/2));display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.top img{display:block;width:106px;height:auto}.top strong{font-size:1.1rem}.top nav{margin-left:auto;display:flex;gap:15px;flex-wrap:wrap;font-size:.94rem}
+main{max-width:1230px;margin:0 auto;padding:24px}.eyebrow{font-size:.79rem;text-transform:uppercase;letter-spacing:.08em;color:#446a8b;font-weight:800}
+h1{font-size:clamp(1.85rem,3.1vw,2.7rem);margin:6px 0 8px;letter-spacing:-.02em}h2{font-size:1.36rem;margin:0 0 14px}h3{font-size:1.04rem;margin:.5em 0}p{margin:.45rem 0 .9rem}
+.lead{max-width:75ch;color:#41586c;font-size:1.03rem}
+.panel{background:#fff;border:1px solid #d4dfe9;border-radius:15px;padding:22px;margin:17px 0;box-shadow:0 2px 12px #183b5809}
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0}
+.controls label{font-weight:750}.controls input[type=range]{flex:1;min-width:165px;accent-color:#19669f}
+.big-number{font-size:1.45rem;min-width:46px;text-align:center;color:#135889;font-weight:800}
+.meta{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}.meta span{display:block;background:#edf6fe;padding:9px 14px;border-radius:9px}
+.meta strong{font-size:1.13rem}.muted{color:#5b6d7d}.small{font-size:.9rem}.fine{font-size:.82rem;color:#55697a}
+.stack{display:grid;grid-template-columns:1.35fr .85fr;gap:17px}
+@media(max-width:800px){.stack{grid-template-columns:1fr}.top nav{margin-left:0}main{padding:14px}.panel{padding:16px}}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;line-height:1.08;align-items:center;justify-content:center;min-width:1.15em;font-size:1.1em;color:inherit}
+.frac .num{display:block;border-bottom:1.7px solid currentColor;padding:0 .18em .09em}
+.frac .den{display:block;padding:.07em .18em 0}
+.chips{display:flex;flex-wrap:wrap;gap:9px;max-height:235px;overflow:auto;padding:9px 2px}
+.chip{display:inline-flex;gap:6px;align-items:center;justify-content:center;min-width:53px;min-height:61px;padding:5px 10px;background:#f8fbfe}
+.chip.new{border-color:#2c86be;background:#e5f3ff}.chip.selected{border:3px solid #1671ab;background:#d6ecff}
+.chip .label{font-size:.7rem;font-weight:700;color:#19669d;align-self:flex-start}
+.legend{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:.87rem}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:#627b94;vertical-align:middle;margin-right:5px}.dot.new{background:#167eb6}.dot.pick{background:#e59319}
+.numberline{width:100%;height:auto;display:block;background:#fbfdff;border:1px solid #d9e6f0;border-radius:11px}
+.selected-area{padding:15px;background:#f7fafc;border-radius:11px;min-height:128px}
+.selected-head{display:flex;align-items:center;gap:18px;margin:6px 0 12px}.selected-head .frac{font-size:2.1rem;color:#145d97}
+.selected-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;font-size:.93rem}
+.selected-details b{display:block;color:#243a4e}
+.section-tabs{display:flex;gap:9px;flex-wrap:wrap;margin:22px 0 10px}.section-tabs button[aria-selected=true]{background:#1769a4;color:#fff;border-color:#1769a4}
+[hidden]{display:none!important}.question{background:#fff9ed;border-left:4px solid #e7aa3a;padding:13px 15px;margin:12px 0;border-radius:5px;font-weight:600}
+.task-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.game-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}@media(max-width:670px){.game-grid{grid-template-columns:1fr}}
+.choice{min-width:61px;min-height:65px}.choice.used{visibility:hidden}.answer{min-height:80px;display:flex;gap:7px;flex-wrap:wrap;align-items:center;padding:10px;border:2px dashed #9bb6ce;border-radius:10px;background:#f7fbfe}
+.answer .chip{min-width:48px;min-height:57px}.feedback{margin:12px 0;padding:11px;border-radius:9px;background:#edf6fd}.feedback.good{background:#e9f6eb;color:#125027}.feedback.bad{background:#fff2e4;color:#74470d}
+input[type=number]{width:95px;padding:9px;border:1px solid #9fb3c6;border-radius:7px}
+details{border-top:1px solid #d9e5ec;padding:11px 0}summary{font-weight:700;cursor:pointer}
+svg text{font-family:Arial,Helvetica,sans-serif}footer{padding:8px 0 35px;color:#667889;font-size:.88rem}
+</style>
+</head>
+<body>
+<header class="top">
+<a href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"></a>
+<strong>Maths Apps <span class="muted">/ Farey Sequences</span></strong>
+<nav aria-label="App navigation"><a href="../../number/index.html">Number</a><a href="../../number/fractions/index.html">Fractions</a><a href="../../number/sequences/index.html">Sequences</a><a href="../../index.html">Maths home</a></nav>
+</header>
+<main>
+<div class="eyebrow">Number · Fractions · Sequences</div>
+<h1>Farey Sequences Explorer</h1>
+<p class="lead" id="intro">Build a list of fractions between 0 and 1. Put them in order, notice what changes and explain the patterns.</p>
+<div class="controls"><label for="language">Language</label><select id="language"><option value="short">Concise</option><option value="guided" selected>Guided</option><option value="precise">Mathematically precise</option></select><span class="fine">Explore first. Formal explanations come later.</span></div>
+<div class="section-tabs" role="tablist" aria-label="Choose activity">
+<button role="tab" id="tab-explore" aria-selected="true" aria-controls="explore" data-tab="explore">1 · Explore</button>
+<button role="tab" id="tab-order" aria-selected="false" aria-controls="order" data-tab="order">2 · Order fractions</button>
+<button role="tab" id="tab-patterns" aria-selected="false" aria-controls="patterns" data-tab="patterns">3 · Find patterns</button>
+<button role="tab" id="tab-challenge" aria-selected="false" aria-controls="challenge" data-tab="challenge">4 · Investigate</button>
+</div>
+<section id="explore" role="tabpanel" aria-labelledby="tab-explore">
+<div class="panel">
+<h2>Build the sequence</h2>
+<p>Choose the largest denominator. Which fractions appear for the first time?</p>
+<div class="controls"><button id="down" aria-label="Decrease n">−</button><label for="size">Sequence F<sub>n</sub></label><input type="range" id="size" min="1" max="30" value="5"><output id="sizeValue" class="big-number" for="size">F₅</output><button id="up" aria-label="Increase n">+</button><label><input id="highlight" type="checkbox" checked> Highlight new fractions</label></div>
+<div class="meta"><span><strong id="count">11</strong><br>fractions</span><span><strong id="added">4</strong><br>new at this step</span><span><strong id="rule">Denominators ≤ 5</strong><br>in simplest form</span></div>
+<p class="legend"><span><span class="dot"></span>Previously present</span><span><span class="dot new"></span>New at this step</span><span><span class="dot pick"></span>Selected fraction</span></p>
+<svg class="numberline" id="numberline" viewBox="0 0 1000 165" role="img" aria-label="Farey fractions marked on the number line from zero to one"></svg>
+<p class="small muted">Click a fraction below to inspect it. At larger values of n, the labels stay in the list so the line remains readable.</p>
+<div class="chips" id="fractionList" aria-label="Fractions in the sequence"></div>
+</div>
+<div class="panel">
+<h2>Look more closely</h2>
+<div id="selectedArea" class="selected-area" aria-live="polite"></div>
+<div class="task-row" style="margin-top:12px"><button id="previous">← Previous fraction</button><button id="nextFraction">Next fraction →</button></div>
+</div>
+</section>
+<section id="order" role="tabpanel" aria-labelledby="tab-order" hidden>
+<div class="panel">
+<h2>Put the fractions in order</h2>
+<p>Start with <strong>F₃</strong>, then try F₄, F₅ or F₆. Click fractions from smallest to largest. Decide before checking.</p>
+<div class="controls"><label for="sortSize">Difficulty</label><select id="sortSize"><option value="3">F₃ · 5 fractions</option><option value="4">F₄ · 7 fractions</option><option value="5" selected>F₅ · 11 fractions</option><option value="6">F₆ · 13 fractions</option></select><button id="mix">Shuffle</button></div>
+<div class="game-grid"><div><h3>Unsorted fractions</h3><div class="chips" id="choices"></div></div><div><h3>Your sequence</h3><div id="ordered" class="answer" aria-live="polite"><span class="muted">Choose the smallest fraction first.</span></div><div class="task-row" style="margin-top:10px"><button id="undo">Undo last</button><button id="checkOrder" class="primary">Check my order</button></div></div></div>
+<div id="orderFeedback" class="feedback" role="status" aria-live="polite">Tip: use equivalent fractions, common denominators or cross-multiplication. You may also use the number line.</div>
+</div>
+</section>
+<section id="patterns" role="tabpanel" aria-labelledby="tab-patterns" hidden>
+<div class="panel">
+<h2>What changes from one sequence to the next?</h2>
+<div class="question">Why does F₅ gain four fractions, but F₆ only gains two?</div>
+<div class="task-row"><button id="showPrime">Show new fractions for F₅ and F₆</button></div><div id="primeAnswer" class="feedback" hidden></div>
+<h3>Length of the sequence</h3><p>How many fractions are in F₁, F₂, F₃, … ? Is there a pattern in how quickly the lists grow?</p>
+<svg class="numberline" id="growth" viewBox="0 0 960 255" role="img" aria-label="Bar chart: number of fractions in Farey sequences one through twenty"></svg>
+<p class="small">The number added at step n is the number of integers from 1 to n − 1 that share no common factor with n except 1.</p>
+<details><summary>Why does each new list get longer?</summary><p>For n ≥ 2, the fraction 1/n is in simplest form and did not occur earlier. So every step adds at least one fraction.</p></details>
+<details><summary>Why are the lengths odd, apart from F₁?</summary><p>For every fraction a/b below 1/2 there is a matching fraction (b − a)/b above 1/2. The fraction 1/2 sits in the middle. Each pair contributes two terms, so |Fₙ| is odd when n ≥ 2. F₁ has two terms.</p></details>
+</div>
+</section>
+<section id="challenge" role="tabpanel" aria-labelledby="tab-challenge" hidden>
+<div class="panel">
+<h2>Investigate · Predict · Explain</h2>
+<p>Make a conjecture. Test several examples. Then try to explain why it works.</p>
+<div class="question">How many new fractions appear when we move from F₁₁ to F₁₂?</div>
+<div class="task-row"><label for="prediction">My prediction</label><input type="number" id="prediction" min="0" max="50" inputmode="numeric"><button id="checkPrediction" class="primary">Check prediction</button></div><div id="predictFeedback" class="feedback" role="status" aria-live="polite" hidden></div>
+<hr style="border:0;border-top:1px solid #d7e4ec;margin:22px 0">
+<h3>The fraction between two neighbours</h3><p>Take two neighbouring fractions in Fₙ. Add their numerators. Add their denominators. The result is called the <strong>mediant</strong>.</p>
+<div class="task-row"><label for="leftPair">First neighbour</label><select id="leftPair"></select><button id="findMediant" class="primary">Find mediant</button></div>
+<div id="mediantAnswer" class="feedback" role="status" aria-live="polite"></div>
+<details><summary>Extension: prove the neighbour rule</summary><p>If a/b and c/d are consecutive in a Farey sequence, with a/b &lt; c/d, then bc − ad = 1. The mediant (a+c)/(b+d) lies strictly between them and first appears in F<sub>b+d</sub>. Look for these properties in your own examples before reading a proof.</p></details>
+<details><summary>Further rich tasks</summary><p>Can you find two consecutive fractions whose denominators add to 15? When does a fraction enter a Farey sequence? Can you show that the mean of all fractions in Fₙ is exactly 1/2?</p></details>
+</div>
+</section>
+<div class="panel">
+<h2>Connections</h2>
+<div class="game-grid"><div><h3>Fractions and decimals</h3><p>Every point is both a fraction and a decimal. Compare exact fractions first; use decimals to check your estimate.</p><p><a href="../../number/fractions/index.html">Fractions topic →</a></p></div><div><h3>Sequences</h3><p>The lists F₁, F₂, F₃, … form a growing family of sequences. Their lengths make another sequence: 2, 3, 5, 7, 11, 13, …</p><p><a href="../../number/sequences/index.html">Sequences topic →</a></p></div></div>
+<details><summary>Inspiration and further reading</summary><p>Original interactive teaching activity developed for Maths Apps. Investigations informed by <a href="https://nrich.maths.org/problems/farey-sequences-0">NRICH · Farey Sequences</a>, <a href="https://nrich.maths.org/problems/mediant-madness">NRICH · Mediant Madness</a>, <a href="https://www.geogebra.org/m/KBNGsksv">GeoGebra · Farey Fraction Number Line</a>, and <a href="https://www.desmos.com/calculator/n8gbfriai9">Desmos · Sequences</a>. The Desmos link illustrates sequences generally, not a dedicated Farey app.</p></details>
+</div>
+</main>
+<footer style="max-width:1230px;margin:0 auto;padding:0 24px 25px">Maths Apps · Ronan Downes · Learn, explore, explain</footer>
+<script>
+(function(){
+'use strict';
+const $ = function(s){return document.querySelector(s);};
+const NS='http://www.w3.org/2000/svg';
+const gcd=function(a,b){while(b){const t=a%b;a=b;b=t;}return a;};
+const fmt=function(a,b){return '<span class="frac" aria-label="'+a+' over '+b+'"><span class="num">'+a+'</span><span class="den">'+b+'</span></span>';};
+const farey=function(n){
+  const list=[];
+  for(let d=1;d<=n;d++){for(let a=0;a<=d;a++){if(gcd(a,d)===1)list.push({a:a,b:d});}}
+  list.sort(function(x,y){return x.a*y.b-y.a*x.b;});
+  return list;
+};
+const S={n:5,selected:'1/2',highlight:true,order:[],shuffled:[],gameN:5,tab:'explore'};
+const key=function(x){return x.a+'/'+x.b;};
+const fracValue=function(x){return x.a/x.b;};
+const frec=function(a,b){return String(a)+'/'+String(b);};
+const seqCache={};
+const getSeq=function(n){return seqCache[n]||(seqCache[n]=farey(n));};
+function txtSvg(svg,txt,x,y,size,anchor,fill){
+ const node=document.createElementNS(NS,'text');node.setAttribute('x',x);node.setAttribute('y',y);node.setAttribute('font-size',size||'15');node.setAttribute('text-anchor',anchor||'middle');node.setAttribute('fill',fill||'#35516a');node.textContent=txt;svg.appendChild(node);return node;
+}
+function lineSvg(svg,x1,y1,x2,y2,stroke,width){
+ const node=document.createElementNS(NS,'line');[['x1',x1],['y1',y1],['x2',x2],['y2',y2],['stroke',stroke],['stroke-width',width||1]].forEach(function(p){node.setAttribute(p[0],p[1]);});svg.appendChild(node);return node;
+}
+function renderLine(list){
+ const svg=$('#numberline');svg.replaceChildren();
+ lineSvg(svg,48,88,952,88,'#344f67',3);
+ [0,.25,.5,.75,1].forEach(function(v){const x=48+904*v;lineSvg(svg,x,81,x,99,'#889fb1',2);txtSvg(svg,String(v),x,124,16);});
+ const selected=list.find(function(f){return key(f)===S.selected;})||list[Math.floor(list.length/2)];
+ list.forEach(function(f){
+  const x=48+904*fracValue(f),isSelected=key(f)===key(selected);
+  const c=document.createElementNS(NS,'circle');c.setAttribute('cx',x);c.setAttribute('cy',88);c.setAttribute('r',isSelected?8:(list.length>110?2.4:4.5));
+  c.setAttribute('fill',isSelected?'#e59319':(S.highlight&&f.b===S.n?'#1483bc':'#657f97'));
+  c.setAttribute('opacity',isSelected?'1':'.78');svg.appendChild(c);
+ });
+ const x=48+904*fracValue(selected);
+ txtSvg(svg,selected.a+'/'+selected.b,x,51,24,'middle','#175b8e');
+ lineSvg(svg,x,56,x,76,'#e59319',2);
+}
+function renderSelection(list){
+ const idx=Math.max(0,list.findIndex(function(f){return key(f)===S.selected;})),f=list[idx]||list[0];
+ const before=idx>0?list[idx-1]:null,after=idx<list.length-1?list[idx+1]:null;
+ const decimal=fracValue(f).toFixed(6).replace(/0+$/,'').replace(/\.$/,'');
+ const content='<div class="selected-head">'+fmt(f.a,f.b)+'<div><b>Exact value</b><div class="muted">'+(f.b===S.n?'New in F'+S.n:'Appeared in F'+f.b)+'</div></div></div>'+
+ '<div class="selected-details"><div><b>Decimal</b>'+decimal+'</div><div><b>Percentage</b>'+(100*fracValue(f)).toFixed(2).replace(/\.00$/,'')+'%</div>'+
+ '<div><b>Previous</b>'+(before?fmt(before.a,before.b):'—')+'</div><div><b>Next</b>'+(after?fmt(after.a,after.b):'—')+'</div></div>'+
+ (after?'<p class="small">Neighbour check: '+f.b+' × '+after.a+' − '+f.a+' × '+after.b+' = <strong>'+(f.b*after.a-f.a*after.b)+'</strong></p>':'');
+ $('#selectedArea').innerHTML=content;
+ $('#previous').disabled=idx===0;$('#nextFraction').disabled=idx===list.length-1;
+}
+function render(){
+ const n=S.n,list=getSeq(n);
+ $('#size').value=n;$('#sizeValue').textContent='F'+String(n);$('#count').textContent=list.length;
+ $('#added').textContent=n===1?'2':list.filter(function(f){return f.b===n;}).length;
+ $('#rule').textContent='Denominators ≤ '+n;
+ $('#highlight').checked=S.highlight;
+ const container=$('#fractionList');container.replaceChildren();
+ list.forEach(function(f){
+ const btn=document.createElement('button');btn.type='button';btn.className='chip'+(f.b===n&&S.highlight?' new':'')+(key(f)===S.selected?' selected':'');
+ btn.innerHTML=fmt(f.a,f.b)+(f.b===n&&S.highlight?'<span class="label">new</span>':'');
+ btn.setAttribute('aria-label','Select '+f.a+' over '+f.b);btn.setAttribute('aria-pressed',String(key(f)===S.selected));
+ btn.addEventListener('click',function(){S.selected=key(f);render();});container.appendChild(btn);
+ });
+ if(!list.some(function(f){return key(f)===S.selected;})) S.selected=key(list[Math.floor(list.length/2)]);
+ renderLine(list);renderSelection(list);renderPairSelector();
+}
+function renderPairSelector(){
+ const options=$('#leftPair');const list=getSeq(S.n),old=options.value;options.replaceChildren();
+ list.slice(0,-1).forEach(function(f,i){
+ const opt=document.createElement('option');opt.value=i;opt.textContent=f.a+'/'+f.b+'  and  '+list[i+1].a+'/'+list[i+1].b;options.appendChild(opt);
+ });options.value=old&&Number(old)<list.length-1?old:Math.floor((list.length-1)/2);
+ $('#mediantAnswer').textContent='Choose two neighbours, then predict their mediant.';
+}
+$('#size').addEventListener('input',function(){S.n=+this.value;render();});
+$('#down').addEventListener('click',function(){S.n=Math.max(1,S.n-1);render();});
+$('#up').addEventListener('click',function(){S.n=Math.min(30,S.n+1);render();});
+$('#highlight').addEventListener('change',function(){S.highlight=this.checked;render();});
+$('#previous').addEventListener('click',function(){const list=getSeq(S.n),i=list.findIndex(function(f){return key(f)===S.selected;});S.selected=key(list[Math.max(0,i-1)]);render();});
+$('#nextFraction').addEventListener('click',function(){const list=getSeq(S.n),i=list.findIndex(function(f){return key(f)===S.selected;});S.selected=key(list[Math.min(list.length-1,i+1)]);render();});
+const language={
+ short:'Put the fractions between 0 and 1 in order. What changes?',
+ guided:'Build a list of fractions between 0 and 1. Put them in order, notice what changes and explain the patterns.',
+ precise:'Fₙ is the increasing sequence of reduced fractions in [0, 1] whose denominators do not exceed n. Investigate its structure.'
+};
+$('#language').addEventListener('change',function(){$('#intro').textContent=language[this.value];});
+document.querySelectorAll('[data-tab]').forEach(function(b){
+ b.addEventListener('click',function(){
+  S.tab=b.dataset.tab;
+  document.querySelectorAll('[data-tab]').forEach(function(t){t.setAttribute('aria-selected',String(t===b));});
+  ['explore','order','patterns','challenge'].forEach(function(id){$('#'+id).hidden=id!==S.tab;});
+ });
+});
+function shuffle(list){
+ const a=list.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;
+}
+function startGame(){
+ S.gameN=+$('#sortSize').value;S.order=[];S.shuffled=shuffle(getSeq(S.gameN));renderGame();
+ $('#orderFeedback').textContent='Select fractions in ascending order. You can undo a choice.';
+ $('#orderFeedback').className='feedback';
+}
+function renderGame(){
+ const choice=$('#choices');choice.replaceChildren();
+ S.shuffled.forEach(function(f){
+ const b=document.createElement('button');b.className='choice chip'+(S.order.includes(key(f))?' used':'');
+ b.innerHTML=fmt(f.a,f.b);b.disabled=S.order.includes(key(f));b.setAttribute('aria-label','Choose '+f.a+' over '+f.b);
+ b.addEventListener('click',function(){S.order.push(key(f));renderGame();});choice.appendChild(b);
+ });
+ const display=$('#ordered');display.replaceChildren();
+ if(!S.order.length){const s=document.createElement('span');s.className='muted';s.textContent='Choose the smallest fraction first.';display.appendChild(s);}
+ S.order.forEach(function(v){const f=S.shuffled.find(function(x){return key(x)===v;});const span=document.createElement('span');span.className='chip';span.innerHTML=fmt(f.a,f.b);display.appendChild(span);});
+}
+$('#sortSize').addEventListener('change',startGame);$('#mix').addEventListener('click',startGame);
+$('#undo').addEventListener('click',function(){S.order.pop();renderGame();});
+$('#checkOrder').addEventListener('click',function(){
+ const correct=getSeq(S.gameN).map(key),f=$('#orderFeedback');
+ if(S.order.length!==correct.length){f.textContent='You have selected '+S.order.length+' of '+correct.length+' fractions. Complete the list first.';f.className='feedback bad';return;}
+ const i=correct.findIndex(function(k,j){return S.order[j]!==k;});
+ f.className=i<0?'feedback good':'feedback bad';
+ f.textContent=i<0?'Correct. You have constructed F'+S.gameN+' in ascending order. Which fractions first appear at this step?':'Look again at positions '+(i+1)+' and '+Math.min(i+2,correct.length)+'. Use a common denominator or cross-multiplication.';
+});
+$('#showPrime').addEventListener('click',function(){
+ const a=$('#primeAnswer'),f5=getSeq(5).filter(function(f){return f.b===5;}),f6=getSeq(6).filter(function(f){return f.b===6;});
+ a.hidden=false;a.innerHTML='<b>New in F₅:</b> '+f5.map(function(f){return fmt(f.a,f.b);}).join(' &nbsp; ')+
+ '<p><b>New in F₆:</b> '+f6.map(function(f){return fmt(f.a,f.b);}).join(' &nbsp; ')+
+ '</p><p>F₅ gains 4 because 5 has no factors other than 1 and 5. For denominator 6, 2/6, 3/6 and 4/6 reduce to fractions already in earlier sequences.</p>';
+});
+function renderGrowth(){
+ const svg=$('#growth');svg.replaceChildren();
+ const counts=Array.from({length:20},function(_,i){return getSeq(i+1).length;});
+ const max=counts[19];lineSvg(svg,45,210,940,210,'#58738a',2);
+ counts.forEach(function(c,i){
+  const x=54+i*44.1,barH=160*c/max;
+  const rect=document.createElementNS(NS,'rect');rect.setAttribute('x',x);rect.setAttribute('y',210-barH);rect.setAttribute('width',29);rect.setAttribute('height',barH);
+  rect.setAttribute('rx','3');rect.setAttribute('fill',i===S.n-1?'#e59319':'#438abb');svg.appendChild(rect);
+  txtSvg(svg,String(i+1),x+14.5,230,12);
+  if(i<10||i===19) txtSvg(svg,String(c),x+14.5,Math.max(14,204-barH),12,'middle','#294b65');
+ });txtSvg(svg,'n →',922,247,13);txtSvg(svg,'Number of fractions in Fₙ',195,20,17,'start','#203d57');
+}
+$('#checkPrediction').addEventListener('click',function(){
+ const field=$('#prediction'),n=12,added=getSeq(n).filter(function(f){return f.b===n;});
+ const ans=$('#predictFeedback');ans.hidden=false;
+ if(field.value.trim()===''){ans.textContent='Enter a prediction before checking.';ans.className='feedback bad';return;}
+ const value=Number(field.value),ok=value===added.length;ans.className='feedback '+(ok?'good':'bad');
+ ans.innerHTML=(ok?'Correct! ':'Not quite. ')+'F₁₂ adds <b>'+added.length+'</b> fractions: '+added.map(function(f){return fmt(f.a,f.b);}).join(' &nbsp; ')+'. Numerators 2, 3, 4, 6, 8, 9 and 10 are excluded because the fractions reduce.';
+});
+$('#findMediant').addEventListener('click',function(){
+ const list=getSeq(S.n),i=Number($('#leftPair').value),a=list[i],b=list[i+1];
+ const c=a.a+b.a,d=a.b+b.b;
+ $('#mediantAnswer').innerHTML=fmt(a.a,a.b)+' &nbsp; <b>and</b> &nbsp; '+fmt(b.a,b.b)+' &nbsp; → &nbsp; <strong>'+fmt(c,d)+'</strong>'+
+ '<p>('+a.a+' + '+b.a+') / ('+a.b+' + '+b.b+') = '+c+'/'+d+'. This fraction lies strictly between them. It first appears at F'+d+'.</p>'+
+ '<p>Neighbour check: '+a.b+' × '+b.a+' − '+a.a+' × '+b.b+' = <b>'+(a.b*b.a-a.a*b.b)+'</b>.</p>';
+});
+render();startGame();renderGrowth();
+})();
+</script>
+</body></html>
