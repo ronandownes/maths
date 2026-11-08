@@ -336,8 +336,7 @@
       bar.insertAdjacentElement("afterend", sidebar);
     }
     navigation(menu);
-    if (sidebar) sidebar && sidebar.append && sidebar && sidebar.nodeType === 1 && sidebar && sidebar.tagName && sidebar && sidebar && sidebar; // no-op
-    if (sidebar) sidebarRender(sidebar);
+    if (sidebar) renderSidebar(sidebar);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });
   else start();
