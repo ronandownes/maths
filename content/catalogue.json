@@ -249,9 +249,30 @@
         "ready": true
       },
       {
+        "slug": "marble-bag",
+        "title": "Marble bag probability",
+        "ready": true,
+        "app": "apps/probability/marble-bag/index.html",
+        "description": "Count coloured marbles; calculate fractions, percentages and likelihood."
+      },
+      {
         "slug": "tree-diagrams",
         "title": "Tree diagrams",
         "ready": true
+      },
+      {
+        "slug": "tree-explorer",
+        "title": "Tree diagrams & sample spaces explorer",
+        "ready": true,
+        "app": "apps/probability/tree-diagrams/index.html",
+        "description": "Reveal branches and compare sample spaces with outcome tables."
+      },
+      {
+        "slug": "two-way-tables",
+        "title": "Two-way frequency tables",
+        "ready": true,
+        "app": "apps/probability/two-way-tables/index.html",
+        "description": "Investigate observed counts, proportions and conditional probabilities."
       },
       {
         "slug": "counting",

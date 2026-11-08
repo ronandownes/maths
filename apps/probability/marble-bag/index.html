@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en-IE"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Marble bag probability | Maths Apps</title>
+<link rel="stylesheet" href="../shared/styles.css"></head><body data-mode="bag">
+<header class="topbar"><span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span><a class="brand" href="../../../index.html">Maths Apps</a><span class="crumb"><a href="../../../probability/index.html">Probability</a> <strong>/ Marble bag probability</strong></span></header>
+<main class="workspace" id="workspace"><div class="heading"><div><h1>Marble bag probability</h1><p>Choose colours, count marbles, and calculate probabilities.</p></div><button id="fullScreen" aria-pressed="false" type="button">⛶ Full screen</button></div>
+<nav class="app-links" aria-label="Probability activities"><a href="../marble-bag/index.html" aria-current="page">Marble bag</a><a href="../tree-diagrams/index.html">Tree diagrams</a><a href="../two-way-tables/index.html">Two-way tables</a></nav>
+<section class="app-mode" id="treeTab" hidden aria-label="Tree and sample space explorer">
+<div class="toolbar"><div class="control"><label for="preset">Experiment</label><select id="preset"><option value="twoCoins">Two coin tosses</option><option value="oneCoin">One coin toss</option><option value="threeCoins">Three coin tosses</option><option value="coinDie">Coin and six-sided die</option><option value="twoDice">Four-sided die and six-sided die</option><option value="withReplace">Counters: with replacement</option><option value="withoutReplace">Counters: without replacement</option><option value="genetics">Pea-plant genetics (Gg × gg)</option><option value="fromBag">Two draws from my marble bag</option><option value="fromTable">Weather and umbrellas (empirical)</option></select></div>
+<div class="control"><label for="view">Display</label><select id="view"><option value="both">Tree + table</option><option value="tree">Tree only</option><option value="table">Table only</option></select></div><label class="switch"><input id="showProb" type="checkbox"><span>Show probabilities</span></label><label class="switch"><input id="showSet" type="checkbox" checked><span>Show sample space</span></label><span class="spacer"></span><button id="runRandom" type="button">Try an outcome</button></div>
+<div class="context"><span class="pill" id="dependence">Independent stages</span><span class="explanation" id="helpText">Find every possible ordered outcome.</span></div>
+<div class="stepbar"><span class="step-title">Build the diagram:</span><button id="reset" type="button">↺ Start</button><button id="next" type="button">Next stage →</button><button id="showAll" type="button">Show all</button><span class="stage-counter" id="progress" aria-live="polite"></span></div>
+<div class="visual-grid split" id="vizLayout"><section class="panel" id="treePanel"><div class="panel-title"><h2>Tree diagram</h2><small>Choose a completed path to highlight it</small></div><div class="tree-scroll" id="treeScroll"><svg id="treeSvg" role="img" aria-label="Interactive outcome tree" xmlns="http://www.w3.org/2000/svg"></svg></div></section>
+<section class="panel" id="tablePanel"><div class="panel-title"><h2 id="tableHeading">Outcome table</h2><small>Same experiment, another representation</small></div><div id="tableScroll" class="table-scroll"></div></section></div>
+<div class="summary"><div class="stat"><div class="num" id="pathCount">4</div><div class="stat-label">Elementary paths</div></div><div class="stat"><div class="num" id="uniqueCount">4</div><div class="stat-label">Distinct recorded outcomes</div></div><div class="stat"><div class="num" id="probTotal">1</div><div class="stat-label">Total probability</div></div></div>
+<section class="sample-panel" id="samplePanel"><div class="caption" id="sampleCaption">Sample space, S</div><div class="sample-set" id="sampleSet" aria-live="polite"></div></section>
+<div class="selection" id="selection" aria-live="polite">Select a path on the tree or a cell in the table. Each completed path describes an elementary outcome.</div>
+<p class="footnote">Teaching reference: <a href="https://openstax.org/books/contemporary-mathematics/pages/7-4-tree-diagrams-tables-and-outcomes" target="_blank" rel="noopener noreferrer">OpenStax, Contemporary Mathematics §7.4</a>. Original interactive demonstration. Probability is optional so that students can first concentrate on enumerating outcomes. Duplicate recorded results are shown only once in the sample <em>set</em>, but remain separate elementary paths in the tree.</p>
+</section>
+<section class="app-mode" id="bagTab" aria-label="Marble bag probability explorer">
+ <div class="mode-row"><div><h2>Marble Bag Probability</h2><p class="extra-intro">Count favourable outcomes and all equally likely marbles. Predict before checking.</p></div><div class="control-grid"><button type="button" id="bagNew">New problem</button><label class="switch"><input type="checkbox" id="bagReplace" checked> Replace the first marble</label></div></div>
+ <div class="counter-row" id="bagCounters" aria-label="Adjust the numbers of marbles"></div>
+ <div class="studio-layout">
+   <section class="studio-card"><h3>Marbles in the bag</h3><svg id="marbleBag" class="bag" role="img" aria-label="A bag of coloured marbles" viewBox="0 0 590 610" xmlns="http://www.w3.org/2000/svg"></svg><p class="studio-mini-note">Choose a coloured marble to change the question. Adjust the counts above to create your own example.</p></section>
+   <section class="studio-card"><h3>Calculate the probability</h3>
+    <p id="bagQuestion" class="question-line">What is the probability of choosing a blue marble?</p>
+    <div class="math-answer"><span id="bagPLabel">P(Blue) =</span><div class="fraction-input"><input id="bagNum" type="number" min="0" step="1" inputmode="numeric" aria-label="Favourable outcomes" placeholder="?"/><span class="fraction-line"></span><input id="bagDen" type="number" min="1" step="1" inputmode="numeric" aria-label="Total outcomes" placeholder="?"/></div></div>
+    <div class="math-answer"><span id="bagPercentLabel">P(Blue) =</span><input id="bagPct" type="number" min="0" max="100" step="0.01" inputmode="decimal" aria-label="Probability percentage" placeholder="?"/>%</div>
+    <div class="prob-scale"><div class="prob-scale-track" aria-label="Likelihood scale from 0 to 100%"></div><div class="prob-scale-needle" id="bagNeedle" hidden></div><div class="scale-labels"><span>0 · Impossible</span><span>50% · Even chance</span><span>100% · Certain</span></div></div>
+    <div class="studio-feedback" id="bagFeedback" aria-live="polite">Enter the fraction and percentage, then choose Check.</div>
+    <div class="studio-actions"><button class="primary" type="button" id="bagCheck">Check</button><button type="button" id="bagReveal">Show solution</button><button type="button" id="bagToTree">Explore two draws as a tree →</button></div>
+    <p class="studio-mini-note">The fraction model assumes every physical marble has the same chance of being selected. With replacement, the bag's composition stays the same for the second draw. Without replacement, it changes.</p>
+   </section>
+ </div>
+</section>
+<section class="app-mode" id="frequencyTab" hidden aria-label="Two-way frequency table explorer">
+ <div class="mode-row"><div><h2>Two-Way Frequency Tables</h2><p class="extra-intro">Change four observed counts. Compare totals, joint proportions and conditional proportions.</p></div><button type="button" id="freqReset">Reset data</button></div>
+ <div class="studio-layout equal">
+  <section class="studio-card"><h3>Illustrative survey: weather and umbrellas</h3><p class="studio-mini-note">Invented data from 50 observations. Each observation records the weather and whether a person carried an umbrella.</p>
+   <div class="counter-row" id="freqControls"></div><div class="freq-toggles"><label for="freqDisplay">Display:</label><select id="freqDisplay"><option value="count">Frequency (counts)</option><option value="overall">Percent of all observations</option><option value="row">Row percentages</option><option value="col">Column percentages</option></select></div>
+   <div style="overflow:auto" id="frequencyTableContainer"></div><div id="freqExplanation" class="studio-hint" aria-live="polite"></div>
+  </section>
+  <section class="studio-card"><h3>Explore association and probability</h3><p class="studio-mini-note">The bars show percentages <strong>within each weather category</strong>. Change a count to see the relationship change.</p><div id="freqChart"></div>
+   <div class="legend"><span><i style="background:#5887d2"></i>Carried umbrella</span><span><i style="background:#e09a63"></i>Did not carry</span></div>
+   <div class="select-row"><label for="freqQuestion">Find:</label><select id="freqQuestion"><option value="joint">P(Wet and carried)</option><option value="marginalWet">P(Wet)</option><option value="marginalCarry">P(Carried umbrella)</option><option value="carryGivenWet">P(Carried | Wet)</option><option value="carryGivenDry">P(Carried | Dry)</option><option value="wetGivenCarry">P(Wet | Carried)</option></select></div>
+   <div id="freqAnswer" class="question-answer" aria-live="polite"></div>
+   <div class="studio-actions"><button class="primary" id="freqToTree" type="button">Build an empirical tree →</button></div>
+   <p class="studio-mini-note"><strong>Important:</strong> this is a two-way <em>frequency</em> table, not a table listing equally likely ordered outcomes. Relative frequencies estimate probabilities from observations. Association does not, by itself, establish causation.</p>
+  </section>
+ </div>
+</section>
+
+</main>
+<script src="../shared/tree.js"></script>
+<script src="../shared/explorers.js"></script></body></html>
