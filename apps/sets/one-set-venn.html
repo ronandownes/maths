@@ -62,10 +62,10 @@ body.embed .diagram-card{padding:8px}
 <button id="words" type="button">Words</button>
 </div>
 <h1>One set. One circle.</h1>
-<p id="instruction">A set is a collection of distinct elements. Rearranging its elements does not change the set.</p>
+<p id="instruction">A set is a well-defined collection of distinct elements. Order and position do not matter.</p>
 <div class="choices" role="group" aria-label="Choose the elements">
 <button type="button" data-preset="seasons" aria-pressed="true">Four seasons</button>
-<button type="button" data-preset="even" aria-pressed="false">Multiples of 2</button>
+<button type="button" data-preset="even" aria-pressed="false">Multiples of 2 (0–9)</button>
 </div>
 <section class="diagram-card" aria-label="Interactive one-set Venn diagram">
 <div class="venn-field"><div class="set-circle" id="set-circle" aria-label="One circle containing the elements of the set"><span class="set-name" id="set-name">A</span><div id="elements"></div></div></div>
@@ -159,9 +159,9 @@ document.getElementById('rearrange').addEventListener('click',function(){
   }
 });
 var wording={
-maths:['A set is a collection of distinct elements. Rearranging its elements does not change the set.','Drag an element, or use the arrow keys to move it.','The order and position of elements do not affect membership or equality.'],
-eal:['A set is a group of different items. Each item is called an element. Move the items: the set is unchanged.','Drag a word or number. You can also use your keyboard arrows.','Every item stays in the set, whatever its position.'],
-simple:['Move the elements. It is still the same set.','Drag an element, or use the arrow keys.','Different order. Same set.']
+maths:['A set is a well-defined collection of distinct elements. Order and position do not matter.','Drag an element, or use the arrow keys to move it.','The order and position of elements do not affect membership or equality.'],
+eal:['A set is a collection of different items. We can decide what belongs. Each item is an element. Moving it does not change the set.','Drag a word or number. You can also use your keyboard arrows.','Every item stays in the set, whatever its position.'],
+simple:['A set has distinct elements. We know what belongs. Order does not matter.','Drag an element, or use the arrow keys.','Different order. Same set.']
 };
 function setLiteracy(mode){
   if(!wording[mode])mode='maths';
