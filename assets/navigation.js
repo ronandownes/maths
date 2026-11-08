@@ -39,12 +39,13 @@
     ]},
     { label: "Algebra", home: "algebra/index.html", topics: [
       T("Expanding brackets", "algebra/expansions/index.html", [
-        L("Split the brackets", "apps/split-brackets/index.html"),
-        L("Place-value multiplication", "apps/polynomial-place-value/index.html"),
-        L("Vertical FOIL", "apps/vertical-foil/index.html"),
-        L("Inline rainbow", "apps/inline-rainbow/index.html"),
-        L("FOIL representations", "apps/foil/index.html"),
-        L("Linear right margin", "apps/linear-right-margin/index.html")
+        L("Split Brackets", "apps/split-brackets/index.html"),
+        L("Horizontal Group FOIL", "apps/foil/index.html"),
+        L("Vertical Group FOIL", "apps/vertical-foil/index.html"),
+        L("Horizontal Binomial × Binomial — FOIL in x", "apps/horizontal-foil-x/index.html"),
+        L("Vertical Margin — collect like terms in x", "apps/linear-right-margin/index.html"),
+        L("Polynomial Place Value", "apps/polynomial-place-value/index.html"),
+        L("Polynomial Coefficients", "apps/polynomial-coefficients/index.html")
       ]),
       T("Factorising", "algebra/factorising/index.html", [
         L("Factorising frame", "apps/factorising-frame/index.html")
@@ -234,8 +235,18 @@
         element.append(link(L("Introduction", "unifying/index.html"), "maths-back-link"));
       }
       element.append(caption(strand ? "Topics" : "Strands"));
-      element.append(list(strand ? strand.topics.map(t => L(t.label, t.home))
+      element.append(list(strand ? strand.topics.filter(t => !t.source).map(t => L(t.label, t.home))
         : strands.map(s => L(s.label, s.home)), "maths-topic-links"));
+      return;
+    }
+
+    // Expanding is a teaching topic with seven distinct classroom activities.
+    // The sidebar follows the chosen topic; textbook chapter references never
+    // leak into this navigation, and each activity remains separately selectable.
+    if (topic.home === "algebra/expansions/index.html") {
+      element.append(link(L("Introduction", topic.home), "maths-back-link"));
+      element.append(caption("Activities"));
+      element.append(list(topic.activities, "maths-activity-links"));
       return;
     }
 
