@@ -747,6 +747,10 @@ body:not(.maths-only) #focusNext{display:none!important}
 /* Reveal the unit/HCF interaction only when relevant. */
 .configuration-note{font:.76rem/1.35 Arial,sans-serif;color:#556c83;text-align:center;margin:0 auto 5px;max-width:900px}
 .configuration-note[hidden]{display:none!important}
+#mobileSettingsPanel .quick-field>label{font-size:.9rem!important;font-weight:750!important;line-height:1.05;text-align:center;white-space:pre-line}
+#mobileSettingsPanel #factorSelect{min-width:0!important;width:94px!important;max-width:94px!important}
+#mobileSettingsPanel #hcfNumber{display:none!important}
+.live-concept{max-width:1100px;margin:4px auto 12px;text-align:center;font:.91rem/1.45 Arial,sans-serif;color:#425d7a}
 </style>
 </head>
 <body>
@@ -765,10 +769,12 @@ body:not(.maths-only) #focusNext{display:none!important}
 <div class="settings settings-top common-settings" id="mobileSettingsPanel" aria-label="Question settings">
 <button id="mobileSettingsClose" type="button" class="mobile-settings-close" aria-label="Close settings">✕ Close</button>
 <div class="quick-fields" id="quickFields">
-<div class="quick-field"><label for="factorSelect">Factors</label><select id="factorSelect" aria-label="Number of terms in factors"></select></div>
-<div class="quick-field"><label for="coefficientSelect">Coefficients</label><select id="coefficientSelect"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="manual">Manual</option></select></div>
+<div class="quick-field"><label for="factorSelect" title="Pairs count potential terms, not polynomial degrees">FACTOR
+TERMS</label><select id="factorSelect" aria-label="Number of terms in factors"></select></div>
+<div class="quick-field"><label for="coefficientSelect">COEF.
+LEVEL</label><select id="coefficientSelect"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="manual">Manual</option></select></div>
 <div class="quick-field"><span>Signs</span><div class="quick-signs"><label>Higher<select id="signHigh" aria-label="Signs of higher-degree factor"></select></label><label>Lower<select id="signLow" aria-label="Signs of lower-degree factor"></select></label></div></div>
-<div class="quick-field"><label for="unitSelect">Unit coefficients</label><select id="unitSelect" aria-label="Positions of coefficients of one"></select></div>
+<div class="quick-field"><label for="unitSelect" title="Unit coefficients include, but are not limited to, monic leading coefficients">UNIT 1s</label><select id="unitSelect" aria-label="Positions of coefficients of one"></select></div>
 <div class="quick-field"><label for="zeroSelect">Zeros</label><select id="zeroSelect" aria-label="Missing coefficients"></select></div>
 <div class="quick-field"><label for="hcfSelect">HCF</label><div class="quick-pair"><select id="hcfSelect" aria-label="HCF placement"><option value="off">Off</option><option value="outside">Outside</option><option value="first">First</option><option value="second">Second</option><option value="both">Both</option></select><select id="hcfNumber" aria-label="HCF multiplier"><option value="random">2–11</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option></select></div></div>
 </div>
@@ -922,10 +928,11 @@ function applyOnePattern(a,b,mode,next){
  // The factors are displayed in ascending degree: b first, a second.
  // A zero coefficient is a structural hole; it must never be turned into 1.
  const active=row=>row.map((v,i)=>[row,i]).filter(([r,i])=>r[i]!==0);
- const first=active(b),second=active(a),all=[...first,...second];
+ const firstRow=a.length>b.length?b:a,secondRow=a.length>b.length?a:b;
+ const first=active(firstRow),second=active(secondRow),all=[...first,...second];
  const mark=([row,i])=>{if(row[i]!==0)row[i]=1};
  const leading=items=>items[0],trailing=items=>items[items.length-1];
- const trailFirst=[b,b.length-1],trailSecond=[a,a.length-1];
+ const trailFirst=[firstRow,firstRow.length-1],trailSecond=[secondRow,secondRow.length-1];
  if(mode==='firsts'){mark(leading(first));mark(leading(second))}
  else if(mode==='lasts'){mark(trailFirst);mark(trailSecond)}
  else if(mode==='inner'){mark(trailFirst);mark(leading(second))}
@@ -973,12 +980,12 @@ function applySignPattern(arr,selected,sign,next){
  for(let i=1;i<arr.length;i++)if(arr[i]!==0)arr[i]=Math.abs(arr[i])*(pattern[i-1]==='−'?-1:1);
 }
 function placeHcf(a,b,next){
- const k=state.hcfNumber==='random'?next(2,11):Number(state.hcfNumber);
- const scale=row=>row.forEach((v,i)=>{row[i]=v*k});
- const first=b,second=a;
- if(state.hcfMode==='outside')return k;
- if(state.hcfMode==='first'||state.hcfMode==='both')scale(first);
- if(state.hcfMode==='second'||state.hcfMode==='both')scale(second);
+ const k=()=>state.hcfNumber==='random'?next(2,11):Number(state.hcfNumber);
+ const scale=(row,multiplier)=>row.forEach((v,i)=>{row[i]=v*multiplier});
+ const first=a.length>b.length?b:a,second=a.length>b.length?a:b;
+ if(state.hcfMode==='outside')return k();
+ if(state.hcfMode==='first'||state.hcfMode==='both')scale(first,k());
+ if(state.hcfMode==='second'||state.hcfMode==='both')scale(second,k());
  return 1;
 }
 function makeQuestion(next,signOverride=null){
@@ -986,11 +993,16 @@ function makeQuestion(next,signOverride=null){
  const sizes=factorSizes[type]||[3,2],na=sizes[0],nb=sizes[1];
  const sign=signOverride||(state.sign==='random'?chooseSign(next):state.sign);
  const level=state.level,pick=items=>items[next(0,items.length-1)];
- const pool=level===1?[2,2,3,3,4,5]:level===2?[2,3,4,5,6,7,8,9,10,11,12,13,14,15]:
-  [2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,19,23,29,31,37,41];
+ const seq=(start,end)=>Array.from({length:end-start+1},(_,i)=>i+start);
+ const pool=level===1?seq(2,11):
+  level===2?[...seq(2,25),...seq(30,35),37,...seq(40,45)]:
+  [...seq(2,59),...seq(60,65),...seq(70,75),...seq(80,85),...seq(90,95)];
+ const limitedBy=max=>max>50?[2]:max>35?[2,3]:max>19?[2,3,4]:pool;
  for(let trial=0;trial<2500;trial++){
-  const a=Array.from({length:na},()=>pick(pool));
-  const b=Array.from({length:nb},()=>pick(pool));
+  const largeFirst=next(0,1)===0;
+  const a=Array.from({length:na},()=>pick(largeFirst?pool:[2,3,4]));
+  const b=Array.from({length:nb},()=>pick(largeFirst?limitedBy(Math.max(...a)):pool));
+  if(!largeFirst){const small=limitedBy(Math.max(...b));a.forEach((_,i)=>{a[i]=pick(small)})}
   if(monomialTypes.includes(type)){b[0]=1;b[1]=0}
   applyZeroPattern(a,b,state.zeroMode,next);
   applyOnePattern(a,b,state.oneMode,next);
@@ -1114,14 +1126,15 @@ function syncQuickSelectors(){
   };
  });
  const exercise=$('exerciseSelect');
- exercise.replaceChildren(...bankProfiles.map((p,i)=>new Option('Exercise '+(i+1)+' · '+p.name,String(i))),new Option('Custom / Random','fresh'));
+ exercise.replaceChildren(...bankProfiles.map((p,i)=>new Option('Exercise '+(i+1),String(i))),new Option('Custom / Random','fresh'));
  exercise.value=Number.isInteger(state.slot)?String(state.slot):'fresh';exercise.disabled=assessment.started;
  exercise.onchange=()=>exercise.value==='fresh'?freshQuestion():applyExerciseChoice(Number(exercise.value),0);
  const nav=$('exerciseNav');nav.replaceChildren();
  const inExercise=Number.isInteger(state.slot);
  const back=el('button','‹');back.type='button';back.disabled=!inExercise||state.bankQuestion===0||assessment.started;
  back.title='Previous question';back.onclick=()=>applyExerciseChoice(state.slot,state.bankQuestion-1);
- const label=el('span',inExercise?(state.bankQuestion===0?'Worked example 1':'Your turn · Q '+(state.bankQuestion+1)):'Random question','exercise-position');
+ const exerciseLetter=n=>{let result='';for(n++;n>0;n=Math.floor((n-1)/26))result=String.fromCharCode(65+(n-1)%26)+result;return result};
+ const label=el('span',inExercise?(state.bankQuestion===0?'Worked example':'Your turn · '+exerciseLetter(state.bankQuestion-1)):'Random example','exercise-position');
  const next=el('button','Next question →');next.type='button';next.disabled=assessment.started;
  next.onclick=()=>inExercise?applyExerciseChoice(state.slot,state.bankQuestion+1):freshQuestion();
  nav.append(back,label,next);
@@ -1336,9 +1349,10 @@ function drawReflection(hcf){
  const contrast=document.createElement('p');
  contrast.innerHTML='<strong>Why no carrying?</strong> In base ten, ten units become one unit of the next place. Here x is a variable, not a fixed base. Coefficients need no carrying and may be negative.';
  section.append(heading,principle,contrast);
+ const pattern=document.createElement('p');pattern.innerHTML='<strong>Look back.</strong> For (ax+b)(cx+d), the middle coefficient comes from ad+bc. When does it equal the sum of the end coefficients? When does a product-plus-one shortcut work? How do negative signs change it?';section.append(pattern);
  if(hcf.needed){
   const hcfNote=document.createElement('p');
-  hcfNote.innerHTML='<strong>HCF.</strong> Factor it out before multiplying; distribute it back at the end. The product stays the same.';
+  hcfNote.innerHTML='<strong>HCF.</strong> Redistribution does not change the product. Working backwards, the expanded expression does not tell you uniquely which original bracket contained the numerical HCF.';
   section.append(hcfNote);
  }
  const thought=document.createElement('p');thought.className='reflection-prompt';
@@ -1404,6 +1418,7 @@ function draw(){
  const mode=state.mode,displayStep=state.step;
  const step=mode==='worked'?6:mode==='question'?0:phaseOf(state.question,displayStep);
  const root=$('canvas');root.replaceChildren();
+ if(mode==='worked'||(mode==='step'&&displayStep>0)){const concept=document.createElement('p');concept.className='live-concept';concept.textContent='Every term multiplies every term. Multiplying by 1 changes nothing; multiplying by a negative reverses the sign.';root.append(concept)}
  $('heading').textContent='';
  $('help').textContent='';
  $('practiceArea').className=mode==='step'?'step-active'+(step===3&&state.partialCount&&!state.partialAll?' partial-theme-'+((state.partialCount-1)%3):''):'';
@@ -1497,7 +1512,7 @@ function draw(){
  const original=state.question;
  const originalFactors=original.a.length>original.b.length?[original.b,original.a]:[original.a,original.b];
  $('factorExpression').innerHTML=((original.scalar||1)!==1?'<span class="scalar-prefix">'+minus(original.scalar)+'</span>':'')+originalFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
- if(hcf.needed&&mode!=='question'&&(mode!=='step'||displayStep>=1)){
+ if(hcf.needed&&hcf.inside&&mode!=='question'&&(mode!=='step'||displayStep>=1)){
   const reduced=a.length>b.length?[b,a]:[a,b];
   const parking=document.createElement('div');parking.className='hcf-work-line hcf-first-line';
   parking.innerHTML=minus(hcf.factor)+reduced.map(f=>'('+poly(f)+')').join(' ');
