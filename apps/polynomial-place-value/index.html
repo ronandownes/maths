@@ -640,12 +640,10 @@ main{margin:5px auto;padding:10px 19px 18px}
 .game-panel>.primary{display:block;margin:12px auto;font-size:1.15rem}
 @media(prefers-reduced-motion:reduce){.race-bubble{animation:none;transition:none}.race-fill{transition:none}}
 
-.hcf-park{border:1px solid #b9cee5;border-radius:8px;background:#f5f9fe;padding:10px 12px;margin:10px auto 16px;max-width:760px;text-align:center}
-.hcf-park-label{font:650 .93rem/1.45 Arial,Helvetica,sans-serif;color:#28547e}
-.hcf-park-equation{font:clamp(1.3rem,2.7vw,2rem)/1.5 "Cambria Math",Cambria,Georgia,serif;overflow-wrap:anywhere}
-.hcf-park-equation sup,.hcf-restore sup{font-size:.64em;vertical-align:super}
-.hcf-restore{font:clamp(1.3rem,2.7vw,1.85rem)/1.45 "Cambria Math",Cambria,Georgia,serif;text-align:center;margin:12px auto;color:#244d77}
-.hcf-restore-label{font:650 .88rem/1.4 Arial,Helvetica,sans-serif;color:#536b86}
+.hcf-work-line{font:clamp(1.4rem,3vw,2.2rem)/1.4 "Cambria Math",Cambria,Georgia,serif;text-align:center;color:#202124;margin:12px auto;max-width:100%;overflow-wrap:anywhere}
+.hcf-work-line sup{font-size:.62em;vertical-align:super}
+.hcf-first-line{margin:5px auto 12px}
+.hcf-after-table{margin:8px auto 5px}
 @media(min-width:761px){#mobileSettingsPanel{flex-wrap:nowrap;gap:6px;overflow-x:auto;max-width:100%}#mobileSettingsPanel>.setting{padding-left:6px;padding-right:6px;flex-shrink:0}#mobileSettingsPanel>.setting--advanced{margin-left:auto}}
 </style>
 </head>
@@ -727,15 +725,14 @@ const actions=[
  'Calculate partial products',
  'Combine like terms',
  'Restore powers of x',
- 'Check signs and box the answer',
- 'Review and practise'
+ 'Box the answer'
 ];
 function hcfSteps(hcf){
  if(!hcf.needed)return actions;
  const first=hcf.displayFirst>1,second=hcf.displaySecond>1;
  const source=first&&second?'both brackets':first?'the first bracket':'the second bracket';
  return ['Take out the HCF from '+source,...actions.slice(0,5),
-  'Distribute the HCF back in',...actions.slice(5)];
+  'Distribute the HCF',...actions.slice(5)];
 }
 function phaseOf(question,step){
  if(!hcfData(question).needed)return step;
@@ -1144,13 +1141,9 @@ function draw(){
  const originalFactors=original.a.length>original.b.length?[original.b,original.a]:[original.a,original.b];
  $('factorExpression').innerHTML=((original.scalar||1)!==1?'<span class="scalar-prefix">'+minus(original.scalar)+'</span>':'')+originalFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
  if(hcf.needed&&mode!=='question'&&(mode!=='step'||displayStep>=1)){
-  const first=hcf.displayFirst,second=hcf.displaySecond;
-  const detail=first>1&&second>1?'HCFs: '+first+' and '+second+'; parked factor: '+hcf.factor:
-   'HCF from '+(first>1?'first':'second')+' bracket: '+hcf.factor;
   const reduced=a.length>b.length?[b,a]:[a,b];
-  const parking=document.createElement('div');parking.className='hcf-park';
-  parking.innerHTML='<div class="hcf-park-label">'+detail+' (outside the table)</div>'+
-   '<div class="hcf-park-equation">= '+minus(hcf.factor)+reduced.map(f=>'('+poly(f)+')').join(' ')+'</div>';
+  const parking=document.createElement('div');parking.className='hcf-work-line hcf-first-line';
+  parking.innerHTML=minus(hcf.factor)+reduced.map(f=>'('+poly(f)+')').join(' ');
   root.append(parking);
  }
  if(mode!=='question'&&(mode!=='step'||step>=1)){
@@ -1240,60 +1233,19 @@ function draw(){
    root.append(explain);
   }
   if(hcf.needed&&step>=5){
-   const inBrackets=document.createElement('div');inBrackets.className='hcf-restore';
-   inBrackets.innerHTML='<div class="hcf-restore-label">Expansion before restoring the HCF</div>'+
-    '= '+minus(hcf.factor)+'('+poly(final)+')';
-   root.append(inBrackets);
+   const bracketed=document.createElement('div');bracketed.className='hcf-work-line hcf-after-table';
+   bracketed.innerHTML=minus(hcf.factor)+'('+poly(final)+')';
+   root.append(bracketed);
   }
   if(hcf.needed&&mode==='step'&&displayStep===7){
-   const restored=document.createElement('div');restored.className='hcf-restore';
-   restored.innerHTML='<div class="hcf-restore-label">Distribute the parked HCF</div>= '+poly(expanded);
-   root.append(restored);
+   const multiplied=document.createElement('div');multiplied.className='hcf-work-line';
+   multiplied.innerHTML=poly(expanded);
+   root.append(multiplied);
   }
   if(step>=6){
    const eq=document.createElement('div');eq.className='equation worked-conclusion';
    eq.innerHTML=poly(expanded);
    root.append(eq);
-  }
-  if(mode==='step'&&step===7){
-   const panel=el('section',undefined,'deepen-panel');
-   panel.append(el('h3','Deepen your learning'));
-   panel.append(el('p','Try the next question on your own. Check and correct any mistakes, then try again.','deepen-main'));
-   const recall=el('p',undefined,'deepen-revisit');
-   recall.append(el('strong','Spaced retrieval: '),document.createTextNode('Try again tomorrow, next week and in about a month. Recall the method before looking. Revisit sooner if needed.'));
-   panel.append(recall);
-   const investigate=el('button',state.showInvestigation?'Hide investigations':'Investigations','deepen-toggle');
-   investigate.type='button';investigate.setAttribute('aria-expanded',String(state.showInvestigation));
-   investigate.onclick=()=>{state.showInvestigation=!state.showInvestigation;render()};
-   panel.append(investigate);
-   if(state.showInvestigation){
-   const investigations=[
-    {question:'Relatively prime coefficients and common factors',detail:'Compare 6x² + 9x + 15 with 6x² + 9x + 14. The HCF of 6, 9 and 15 is 3; the HCF of 6, 9 and 14 is 1. That means no prime factor divides ALL the coefficients of the second polynomial, even though some pairs share factors. Such a polynomial is called primitive. Try 5(x + 2)(2x + 3): every coefficient in its expansion is divisible by 5. Use Constant on to explore other outside multipliers.'},
-    {question:'Trick of the trade: take out a common factor first.',detail:'For (10x + 15)(2x² + 3x + 4), rewrite 10x + 15 as 5(2x + 3). Expand the simpler brackets first, then multiply every coefficient of the answer by 5. Why does this work?'},
-    {question:'Investigation: Changing the signs of a factor changes the signs of the answer.',detail:'Take the factor (7x − 1) and change both signs to (−7x + 1) = −(7x − 1). Multiply each by the same second factor. Can you predict the entire new answer without expanding? Why is this scaling by −1?'},
-    {question:'Predict the first and last coefficients.',detail:'Without multiplying out, calculate '+minus(a[0])+' × '+minus(b[0])+' and '+minus(a[a.length-1])+' × '+minus(b[b.length-1])+'. Explain why these determine the leading and constant coefficients.'},
-    {question:'Hidden Maths: Can you leave out the zero placeholders?',detail:'The second partial-product row is shifted one place; a third row is shifted two places. Try leaving those zeros unwritten. Can you still align every coefficient under the correct power of x? What mistakes could arise? Our advice: keep the zeros while learning; omit them only when you are sure of your place-value columns.'},
-    {question:'Hidden Maths: What happens when you multiply by x + 1?',detail:'First predict the answer to (2x² + 3x + 4)(x + 1). What happens to neighbouring coefficients? Compare with multiplying by x − 1. Can you explain the pattern using place-value columns?'},
-    {question:'Where do the middle coefficients come from?',detail:'Choose one middle power of x in your answer. Identify every pair of terms that contributes to its coefficient.'},
-    {question:'Investigate the signs in this expansion.',detail:'Which partial products are positive and which are negative? Predict whether the answer contains positive, negative or zero coefficients.'},
-    {question:'Change one coefficient of the second factor.',detail:'Predict which coefficients in the expanded answer will change and which will stay the same. Then check.'},
-    {question:'Reverse the order of the brackets.',detail:'Will the expansion change? Explain using the arrangement of partial products.'},
-    {question:'Investigation: Scaling a factor scales the answer.',detail:'Double BOTH coefficients of your linear factor, keeping the other factor unchanged. Expand and compare with your original answer. Could you instead have factored out 2, expanded the original brackets and doubled the answer? Test multiplying the linear factor by 3, then by any number k. Explain why it works.'},
-    {question:'Investigation: Does it matter which factor you scale?',detail:'First expand (2x + 3)(x + 4). To double the answer, you could double both terms of the FIRST factor, or double both terms of the SECOND factor. Predict whether (4x + 6)(x + 4) and (2x + 3)(2x + 8) have the same expansion. Test tripling either factor, then scaling one by 2 and the other by 3. What happens if you first take out the highest common factor from each bracket?'},
-    {question:'Investigate 3x² + 9x + 30.',detail:'What do all three coefficients have in common? Factor it out. How could you use this before expanding a product?'},
-        {question:'Can every coefficient of a product share a factor?',detail:'Start with two polynomials whose coefficients have no common factor greater than 1. Investigate whether their product can have one.'},
-    {question:'Explore (5x + 10)(2x² + 3x + 7).',detail:'Factor out the common number first. Compare two methods of expanding and decide which is more efficient.'},
-    {question:'Test collective relative primality.',detail:'The coefficients 6, 9 and 14 have HCF 1, even though 6 and 9 share 3 and 6 and 14 share 2. Why is checking the HCF of ALL coefficients different from asking whether EVERY pair is relatively prime?'}
-   ];
-    const selected=state.investigationOffset%investigations.length;
-    const investigation=investigations[selected];
-    const insight=el('div',undefined,'investigation');
-    insight.append(el('strong',investigation.question),el('p',investigation.detail));
-    const next=el('button','Another investigation');next.type='button';
-    next.onclick=()=>{state.investigationOffset++;render()};
-    insight.append(next);panel.append(insight);
-   }
-   root.append(panel);
   }
 }
 
