@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="An interactive Venn diagram investigation: sort numbers, infer rules, explore multiples and discover the LCM.">
+<title>Number Venn Laboratory | Maths Apps</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="stylesheet" href="foundations.css">
+<style>
+:root{--navy:#174a76;--sky:#e3f3ff;--edge:#54758e;--green:#1f7752;--line:#cbd9e6}
+body{background:#f4f6f8}
+.lab-main{width:min(1240px,calc(100% - 24px));margin:18px auto 48px}
+.lab-kicker{margin:0;color:#53718a;font-size:.82rem;font-weight:800;letter-spacing:.1em}
+.lab-main h1{font-size:clamp(1.7rem,3.5vw,2.5rem);margin:3px 0 8px;color:#214f79;line-height:1.2}
+.lab-lead{max-width:1000px;margin:0 0 14px;color:#465d70;font-size:1.07rem}
+.lab-bar{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:14px 0;padding:12px 0;border-block:1px solid #d5e1eb}
+.lab-bar button[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:white}
+.lab-settings{background:white;border:1px solid #d5e1eb;border-radius:12px;padding:14px;margin:12px 0}
+.lab-settings summary{font-weight:800;font-size:1.05rem;cursor:pointer}
+.lab-settings-grid{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:10px;margin:14px 0 4px}
+.lab-settings-grid label,.lab-preset-label{display:flex;flex-direction:column;gap:4px;font-weight:750;color:#36536c;font-size:.91rem}
+.lab-settings-grid select,.lab-settings-grid input,.lab-preset-label select{width:100%;min-width:0;background:#fff;padding:7px 9px;border:1px solid #b7c9d7;border-radius:7px;min-height:43px;font-size:1rem}
+.lab-settings-grid input:disabled{background:#f2f4f6;color:#9aa8b5}
+.lab-settings small{color:#526a7e}
+.lab-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:9px 0}
+.lab-top p{margin:0;font-weight:800;color:#274f6b}
+.lab-top .lab-actions{display:flex;flex-wrap:wrap;gap:8px}
+.lab-primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.lab-primary:hover{background:#123e65}
+.lab-question{font-size:1.07rem;color:#263d50;margin:12px 0}
+.lab-board-wrap{overflow-x:auto;border:1px solid #b6cfe0;border-radius:12px;background:var(--sky)}
+.lab-board{min-width:820px}
+.lab-labels{display:flex;justify-content:space-around;align-items:center;padding:13px 18px 0;background:var(--sky);font-size:clamp(1.1rem,2.3vw,1.45rem);font-weight:800;text-align:center}
+.lab-labels>div{width:42%;max-width:400px}
+.lab-guess{display:none;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap}
+.lab-guess select{max-width:100%;min-height:40px}
+.lab-board.infer-mode .lab-guess{display:flex}
+.lab-board.infer-mode .lab-rule{display:none}
+.lab-diagram{position:relative;height:520px;min-width:820px;background:var(--sky)}
+.lab-diagram svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.lab-zone{position:absolute;display:flex;align-content:flex-start;align-items:flex-start;flex-wrap:wrap;gap:5px;padding:5px;border-radius:12px;outline:2px solid transparent;outline-offset:-2px;overflow:auto;scrollbar-width:thin}
+.lab-zone:focus-visible,.lab-zone.drag-over{outline:3px dashed #1c5d94;background:rgba(255,255,255,.30)}
+.lab-zone[data-zone="a"]{left:16%;width:17%;top:19%;height:65%}
+.lab-zone[data-zone="both"]{left:36%;width:28%;top:19%;height:65%}
+.lab-zone[data-zone="b"]{left:67%;width:17%;top:19%;height:65%}
+.lab-outside{min-height:74px;padding:11px 16px 16px;border-top:1px solid #bad7ea;background:#e3f3ff}
+.lab-outside-header{font-weight:800;margin:0 0 8px}
+.lab-outside .lab-zone{position:static;display:flex;gap:7px;min-height:54px;border:1px dashed #92b3cc;padding:7px}
+.lab-bank{margin:14px 0;padding:12px 14px;background:#fff;border:1px solid #d2e1ec;border-radius:12px}
+.lab-bank h2{margin:0 0 4px;font-size:1.15rem;color:#214f79}
+.lab-bank p{margin:0 0 8px;color:#526b7e;font-size:.92rem}
+.lab-tray{display:flex;flex-wrap:wrap;gap:6px;min-height:52px}
+.lab-chip{display:inline-flex;justify-content:center;align-items:center;min-width:41px;height:41px;padding:0 5px;border:1.5px solid #718fa6;border-radius:8px;background:#fff;font:800 1.16rem/1 Arial,sans-serif;color:#123b56;touch-action:manipulation;box-shadow:0 1px 1px #a5bfd1}
+.lab-chip[aria-pressed="true"]{background:#ffe7a8;border:3px solid #b26508;color:#543500}
+.lab-chip.is-wrong{background:#ffe5e2;border-color:#ba4038}
+.lab-chip.is-right{background:#dff4e8;border-color:#23724e}
+.lab-chip-static{cursor:default}
+.lab-placebar{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:10px 0}
+.lab-placebar strong{color:#35516a;margin-right:5px}
+.lab-placebar button{min-height:40px}
+.lab-placebar button:disabled{opacity:.5;cursor:default}
+.lab-feedback{margin:12px 0;padding:12px 14px;border-left:4px solid #537fa1;background:#edf4fa;border-radius:7px;min-height:45px;font-weight:750}
+.lab-feedback.good{border-color:#28764c;background:#e7f6ec}
+.lab-feedback.problem{border-color:#aa6b26;background:#fff5e2}
+.lab-activity-info{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.lab-info-card{padding:15px 17px;background:white;border:1px solid #d6e2eb;border-radius:10px}
+.lab-info-card h2{margin:0 0 7px;color:#214f79;font-size:1.17rem}
+.lab-info-card p{margin:4px 0;line-height:1.55}
+.lab-info-card details{margin:7px 0}
+.lab-info-card summary{font-weight:800;cursor:pointer}
+.lab-maths{font:700 1.25rem "Cambria Math",Cambria,Georgia,serif;color:#164c75;overflow-wrap:anywhere}
+.lab-links{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:.93rem;margin:20px 0 30px}
+.lab-links a{font-weight:750}
+.lab-hidden{display:none!important}
+@media(max-width:930px){.lab-settings-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){.lab-settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lab-activity-info{grid-template-columns:1fr}.lab-main{width:calc(100% - 18px)}.lab-bar button{flex:1 1 26%}.lab-top .lab-actions button{flex:1}}
+@media print{.foundation-header,.lab-bar,.lab-settings,.lab-bank,.lab-top .lab-actions,.lab-placebar,.lab-links{display:none!important}.lab-board-wrap{overflow:visible}.lab-main{width:100%}.lab-diagram{height:520px!important}.lab-feedback{display:none}}
+</style>
+</head>
+<body>
+<header class="foundation-header">
+<a class="foundation-brand" href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt=""><span>Apps</span></a>
+<button class="foundation-menu-toggle" type="button" id="menuToggle" aria-expanded="false" aria-controls="siteLinks">☰ Menu</button>
+<nav class="foundation-links" id="siteLinks" aria-label="Related pages">
+<a href="index.html">Sets apps</a>
+<a href="venn-problem-solving.html">Venn operations</a>
+<a href="../../number/sets/index.html">Sets lesson</a>
+<a href="https://ronandownes.github.io/book/sets-first-look.html">Book chapter</a>
+</nav>
+</header>
+<main class="lab-main" id="main">
+<p class="lab-kicker">NUMBER · SETS · MULTIPLES</p>
+<h1>Number Venn Laboratory</h1>
+<p class="lab-lead">Which numbers belong in each set? Make decisions, test your reasoning, discover hidden set rules and investigate why common multiples lead to the least common multiple (LCM).</p>
+<div class="lab-bar" role="group" aria-label="Activity">
+<button id="sortMode" type="button" data-mode="sort" aria-pressed="true">Sort the numbers</button>
+<button id="inferMode" type="button" data-mode="infer" aria-pressed="false">Find the rules</button>
+<button id="solutionMode" type="button" data-mode="investigate" aria-pressed="false">Investigate</button>
+<label class="lab-preset-label" for="preset">Example
+<select id="preset">
+<option value="even5">Even numbers and multiples of 5</option>
+<option value="oddBelow20">Odd numbers and numbers less than 20</option>
+<option value="inferOddAbove20">Hidden labels: find both rules</option>
+<option value="evenOdd">Even and odd — an empty intersection</option>
+<option value="multiple3and4">Multiples of 3 and 4 — LCM</option>
+<option value="multiple4and6">Multiples of 4 and 6 — LCM</option>
+<option value="multiple3and5">Multiples of 3 and 5 — LCM</option>
+<option value="custom">Make your own</option>
+</select></label>
+</div>
+<details class="lab-settings" id="settings">
+<summary>⚙ Set up your own diagram — change the rules and the highest number</summary>
+<p>Use positive whole numbers from 1 to your chosen maximum. Change either rule to create a new diagram.</p>
+<div class="lab-settings-grid">
+<label>Highest number<input type="number" id="maximum" min="5" max="100" step="1" value="30"></label>
+<label>Rule for set A<select id="kindA"><option value="even">Even numbers</option><option value="odd">Odd numbers</option><option value="multiple">Multiples of…</option><option value="lt">Less than…</option><option value="gt">Greater than…</option><option value="prime">Prime numbers</option><option value="square">Square numbers</option></select></label>
+<label>Number for A<input type="number" id="valueA" min="1" max="1000" step="1" value="2" disabled></label>
+<label>Rule for set B<select id="kindB"><option value="even">Even numbers</option><option value="odd">Odd numbers</option><option value="multiple">Multiples of…</option><option value="lt">Less than…</option><option value="gt">Greater than…</option><option value="prime">Prime numbers</option><option value="square">Square numbers</option></select></label>
+<label>Number for B<input type="number" id="valueB" min="1" max="1000" step="1" value="5"></label>
+</div>
+<small>For projector visibility, 1–30 is a useful starting range. Larger ranges make the diagram taller; all numbers remain individually selectable. Zero is excluded from these activities.</small>
+</details>
+<p class="lab-question" id="prompt">What do you notice? What do you wonder? Sort 1 to 30 by both rules.</p>
+<div class="lab-top">
+<p id="progress" role="status" aria-live="polite">0 of 30 placed</p>
+<div class="lab-actions"><button type="button" id="check" class="lab-primary">Check my diagram</button><button type="button" id="show">Show correct places</button><button type="button" id="reset">Start again</button></div>
+</div>
+<div class="lab-board-wrap" aria-label="Scrollable Venn diagram if the screen is narrow">
+<section class="lab-board" id="board" aria-label="Number Venn diagram">
+<div class="lab-labels">
+<div><span class="lab-rule" id="labelA">Even numbers</span><div class="lab-guess"><label for="guessA">Set A:</label><select id="guessA" aria-label="Guess the rule for set A"></select></div></div>
+<div><span class="lab-rule" id="labelB">Multiples of 5</span><div class="lab-guess"><label for="guessB">Set B:</label><select id="guessB" aria-label="Guess the rule for set B"></select></div></div>
+</div>
+<div class="lab-diagram" id="diagram">
+<svg viewBox="0 0 1000 520" preserveAspectRatio="none" role="img" aria-label="Two overlapping outlined ovals, labelled above">
+<ellipse cx="350" cy="260" rx="300" ry="208" fill="none" stroke="#668a97" stroke-width="3.3" vector-effect="non-scaling-stroke"></ellipse>
+<ellipse cx="650" cy="260" rx="300" ry="208" fill="none" stroke="#668a97" stroke-width="3.3" vector-effect="non-scaling-stroke"></ellipse>
+</svg>
+<div class="lab-zone" data-zone="a" tabindex="0" role="button" aria-label="Place selected number in set A only"></div>
+<div class="lab-zone" data-zone="both" tabindex="0" role="button" aria-label="Place selected number in both A and B"></div>
+<div class="lab-zone" data-zone="b" tabindex="0" role="button" aria-label="Place selected number in set B only"></div>
+</div>
+<div class="lab-outside"><p class="lab-outside-header">Outside both sets — neither rule applies</p><div class="lab-zone" data-zone="neither" tabindex="0" role="button" aria-label="Place selected number outside both sets"></div></div>
+</section>
+</div>
+<div class="lab-bank" id="bankArea">
+<h2>Numbers to place</h2>
+<p id="bankHint">Select a number, then tap a region or one of the four placement buttons. You can also drag and drop.</p>
+<div class="lab-tray" id="bank"></div>
+</div>
+<div class="lab-placebar" id="placebar"><strong>Place selected number:</strong>
+<button type="button" data-place="a">A only</button><button type="button" data-place="both">Both A and B</button><button type="button" data-place="b">B only</button><button type="button" data-place="neither">Neither</button><button type="button" data-place="bank">Return to tray</button>
+</div>
+<div class="lab-feedback" id="feedback" role="status" aria-live="polite">Start by considering the two properties. Where should 10 go?</div>
+<div class="lab-activity-info">
+<section class="lab-info-card"><h2>Explain your thinking</h2>
+<p id="question">If a number fits both rules, where must it go? Explain how you know.</p>
+<details><summary>Reveal a reasoning prompt</summary><p id="reasoning">A number in the overlap must satisfy both conditions simultaneously, not just one.</p></details>
+</section>
+<section class="lab-info-card"><h2>Intersection and LCM</h2>
+<p id="snapshot">After sorting, check your diagram to explore the counts and the connection to common multiples.</p>
+<details id="lcmDetails"><summary>Explore the mathematics</summary><div id="lcmContent"></div></details>
+</section>
+</div>
+<div class="lab-links"><a href="index.html">← All Sets apps</a><a href="venn-problem-solving.html">Venn operations and problem solving</a><a href="https://nrich.maths.org/problems/venn-diagrams" target="_blank" rel="noopener noreferrer">NRICH Venn Diagrams investigation (University of Cambridge)</a></div>
+</main>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var labels={even:"Even numbers",odd:"Odd numbers",multiple:"Multiples of ",lt:"Numbers less than ",gt:"Numbers greater than ",prime:"Prime numbers",square:"Square numbers"};
+var presets={
+ even5:{a:{kind:"even",value:2},b:{kind:"multiple",value:5},max:30,prompt:"What do you notice? What do you wonder? Sort the numbers from 1 to 30. Which are even multiples of 5?"},
+ oddBelow20:{a:{kind:"odd",value:1},b:{kind:"lt",value:20},max:30,prompt:"Some numbers are odd, some are less than 20, and some satisfy both rules. How will you decide?"},
+ inferOddAbove20:{a:{kind:"odd",value:1},b:{kind:"gt",value:20},max:30,prompt:"The numbers are already sorted, but the labels have disappeared. What could each set mean?"},
+ evenOdd:{a:{kind:"even",value:2},b:{kind:"odd",value:1},max:30,prompt:"Will any number go in the overlap? Can any whole number be both even and odd?"},
+ multiple3and4:{a:{kind:"multiple",value:3},b:{kind:"multiple",value:4},max:48,prompt:"Which numbers appear in both multiplication tables? Identify the first positive common multiple."},
+ multiple4and6:{a:{kind:"multiple",value:4},b:{kind:"multiple",value:6},max:48,prompt:"What is the smallest number in the overlap? Why are all common multiples multiples of it?"},
+ multiple3and5:{a:{kind:"multiple",value:3},b:{kind:"multiple",value:5},max:60,prompt:"Which numbers lie in the intersection, and how do they connect to the LCM?"},
+ custom:{a:{kind:"multiple",value:3},b:{kind:"multiple",value:4},max:30,prompt:"Create your own Venn problem. Where do the two rules overlap?"}
+};
+var state={a:{kind:"even",value:2},b:{kind:"multiple",value:5},max:30,mode:"sort",placed:{},selected:null,checked:false,revealed:false};
+function copyRule(r){return {kind:r.kind,value:r.value};}
+function validNumber(v,minimum,maximum,fallback){v=Number(v);return Number.isFinite(v)?Math.max(minimum,Math.min(maximum,Math.floor(v))):fallback;}
+function prime(n){if(n<2)return false;for(var j=2;j*j<=n;j++)if(n%j===0)return false;return true;}
+function matches(n,r){switch(r.kind){case "even":return n%2===0;case "odd":return n%2!==0;case "multiple":return n%r.value===0;case "lt":return n<r.value;case "gt":return n>r.value;case "prime":return prime(n);case "square":return Math.sqrt(n)%1===0;default:return false;}}
+function ruleText(r){return labels[r.kind]+(["multiple","lt","gt"].includes(r.kind)?r.value:"");}
+function correctZone(n){var a=matches(n,state.a),b=matches(n,state.b);return a?(b?"both":"a"):(b?"b":"neither");}
+function actualCounts(){var c={a:0,b:0,both:0,neither:0,union:0};for(var n=1;n<=state.max;n++){var z=correctZone(n);c[z]++;if(z!=="neither")c.union++;}return c;}
+function numberList(region){var arr=[];for(var n=1;n<=state.max;n++)if(correctZone(n)===region)arr.push(n);return arr;}
+function gcd(a,b){while(b){var t=b;b=a%b;a=t;}return a;}
+function makeChip(n,isInfer){var e=document.createElement(isInfer?"span":"button");e.className="lab-chip"+(isInfer?" lab-chip-static":"");e.textContent=String(n);if(!isInfer){e.type="button";e.dataset.number=String(n);e.draggable=true;e.setAttribute("aria-label","Number "+n);e.setAttribute("aria-pressed",state.selected===n?"true":"false");if(state.checked&&state.placed[n])e.classList.add(correctZone(n)===state.placed[n]?"is-right":"is-wrong");}return e;}
+function updateLabels(){var infer=state.mode==="infer";$("board").classList.toggle("infer-mode",infer);$("labelA").textContent=ruleText(state.a);$("labelB").textContent=ruleText(state.b);$("diagram").style.height=(520+Math.max(0,state.max-30)*12)+"px";}
+function renderBoard(){updateLabels();var infer=state.mode==="infer";["a","both","b","neither"].forEach(function(z){var node=document.querySelector('[data-zone="'+z+'"]');node.replaceChildren();for(var n=1;n<=state.max;n++){if((infer?correctZone(n):state.placed[n])===z)node.appendChild(makeChip(n,infer));}});
+$("bank").replaceChildren();if(!infer)for(var n=1;n<=state.max;n++)if(!state.placed[n])$("bank").appendChild(makeChip(n,false));
+$("bankArea").classList.toggle("lab-hidden",infer);$("placebar").classList.toggle("lab-hidden",infer);
+$("check").textContent=infer?"Check my labels":"Check my diagram";
+$("show").textContent=infer?"Reveal labels":"Show correct places";
+$("reset").textContent=infer?"Try different labels":"Start again";
+var count=Object.keys(state.placed).length;
+$("progress").textContent=infer?"Study the completed diagram. Can you infer the two rules?":count+" of "+state.max+" numbers placed";
+document.querySelectorAll("[data-place]").forEach(function(e){e.disabled=state.selected===null;});}
+function setFeedback(t,kind){$("feedback").textContent=t;$("feedback").className="lab-feedback"+(kind?" "+kind:"");}
+function clearResults(){$("snapshot").textContent="Check your work, or open the mathematics below when you are ready.";$("lcmDetails").open=false;state.checked=false;state.revealed=false;}
+function resetPlacements(){state.placed={};state.selected=null;clearResults();renderBoard();setFeedback("Choose a number and place it in the correct region. Explain your decision.","");}
+function assign(n,zone){if(state.mode==="infer")return;if(!Number.isInteger(n)||n<1||n>state.max)return;if(zone==="bank")delete state.placed[n];else if(["a","both","b","neither"].includes(zone))state.placed[n]=zone;state.selected=null;state.checked=false;state.revealed=false;renderBoard();setFeedback("Placed "+n+". Keep going, or check your diagram when you are ready.","");}
+function pick(n){state.selected=state.selected===n?null:n;renderBoard();if(state.selected!==null)setFeedback("Number "+state.selected+" selected. Choose A only, both, B only or neither.","");}
+function showMaths(){var c=actualCounts();$("snapshot").textContent="A only: "+c.a+" · Both: "+c.both+" · B only: "+c.b+" · Neither: "+c.neither+". The union contains "+c.union+" elements.";
+var bits=[],am=state.a.kind==="even"?2:state.a.kind==="multiple"?state.a.value:null,bm=state.b.kind==="even"?2:state.b.kind==="multiple"?state.b.value:null;
+if(am!==null&&bm!==null){var lcm=(am/gcd(am,bm))*bm;var shared=numberList("both");bits.push("The numbers in both sets are common multiples of "+am+" and "+bm+".");bits.push(lcm<=state.max?"Their least common multiple is "+lcm+", the first positive number in the intersection.":"No common multiple occurs between 1 and "+state.max+", but the LCM is "+lcm+" — beyond the numbers displayed.");bits.push("Displayed common multiples: "+(shared.length?shared.join(", "):"none")+".");bits.push("Every positive common multiple is a multiple of "+lcm+".");}
+else if((state.a.kind==="even"&&state.b.kind==="odd")||(state.a.kind==="odd"&&state.b.kind==="even")){bits.push("No integer is both even and odd. The intersection is empty, not just in this diagram but for all integers.");bits.push("Zero is even, but it is not included in the displayed range 1 to "+state.max+".");}
+else{bits.push("The intersection is the set of numbers that satisfy BOTH rules.");bits.push("A ∩ B = {"+numberList("both").join(", ")+"}.");}
+bits.push("#A = "+(c.a+c.both)+"; #B = "+(c.b+c.both)+"; #(A ∩ B) = "+c.both+"; #(A ∪ B) = "+c.union+".");
+$("lcmContent").replaceChildren();bits.forEach(function(t){var p=document.createElement("p");p.textContent=t;$("lcmContent").appendChild(p);});}
+function checkSort(){state.checked=true;var missing=0,wrong=[];for(var n=1;n<=state.max;n++){if(!state.placed[n])missing++;else if(state.placed[n]!==correctZone(n))wrong.push(n);}renderBoard();if(!missing&&!wrong.length){setFeedback("Excellent: all "+state.max+" numbers are in the correct regions. Explain WHY the intersection has these elements.","good");showMaths();}else{var msg=(missing?missing+" numbers still to place. ":"")+(wrong.length?wrong.length+" numbers are in the wrong region. For example, reconsider "+wrong[0]+".":"All placed numbers are correct.");setFeedback(msg,"problem");if(!missing)showMaths();}}
+function revealAll(){if(state.mode==="infer"){setFeedback("One pair of matching rules is: A = "+ruleText(state.a)+"; B = "+ruleText(state.b)+". Other descriptions can also agree over a finite range.","good");showMaths();return;}state.placed={};for(var n=1;n<=state.max;n++)state.placed[n]=correctZone(n);state.selected=null;state.checked=true;state.revealed=true;renderBoard();setFeedback("Correct placement shown. Try to explain the overlap before looking at the LCM.","good");showMaths();}
+function candidates(){var list=[{kind:"even",value:2},{kind:"odd",value:1}];[2,3,4,5,6,7,8,9,10,12].forEach(function(v){list.push({kind:"multiple",value:v});});[10,15,20,25,30].forEach(function(v){list.push({kind:"lt",value:v},{kind:"gt",value:v});});list.push({kind:"prime",value:1},{kind:"square",value:1},copyRule(state.a),copyRule(state.b));var seen={};return list.filter(function(r){var k=r.kind+":"+r.value;if(seen[k])return false;seen[k]=true;return true;});}
+function fillGuesses(){["guessA","guessB"].forEach(function(k){var select=$(k);select.replaceChildren();var opt=document.createElement("option");opt.value="";opt.textContent="Choose a rule…";select.appendChild(opt);candidates().forEach(function(r){var o=document.createElement("option");o.value=r.kind+":"+r.value;o.textContent=ruleText(r);select.appendChild(o);});});}
+function candidateFromInput(v){var p=v.split(":");return {kind:p[0],value:Number(p[1])};}
+function ruleEquivalent(candidate,actual){for(var n=1;n<=state.max;n++)if(matches(n,candidate)!==matches(n,actual))return false;return true;}
+function checkGuess(){var a=$("guessA").value,b=$("guessB").value;if(!a||!b){setFeedback("Choose a proposed rule for both sets before checking.","problem");return;}var aa=ruleEquivalent(candidateFromInput(a),state.a),bb=ruleEquivalent(candidateFromInput(b),state.b);if(aa&&bb){setFeedback("Both rules fit every displayed number. Well reasoned! Could a different pair of rules also fit?","good");showMaths();}else{var fail=[];if(!aa)fail.push("A");if(!bb)fail.push("B");setFeedback("Check the suggested rule for set "+fail.join(" and ")+". Test every number, including those outside both sets.","problem");}}
+function setMode(mode){state.mode=mode;document.querySelectorAll("[data-mode]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.mode===mode));});clearResults();state.placed={};state.selected=null;fillGuesses();if(mode==="infer"||mode==="investigate"){if(mode==="investigate"){for(var n=1;n<=state.max;n++)state.placed[n]=correctZone(n);} }renderBoard();if(mode==="infer"){setFeedback("The numbers are sorted already. Study each region and guess the missing labels.","");}else if(mode==="investigate"){state.checked=true;renderBoard();showMaths();setFeedback("Study the finished diagram and investigate the overlap, intersection and LCM.","");}else{setFeedback("Select a number, then choose the region where it belongs.","");}}
+function syncInputs(){$("maximum").value=state.max;$("kindA").value=state.a.kind;$("kindB").value=state.b.kind;$("valueA").value=state.a.value;$("valueB").value=state.b.value;["A","B"].forEach(function(s){var k=$("kind"+s).value;$("value"+s).disabled=!["multiple","lt","gt"].includes(k);});}
+function readInputs(){state.max=validNumber($("maximum").value,5,100,30);state.a={kind:$("kindA").value,value:validNumber($("valueA").value,1,1000,2)};state.b={kind:$("kindB").value,value:validNumber($("valueB").value,1,1000,5)};syncInputs();$("preset").value="custom";updatePrompt();setMode(state.mode);}
+function updatePrompt(){var key=$("preset").value;$("prompt").textContent=(presets[key]&&key!=="custom")?presets[key].prompt:"Investigate "+ruleText(state.a).toLowerCase()+" and "+ruleText(state.b).toLowerCase()+" among the numbers 1 to "+state.max+".";var am=state.a.kind==="multiple"||state.a.kind==="even",bm=state.b.kind==="multiple"||state.b.kind==="even";$("question").textContent=am&&bm?"Find the first positive number that satisfies both rules. Is there always one in your displayed range?":state.a.kind==="even"&&state.b.kind==="odd"||state.a.kind==="odd"&&state.b.kind==="even"?"Could an integer ever belong to both sets? What happens to the overlap?":"Find a number that belongs to A only, one that belongs to B only, and one that belongs to both, if possible."; $("reasoning").textContent=am&&bm?"For positive whole numbers, common multiples of two positive integers are precisely multiples of their least common multiple. The first may be beyond the displayed range.":"Check each number against each rule separately. The four regions represent A only, both, B only and neither.";}
+function choosePreset(key){var p=presets[key]||presets.custom;state.a=copyRule(p.a);state.b=copyRule(p.b);state.max=p.max;syncInputs();updatePrompt();setMode(key==="inferOddAbove20"?"infer":"sort");}
+$("preset").addEventListener("change",function(){choosePreset(this.value);});
+["maximum","kindA","kindB","valueA","valueB"].forEach(function(k){$(k).addEventListener("change",readInputs);});
+document.querySelectorAll("[data-mode]").forEach(function(b){b.addEventListener("click",function(){setMode(b.dataset.mode);});});
+$("check").addEventListener("click",function(){if(state.mode==="infer")checkGuess();else checkSort();});
+$("show").addEventListener("click",revealAll);
+$("reset").addEventListener("click",function(){if(state.mode==="infer"){$("guessA").value="";$("guessB").value="";setFeedback("Try again: examine the numbers inside and outside each set.","");}else if(state.mode==="investigate"){setMode("sort");}else resetPlacements();});
+$("main").addEventListener("click",function(e){var button=e.target.closest("[data-number]");if(button){pick(Number(button.dataset.number));return;}var place=e.target.closest("[data-place]");if(place&&state.selected!==null){assign(state.selected,place.dataset.place);return;}var zone=e.target.closest(".lab-zone");if(zone&&state.selected!==null)assign(state.selected,zone.dataset.zone);});
+document.querySelectorAll(".lab-zone").forEach(function(zone){zone.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&state.selected!==null){e.preventDefault();assign(state.selected,zone.dataset.zone);}});zone.addEventListener("dragover",function(e){if(state.mode!=="infer"){e.preventDefault();zone.classList.add("drag-over");}});zone.addEventListener("dragleave",function(){zone.classList.remove("drag-over");});zone.addEventListener("drop",function(e){e.preventDefault();zone.classList.remove("drag-over");assign(Number(e.dataTransfer.getData("text/plain")),zone.dataset.zone);});});
+$("bank").addEventListener("dragover",function(e){e.preventDefault();});
+$("bank").addEventListener("drop",function(e){e.preventDefault();assign(Number(e.dataTransfer.getData("text/plain")),"bank");});
+$("main").addEventListener("dragstart",function(e){var b=e.target.closest("[data-number]");if(b&&state.mode!=="infer")e.dataTransfer.setData("text/plain",b.dataset.number);});
+$("menuToggle").addEventListener("click",function(){var open=$("siteLinks").classList.toggle("is-open");$("menuToggle").setAttribute("aria-expanded",String(open));});
+choosePreset("even5");
+})();
+</script>
+</body>
+</html>
