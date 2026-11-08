@@ -650,14 +650,14 @@ main{margin:5px auto;padding:10px 19px 18px}
 .step-row .step-literacy-button:focus-visible,.step-literacy-options button:focus-visible,.step-literacy-options a:focus-visible{outline:2px solid #627f9c;outline-offset:2px}
 .step-literacy-options{display:grid;gap:8px;margin:2px 0 12px 36px;padding:9px 0 10px 10px;border-left:2px solid #cbd5e1;background:transparent;color:#465260;font:400 .88rem/1.4 Arial,Helvetica,sans-serif}
 .step-literacy-options .literacy-intro{margin:0;color:#606d7b;font-size:.83rem}
-.step-literacy-options .literacy-options{display:flex;gap:5px;flex-wrap:wrap}
-.step-literacy-options .literacy-option{padding:6px 10px;min-height:35px;border:1px solid #cbd5e1;background:transparent;color:#4c5866;border-radius:5px;font:500 .85rem Arial,Helvetica,sans-serif}
+.step-literacy-options .literacy-options{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,.75fr) minmax(0,.8fr);gap:5px;width:100%;max-width:355px;align-items:stretch}
+.step-literacy-options .literacy-option{display:flex;align-items:center;justify-content:center;min-width:0;white-space:nowrap;padding:6px 5px;min-height:35px;border:1px solid #cbd5e1;background:transparent;color:#4c5866;border-radius:5px;font:500 clamp(.70rem,1.7vw,.82rem)/1.15 Arial,Helvetica,sans-serif}
 .step-literacy-options .literacy-option[aria-pressed=true]{background:#f1f3f5;border-color:#9eabba;color:#303a47;font-weight:650}
 .step-literacy-options .literacy-explanation-button{justify-self:start;min-height:30px;padding:4px 1px;background:transparent;border:0;color:#576576;font:400 .85rem Arial,Helvetica,sans-serif;text-decoration:underline}
 .step-literacy-options .step-current-tip{margin:0;padding:4px 0 4px 9px;border:0;border-left:2px solid #cbd5e1;background:transparent;color:#354457;font:400 .95rem/1.45 Arial,Helvetica,sans-serif;max-width:51ch}
 .step-literacy-options .literacy-eal{margin:4px 0 0;font-size:.79rem;line-height:1.4;color:#647082;max-width:50ch}
 .step-literacy-options .literacy-reference{font-size:.79rem;color:#536477;justify-self:start}
-@media(max-width:390px){.step-row .step-literacy-button{font-size:.72rem}.step-literacy-options{margin-left:29px}.step-literacy-options .literacy-options{gap:4px}}
+@media(max-width:390px){.step-row .step-literacy-button{font-size:.72rem}.step-literacy-options{margin-left:29px}.step-literacy-options .literacy-options{gap:3px;max-width:100%}.step-literacy-options .literacy-option{padding:5px 2px;font-size:.69rem}}
 </style>
 </head>
 <body>
@@ -1124,9 +1124,11 @@ function draw(){
      panel.setAttribute('aria-label','Optional wording and explanation for this step');
      panel.append(el('p','Choose wording. The maths and your progress stay the same.','literacy-intro'));
      const buttons=el('div',undefined,'literacy-options');
-     [['mathematical','Mathematical'],['everyday','Everyday'],['short','Short English']].forEach(([value,label])=>{
+     [['mathematical','Maths language'],['everyday','CEFR'],['short','Simple']].forEach(([value,label])=>{
       const btn=el('button',label,'literacy-option');btn.type='button';
       btn.setAttribute('aria-pressed',String(state.literacyMode===value));
+      if(value==='everyday')btn.title='Plain-English wording informed by EAL/CEFR accessibility, not a certified CEFR level';
+      if(value==='short')btn.title='Shorter English sentences; mathematical difficulty is unchanged';
       btn.onclick=()=>{state.literacyMode=value;state.literacyOpen=false;state.helpStage=-1;render()};
       buttons.append(btn);
      });
@@ -1143,7 +1145,7 @@ function draw(){
      }
      const context=el('p',undefined,'literacy-eal');
      context.append(el('strong','EAL / CEFR: '));
-     context.append(document.createTextNode('English as an Additional Language; CEFR levels A1–C2. Short English offers language support, not a certified CEFR level or a maths grade.'));
+     context.append(document.createTextNode('English as an Additional Language; CEFR describes language proficiency (A1–C2). The CEFR and Simple choices offer wording support, not a tested CEFR level or a change in maths difficulty.'));
      panel.append(context);
      const ref=el('a','CEFR language levels','literacy-reference');
      ref.href='https://www.coe.int/en/web/common-european-framework-reference-languages/level-descriptions';
