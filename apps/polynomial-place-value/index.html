@@ -722,7 +722,7 @@ window.matchMedia('(min-width: 761px)').addEventListener('change',event=>{
 
 const actions=[
  'Set up the place-value columns',
- 'Place coefficients in matching rows and columns',
+ 'Align the coefficients of both factors in the top two rows',
  'Calculate partial products',
  'Combine like terms',
  'Append powers of x to each coefficient',
@@ -731,7 +731,7 @@ const actions=[
 ];
 const everydayActions=[
  'Make the columns for # and powers of x',
- 'Line up matching powers',
+ 'Put the numbers from each bracket into the top two rows',
  'Multiply and put each result in its column',
  'Add numbers in the same column',
  'Put x powers back beside the answers',
@@ -740,7 +740,7 @@ const everydayActions=[
 ];
 const everydayInstructions=[
  'Start with #, x, x² and so on. Add one extra column when multiplying by a linear factor, or two for a quadratic.',
- 'Put the higher-degree factor on top. Put x terms below x terms and constants below constants.',
+ 'Use one row for each bracket. Start at the right, putting the last numbers under #. Put the x numbers under x.',
  'Multiply each bottom number by the top numbers. Shift your working to the right column for each power.',
  'Add numbers only when they belong to the same power of x.',
  'Write x, x² and the other powers next to the column totals.',
@@ -751,7 +751,7 @@ const stepWords=()=>state.language==='everyday'?everydayActions:actions;
 const stepTips=()=>state.language==='everyday'?everydayInstructions:instructions;
 const instructions=[
  'Write #, x, x² and the higher powers across the top. Add one extra column for a linear multiplier, or two for a quadratic.',
- 'Keep the higher-degree factor on top. Match constants, x terms and other like powers in the same columns.',
+ 'Put the higher-degree factor in the upper row and the other factor immediately beneath. Align coefficients of equal powers of x in the same columns.',
  'Multiply the bottom coefficients by those above. Each partial product belongs in its matching power-of-x column.',
  'Add each column. The coefficient sequence runs from the highest power to the constant.',
  'Append the correct power of x to each non-zero coefficient, reading from left to right.',
