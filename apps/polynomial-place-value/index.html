@@ -744,6 +744,9 @@ body:not(.maths-only) #focusNext{display:none!important}
  #boardPanel:not([hidden]) .board-grid{height:185mm!important;min-height:185mm!important;gap:12px!important}
  #boardPanel:not([hidden]) .board-question{border:1px solid #bfcbd7!important;break-inside:avoid!important}
 }
+/* Reveal the unit/HCF interaction only when relevant. */
+.configuration-note{font:.76rem/1.35 Arial,sans-serif;color:#556c83;text-align:center;margin:0 auto 5px;max-width:900px}
+.configuration-note[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -769,6 +772,7 @@ body:not(.maths-only) #focusNext{display:none!important}
 <div class="quick-field"><label for="zeroSelect">Zeros</label><select id="zeroSelect" aria-label="Missing coefficients"></select></div>
 <div class="quick-field"><label for="hcfSelect">HCF</label><div class="quick-pair"><select id="hcfSelect" aria-label="HCF placement"><option value="off">Off</option><option value="outside">Outside</option><option value="first">First</option><option value="second">Second</option><option value="both">Both</option></select><select id="hcfNumber" aria-label="HCF multiplier"><option value="random">2–11</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option></select></div></div>
 </div>
+<p id="configurationNote" class="configuration-note" hidden></p>
 <div class="legacy-settings" hidden>
 <div class="setting setting--factors"><span class="caption">Factor pattern</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor combination"></div><select id="challengeSelect" hidden aria-label="Future factor combinations"><option value="">Challenge…</option><option value="l4">Linear × Quartic</option><option value="l5">Linear × Quintic</option><option value="q3">Quadratic × Cubic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select><div class="inline-hcf"><span>HCF</span><button type="button" id="constantBtn" aria-pressed="false" title="Independent common numerical factor">Off</button></div></div></div>
 <div class="setting setting--coefficients"><span class="caption">Coefficient difficulty</span><div class="button-group" id="levels" aria-label="Coefficient level"></div></div>
@@ -1088,6 +1092,8 @@ function syncQuickSelectors(){
  zero.value=state.zeroMode;zero.disabled=assessment.started;
  zero.onchange=()=>{state.zeroMode=zero.value;refreshSelectedQuestion();assessmentConfigChanged()};
  const hcf=$('hcfSelect'),hnum=$('hcfNumber');
+ const note=$('configurationNote');note.hidden=state.oneMode==='off'||!['first','second','both'].includes(state.hcfMode);
+ note.textContent='Unit coefficients are chosen before distributing the HCF. The visible coefficients may therefore change.';
  hcf.value=state.hcfMode;hnum.value=state.hcfNumber;
  hcf.disabled=assessment.started;hnum.disabled=assessment.started||state.hcfMode==='off';
  hcf.onchange=()=>{state.hcfMode=hcf.value;state.constantOn=hcf.value!=='off';refreshSelectedQuestion();assessmentConfigChanged()};
