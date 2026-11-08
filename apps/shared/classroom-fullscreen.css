@@ -1,0 +1,33 @@
+/* Reusable full-screen presentation surface for Maths Apps. */
+.maths-classroom-surface:fullscreen,
+.maths-classroom-surface:-webkit-full-screen,
+.maths-classroom-surface.maths-classroom-focus{
+ box-sizing:border-box!important;
+ width:100vw!important;
+ min-width:0!important;
+ max-width:none!important;
+ height:100dvh!important;
+ min-height:0!important;
+ margin:0!important;
+ overflow:auto!important;
+ background:#fff!important;
+ border:0!important;
+ border-radius:0!important;
+ padding:clamp(10px,1.6vw,25px)!important;
+ overscroll-behavior:contain;
+}
+.maths-classroom-surface.maths-classroom-focus{
+ position:fixed!important;
+ inset:0!important;
+ z-index:3000!important;
+}
+body.maths-classroom-scroll-lock{overflow:hidden!important}
+.maths-classroom-toggle{
+ display:inline-flex;align-items:center;justify-content:center;gap:6px;
+ min-height:40px;padding:8px 12px;border:1px solid #7aa5d8;border-radius:8px;
+ background:#edf5ff;color:#174ea6;font:700 .9rem/1.2 Arial,Helvetica,sans-serif;
+ cursor:pointer;white-space:nowrap;
+}
+.maths-classroom-toggle:hover,.maths-classroom-toggle:focus-visible{background:#dcecff}
+.maths-classroom-toggle[aria-pressed="true"]{background:#164e8c;color:#fff;border-color:#164e8c}
+@media print{.maths-classroom-toggle{display:none!important}}
