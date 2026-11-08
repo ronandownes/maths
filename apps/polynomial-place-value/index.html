@@ -727,6 +727,23 @@ body:not(.maths-only) #focusNext{display:none!important}
 #nextExercise,#displaySix{min-height:44px}
 #coefficients[hidden]{display:none!important}
 @media(max-width:760px){#mobileSettingsPanel .quick-fields{align-items:stretch;flex-direction:column}#mobileSettingsPanel .quick-field{width:100%;align-items:stretch}#mobileSettingsPanel select{width:100%;max-width:none}}
+/* Whiteboard layout: top aligned, adjustable margins and clear A4 printing. */
+.board-grid{column-gap:56px;row-gap:20px}
+.board-question{justify-content:flex-start;align-items:center;padding-top:40px}
+.board-panel:fullscreen .board-grid{column-gap:56px;row-gap:20px}
+.board-spacing-controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.board-spacing-row{display:flex;align-items:center;gap:4px;font-size:.72rem;color:#516276}
+.board-spacing-row input{width:82px;accent-color:#235a97}
+.board-spacing-row output{min-width:37px;font-variant-numeric:tabular-nums}
+@media print{
+ @page{size:A4 landscape;margin:9mm}
+ header,#mobileSettingsPanel,.mobile-settings-toggle,.activity-switch,.focus-tools,.board-controls,.mobile-settings-backdrop{display:none!important}
+ body{background:#fff!important}
+ main{max-width:100%!important;border:none!important;margin:0!important;padding:0!important}
+ #boardPanel:not([hidden]){padding:0!important;margin:0!important;border:0!important;break-inside:avoid!important}
+ #boardPanel:not([hidden]) .board-grid{height:185mm!important;min-height:185mm!important;gap:12px!important}
+ #boardPanel:not([hidden]) .board-question{border:1px solid #bfcbd7!important;break-inside:avoid!important}
+}
 </style>
 </head>
 <body>
@@ -2052,7 +2069,7 @@ function worksheetOptions(){
  const status=el('span');status.id='wsStatus';go.onclick=printWorksheet;close.onclick=()=>switchMode('practice');
  actions.append(go,close,status);panel.append(actions);wsStatus();
 }
-const boardState={columns:1,rows:1,answers:false,offset:0};
+const boardState={columns:1,rows:1,answers:false,offset:0,columnGap:56,rowGap:20,topMargin:40};
 // Both factors share a single place-value grid, with the higher-degree factor on top.
 function boardStackRow(coefficients,row,highestDegree){
  let earlier=false,html='';
@@ -2101,7 +2118,7 @@ function fitBoardQuestions(){
  grid.querySelectorAll('.board-question').forEach(cell=>{
   const expr=cell.querySelector('.board-expression'),answer=cell.querySelector('.board-answer');
   const line=cell.querySelector('.board-math-line');
-  const width=Math.max(35,cell.clientWidth-20),height=Math.max(35,cell.clientHeight-22);
+  const width=Math.max(35,cell.clientWidth-20),height=Math.max(35,cell.clientHeight-22-boardState.topMargin);
   const inline=Boolean(answer&&cell.classList.contains('board-question--single'));
   cell.classList.remove('board-inline-wrap');
   // Answer uses the same font size as the question, whether inline or stacked.
@@ -2162,6 +2179,25 @@ function drawBoard(){
  addBoardSlider('Columns','columns');
  addBoardSlider('Rows','rows');
  custom.append(sliderStack);controls.append(custom);
+ const spacingControls=el('div',undefined,'board-spacing-controls');
+ for(const [title,key,min,max] of [['Column gap','columnGap',8,140],['Row gap','rowGap',0,130],['Top margin','topMargin',0,150]]){
+  const controlLabel=el('label',undefined,'board-spacing-row');
+  const slider=el('input');slider.type='range';slider.min=String(min);slider.max=String(max);slider.step='2';slider.value=String(boardState[key]);
+  const name=el('span',title),value=el('output',boardState[key]+'px');
+  controlLabel.append(name,slider,value);spacingControls.append(controlLabel);
+  slider.oninput=()=>{
+   boardState[key]=Number(slider.value);value.textContent=slider.value+'px';
+   const boardGrid=host.querySelector('.board-grid');
+   if(!boardGrid)return;
+   boardGrid.style.columnGap=boardState.columnGap+'px';
+   boardGrid.style.rowGap=boardState.rowGap+'px';
+   boardGrid.querySelectorAll('.board-question').forEach(cell=>{cell.style.paddingTop=boardState.topMargin+'px'});
+   requestAnimationFrame(fitBoardQuestions);
+  };
+ }
+ controls.append(spacingControls);
+ const printBoard=el('button','Print display');printBoard.type='button';printBoard.onclick=()=>window.print();controls.append(printBoard);
+
  const answers=el('button',boardState.answers?'Hide answers':'Answers');
  answers.type='button';answers.setAttribute('aria-pressed',String(boardState.answers));answers.onclick=()=>{boardState.answers=!boardState.answers;drawBoard()};
  controls.append(answers);
@@ -2174,6 +2210,7 @@ function drawBoard(){
  host.append(controls);
  const grid=el('div',undefined,'board-grid');
  host.append(grid);
+ grid.style.columnGap=boardState.columnGap+'px';grid.style.rowGap=boardState.rowGap+'px';
  const cellCache=[];
  let fitPending=false;
  function resizeBoardGrid(){
@@ -2198,6 +2235,7 @@ function drawBoard(){
    }
   }
   grid.replaceChildren(...cellCache.slice(0,count));
+ grid.querySelectorAll('.board-question').forEach(cell=>{cell.style.paddingTop=boardState.topMargin+'px'});
   cellCache.forEach(cell=>cell.classList.toggle('board-question--single',count===1));
   if(!fitPending){
    fitPending=true;
