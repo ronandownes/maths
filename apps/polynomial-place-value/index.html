@@ -640,14 +640,13 @@ main{margin:5px auto;padding:10px 19px 18px}
 .game-panel>.primary{display:block;margin:12px auto;font-size:1.15rem}
 @media(prefers-reduced-motion:reduce){.race-bubble{animation:none;transition:none}.race-fill{transition:none}}
 
-/* One persistent literacy selector beside Signs, not inside the mathematical steps. */
-.settings-top.common-settings>.setting--literacy{flex:0 0 auto;min-width:0;padding:7px 6px}
-#literacyChoice{display:grid;grid-template-columns:repeat(3,max-content);gap:3px;align-items:stretch;white-space:nowrap}
-#literacyChoice button{margin:0;min-width:0;min-height:39px;padding:6px 6px;border:1px solid #cbd5e1;border-radius:6px;background:#fff;color:#4b5868;font:500 .75rem/1.2 Arial,Helvetica,sans-serif}
-#literacyChoice button[aria-pressed=true]{background:#edf3fc;color:#174ea6;border-color:#77a1d7;font-weight:700}
-#literacyChoice button:focus-visible{outline:2px solid #608ab4;outline-offset:2px}
+.hcf-park{border:1px solid #b9cee5;border-radius:8px;background:#f5f9fe;padding:10px 12px;margin:10px auto 16px;max-width:760px;text-align:center}
+.hcf-park-label{font:650 .93rem/1.45 Arial,Helvetica,sans-serif;color:#28547e}
+.hcf-park-equation{font:clamp(1.3rem,2.7vw,2rem)/1.5 "Cambria Math",Cambria,Georgia,serif;overflow-wrap:anywhere}
+.hcf-park-equation sup,.hcf-restore sup{font-size:.64em;vertical-align:super}
+.hcf-restore{font:clamp(1.3rem,2.7vw,1.85rem)/1.45 "Cambria Math",Cambria,Georgia,serif;text-align:center;margin:12px auto;color:#244d77}
+.hcf-restore-label{font:650 .88rem/1.4 Arial,Helvetica,sans-serif;color:#536b86}
 @media(min-width:761px){#mobileSettingsPanel{flex-wrap:nowrap;gap:6px;overflow-x:auto;max-width:100%}#mobileSettingsPanel>.setting{padding-left:6px;padding-right:6px;flex-shrink:0}#mobileSettingsPanel>.setting--advanced{margin-left:auto}}
-@media(max-width:760px){#mobileSettingsPanel .setting--literacy{width:100%;min-width:0}#mobileSettingsPanel #literacyChoice{display:grid;width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}#mobileSettingsPanel #literacyChoice button{min-width:0;min-height:44px;padding:5px 2px;font-size:.85rem}}
 </style>
 </head>
 <body>
@@ -663,7 +662,6 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="setting"><span class="caption">Factor pattern</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor pattern"></div><select id="challengeSelect" aria-label="Optional higher degree factor patterns"><option value="">Challenge…</option><option value="l3">Linear × Cubic</option><option value="l4">Linear × Quartic</option><option value="l5">Linear × Quintic</option><option value="q3">Quadratic × Cubic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select></div></div>
 <div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
 <div class="setting"><span class="caption">Signs within factors</span><div class="button-group" id="signs" aria-label="Choose signs"></div></div>
-<div class="setting setting--literacy"><span class="caption">Literacy</span><div class="button-group" id="literacyChoice" role="group" aria-label="Choose the language used in the steps"><button type="button" data-literacy="mathematical" aria-pressed="true" title="Target: precise mathematical vocabulary">Maths</button><button type="button" data-literacy="everyday" aria-pressed="false" title="EAL: accessible English wording for learners of English as an Additional Language; not a CEFR assessment">EAL</button><button type="button" data-literacy="short" aria-pressed="false" title="Simple: shorter sentences with the same mathematics">Simple</button></div></div>
 <div class="setting setting--advanced"><span class="caption">Options</span><div class="advanced-buttons"><button type="button" id="constantBtn" aria-pressed="false" title="HCF Off gives a primitive expansion (coefficient HCF 1); HCF On gives a common numerical factor.">HCF Off</button><button type="button" id="monicBtn" aria-pressed="false" title="Advanced: leading coefficient 1">Monic off</button><button type="button" id="challengeBtn" hidden aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false">Challenge off</button></div></div>
 <div class="beyond-choices" id="beyondPanel" hidden><div class="button-group" id="beyondChoices"></div><span id="beyondNote"></span></div>
 </div>
@@ -724,59 +722,25 @@ window.matchMedia('(min-width: 761px)').addEventListener('change',event=>{
 });
 
 const actions=[
- 'Set up the place-value columns',
- 'Align the coefficients of both factors in the top two rows',
+ 'Set up place-value columns',
+ 'Align coefficients',
  'Calculate partial products',
  'Combine like terms',
- 'Append powers of x to each coefficient',
- 'Box the answer with the correct signs',
- 'Deepen your learning'
+ 'Restore powers of x',
+ 'Check signs and box the answer',
+ 'Review and practise'
 ];
-const everydayActions=[
- 'Make the columns for # and powers of x',
- 'Use one row for each bracket',
- 'Multiply and put each result in its column',
- 'Add numbers in the same column',
- 'Put x powers back beside the answers',
- 'Write and box the final answer',
- 'Check what you have learned'
-];
-const shortEnglishActions=[
- 'Make columns: #, x, x², ...',
- 'Write one bracket on each row',
- 'Multiply. Put each answer in its column',
- 'Add the numbers in each column',
- 'Write x, x², ... beside the numbers',
- 'Check the signs. Box the answer',
- 'Try a new question'
-];
-const shortEnglishInstructions=[
- 'Start with #, x, x². If the other factor is linear, add one column. If it is quadratic, add two.',
- 'Write one bracket on each row. Line up the numbers under the same powers of x.',
- 'Multiply numbers from the two rows. Put each answer in the matching column.',
- 'Add the numbers in each column. Do not mix different powers of x.',
- 'Write x or x² beside each total. Keep the correct column order.',
- 'Write the + and − signs. Draw a box around your answer.',
- 'Try again without help. Check your steps. Come back to practise another day.'
-];
-const everydayInstructions=[
- 'Start with #, x, x² and so on. Add one extra column when multiplying by a linear factor, or two for a quadratic.',
- 'Use one row for each bracket. Start at the right, putting the last numbers under #. Put the x numbers under x.',
- 'Multiply each bottom number by the top numbers. Shift your working to the right column for each power.',
- 'Add numbers only when they belong to the same power of x.',
- 'Write x, x² and the other powers next to the column totals.',
- 'Check the plus and minus signs, then box the result.',
- 'Try to explain why the columns work or solve another question independently.'
-];
-const instructions=[
- 'Write #, x, x² and the higher powers across the top. Add one extra column for a linear multiplier, or two for a quadratic.',
- 'Put the higher-degree factor in the upper row and the other factor immediately beneath. Align coefficients of equal powers of x in the same columns.',
- 'Multiply the bottom coefficients by those above. Each partial product belongs in its matching power-of-x column.',
- 'Add each column. The coefficient sequence runs from the highest power to the constant.',
- 'Append the correct power of x to each non-zero coefficient, reading from left to right.',
- 'Use descending powers of x, include every + and − sign, and box the final answer.',
- 'Work independently, use spaced retrieval and explore a deeper connection if you want.'
-];
+function hcfSteps(hcf){
+ if(!hcf.needed)return actions;
+ const first=hcf.displayFirst>1,second=hcf.displaySecond>1;
+ const source=first&&second?'both brackets':first?'the first bracket':'the second bracket';
+ return ['Take out the HCF from '+source,...actions.slice(0,5),
+  'Distribute the HCF back in',...actions.slice(5)];
+}
+function phaseOf(question,step){
+ if(!hcfData(question).needed)return step;
+ return step<=1?0:step<=6?step-1:step-2;
+}
 const factorTypes=[['ll','Lin × Lin'],['ql','Lin × Quad'],['qq','Quad × Quad']];
 const factorChoices=[['ll','Lin ×\nLin'],['ql','Lin ×\nQuad'],['qq','Quad ×\nQuad'],['any','Rand']];
 const beyondChoices=[['l3','Linear × Cubic'],['l4','Linear × Quartic'],['l5','Linear × Quintic'],['q3','Quadratic × Cubic'],['q4','Quadratic × Quartic'],['44','Quartic × Quartic']];
@@ -795,12 +759,20 @@ const bankProfiles=[
  {type:'qq',level:3,sign:'mixed',name:'Quad × Quad · double-digit prime challenge'}
 ];
 
-const state={type:'ll',factorRandom:false,coreType:'ll',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:1,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,literacyMode:'mathematical',showInvestigation:false,question:null,bankQuestion:0};
+const state={type:'ll',factorRandom:false,coreType:'ll',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:1,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
 const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t}return a};
 const primitive=a=>a.reduce((g,v)=>gcd(g,v),0)===1;
+function hcfData(question){
+ const ga=Math.max(1,question.a.reduce((g,v)=>gcd(g,v),0));
+ const gb=Math.max(1,question.b.reduce((g,v)=>gcd(g,v),0));
+ const reverse=question.a.length>question.b.length;
+ return {a:question.a.map(v=>v/ga),b:question.b.map(v=>v/gb),
+  displayFirst:reverse?gb:ga,displaySecond:reverse?ga:gb,
+  factor:ga*gb*(question.scalar||1),needed:ga>1||gb>1};
+}
 function poly(a){let result='',degree=a.length-1;
  for(let i=0;i<a.length;i++){const v=a[i],p=degree-i;if(v===0)continue;
   const body=(p&&Math.abs(v)===1?'':Math.abs(v))+pow(p);
@@ -868,7 +840,7 @@ function chosenQuestion(){
  return makeQuestion(rng);
 }
 function selectQuestion(slot){
- state.slot=slot;state.question=chosenQuestion();state.helpStage=-1;state.showInvestigation=false;state.investigationOffset=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
+ state.slot=slot;state.question=chosenQuestion();state.step=0;state.helpStage=-1;state.showInvestigation=false;state.investigationOffset=0;state.partialCount=0;state.partialAll=false;state.groupCount=0;state.groupAll=false;render();
 }
 function freshQuestion(){
  boardState.offset=0;
@@ -1021,8 +993,9 @@ function coefficientInputs(){
    const degree=state.question[key].length-i-1;
    const label=document.createElement('label');label.className='coefficient';
    const control=document.createElement('div');control.className='coefficient-control';
-   if(state.mode==='step'&&state.step===3&&state.partialCount>0&&!state.partialAll){
-    const selected=individualProducts(state.question.a,state.question.b)[state.partialCount-1];
+   if(state.mode==='step'&&phaseOf(state.question,state.step)===3&&state.partialCount>0&&!state.partialAll){
+    const working=hcfData(state.question);
+    const selected=individualProducts(working.a,working.b)[state.partialCount-1];
     if(selected&&((key==='a'&&i===selected.i)||(key==='b'&&i===selected.j)))control.className+=' coefficient-highlight';
    }
    const caption=document.createElement('span');caption.className='coefficient-symbol';caption.innerHTML=degree===0?'#':degree===1?'x':pow(degree);
@@ -1072,8 +1045,10 @@ function row(table,values,kind='',label='',degree=0,showPowers=false,asPolynomia
  table.append(tr);
 }
 function draw(){
- const {a,b}=state.question,final=product(a,b).map(v=>v*(state.question.scalar||1)),n=final.length,degree=n-1;
- const mode=state.mode,step=mode==='worked'?6:mode==='question'?0:state.step;
+ const hcf=hcfData(state.question),{a,b}=hcf;
+ const final=product(a,b),expanded=final.map(v=>v*hcf.factor),n=final.length,degree=n-1;
+ const mode=state.mode,displayStep=state.step;
+ const step=mode==='worked'?6:mode==='question'?0:phaseOf(state.question,displayStep);
  const root=$('canvas');root.replaceChildren();
  $('heading').textContent='';
  $('help').textContent='';
@@ -1083,26 +1058,26 @@ function draw(){
  if(mode==='step'){
   checklist.replaceChildren();
   const caption=document.createElement('div');caption.className='step-checklist-title';caption.textContent='Steps';checklist.append(caption);
-  actions.forEach((mathematicalAction,i)=>{
-   const action=state.literacyMode==='short'?shortEnglishActions[i]:state.literacyMode==='everyday'?everydayActions[i]:mathematicalAction;
+  const currentActions=hcfSteps(hcf);
+  if(state.step>currentActions.length)state.step=currentActions.length;
+  currentActions.forEach((action,i)=>{
    const entry=document.createElement('button');entry.type='button';
-   entry.className='checklist-item '+(i<step?'step-complete':i===step?'step-current':'step-upcoming');
-   entry.setAttribute('aria-current',i===step?'step':'false');
+   entry.className='checklist-item '+(i<displayStep?'step-complete':i===displayStep?'step-current':'step-upcoming');
+   entry.setAttribute('aria-current',i===displayStep?'step':'false');
    entry.setAttribute('aria-label','Go to step '+(i+1)+': '+action);
-   const marker=document.createElement('span');marker.className='checklist-marker';marker.textContent=i<step?'✓':String(i+1);
+   const marker=document.createElement('span');marker.className='checklist-marker';marker.textContent=i<displayStep?'✓':String(i+1);
    const label=document.createElement('span');label.textContent=action;
    entry.append(marker,label);
    entry.onclick=()=>{
     state.step=i+1;state.helpStage=-1;
-    if(i!==6)state.showInvestigation=false;
+    if(i!==currentActions.length-1)state.showInvestigation=false;
     // Every main stage defaults to the complete result; drill-down is optional.
     state.partialCount=individualProducts(a,b).length;state.partialAll=true;
     state.groupCount=n;state.groupAll=true;
     render();
    };
-   // Wording is selected globally above; the steps contain no language controls.
    checklist.append(entry);
-   if(i===2&&step===3){
+   if(i===(hcf.needed?3:2)&&displayStep===i+1){
     const items=individualProducts(a,b);
     const sub=document.createElement('div');sub.className='stage-controls';
     sub.setAttribute('aria-label','Calculate partial products');
@@ -1132,7 +1107,7 @@ function draw(){
     }
     checklist.append(sub);
    }
-   if(i===3&&step===4){
+   if(i===(hcf.needed?4:3)&&displayStep===i+1){
     const sub=document.createElement('div');sub.className='stage-controls';
     sub.setAttribute('aria-label','Combine like terms by column');
     const description=document.createElement('div');description.className='stage-control-title';
@@ -1165,8 +1140,19 @@ function draw(){
   });
  }
  const pad=v=>Array(n-v.length).fill(null).concat(v);
- const visibleFactors=a.length>b.length?[b,a]:[a,b];
- $('factorExpression').innerHTML=((state.question.scalar||1)!==1?'<span class="scalar-prefix">'+minus(state.question.scalar)+'</span>':'')+visibleFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
+ const original=state.question;
+ const originalFactors=original.a.length>original.b.length?[original.b,original.a]:[original.a,original.b];
+ $('factorExpression').innerHTML=((original.scalar||1)!==1?'<span class="scalar-prefix">'+minus(original.scalar)+'</span>':'')+originalFactors.map(f=>'<span class="factor"><span class="bracket">(</span>'+poly(f)+'<span class="bracket">)</span></span>').join(' ');
+ if(hcf.needed&&mode!=='question'&&(mode!=='step'||displayStep>=1)){
+  const first=hcf.displayFirst,second=hcf.displaySecond;
+  const detail=first>1&&second>1?'HCFs: '+first+' and '+second+'; parked factor: '+hcf.factor:
+   'HCF from '+(first>1?'first':'second')+' bracket: '+hcf.factor;
+  const reduced=a.length>b.length?[b,a]:[a,b];
+  const parking=document.createElement('div');parking.className='hcf-park';
+  parking.innerHTML='<div class="hcf-park-label">'+detail+' (outside the table)</div>'+
+   '<div class="hcf-park-equation">= '+minus(hcf.factor)+reduced.map(f=>'('+poly(f)+')').join(' ')+'</div>';
+  root.append(parking);
+ }
  if(mode!=='question'&&(mode!=='step'||step>=1)){
   const table=document.createElement('table');table.className='math-table';
   if(true){
@@ -1248,14 +1234,25 @@ function draw(){
    note.append(location);root.append(note);
   }
   if(mode==='step'&&step===4&&!state.groupAll&&state.groupCount>0){
-   const values=workRows(state.question).map(r=>r[state.groupCount-1]).filter(v=>v!==null);
+   const values=workRows({a,b}).map(r=>r[state.groupCount-1]).filter(v=>v!==null);
    const explain=document.createElement('div');explain.className='group-explanation';
    explain.textContent=values.map(minus).join(' + ').replace(/\+ −/g,'− ')+' = '+minus(final[state.groupCount-1]);
    root.append(explain);
   }
+  if(hcf.needed&&step>=5){
+   const inBrackets=document.createElement('div');inBrackets.className='hcf-restore';
+   inBrackets.innerHTML='<div class="hcf-restore-label">Expansion before restoring the HCF</div>'+
+    '= '+minus(hcf.factor)+'('+poly(final)+')';
+   root.append(inBrackets);
+  }
+  if(hcf.needed&&mode==='step'&&displayStep===7){
+   const restored=document.createElement('div');restored.className='hcf-restore';
+   restored.innerHTML='<div class="hcf-restore-label">Distribute the parked HCF</div>= '+poly(expanded);
+   root.append(restored);
+  }
   if(step>=6){
    const eq=document.createElement('div');eq.className='equation worked-conclusion';
-   eq.innerHTML=poly(final);
+   eq.innerHTML=poly(expanded);
    root.append(eq);
   }
   if(mode==='step'&&step===7){
@@ -2400,7 +2397,7 @@ function connectTableOperands(){
  const host=$('canvas');
  const previous=host.querySelector&&host.querySelector('.table-operand-connector');
  if(previous)previous.remove();
- if(state.mode!=='step'||state.step!==3||!state.partialCount||state.partialAll||
+ if(state.mode!=='step'||phaseOf(state.question,state.step)!==3||!state.partialCount||state.partialAll||
     !host.querySelector||!host.getBoundingClientRect)return;
  const first=host.querySelector('.table-operand-first');
  const second=host.querySelector('.table-operand-second');
@@ -2416,18 +2413,9 @@ function connectTableOperands(){
  host.append(line);
 }
 function render(){
- document.querySelectorAll('#literacyChoice [data-literacy]').forEach(button=>{
-  button.setAttribute('aria-pressed',String(button.dataset.literacy===state.literacyMode));
- });
- renderSelectors();coefficientInputs();draw();connectTableOperands();if(assessment.mode==='board')drawBoard();else if(assessment.mode==='worksheet')wsStatus()
+ renderSelectors();coefficientInputs();draw();connectTableOperands();
+ if(assessment.mode==='board')drawBoard();else if(assessment.mode==='worksheet')wsStatus();
 }
-document.querySelectorAll('#literacyChoice [data-literacy]').forEach(button=>{
- button.addEventListener('click',()=>{
-  if(state.literacyMode===button.dataset.literacy)return;
-  state.literacyMode=button.dataset.literacy;
-  render();
- });
-});
 window.addEventListener('resize',connectTableOperands);
 selectQuestion(0);
 })();</script>
