@@ -324,7 +324,12 @@
   }
 
   function start() {
-    if (window.self !== window.top) return; // Embedded explorer already has its book's navigation.
+    if (window.self !== window.top) return;
+    // Page titles remain consistent even on older generated HTML pages.
+    document.title = document.title.replace(/ \| Maths$/, " | Irish School Maths Apps");
+    const mainBrand = document.querySelector(".topbar .brand img");
+    if (mainBrand) mainBrand.alt = "Irish School Maths Apps";
+ // Embedded explorer already has its book's navigation.
     if (document.documentElement.dataset.mathsNavReady) return;
     document.documentElement.dataset.mathsNavReady = "yes";
     const css = document.createElement("link");
@@ -339,9 +344,9 @@
       const bar = document.createElement("div");
       bar.className = "maths-unified-top";
       const brand = link(L("", "index.html"), "maths-unified-brand");
-      brand.setAttribute("aria-label", "Maths home");
+      brand.setAttribute("aria-label", "Irish School Maths Apps home");
       const logo = document.createElement("img");
-      logo.alt = "Maths four-dot logo";
+      logo.alt = "Irish School Maths Apps four-dot logo";
       logo.src = url("assets/maths-logo.svg");
       brand.append(logo);
       bar.append(brand);
