@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Parts of an Angle v8</title>
+<style>
+:root{
+  --ink:#202936; --blue:#1565c0; --red:#c62828; --green:#2e7d32;
+  --muted:#657084; --border:#aab5c3; --bg:#f3f6fa; --inside:#dcecff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:980px;margin:auto;padding:18px}
+h1{text-align:center;font-size:clamp(2.4rem,7vw,4.5rem);margin:.1em 0 .12em}
+.subhead{text-align:center;font-size:clamp(1.05rem,2.8vw,1.35rem);font-weight:800;color:var(--muted);margin:0 0 14px}
+.toolbar,.namebar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+button{min-height:42px;padding:8px 12px;border:1px solid var(--border);border-radius:9px;background:#fff;font:inherit;font-weight:750;cursor:pointer}
+svg{width:100%;display:block;background:#fff;border:2px solid var(--border);border-radius:12px;touch-action:none;user-select:none}
+.wedge{fill:var(--inside)}
+.ray{stroke:var(--ink);stroke-width:6;stroke-linecap:round}
+.angle-arc{fill:none;stroke:var(--blue);stroke-width:5;stroke-linecap:round}
+.vertex,.arm-point{stroke:#fff;stroke-width:4}
+.vertex{fill:var(--red);cursor:grab}
+.arm-point{fill:var(--green);cursor:grab}
+.label{font-size:28px;font-weight:900;fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:5px}
+.part-label{font-size:26px;font-weight:900;fill:var(--blue);paint-order:stroke;stroke:#fff;stroke-width:5px}
+.clickable-term{cursor:pointer;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.inside-label{font-size:25px;font-weight:900;fill:var(--blue)}
+.build-instruction{font-size:27px;font-weight:900;fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:5px}
+.status{text-align:center;color:var(--green);font-size:clamp(1.35rem,4vw,2.2rem);font-weight:950;margin:14px 0 4px}
+.card{margin-top:14px;background:#fff;border-left:8px solid var(--blue);padding:14px 16px;border-radius:10px}
+.card h2{margin:.05em 0 .35em;font-size:clamp(1.5rem,4vw,2rem)}
+.card p{font-size:1.08rem;line-height:1.45;margin:.45em 0}
+.bigmath{text-align:center;font-size:clamp(2rem,6vw,3.5rem);font-weight:950;margin:.2em 0}
+.note{margin-top:10px;padding:10px 12px;border-radius:9px;background:#eef5ff;font-weight:750}
+.build-panel{margin-top:12px;background:#fff;padding:12px 16px;border-radius:10px;border:2px solid var(--border)}
+.build-step{text-align:center;font-size:1.25rem;font-weight:900;margin:0 0 8px}
+.quiz{margin-top:14px;background:#fff;border:2px solid var(--border);border-radius:10px;padding:14px 16px}
+.q{padding:10px 0;border-top:1px solid #d8dee8}
+.q:first-of-type{border-top:0}
+.answer{margin-top:5px;color:var(--blue);font-weight:800}
+.memory-strip{display:flex;align-items:center;gap:14px;margin:.7rem 0 1rem;font-size:clamp(1.05rem,3vw,1.35rem);font-weight:900;color:var(--blue);text-transform:lowercase}
+.memory-strip::before,.memory-strip::after{content:"";height:1px;background:#c8d4e3;flex:1}
+.memory-strip span{white-space:nowrap}
+.quiz label{display:block;font-weight:800;margin-bottom:7px}.quiz input[type="text"]{width:min(260px,100%);padding:9px 11px;border:1px solid var(--border);border-radius:8px;font:inherit}.quiz .check-btn{margin-left:6px}.choices{display:grid;grid-template-columns:repeat(2,minmax(120px,1fr));gap:8px;margin-top:8px}.choice{width:100%;text-align:left}.feedback{min-height:1.4em;margin-top:8px;font-weight:850}.feedback.correct{color:var(--green)}.feedback.try{color:#9a5b00}
+.hidden{display:none!important}
+dialog{max-width:min(620px,90vw);border:0;border-radius:14px;padding:0;box-shadow:0 18px 55px #0005}
+dialog::backdrop{background:#0008}
+.dialog-body{padding:22px}
+.dialog-body h2{margin:0 0 10px;font-size:2rem}
+.dialog-body p{font-size:1.12rem;line-height:1.5}
+.dialog-actions{text-align:right;margin-top:16px}
+@media(max-width:640px){
+  .part-label{font-size:21px}.label{font-size:23px}.inside-label{font-size:20px}.build-instruction{font-size:22px}
+}
+</style>
+<link rel="stylesheet" href="../shared/site.css">
+</head>
+<body><header class="site-shell"><div class="site-shell-inner"><a class="site-brand" href="../../../index.html"><span class="site-logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Maths Apps</span></a><nav class="site-nav"><a href="../../../index.html">Home</a><a href="../../../geometry/index.html">Geometry</a></nav></div></header>
+<main>
+  <h1>Parts of an Angle</h1>
+  <p class="subhead">Vertex · arms · inside · notation</p>
+
+  <div class="toolbar">
+    <button id="toggleParts">Hide parts</button>
+    <button id="toggleLabels">Show labels</button>
+    <button id="toggleNotation">Show notation</button>
+    <button id="buildBtn">Build your own</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <svg id="board" viewBox="0 0 900 500" aria-label="Interactive parts of an angle">
+    <defs>
+      <marker id="arrow" markerWidth="6" markerHeight="6" refX="5.4" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0.5,0.7 L5.3,3 L0.5,5.3" fill="none" stroke="#202936" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </marker>
+    </defs>
+
+    <path id="wedge" class="wedge"></path>
+    <path id="angleArc" class="angle-arc hidden"></path>
+
+    <line id="ray1" class="ray" marker-end="url(#arrow)"></line>
+    <line id="ray2" class="ray" marker-end="url(#arrow)"></line>
+
+    <circle id="vertexDot" class="vertex" r="15"></circle>
+    <circle id="armPoint1" class="arm-point" r="14"></circle>
+    <circle id="armPoint2" class="arm-point" r="14"></circle>
+
+    <g id="pointLabels" class="hidden">
+      <text id="labA" class="label">A</text>
+      <text id="labB" class="label">B</text>
+      <text id="labC" class="label">C</text>
+    </g>
+
+    <g id="partLabels">
+      <text id="vertexText" class="part-label clickable-term">vertex</text>
+      <text id="arm1Text" class="part-label clickable-term">arm</text>
+      <text id="arm2Text" class="part-label clickable-term">arm</text>
+      <text id="insideText" class="inside-label clickable-term">inside of angle</text>
+    </g>
+
+    <text id="buildInstruction" class="build-instruction hidden" x="450" y="48" text-anchor="middle"></text>
+  </svg>
+
+  <p id="status" class="status">Move the control points.</p>
+
+  <div id="buildPanel" class="build-panel hidden">
+    <p id="buildStep" class="build-step"></p>
+    <div class="namebar">
+      <button id="threeName" class="hidden">Name with three letters</button>
+      <button id="oneName" class="hidden">Name with one letter</button>
+      <button id="exitBuild">Return to explore</button>
+    </div>
+  </div>
+
+  <section id="notationCard" class="card hidden">
+    <h2>Naming an angle</h2>
+    <div id="notationMath" class="bigmath">∠ABC &nbsp; or &nbsp; ∠CBA</div>
+    <p id="middleLetterRule"><strong>The middle letter is the vertex.</strong></p>
+    <p id="oneLetterExplanation"></p>
+    <p class="note">Unless otherwise specified, you may take it that any angle we talk about is an <strong>ordinary angle</strong>.</p>
+  </section>
+
+  <section class="card">
+    <h2>What to notice</h2>
+    <div class="memory-strip" aria-label="Key words"><span>vertex · arms · inside</span></div>
+    <p><strong>Every angle has:</strong></p>
+    <p id="noticeVertex"></p>
+    <p id="noticeArms"></p>
+    <p>3. an <strong>inside</strong> — a part of the plane that we can shade.</p>
+  </section>
+
+  <section class="quiz" aria-labelledby="quickCheckTitle">
+    <h2 id="quickCheckTitle">Quick check</h2>
+    <div class="q">
+      <label for="armAnswer">What three-letter word do we use for each ray of the angle?</label>
+      <input id="armAnswer" type="text" maxlength="12" autocomplete="off" spellcheck="false" aria-describedby="armFeedback">
+      <button id="checkArm" class="check-btn">Check</button>
+      <div id="armFeedback" class="feedback" aria-live="polite"></div>
+    </div>
+    <div class="q">
+      <strong>What do we call the common endpoint of the two arms?</strong>
+      <div class="choices" id="vertexChoices">
+        <button class="choice" data-answer="vertex">Vertex</button>
+        <button class="choice" data-answer="vexter">Vexter</button>
+        <button class="choice" data-answer="ravtex">Ravtex</button>
+        <button class="choice" data-answer="tervix">Tervix</button>
+      </div>
+      <div id="vertexFeedback" class="feedback" aria-live="polite"></div>
+    </div>
+  </section>
+</main>
+
+<dialog id="armDialog">
+  <div class="dialog-body">
+    <h2>Arm of an angle</h2>
+    <p><strong>Definition 1</strong> gives the ray language: a point divides a line into two pieces, called rays.</p>
+    <p id="armRayExample"></p>
+    <p>For an angle, these two rays are called the <strong>arms</strong> of the angle.</p>
+    <div class="dialog-actions"><button id="closeArmDialog">Close</button></div>
+  </div>
+</dialog>
+
+<dialog id="vertexDialog">
+  <div class="dialog-body">
+    <h2>Vertex</h2>
+    <p>Every angle has <strong>one vertex</strong>.</p>
+    <p id="vertexExample"></p>
+    <div class="dialog-actions"><button id="closeVertexDialog">Close</button></div>
+  </div>
+</dialog>
+
+<dialog id="insideDialog">
+  <div class="dialog-body">
+    <h2>Inside of an angle</h2>
+    <p>Every angle has an <strong>inside</strong>.</p>
+    <p>The inside is a <strong>part of the plane</strong>. In this diagram, we show it by shading.</p>
+    <div class="dialog-actions"><button id="closeInsideDialog">Close</button></div>
+  </div>
+</dialog>
+
+<script>
+const W=900,H=500,pad=30;
+const board=document.getElementById('board');
+const wedge=document.getElementById('wedge');
+const angleArc=document.getElementById('angleArc');
+const ray1=document.getElementById('ray1'),ray2=document.getElementById('ray2');
+const vertexDot=document.getElementById('vertexDot');
+const armPoint1=document.getElementById('armPoint1'),armPoint2=document.getElementById('armPoint2');
+const pointLabels=document.getElementById('pointLabels'),partLabels=document.getElementById('partLabels');
+const labA=document.getElementById('labA'),labB=document.getElementById('labB'),labC=document.getElementById('labC');
+const vertexText=document.getElementById('vertexText'),arm1Text=document.getElementById('arm1Text'),arm2Text=document.getElementById('arm2Text'),insideText=document.getElementById('insideText');
+const buildInstruction=document.getElementById('buildInstruction');
+const status=document.getElementById('status');
+const buildPanel=document.getElementById('buildPanel'),buildStep=document.getElementById('buildStep');
+const notationCard=document.getElementById('notationCard'),notationMath=document.getElementById('notationMath');
+const threeName=document.getElementById('threeName'),oneName=document.getElementById('oneName');
+const armDialog=document.getElementById('armDialog');
+const vertexDialog=document.getElementById('vertexDialog');
+const insideDialog=document.getElementById('insideDialog');
+const middleLetterRule=document.getElementById('middleLetterRule'),oneLetterExplanation=document.getElementById('oneLetterExplanation');
+const noticeVertex=document.getElementById('noticeVertex'),noticeArms=document.getElementById('noticeArms');
+const armRayExample=document.getElementById('armRayExample'),vertexExample=document.getElementById('vertexExample');
+const armAnswer=document.getElementById('armAnswer'),armFeedback=document.getElementById('armFeedback'),vertexFeedback=document.getElementById('vertexFeedback');
+const LETTER_POOL=['A','B','C','D','E','F','G','H'];
+let names={A:'A',B:'B',C:'C'};
+
+const defaults={B:{x:430,y:285},A:{x:725,y:330},C:{x:670,y:105}};
+let pts=copy(defaults);
+let chosenInside='minor';
+let mode='explore';
+let buildStage=0;
+let active=null;
+let dragStart=null;
+
+function copy(x){return JSON.parse(JSON.stringify(x))}
+function pickNames(){
+  const pool=[...LETTER_POOL];
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+  names={A:pool[0],B:pool[1],C:pool[2]};
+  refreshLanguage();
+}
+function threeLetterNames(){return [`∠${names.A}${names.B}${names.C}`,`∠${names.C}${names.B}${names.A}`]}
+function refreshLanguage(){
+  labA.textContent=names.A; labB.textContent=names.B; labC.textContent=names.C;
+  const [n1,n2]=threeLetterNames();
+  notationMath.innerHTML=`${n1} &nbsp; or &nbsp; ${n2}`;
+  middleLetterRule.innerHTML=`<strong>The middle letter is the vertex.</strong> Here, ${names.B} is the vertex.`;
+  oneLetterExplanation.innerHTML=`In a simple case where there is only one angle at ${names.B}, it may also be named <strong>∠${names.B}</strong>.`;
+  noticeVertex.innerHTML=`1. one <strong>vertex</strong>, the point <strong>${names.B}</strong>;`;
+  noticeArms.innerHTML=`2. two rays, <strong>[${names.B}${names.A}</strong> and <strong>[${names.B}${names.C}</strong>, called the <strong>arms</strong> of the angle;`;
+  armRayExample.innerHTML=`The ray that starts at ${names.B} and passes through ${names.A} is written <strong>[${names.B}${names.A}</strong>; similarly, <strong>[${names.B}${names.C}</strong> starts at ${names.B} and passes through ${names.C}.`;
+  vertexExample.innerHTML=`In this diagram, <strong>${names.B}</strong> is the vertex.`;
+}
+function clearAssessment(){armAnswer.value='';armFeedback.textContent='';armFeedback.className='feedback';vertexFeedback.textContent='';vertexFeedback.className='feedback'}
+function clamp(p){return{x:Math.max(pad,Math.min(W-pad,p.x)),y:Math.max(pad,Math.min(H-pad,p.y))}}
+function pointer(evt){
+  const r=board.getBoundingClientRect();
+  return clamp({x:(evt.clientX-r.left)*W/r.width,y:(evt.clientY-r.top)*H/r.height});
+}
+function have(k){return pts[k] && Number.isFinite(pts[k].x) && Number.isFinite(pts[k].y)}
+function angleOf(p){
+  let a=Math.atan2(pts.B.y-p.y,p.x-pts.B.x)*180/Math.PI;
+  if(a<0)a+=360;
+  return a;
+}
+function directed(a,b){return (b-a+360)%360}
+function pointAt(deg,r){
+  const a=deg*Math.PI/180;
+  return{x:pts.B.x+r*Math.cos(a),y:pts.B.y-r*Math.sin(a)}
+}
+function rayEnd(p){
+  const dx=p.x-pts.B.x,dy=p.y-pts.B.y,h=[],e=1e-9;
+  if(Math.abs(dx)>e) for(const x of [0,W]){
+    const t=(x-pts.B.x)/dx;
+    if(t>0){const y=pts.B.y+t*dy;if(y>=0&&y<=H)h.push({x,y,t})}
+  }
+  if(Math.abs(dy)>e) for(const y of [0,H]){
+    const t=(y-pts.B.y)/dy;
+    if(t>0){const x=pts.B.x+t*dx;if(x>=0&&x<=W)h.push({x,y,t})}
+  }
+  h.sort((u,v)=>u.t-v.t);
+  return h[0]||p;
+}
+function wedgePath(){
+  const a1=angleOf(pts.A),a2=angleOf(pts.C);
+  let sweep=directed(a1,a2),start=a1;
+  if(chosenInside==='major'){sweep=360-sweep;start=a2}
+  const R=1800,steps=Math.max(18,Math.ceil(sweep/6)),arr=[pts.B];
+  for(let i=0;i<=steps;i++)arr.push(pointAt(start+sweep*i/steps,R));
+  return "M "+arr.map(p=>`${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" L ")+" Z";
+}
+function arcPath(radius,startDeg,sweepDeg){
+  const p1=pointAt(startDeg,radius),p2=pointAt(startDeg+sweepDeg,radius);
+  const large=sweepDeg>180?1:0;
+  return `M ${p1.x} ${p1.y} A ${radius} ${radius} 0 ${large} 0 ${p2.x} ${p2.y}`;
+}
+function mid(a,b,t){return{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t}}
+
+function hideGeometry(){
+  wedge.setAttribute('d','');
+  angleArc.classList.add('hidden');
+  for(const line of [ray1,ray2]){
+    line.setAttribute('x1',-30);line.setAttribute('y1',-30);
+    line.setAttribute('x2',-30);line.setAttribute('y2',-30);
+  }
+  for(const dot of [vertexDot,armPoint1,armPoint2]){
+    dot.setAttribute('cx',-30);dot.setAttribute('cy',-30);
+  }
+}
+function render(){
+  const b=have('B'),a=have('A'),c=have('C');
+
+  vertexDot.setAttribute('cx',b?pts.B.x:-30);
+  vertexDot.setAttribute('cy',b?pts.B.y:-30);
+
+  if(b&&a){
+    const e=rayEnd(pts.A);
+    ray1.setAttribute('x1',pts.B.x);ray1.setAttribute('y1',pts.B.y);
+    ray1.setAttribute('x2',e.x);ray1.setAttribute('y2',e.y);
+    armPoint1.setAttribute('cx',pts.A.x);armPoint1.setAttribute('cy',pts.A.y);
+  }else{
+    ray1.setAttribute('x1',-30);ray1.setAttribute('y1',-30);ray1.setAttribute('x2',-30);ray1.setAttribute('y2',-30);
+    armPoint1.setAttribute('cx',-30);armPoint1.setAttribute('cy',-30);
+  }
+
+  if(b&&c){
+    const e=rayEnd(pts.C);
+    ray2.setAttribute('x1',pts.B.x);ray2.setAttribute('y1',pts.B.y);
+    ray2.setAttribute('x2',e.x);ray2.setAttribute('y2',e.y);
+    armPoint2.setAttribute('cx',pts.C.x);armPoint2.setAttribute('cy',pts.C.y);
+  }else{
+    ray2.setAttribute('x1',-30);ray2.setAttribute('y1',-30);ray2.setAttribute('x2',-30);ray2.setAttribute('y2',-30);
+    armPoint2.setAttribute('cx',-30);armPoint2.setAttribute('cy',-30);
+  }
+
+  if(b&&a&&c&&chosenInside){
+    wedge.setAttribute('d',wedgePath());
+    const a1=angleOf(pts.A),a2=angleOf(pts.C);
+    let sweep=directed(a1,a2),start=a1;
+    if(chosenInside==='major'){sweep=360-sweep;start=a2}
+    angleArc.setAttribute('d',arcPath(72,start,sweep));
+    angleArc.classList.remove('hidden');
+  }else{
+    wedge.setAttribute('d','');
+    angleArc.classList.add('hidden');
+  }
+
+  if(b&&a&&c){
+    labB.setAttribute('x',pts.B.x-34);labB.setAttribute('y',pts.B.y+38);
+    labA.setAttribute('x',pts.A.x+16);labA.setAttribute('y',pts.A.y+10);
+    labC.setAttribute('x',pts.C.x+16);labC.setAttribute('y',pts.C.y-8);
+
+    vertexText.setAttribute('x',pts.B.x-92);vertexText.setAttribute('y',pts.B.y-22);
+    const m1=mid(pts.B,pts.A,.58),m2=mid(pts.B,pts.C,.58);
+    arm1Text.setAttribute('x',m1.x+10);arm1Text.setAttribute('y',m1.y+34);
+    arm2Text.setAttribute('x',m2.x+10);arm2Text.setAttribute('y',m2.y-18);
+
+    if(chosenInside){
+      const a1=angleOf(pts.A),a2=angleOf(pts.C);
+      let sweep=directed(a1,a2),start=a1;
+      if(chosenInside==='major'){sweep=360-sweep;start=a2}
+      const q=pointAt(start+sweep/2,125);
+      insideText.setAttribute('x',q.x);insideText.setAttribute('y',q.y);
+      insideText.setAttribute('text-anchor','middle');
+    }
+  }
+}
+
+function startDrag(name,evt){
+  if(mode!=='explore')return;
+  active=name;
+  dragStart={pointer:pointer(evt),A:copy(pts.A),B:copy(pts.B),C:copy(pts.C)};
+  board.setPointerCapture?.(evt.pointerId);
+}
+function drag(evt){
+  if(!active||mode!=='explore')return;
+  const p=pointer(evt);
+  if(active==='B'){
+    let dx=p.x-dragStart.pointer.x,dy=p.y-dragStart.pointer.y;
+    const originals=[dragStart.A,dragStart.B,dragStart.C];
+    const minDx=Math.max(...originals.map(q=>pad-q.x));
+    const maxDx=Math.min(...originals.map(q=>W-pad-q.x));
+    const minDy=Math.max(...originals.map(q=>pad-q.y));
+    const maxDy=Math.min(...originals.map(q=>H-pad-q.y));
+    dx=Math.max(minDx,Math.min(maxDx,dx));dy=Math.max(minDy,Math.min(maxDy,dy));
+    for(const k of ['A','B','C'])pts[k]={x:dragStart[k].x+dx,y:dragStart[k].y+dy};
+  }else{
+    pts[active]=p;
+  }
+  render();
+}
+function stopDrag(){active=null;dragStart=null}
+
+vertexDot.addEventListener('pointerdown',e=>startDrag('B',e));
+armPoint1.addEventListener('pointerdown',e=>startDrag('A',e));
+armPoint2.addEventListener('pointerdown',e=>startDrag('C',e));
+board.addEventListener('pointermove',drag);
+board.addEventListener('pointerup',stopDrag);
+board.addEventListener('pointercancel',stopDrag);
+
+function beginBuild(){
+  mode='build';
+  buildStage=0;
+  pts={B:null,A:null,C:null};
+  chosenInside=null;
+  hideGeometry();
+  pointLabels.classList.add('hidden');
+  partLabels.classList.add('hidden');
+  notationCard.classList.add('hidden');
+  buildPanel.classList.remove('hidden');
+  threeName.classList.add('hidden');
+  oneName.classList.add('hidden');
+  buildStep.textContent='';
+  buildInstruction.textContent='Click anywhere for the vertex.';
+  buildInstruction.classList.remove('hidden');
+  status.textContent='Build your own angle.';
+}
+function finishBuild(){
+  buildInstruction.classList.add('hidden');
+  pointLabels.classList.remove('hidden');
+  buildStep.textContent='Now name the angle.';
+  threeName.classList.remove('hidden');
+  oneName.classList.remove('hidden');
+  status.textContent='You built an angle.';
+}
+board.addEventListener('click',evt=>{
+  if(mode!=='build')return;
+  const p=pointer(evt);
+
+  if(buildStage===0){
+    pts.B=p;
+    buildStage=1;
+    render();
+    buildInstruction.textContent='Click a point on the first arm.';
+    return;
+  }
+  if(buildStage===1){
+    if(Math.hypot(p.x-pts.B.x,p.y-pts.B.y)<70)return;
+    pts.A=p;
+    buildStage=2;
+    render();
+    buildInstruction.textContent='Click a point on the second arm.';
+    return;
+  }
+  if(buildStage===2){
+    if(Math.hypot(p.x-pts.B.x,p.y-pts.B.y)<70)return;
+    pts.C=p;
+    buildStage=3;
+    render();
+    buildInstruction.textContent='Click the inside of the angle.';
+    return;
+  }
+  if(buildStage===3){
+    const a1=angleOf(pts.A),ap=angleOf(p),a2=angleOf(pts.C);
+    const minor=directed(a1,a2);
+    const rel=directed(a1,ap);
+    chosenInside=(rel<=minor)?'minor':'major';
+    buildStage=4;
+    render();
+    finishBuild();
+  }
+});
+
+document.getElementById('toggleParts').addEventListener('click',e=>{
+  const hide=!partLabels.classList.contains('hidden');
+  partLabels.classList.toggle('hidden',hide);
+  e.target.textContent=hide?'Show parts':'Hide parts';
+});
+document.getElementById('toggleLabels').addEventListener('click',e=>{
+  const show=pointLabels.classList.contains('hidden');
+  pointLabels.classList.toggle('hidden',!show);
+  e.target.textContent=show?'Hide labels':'Show labels';
+});
+document.getElementById('toggleNotation').addEventListener('click',e=>{
+  const show=notationCard.classList.contains('hidden');
+  notationCard.classList.toggle('hidden',!show);
+  e.target.textContent=show?'Hide notation':'Show notation';
+});
+document.getElementById('buildBtn').addEventListener('click',beginBuild);
+document.getElementById('exitBuild').addEventListener('click',reset);
+document.getElementById('resetBtn').addEventListener('click',reset);
+
+threeName.addEventListener('click',()=>{
+  notationCard.classList.remove('hidden');
+  const [n1,n2]=threeLetterNames(); notationMath.innerHTML=`${n1} &nbsp; or &nbsp; ${n2}`;
+});
+oneName.addEventListener('click',()=>{
+  notationCard.classList.remove('hidden');
+  notationMath.textContent=`∠${names.B}`;
+});
+
+function openDialog(dialog,evt){
+  evt.stopPropagation();
+  if(typeof dialog.showModal==='function') dialog.showModal();
+  else dialog.setAttribute('open','');
+}
+function closeOnBackdrop(dialog,evt){
+  const r=dialog.getBoundingClientRect();
+  if(evt.clientX<r.left||evt.clientX>r.right||evt.clientY<r.top||evt.clientY>r.bottom) dialog.close();
+}
+
+arm1Text.addEventListener('click',evt=>openDialog(armDialog,evt));
+arm2Text.addEventListener('click',evt=>openDialog(armDialog,evt));
+vertexText.addEventListener('click',evt=>openDialog(vertexDialog,evt));
+insideText.addEventListener('click',evt=>openDialog(insideDialog,evt));
+
+document.getElementById('closeArmDialog').addEventListener('click',()=>armDialog.close());
+document.getElementById('closeVertexDialog').addEventListener('click',()=>vertexDialog.close());
+document.getElementById('closeInsideDialog').addEventListener('click',()=>insideDialog.close());
+
+armDialog.addEventListener('click',evt=>closeOnBackdrop(armDialog,evt));
+vertexDialog.addEventListener('click',evt=>closeOnBackdrop(vertexDialog,evt));
+insideDialog.addEventListener('click',evt=>closeOnBackdrop(insideDialog,evt));
+
+document.getElementById('checkArm').addEventListener('click',()=>{
+  const ok=armAnswer.value.trim().toLowerCase()==='arm';
+  armFeedback.textContent=ok?'Correct.':'Try again.';
+  armFeedback.className='feedback '+(ok?'correct':'try');
+});
+armAnswer.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('checkArm').click()}});
+document.getElementById('vertexChoices').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-answer]'); if(!b)return;
+  const ok=b.dataset.answer==='vertex';
+  vertexFeedback.textContent=ok?'Correct.':'Try again.';
+  vertexFeedback.className='feedback '+(ok?'correct':'try');
+});
+
+function reset(){
+  mode='explore';
+  buildStage=0;
+  pts=copy(defaults);
+  chosenInside='minor';
+  buildPanel.classList.add('hidden');
+  buildInstruction.classList.add('hidden');
+  notationCard.classList.add('hidden');
+  partLabels.classList.remove('hidden');
+  pointLabels.classList.add('hidden');
+  document.getElementById('toggleParts').textContent='Hide parts';
+  document.getElementById('toggleLabels').textContent='Show labels';
+  document.getElementById('toggleNotation').textContent='Show notation';
+  status.textContent='Move the control points.';
+  pickNames();
+  clearAssessment();
+  render();
+}
+
+pickNames();
+render();
+</script>
+</body>
+</html>
