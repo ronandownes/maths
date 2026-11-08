@@ -68,7 +68,7 @@
     { label: "Algebra", home: "algebra/index.html", topics: [
       T("Expanding brackets", "algebra/expansions/index.html", [
         L("Split the brackets", "apps/split-brackets/index.html"),
-        L("Split the brackets · polynomial products", "apps/split-brackets/polynomials.html"),
+        L("Split the brackets · binomial practice", "apps/split-brackets/polynomials.html"),
         L("Place-value multiplication", "apps/polynomial-place-value/index.html"),
         L("Vertical FOIL", "apps/vertical-foil/index.html"),
         L("Inline rainbow", "apps/inline-rainbow/index.html"),
