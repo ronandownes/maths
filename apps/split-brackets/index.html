@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff">
-<title>Split the Brackets · Expansion and Grouping | Maths Apps</title>
+<title>Brackets · Expansion and Factorisation | Maths Apps</title>
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <link rel="stylesheet" href="../shared/classroom-fullscreen.css">
 <style>
@@ -252,21 +252,42 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 }
 @media print{.step-sidebar{display:none!important}.practice-layout{display:block}}
 
+
+/* Compact controls with labels above; stable two-column classroom working. */
+.settings{display:flex;align-items:stretch;gap:7px;flex-wrap:wrap}
+.settings .setting{display:flex;align-content:flex-start;align-items:flex-start;justify-content:flex-start;gap:5px 6px;padding:7px 9px;background:#f9fbff}
+.settings .setting>strong{flex:0 0 100%;display:block;font-size:.79rem;margin:0 0 2px;color:#4c647e}
+.factor-choice{display:flex;gap:5px;flex-wrap:wrap}
+.settings .setting button{font-size:.78rem;min-height:35px;padding:6px 8px}
+.activity-switch .cluster.activities,.activity-switch .cluster.classwork{justify-self:start;align-items:flex-start}
+#bankPosition{font-size:.83rem;color:#536a83;min-width:52px;text-align:center}
+#coefficientEditors{gap:8px 10px;margin:7px auto 12px}
+#coefficientEditors label{font-size:.77rem;white-space:nowrap}
+#coefficientEditors input{width:58px}
+.procedure-modes{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0 4px}
+.procedure-modes button{flex:1 1 auto;padding:7px 6px;min-height:38px;font-size:.82rem}
+#practicePanel .practice-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,25%);gap:12px;align-items:start}
+#practicePanel .practice-maths{min-width:0}
+#practicePanel #diagram{width:100%;max-width:100%;margin:7px auto;padding:9px 3px 12px}
+#practicePanel .math-row{font-size:clamp(1.85rem,3vw,3.25rem)}
+#practicePanel .tex-solution{font-size:clamp(1.85rem,3vw,3.25rem)}
+@media(max-width:699px){#practicePanel .practice-layout{grid-template-columns:minmax(0,1fr)}}
+
 </style>
 </head>
 <body>
 <header class="topbar">
 <a class="brand" href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"><span>Apps</span></a>
-<div><a class="crumb" href="../../algebra/index.html">Algebra</a> · <a class="crumb" href="../../algebra/expansions/index.html">Expansions</a> <h1>Split the Brackets</h1><p class="tagline">Two distributive groups · four products · reverse by grouping</p></div>
+<div><a class="crumb" href="../../algebra/index.html">Algebra</a> · <a class="crumb" href="../../algebra/expansions/index.html">Expansions</a> <h1>Brackets</h1><p class="tagline">Distributive property · expand and factorise</p></div>
 </header>
 <main id="splitMain">
 <div class="settings-intro"><span>Algebra › Expansions › Split the Brackets</span><button id="classroomFullscreenBtn" type="button" class="maths-classroom-toggle">Full screen</button></div>
 <div class="settings" aria-label="Question settings">
 <div class="setting"><strong>Factor pattern</strong><div class="factor-choice" role="group" aria-label="Factor patterns">
-<button data-pattern="ll" aria-pressed="true">Lin × Lin</button><button data-pattern="lq">Lin × Quad</button><button data-pattern="qq">Quad × Quad</button><button data-pattern="lc">Lin × Cubic</button></div></div>
-<div class="setting"><strong>Variables</strong><button id="sameVarBtn">Same variable</button><button id="differentVarBtn" aria-pressed="true">Different variables</button></div>
+<button data-pattern="mb">Mono × Bin</button><button data-pattern="mt">Mono × Tri</button><button data-pattern="ll" aria-pressed="true">Lin × Lin</button><button data-pattern="lq">Lin × Quad</button><button data-pattern="qq">Quad × Quad</button><button data-pattern="lc">Lin × Cubic</button></div></div>
+<div class="setting"><strong>Variables</strong><button id="sameVarBtn">1 var</button><button id="differentVarBtn" aria-pressed="true">2 vars</button></div>
 <div class="setting"><strong>Method</strong><button id="expandBtn" aria-pressed="true">Expand</button><button id="factorBtn" aria-pressed="false">Factorise</button></div>
-<div class="setting"><strong>HCF</strong><button id="hcfBtn" type="button" aria-pressed="false" title="Generate HCF examples and take out any HCF before distribution">Off</button></div>
+<div class="setting"><strong>Options</strong><button id="hcfBtn" type="button" aria-pressed="false">HCF Off</button><button id="monicBtn" type="button" aria-pressed="false">Monic Off</button></div>
 <div class="setting"><strong>Level</strong><button data-level="1">1</button><button data-level="2">2</button><button data-level="3">3</button></div>
 <div class="setting"><strong>Signs</strong><button data-sign="positive">++</button><button data-sign="negative">−−</button><button data-sign="mixed">Mixed</button><button data-sign="random">Random</button></div>
 </div>
@@ -279,7 +300,7 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 <button id="bankNext" type="button" aria-label="Next question">›</button>
 <button data-slot="random" type="button">Random</button></div></div>
 <div class="cluster activities"><h2>Activities</h2><div class="buttons"><button id="instructionBtn">Instruction</button><button id="practiceBtn">Practice</button><button id="displayBtn">Display</button><button id="gameBtn">Game</button><button id="quizBtn">Quiz</button><button id="testBtn">Test</button><button id="worksheetsBtn">Sheets</button></div></div>
-<div class="cluster procedure"><h2>Procedural fluency</h2><div class="buttons"><button id="stepsBtn">Step by step</button><button id="workedBtn">Worked</button><button id="resetBtn">Restart steps</button></div></div>
+
 </div>
 <section id="practicePanel" aria-label="Split the Brackets practice">
 <div class="practice-layout">
@@ -287,7 +308,6 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 <div class="example-title" id="questionNumber"></div>
 <div class="expression" id="prompt"></div>
 <div class="editors" id="coefficientEditors" aria-label="Editable factor coefficients"></div>
-</div>
 <div class="diagram" id="diagram" aria-label="Two distributive groups and four products"></div>
 <div id="partials" class="partials" aria-label="Four separate products"></div>
 
@@ -296,7 +316,7 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 <p class="pedagogy" id="pedagogy">The distributive property gives the same product whether we expand directly or split into groups.</p>
 </div>
 <aside class="step-sidebar" id="stepSidebar" aria-label="Step-by-step navigation">
-<div class="steps-heading">Steps</div>
+<div class="steps-heading">Procedure</div><div class="procedure-modes"><button id="stepsBtn">Steps</button><button id="workedBtn">Worked</button><button id="resetBtn">Restart</button></div>
 <div id="stepItems" class="step-items" aria-label="Select a step"></div><p class="status" id="status" aria-live="polite"></p>
 <nav class="transport" aria-label="Move through the working">
 <button id="backStep" type="button">← Previous</button>
@@ -328,12 +348,12 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 'use strict';
 const $=id=>document.getElementById(id);
  const classroom=MathsClassroomFullscreen.attach({target:'#splitMain',button:'#classroomFullscreenBtn'});
-const state={level:1,sign:'positive',pattern:'ll',variableMode:'different',hcfEnabled:false,slot:0,questionIndex:0,seq:0,direction:'expand',mode:'practice',view:'step',step:0,group:'intact',q:null};
+const state={level:1,sign:'positive',pattern:'ll',variableMode:'different',hcfEnabled:false,monicEnabled:false,slot:0,questionIndex:0,seq:0,direction:'expand',mode:'practice',view:'step',step:0,group:'intact',q:null};
 const board={cols:1,rows:1,offset:0,answers:false,cache:[]};
 const assessment={mode:null,questions:[],selected:[],completed:false,quizIndex:0};
 const positions=[['First group, first product','ax × cy'],['First group, second product','ax × d'],['Second group, first product','b × cy'],['Second group, second product','b × d']];
 function rand(seed){let x=(seed>>>0)||1234567;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))};}
-const PATTERNS={ll:[1,1],lq:[1,2],qq:[2,2],lc:[1,3]};
+const PATTERNS={mb:[0,1],mt:[0,2],ll:[1,1],lq:[1,2],qq:[2,2],lc:[1,3]};
 const BANKS=[
  {pattern:'ll',level:1,sign:'positive'},
  {pattern:'ll',level:1,sign:'negative'},
@@ -355,7 +375,8 @@ function hcfAnalysis(q){
    reduced:{...q,polyA:A.map(v=>v/first),polyB:B.map(v=>v/second)}};
 }
 function primitiveCoefficients(degree,range,next){
- const a=Array.from({length:degree+1},()=>next(1,range));
+ const pool=range<=5?[2,3,4,5]:range<=15?Array.from({length:14},(_,i)=>i+2):[2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,19,23,29,31,37,41];
+ const a=Array.from({length:degree+1},()=>pool[next(0,pool.length-1)]);
  if(a.every(x=>x%2===0))a[a.length-1]=1;
  let g=gcdArray(a);
  if(g>1)a[a.length-1]=a[a.length-1]+1;
@@ -365,15 +386,16 @@ function primitiveCoefficients(degree,range,next){
 function randomSign(next){return ['positive','negative','mixed'][next(0,2)]}
 function generator(index=0,offset=0){
  const slot=typeof state.slot==='number'?state.slot:17;
- const seed=(91931+state.level*7717+slot*6217+state.seq*10333+
+ const seed=(91931+state.level*7717+slot*6217+(typeof state.slot==='number'?0:state.seq)*10333+
   offset*50077+index*8819)>>>0,next=rand(seed);
  const pattern=state.pattern==='any'?['ll','lq','qq','lc'][index%4]:state.pattern;
  const [degreeA,degreeB]=PATTERNS[pattern];
- const range=state.level===1?3:state.level===2?6:10;
+ const range=state.level===1?5:state.level===2?15:41;
  let A=primitiveCoefficients(degreeA,range,next),B=primitiveCoefficients(degreeB,range,next);
  const sign=state.sign==='random'?randomSign(next):state.sign;
  if(sign==='negative'){A[A.length-1]*=-1;B[B.length-1]*=-1}
  else if(sign==='mixed'){if(next(0,1))A[A.length-1]*=-1;else B[B.length-1]*=-1}
+ if(state.monicEnabled&&!state.hcfEnabled){if(degreeA>0)A[0]=1;if(degreeB>0)B[0]=1;}
  if(state.hcfEnabled){
   const style=(index+slot+state.seq)%3;const kA=style===1?1:2+next(0,1);
   const kB=style===0?1:2+next(0,1);
@@ -451,8 +473,8 @@ function divisionHint(q,swap){
 }
 function safeText(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function resetBoard(){board.offset=0;board.cache=[]}
-function refreshQuestion(){state.q=generator(0);state.step=0;state.view='step';resetBoard();render()}
-function newQuestion(){state.seq++;state.slot='random';refreshQuestion()}
+function refreshQuestion(){state.q=generator(state.questionIndex);state.step=0;state.view='step';resetBoard();render()}
+function newQuestion(){state.seq++;state.slot='random';state.questionIndex=0;refreshQuestion()}
 function setMode(mode){
  if(document.fullscreenElement===$('boardPanel'))document.exitFullscreen().catch(()=>{});
   if(classroom.isActive()&&mode==='display')classroom.close().catch(()=>{});
@@ -468,11 +490,23 @@ function setMode(mode){
 }
 function renderToolbar(){
  for(const button of document.querySelectorAll('[data-slot]'))button.setAttribute('aria-pressed',String(String(state.slot)===button.dataset.slot));
+ for(const button of document.querySelectorAll('[data-pattern]'))button.setAttribute('aria-pressed',String(state.pattern===button.dataset.pattern));
+ $('sameVarBtn').setAttribute('aria-pressed',String(state.variableMode==='same'));
+ $('differentVarBtn').setAttribute('aria-pressed',String(state.variableMode==='different'));
+ $('hcfBtn').setAttribute('aria-pressed',String(state.hcfEnabled));
+ $('hcfBtn').textContent=state.hcfEnabled?'HCF On':'HCF Off';
+ $('monicBtn').setAttribute('aria-pressed',String(state.monicEnabled));
+ $('monicBtn').textContent=state.monicEnabled?'Monic On':'Monic Off';
+ $('bankPosition').textContent=typeof state.slot==='number'?'Q '+(state.questionIndex+1)+' / 6':'Random';
+ $('bankPrevious').disabled=typeof state.slot!=='number'||state.questionIndex===0;
+ $('bankNext').disabled=typeof state.slot!=='number'||state.questionIndex===5;
  for(const button of document.querySelectorAll('[data-level]'))button.setAttribute('aria-pressed',String(state.level===Number(button.dataset.level)));
- for(const button of document.querySelectorAll('[data-sign]'))button.setAttribute('aria-pressed',String(getSign()===button.dataset.sign));
+ for(const button of document.querySelectorAll('[data-sign]'))button.setAttribute('aria-pressed',String(state.sign===button.dataset.sign));
  $('expandBtn').setAttribute('aria-pressed',String(state.direction==='expand'));
  $('factorBtn').setAttribute('aria-pressed',String(state.direction==='factor'));
  for(const [id,mode] of [['practiceBtn','practice'],['displayBtn','display'],['quizBtn','quiz'],['testBtn','test'],['worksheetsBtn','worksheets']])$(id).setAttribute('aria-pressed',String(state.mode===mode));
+ $('instructionBtn').setAttribute('aria-pressed',String(state.mode==='practice'&&state.view==='step'));
+ $('gameBtn').setAttribute('aria-pressed',String(state.mode==='quiz'));
  $('stepsBtn').setAttribute('aria-pressed',String(state.view==='step'));
  $('workedBtn').setAttribute('aria-pressed',String(state.view==='worked'));
  for(const button of document.querySelectorAll('[data-group]'))button.setAttribute('aria-pressed',String(state.group===button.dataset.group));
@@ -586,8 +620,31 @@ function renderPractice(){
  $('questionNumber').textContent=typeof state.slot==='number'?'Classwork '+(state.slot+1):'New question';
 
  $('prompt').hidden=true;
- for(const [id,value] of [['coefA',q.a],['coefB',q.b],['coefC',q.c],['coefD',q.d]]){
-  if(document.activeElement!==$(id))$(id).value=value;
+ const editors=$('coefficientEditors'),A=q.polyA,B=q.polyB;
+ if(editors.dataset.pattern!==q.pattern||editors.dataset.variableMode!==q.variableMode){
+  editors.replaceChildren();
+  editors.dataset.pattern=q.pattern;editors.dataset.variableMode=q.variableMode;
+  for(const [name,coeffs] of [['A',A],['B',B]]){
+   coeffs.forEach((value,i)=>{
+    const label=document.createElement('label'),input=document.createElement('input');
+    label.textContent=name+' '+(coeffs.length-1-i===0?'constant':'degree '+(coeffs.length-1-i))+' ';
+    input.type='number';input.min='-99';input.max='99';input.step='1';
+    input.dataset.factor=name;input.dataset.index=String(i);input.value=String(value);
+    input.addEventListener('change',()=>{
+     const n=Number(input.value),arr=name==='A'?state.q.polyA:state.q.polyB;
+     if(!Number.isInteger(n)||Math.abs(n)>99||(i===0&&arr.length>1&&n<=0)){input.value=String(arr[i]);return;}
+     arr[i]=n;state.q.a=state.q.polyA[0];state.q.b=state.q.polyA.at(-1);
+     state.q.c=state.q.polyB[0];state.q.d=state.q.polyB.at(-1);
+     state.step=0;state.view='step';renderPractice();
+    });
+    label.append(input);editors.append(label);
+   });
+  }
+ }else{
+  editors.querySelectorAll('input').forEach(input=>{
+   if(document.activeElement===input)return;
+   const arr=input.dataset.factor==='A'?A:B;input.value=String(arr[Number(input.dataset.index)]);
+  });
  }
  $('groupOptions').hidden=state.direction!=='factor';
  const limit=state.direction==='expand'?5:4;
@@ -766,9 +823,25 @@ function worksheet(){
 function render(){renderToolbar();if(state.mode==='practice')renderPractice();else if(state.mode==='display')renderBoard()}
 for(const btn of document.querySelectorAll('[data-level]'))btn.onclick=()=>{state.level=Number(btn.dataset.level);refreshQuestion()};
 for(const btn of document.querySelectorAll('[data-sign]'))btn.onclick=()=>{state.sign=btn.dataset.sign;state.slot='random';refreshQuestion()};
-for(const btn of document.querySelectorAll('[data-slot]'))btn.onclick=()=>{state.slot=btn.dataset.slot==='random'?'random':Number(btn.dataset.slot);if(state.slot==='random')state.seq++;refreshQuestion()};
+for(const btn of document.querySelectorAll('[data-slot]'))btn.onclick=()=>{
+ if(btn.dataset.slot==='random'){state.slot='random';state.seq++;state.questionIndex=0;}
+ else{state.slot=Number(btn.dataset.slot);state.questionIndex=0;
+  const bank=BANKS[state.slot];state.pattern=bank.pattern==='any'?'ll':bank.pattern;
+  state.level=bank.level;state.sign=bank.sign;
+ }
+ refreshQuestion();
+};
+$('bankPrevious').onclick=()=>{if(typeof state.slot==='number'){state.questionIndex=Math.max(0,state.questionIndex-1);refreshQuestion()}};
+$('bankNext').onclick=()=>{if(typeof state.slot==='number'){state.questionIndex=Math.min(5,state.questionIndex+1);refreshQuestion()}};
+for(const btn of document.querySelectorAll('[data-pattern]'))btn.onclick=()=>{state.pattern=btn.dataset.pattern;refreshQuestion()};
+$('sameVarBtn').onclick=()=>{state.variableMode='same';refreshQuestion()};
+$('differentVarBtn').onclick=()=>{state.variableMode='different';refreshQuestion()};
+$('hcfBtn').onclick=()=>{state.hcfEnabled=!state.hcfEnabled;refreshQuestion()};
+$('monicBtn').onclick=()=>{state.monicEnabled=!state.monicEnabled;refreshQuestion()};
 $('expandBtn').onclick=()=>{state.direction='expand';state.step=0;state.view='step';resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');else render()};
 $('factorBtn').onclick=()=>{state.direction='factor';state.step=0;state.view='step';resetBoard();if(state.mode==='quiz'||state.mode==='test')setMode('practice');else render()};
+$('instructionBtn').onclick=()=>{state.step=0;state.view='step';setMode('practice')};
+$('gameBtn').onclick=()=>beginAssessment('quiz');
 $('practiceBtn').onclick=()=>setMode('practice');
 $('displayBtn').onclick=()=>setMode('display');
 $('quizBtn').onclick=()=>beginAssessment('quiz');
@@ -782,13 +855,6 @@ $('nextStep').onclick=()=>{state.view='step';state.step=Math.min(state.direction
 $('allSteps').onclick=()=>{state.view='worked';renderPractice()};
 $('newQuestion').onclick=newQuestion;
 for(const btn of document.querySelectorAll('[data-group]'))btn.onclick=()=>{state.group=btn.dataset.group;state.step=0;state.view='step';renderPractice()};
-for(const [id,key] of [['coefA','a'],['coefB','b'],['coefC','c'],['coefD','d']]){
- $(id).addEventListener('change',()=>{
-  const n=Number($(id).value);
-  if(!Number.isInteger(n)||Math.abs(n)>99||(key==='a'||key==='c')&&n<=0||!n){$(id).value=state.q[key];return}
-  state.q[key]=n;state.step=0;state.view='step';resetBoard();renderPractice();
- });
-}
 $('openWorksheet').onclick=worksheet;
 $('closeWorksheet').onclick=()=>setMode('practice');
 document.addEventListener('keydown',e=>{
@@ -800,7 +866,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('fullscreenchange',()=>requestAnimationFrame(fitBoard));
 window.addEventListener('resize',()=>{if(state.mode==='display')requestAnimationFrame(fitBoard)});
-state.q=generator(0);
+state.q=generator(state.questionIndex);
 render();
 })();
 </script>
