@@ -671,6 +671,7 @@ main{margin:5px auto;padding:10px 19px 18px}
 #mobileSettingsPanel .inline-hcf button{min-height:37px;padding:6px 9px;font-weight:700}
 #mobileSettingsPanel .inline-hcf button[aria-pressed=true]{background:#e8f0fe;border-color:#1a73e8;color:#174ea6}
 @media(max-width:760px){#mobileSettingsPanel #oneOptions{flex-wrap:wrap!important}}
+.work-hcf-note{font:.76rem/1.35 Arial,sans-serif;color:#546478;text-align:center;margin:6px 0 2px}
 </style>
 </head>
 <body>
@@ -1420,7 +1421,7 @@ function workingTable(q,work,showMistakes=false){
     :minus(v)+(v!==0&&power-j?pow(power-j):''))+'</td>').join('')+'</tr>';
  return '<table class="quiz-work-table">'+head+tr(pad(work.top),pad(q.a))+
    tr(pad(work.bottom),pad(q.b),'factor-divider')+
-   work.rows.map((row,i)=>tr(row,baseRows[i]||originalRows[i])).join('')+totals+'</table>';
+   work.rows.map((row,i)=>tr(row,baseRows[i]||originalRows[i])).join('')+totals+'</table>'+((q.scalar||1)>1?'<div class="work-hcf-note">Then multiply the result by '+q.scalar+'.</div>':'');
 }
 
 function assessmentTypes(){
@@ -1986,7 +1987,7 @@ function worksheetQuestions(countOverride){
    state.oneMode=old.oneMode; // Preserve teacher's coefficient-one pattern in sheets.
    const seed=seedFor(50000+ws.sheet*1103+i*97+(ws.use==='homework'?10007:0));
    const q=makeQuestion(seeded(seed),sign);
-   if(!state.constantOn&&ws.sheet>=3&&progress>.6&&i%4===1){
+   if(state.oneMode==='off'&&!state.constantOn&&ws.sheet>=3&&progress>.6&&i%4===1){
     const arr=i%2?q.a:q.b;
     arr[arr.length-1]=(arr[arr.length-1]<0?-1:1)*[21,31,41][i%3];
    }
@@ -2103,7 +2104,7 @@ function printWorksheet(){
    tableRow(product(q.a,q.b),'sum-row','+');
   return '<article class="problem worked"'+style+'>'+label+'<div class="formula">'+formula+'</div>'+
    '<table class="worked-table"><thead><tr><th></th>'+headers+'</tr></thead><tbody>'+rows+'</tbody></table>'+
-   '<div class="worked-answer">= '+poly(expanded(q))+'</div></article>';
+   '<div class="worked-answer">'+((q.scalar||1)>1?'= '+q.scalar+'('+poly(product(q.a,q.b))+') = ':'= ')+poly(expanded(q))+'</div></article>';
  }
  for(let i=0;i<all.length;i+=perPage){
   const chunk=all.slice(i,i+perPage).map((x,k)=>problem(x,i+k)).join('');
@@ -2115,7 +2116,7 @@ function printWorksheet(){
  }
  const key=ws.answers==='key'?all.map((item,i)=>{const q=item.q,fs=q.a.length>q.b.length?[q.b,q.a]:[q.a,q.b];
   return '<div class="solution"><strong>'+(i+1)+'. '+names[item.type]+' · L'+item.level+'</strong>'+
-   '<div>('+poly(fs[0])+')('+poly(fs[1])+')</div><b>= '+poly(expanded(q))+'</b></div>';
+   '<div>'+testExpression(q)+'</div><b>= '+poly(expanded(q))+'</b></div>';
  }).join(''):'';
  const html='<!doctype html><html lang="en-IE"><head><meta charset="utf-8"><title>Polynomial worksheet</title><style>'+
  '@page{size:A4 '+ws.orientation+';margin:10mm}*{box-sizing:border-box}body{margin:0;background:#f1f3f6;color:#26364a;font-family:Arial,sans-serif}'+
