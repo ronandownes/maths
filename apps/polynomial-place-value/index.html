@@ -650,6 +650,19 @@ main{margin:5px auto;padding:10px 19px 18px}
 .hcf-first-line{margin:5px auto 12px}
 .hcf-after-table{margin:8px auto 5px}
 @media(min-width:761px){#mobileSettingsPanel{flex-wrap:nowrap;gap:6px;overflow-x:auto;max-width:100%}#mobileSettingsPanel>.setting{padding-left:6px;padding-right:6px;flex-shrink:0}#mobileSettingsPanel>.setting--advanced{margin-left:auto}}
+
+/* Shareable Maths Apps controls: group names describe the mathematics. */
+#mobileSettingsPanel.settings-top.common-settings{display:flex;flex-wrap:wrap;align-items:stretch;gap:7px;overflow:visible;max-width:100%}
+#mobileSettingsPanel.settings-top.common-settings>.setting{margin:0;flex:0 1 auto;min-width:0;padding:7px 8px}
+#mobileSettingsPanel .setting--hcf{margin-left:0!important}
+#mobileSettingsPanel .setting--monicity .button-group{gap:4px}
+#mobileSettingsPanel #oneOptions button{min-height:37px;padding:6px 8px;white-space:nowrap;font-size:.78rem}
+#mobileSettingsPanel #oneOptions button[aria-pressed=true]{background:#e4f5e9;border-color:#54866a;color:#14502c}
+#mobileSettingsPanel #oneOptions button:disabled{opacity:.45}
+#mobileSettingsPanel #challengeSelect{display:none!important}
+#mobileSettingsPanel #levels button{min-width:35px}
+@media(max-width:760px){#mobileSettingsPanel.settings-top.common-settings{overflow-y:auto;max-height:calc(100dvh - 75px)}}
+
 </style>
 </head>
 <body>
@@ -662,10 +675,11 @@ main{margin:5px auto;padding:10px 19px 18px}
 <button id="mobileSettingsBackdrop" class="mobile-settings-backdrop" type="button" aria-label="Close question settings" hidden></button>
 <div class="settings settings-top common-settings" id="mobileSettingsPanel" aria-label="Question settings">
 <button id="mobileSettingsClose" type="button" class="mobile-settings-close" aria-label="Close settings">✕ Close</button>
-<div class="setting"><span class="caption">Factor pattern</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor pattern"></div><select id="challengeSelect" aria-label="Optional higher degree factor patterns"><option value="">Challenge…</option><option value="l4">Linear × Quartic</option><option value="l5">Linear × Quintic</option><option value="q3">Quadratic × Cubic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select></div></div>
-<div class="setting"><span class="caption">Level</span><div class="button-group" id="levels" aria-label="Difficulty level"></div></div>
-<div class="setting"><span class="caption">Signs within factors</span><div class="button-group" id="signs" aria-label="Choose signs"></div></div>
-<div class="setting setting--advanced"><span class="caption">Options</span><div class="advanced-buttons"><button type="button" id="constantBtn" aria-pressed="false" title="HCF Off gives a primitive expansion (coefficient HCF 1); HCF On gives a common numerical factor.">HCF Off</button><button type="button" id="monicBtn" aria-pressed="false" title="Advanced: leading coefficient 1">Monic off</button><button type="button" id="challengeBtn" hidden aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false">Challenge off</button></div></div>
+<div class="setting setting--factors"><span class="caption">Factors</span><div class="factor-pattern-controls"><div class="button-group" id="types" aria-label="Choose factor combination"></div><select id="challengeSelect" hidden aria-label="Future factor combinations"><option value="">Challenge…</option><option value="l4">Linear × Quartic</option><option value="l5">Linear × Quintic</option><option value="q3">Quadratic × Cubic</option><option value="q4">Quadratic × Quartic</option><option value="44">Quartic × Quartic</option></select></div></div>
+<div class="setting setting--coefficients"><span class="caption">Coefficients</span><div class="button-group" id="levels" aria-label="Coefficient level"></div></div>
+<div class="setting setting--signs"><span class="caption">Signs</span><div class="button-group" id="signs" aria-label="Sign pattern"></div></div>
+<div class="setting setting--monicity"><span class="caption">Monicity &amp; 1s</span><div class="button-group" id="oneOptions" aria-label="Position of coefficient one"></div><button id="monicBtn" hidden type="button" aria-pressed="false">Monic off</button></div>
+<div class="setting setting--hcf"><span class="caption">HCF</span><button type="button" id="constantBtn" aria-pressed="false" title="Add a common numerical factor independently of the other settings">Off</button><button id="challengeBtn" hidden type="button" aria-pressed="false" aria-controls="beyondPanel" aria-expanded="false">Challenge off</button></div>
 <div class="beyond-choices" id="beyondPanel" hidden><div class="button-group" id="beyondChoices"></div><span id="beyondNote"></span></div>
 </div>
 <div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
@@ -735,8 +749,8 @@ const actions=[
 function hcfSteps(hcf){
  if(!hcf.needed)return actions;
  const first=hcf.displayFirst>1,second=hcf.displaySecond>1;
- const source=first&&second?'both brackets':first?'the first bracket':'the second bracket';
- return ['Take out the HCF from '+source,...actions.slice(0,5),
+ const source=first&&second?'both brackets':first?'the first bracket':second?'the second bracket':null;
+ return [source?'Take out the HCF from '+source:'Keep the HCF outside',...actions.slice(0,5),
   'Distribute the HCF',...actions.slice(5)];
 }
 function phaseOf(question,step){
@@ -751,6 +765,7 @@ const beyondTypes=['l3',...challengeOnlyTypes];
 const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed'],['random','Signs']];
 const signChoices=[['positive','All +'],['negative','Non-leading −'],['mixed','Mixed + / −'],['random','Random']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
+const oneModes=[['off','Off'],['leading','Leading 1'],['middle','Middle 1'],['constant','Constant 1'],['both','Both monic']];
 // A bank introduces ONE deliberate change at a time: internal signs, arithmetic, then degree.
 // Selecting a bank applies its teaching defaults; the settings above remain teacher overrides.
 const bankProfiles=[
@@ -762,7 +777,7 @@ const bankProfiles=[
  {type:'qq',level:3,sign:'mixed',name:'Quad × Quad · double-digit prime challenge'}
 ];
 
-const state={type:'ll',factorRandom:false,coreType:'ll',beyondOpen:false,constantOn:false,monic:false,sign:'positive',level:1,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
+const state={type:'ll',factorRandom:false,coreType:'ll',beyondOpen:false,constantOn:false,monic:false,oneMode:'off',sign:'positive',level:1,levelRandom:false,mode:'step',step:0,slot:0,freshCount:0,partialCount:0,partialAll:false,groupCount:0,groupAll:false,investigationOffset:0,helpStage:-1,showInvestigation:false,question:null,bankQuestion:0};
 
 const pow=k=>k===0?'':k===1?'x':'x<sup>'+k+'</sup>';
 const minus=v=>v<0?'−'+Math.abs(v):String(v);
@@ -774,7 +789,7 @@ function hcfData(question){
  const reverse=question.a.length>question.b.length;
  return {a:question.a.map(v=>v/ga),b:question.b.map(v=>v/gb),
   displayFirst:reverse?gb:ga,displaySecond:reverse?ga:gb,
-  factor:ga*gb*(question.scalar||1),needed:ga>1||gb>1};
+  factor:ga*gb*(question.scalar||1),needed:ga>1||gb>1||(question.scalar||1)>1,inside:ga>1||gb>1};
 }
 function poly(a){let result='',degree=a.length-1;
  for(let i=0;i<a.length;i++){const v=a[i],p=degree-i;if(v===0)continue;
@@ -790,28 +805,18 @@ function chooseSign(next){return ['positive','negative','mixed'][next(0,2)]}
 function makeQuestion(next,signOverride=null){
  const type=state.factorRandom?factorTypes[next(0,factorTypes.length-1)][0]:state.type;
  const [na,nb]=({ll:[2,2],ql:[3,2],qq:[3,3],cl:[2,1],l3:[4,2],l4:[5,2],l5:[6,2],q3:[4,3],q4:[5,3],'44':[5,5]})[type]||[3,2];
- const level=state.level,sign=signOverride||(state.sign==='random'?chooseSign(next):state.sign);
- const pick=values=>values[next(0,values.length-1)];
- const fav=()=>pick([1,2,2,2,3,3,3,5,5,4,7,8,9]);
- const easy=()=>pick([1,1,1,2,2,2,3,3,3,4,5,5,7]);
- const moderate=()=>pick([2,2,2,3,3,3,4,4,5,5,6,7,8,9]);
- const challenge=()=>pick(state.slot===5&&state.level===3?[11,13,17,19,23,29,31]:[10,11,11,11,20,21,30,31]);
+ const sign=signOverride||(state.sign==='random'?chooseSign(next):state.sign);
+ const level=state.level,pick=values=>values[next(0,values.length-1)];
+ const pool=level===1?[2,2,2,3,3,3,4,4,5,5]:level===2
+  ?[2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+  :[2,3,4,5,6,7,8,9,10,11,12,13,14,15,17,19,23,29,31,37,41];
  for(let trial=0;trial<3500;trial++){
-  let a,b;
-  if(level===1){
-   a=Array.from({length:na},easy);
-   b=Array.from({length:nb},easy);
-   a[next(0,na-1)]=1;b[next(0,nb-1)]=1;
-  }else if(level===2){
-   a=Array.from({length:na},moderate);
-   b=Array.from({length:nb},moderate);
-  }else{
-   a=Array.from({length:na},fav);
-   b=Array.from({length:nb},fav);
-   const target=next(0,1)===0?a:b;
-   target[next(0,target.length-1)]=challenge();
-  }
-  if(state.monic){a[0]=1;if(type!=='cl')b[0]=1;}
+  const a=Array.from({length:na},()=>pick(pool)),b=Array.from({length:nb},()=>pick(pool));
+  const oneMode=state.oneMode||'off';
+  if(oneMode==='leading')a[0]=1;
+  if(oneMode==='middle'&&a.length>2)a[next(1,a.length-2)]=1;
+  if(oneMode==='constant')a[a.length-1]=1;
+  if(oneMode==='both'){a[0]=1;if(type!=='cl')b[0]=1;}
   for(const arr of [a,b])for(let i=1;i<arr.length;i++){
    if(sign==='negative'||(sign==='mixed'&&next(0,1)===1))arr[i]=-Math.abs(arr[i]);
   }
@@ -822,14 +827,23 @@ function makeQuestion(next,signOverride=null){
   }
   if(!primitive(a)||(type!=='cl'&&!primitive(b)))continue;
   if(type==='cl'&&Math.abs(b[0])===1)continue;
-  if(!beyondTypes.includes(type)&&level===2&&product(a,b).some(v=>Math.abs(v)>100))continue;
-  if(!beyondTypes.includes(type)&&level===1&&product(a,b).some(v=>Math.abs(v)>60))continue;
-  // Include the HCF in the actual coefficients, so every app surface calculates correctly.
-  // Since both unscaled integer factors are primitive, the expansion has coefficient HCF = scale.
+  if(!beyondTypes.includes(type)&&level===1&&product(a,b).some(v=>Math.abs(v)>120))continue;
+  if(!beyondTypes.includes(type)&&level===2&&product(a,b).some(v=>Math.abs(v)>650))continue;
   const scale=state.constantOn?pick([2,3,4,5]):1;
+  if(scale===1)return {a,b,type,sign,scalar:1};
+  if(oneMode==='both')return {a,b,type,sign,scalar:scale};
+  if(oneMode==='leading'||oneMode==='constant'||oneMode==='middle')
+   return {a,b:b.map(v=>v*scale),type,sign,scalar:1};
   return {a:a.map(v=>v*scale),b,type,sign,scalar:1};
  }
- return {a:[state.constantOn?2:1,...Array(na-1).fill(sign==='negative'?-2:2).map(v=>v*(state.constantOn?2:1))],b:[1,...Array(nb-1).fill(sign==='positive'?3:-3)],type,sign,scalar:1};
+ const a=Array(na).fill(2),b=Array(nb).fill(3);
+ if(state.oneMode==='leading'||state.oneMode==='both')a[0]=1;
+ if(state.oneMode==='both')b[0]=1;
+ if(state.oneMode==='constant')a[na-1]=1;
+ if(state.oneMode==='middle'&&na>2)a[1]=1;
+ if(sign==='negative'){a[na-1]*=-1;b[nb-1]*=-1;}
+ else if(sign==='mixed')b[nb-1]*=-1;
+ return {a,b,type,sign,scalar:state.constantOn?2:1};
 }
 function chosenQuestion(){
  const rng=state.slot==='fresh'
@@ -837,7 +851,7 @@ function chosenQuestion(){
   :seeded(seedFor(17+state.slot*123+state.bankQuestion*891));
  // Six reproducible questions in each of six ordered banks.
  // Respect the teacher's current factor/sign/level overrides after bank selection.
- if(state.slot===0&&state.bankQuestion===0&&state.type==='ll'&&state.level===1&&state.sign==='positive'&&!state.factorRandom&&!state.monic){
+ if(state.slot===0&&state.bankQuestion===0&&state.type==='ll'&&state.level===1&&state.sign==='positive'&&!state.factorRandom&&state.oneMode==='off'){
   return {a:state.constantOn?[2,2]:[1,1],b:[2,1],type:'ll',sign:'positive',scalar:1};
  }
  return makeQuestion(rng);
@@ -914,6 +928,7 @@ function renderSelectors(){
  chooseButtons('types',factorChoices,challengeOnlyTypes.includes(state.type)?state.coreType:state.type,v=>{
   if(assessment.started)return;
   state.coreType=v;state.type=v;state.factorRandom=false;
+  if(v==='ll'&&state.oneMode==='middle'){state.oneMode='off';state.monic=false;}
   state.beyondOpen=false;refreshSelectedQuestion();assessmentConfigChanged();
  });
  const beyondPanel=$('beyondPanel');beyondPanel.hidden=true;
@@ -932,8 +947,8 @@ function renderSelectors(){
  const challenge=$('challengeBtn');challenge.textContent=state.beyondOpen?'Challenge on':'Challenge off';
  challenge.setAttribute('aria-pressed',String(state.beyondOpen));challenge.setAttribute('aria-expanded',String(state.beyondOpen));
  challenge.onclick=()=>{if(assessment.started)return;state.beyondOpen=!state.beyondOpen;if(!state.beyondOpen&&challengeOnlyTypes.includes(state.type))state.type=state.coreType;refreshSelectedQuestion();assessmentConfigChanged()};
- const constant=$('constantBtn');constant.textContent=state.constantOn?'HCF On':'HCF Off';constant.setAttribute('aria-pressed',String(state.constantOn));constant.title='HCF On: every coefficient of the product shares a factor greater than 1. Monic will be switched off.';
- constant.onclick=()=>{if(assessment.started)return;state.constantOn=!state.constantOn;if(state.constantOn)state.monic=false;refreshSelectedQuestion();assessmentConfigChanged()};
+ const constant=$('constantBtn');constant.textContent=state.constantOn?'HCF On':'HCF Off';constant.setAttribute('aria-pressed',String(state.constantOn));constant.title='Independent common numerical factor; both monic factors can retain an HCF outside the brackets.';
+ constant.onclick=()=>{if(assessment.started)return;state.constantOn=!state.constantOn;refreshSelectedQuestion();assessmentConfigChanged()};
  // Numbered homework questions follow fixed signs; the sign buttons must
  // describe the question currently on screen, not a stale selection.
  chooseButtons('signs',signChoices,state.slot==='fresh'?state.sign:state.question.sign,v=>filter('sign',v));
@@ -978,9 +993,26 @@ function renderSelectors(){
   }
  }
  chooseButtons('levels',levels,state.level,v=>filter('level',v));
- const monicButton=$('monicBtn');monicButton.setAttribute('aria-pressed',String(state.monic));monicButton.textContent=state.monic?'Monic on':'Monic off';
- monicButton.title=state.monic?'Both factors have leading coefficient 1 (where applicable). Click to switch off.':'Require leading coefficients of 1, including numbered banks and Challenge.';
- monicButton.onclick=()=>{if(assessment.started)return;state.monic=!state.monic;if(state.monic)state.constantOn=false;refreshSelectedQuestion();assessmentConfigChanged()};
+ chooseButtons('oneOptions',oneModes,state.oneMode,v=>{
+  if(assessment.started)return;
+  state.oneMode=v;state.monic=v==='both';
+  refreshSelectedQuestion();assessmentConfigChanged();
+ });
+ const hints={
+  off:'Do not require any coefficient of 1.',
+  leading:'Leading coefficient 1 in the first factor. That factor is monic.',
+  middle:'A middle coefficient is 1 in the first factor (quadratic or higher). This does not make it monic.',
+  constant:'The constant coefficient of the first factor has magnitude 1.',
+  both:'Both factors are monic: both leading coefficients are 1.'
+ };
+ oneModes.forEach(([value],i)=>{
+  const b=$('oneOptions').children[i];
+  b.title=hints[value];b.setAttribute('aria-label',hints[value]);
+  b.disabled=assessment.started||(value==='middle'&&state.question?.a?.length<=2);
+ });
+ const monicButton=$('monicBtn');
+ monicButton.setAttribute('aria-pressed',String(state.oneMode==='both'));
+ monicButton.textContent=state.oneMode==='both'?'Monic on':'Monic off';
  const randomSign=$('signs').children[3];randomSign.className='level-random';randomSign.title='Randomly choose a sign pattern';randomSign.setAttribute('aria-label','Random signs');
  setAssessmentControlsLocked();
  const practiceButton=$('practiceMode');practiceButton.setAttribute('aria-pressed',String(assessment.mode==='practice'&&state.slot==='fresh'));
