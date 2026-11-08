@@ -54,10 +54,10 @@ def frame(title, category, heading, intro, body, depth=0, section=None, current=
     return f'''<!doctype html>
 <html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="{e(intro)}"><meta name="theme-color" content="#ffffff">
-<title>{e(title)} | Maths</title><link rel="icon" type="image/svg+xml" href="{prefix}assets/favicon.svg">
+<title>{e(title)} | Irish School Maths Apps</title><link rel="icon" type="image/svg+xml" href="{prefix}assets/favicon.svg">
 <link rel="stylesheet" href="{prefix}assets/styles.css">{extra_css}</head>
 <body{body_class}><a href="#main" class="skip">Skip to content</a>
-<header class="topbar"><a class="brand" href="{prefix}index.html" aria-label="Maths home"><img src="{prefix}assets/maths-logo.svg" alt="Maths, four coloured dots"></a>
+<header class="topbar"><a class="brand" href="{prefix}index.html" aria-label="Irish School Maths Apps home"><img src="{prefix}assets/maths-logo.svg" alt="Maths, four coloured dots"></a>
 <button class="menu-toggle" id="menu-toggle" aria-controls="main-menu" aria-expanded="false">☰ Topics</button>
 <nav id="main-menu" class="menu" aria-label="Main mathematics menu">{nav}</nav></header>
 <div class="stage"><aside class="sidebar" aria-label="Topic sidebar">{aside}</aside>
