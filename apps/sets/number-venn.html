@@ -32,6 +32,7 @@ body{background:#f4f6f8}
 .lab-question{font-size:1.07rem;color:#263d50;margin:12px 0}
 .lab-board-wrap{overflow-x:auto;border:1px solid #b6cfe0;border-radius:12px;background:var(--sky)}
 .lab-board{min-width:820px}
+.lab-range{padding:9px 18px 0;text-align:center;font-weight:800;color:#315871;background:var(--sky)}
 .lab-labels{display:flex;justify-content:space-around;align-items:center;padding:13px 18px 0;background:var(--sky);font-size:clamp(1.1rem,2.3vw,1.45rem);font-weight:800;text-align:center}
 .lab-labels>div{width:42%;max-width:400px}
 .lab-guess{display:none;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap}
@@ -129,6 +130,7 @@ body{background:#f4f6f8}
 </div>
 <div class="lab-board-wrap" aria-label="Scrollable Venn diagram if the screen is narrow">
 <section class="lab-board" id="board" aria-label="Number Venn diagram">
+<div class="lab-range" id="rangeLabel">Displayed whole numbers: 1 to 30</div>
 <div class="lab-labels">
 <div><span class="lab-rule" id="labelA">Even numbers</span><div class="lab-guess"><label for="guessA">Set A:</label><select id="guessA" aria-label="Guess the rule for set A"></select></div></div>
 <div><span class="lab-rule" id="labelB">Multiples of 5</span><div class="lab-guess"><label for="guessB">Set B:</label><select id="guessB" aria-label="Guess the rule for set B"></select></div></div>
@@ -192,7 +194,7 @@ function actualCounts(){var c={a:0,b:0,both:0,neither:0,union:0};for(var n=1;n<=
 function numberList(region){var arr=[];for(var n=1;n<=state.max;n++)if(correctZone(n)===region)arr.push(n);return arr;}
 function gcd(a,b){while(b){var t=b;b=a%b;a=t;}return a;}
 function makeChip(n,isInfer){var e=document.createElement(isInfer?"span":"button");e.className="lab-chip"+(isInfer?" lab-chip-static":"");e.textContent=String(n);if(!isInfer){e.type="button";e.dataset.number=String(n);e.draggable=true;e.setAttribute("aria-label","Number "+n);e.setAttribute("aria-pressed",state.selected===n?"true":"false");if(state.checked&&state.placed[n])e.classList.add(correctZone(n)===state.placed[n]?"is-right":"is-wrong");}return e;}
-function updateLabels(){var infer=state.mode==="infer";$("board").classList.toggle("infer-mode",infer);$("labelA").textContent=ruleText(state.a);$("labelB").textContent=ruleText(state.b);$("diagram").style.height=(520+Math.max(0,state.max-30)*12)+"px";}
+function updateLabels(){$("rangeLabel").textContent="Displayed whole numbers: 1 to "+state.max;var infer=state.mode==="infer";$("board").classList.toggle("infer-mode",infer);$("labelA").textContent=ruleText(state.a);$("labelB").textContent=ruleText(state.b);$("diagram").style.height=(520+Math.max(0,state.max-30)*12)+"px";}
 function renderBoard(){updateLabels();var infer=state.mode==="infer";["a","both","b","neither"].forEach(function(z){var node=document.querySelector('[data-zone="'+z+'"]');node.replaceChildren();for(var n=1;n<=state.max;n++){if((infer?correctZone(n):state.placed[n])===z)node.appendChild(makeChip(n,infer));}});
 $("bank").replaceChildren();if(!infer)for(var n=1;n<=state.max;n++)if(!state.placed[n])$("bank").appendChild(makeChip(n,false));
 $("bankArea").classList.toggle("lab-hidden",infer);$("placebar").classList.toggle("lab-hidden",infer);
@@ -203,9 +205,9 @@ var count=Object.keys(state.placed).length;
 $("progress").textContent=infer?"Study the completed diagram. Can you infer the two rules?":count+" of "+state.max+" numbers placed";
 document.querySelectorAll("[data-place]").forEach(function(e){e.disabled=state.selected===null;});}
 function setFeedback(t,kind){$("feedback").textContent=t;$("feedback").className="lab-feedback"+(kind?" "+kind:"");}
-function clearResults(){$("snapshot").textContent="Check your work, or open the mathematics below when you are ready.";$("lcmDetails").open=false;state.checked=false;state.revealed=false;}
+function clearResults(){$("snapshot").textContent="Check your diagram to reveal the counts and connections.";$("lcmContent").textContent="Check your diagram or reveal the correct placements to see the mathematics.";$("lcmDetails").open=false;state.checked=false;state.revealed=false;}
 function resetPlacements(){state.placed={};state.selected=null;clearResults();renderBoard();setFeedback("Choose a number and place it in the correct region. Explain your decision.","");}
-function assign(n,zone){if(state.mode==="infer")return;if(!Number.isInteger(n)||n<1||n>state.max)return;if(zone==="bank")delete state.placed[n];else if(["a","both","b","neither"].includes(zone))state.placed[n]=zone;state.selected=null;state.checked=false;state.revealed=false;renderBoard();setFeedback("Placed "+n+". Keep going, or check your diagram when you are ready.","");}
+function assign(n,zone){if(state.mode==="infer")return;if(!Number.isInteger(n)||n<1||n>state.max)return;if(zone==="bank")delete state.placed[n];else if(["a","both","b","neither"].includes(zone))state.placed[n]=zone;state.selected=null;clearResults();renderBoard();setFeedback("Placed "+n+". Keep going, or check your diagram when you are ready.","");}
 function pick(n){state.selected=state.selected===n?null:n;renderBoard();if(state.selected!==null)setFeedback("Number "+state.selected+" selected. Choose A only, both, B only or neither.","");}
 function showMaths(){var c=actualCounts();$("snapshot").textContent="A only: "+c.a+" · Both: "+c.both+" · B only: "+c.b+" · Neither: "+c.neither+". The union contains "+c.union+" elements.";
 var bits=[],am=state.a.kind==="even"?2:state.a.kind==="multiple"?state.a.value:null,bm=state.b.kind==="even"?2:state.b.kind==="multiple"?state.b.value:null;
