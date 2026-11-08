@@ -98,7 +98,11 @@ function generate({degreeA,degreeB,level=1,onesMode='off',doublePattern='inner',
   if(possible.length){const slot=possible[next(0,possible.length-1)];
    (slot.factor?B:A)[slot.index]=0;}
  }
- for(const slot of chosen)(slot.factor?B:A)[slot.index]=1;
+ for(const slot of chosen){
+  const signs=slot.factor?signPatternB:signPatternA;
+  const sign=slot.index>0&&signs[slot.index-1]==='−'?-1:1;
+  (slot.factor?B:A)[slot.index]=sign;
+ }
  // Keep coefficient-1 choices intact. HCF is an exterior scalar so the two
  // factors can remain monic while the total expression has a common factor.
  const scalar=hcfEnabled?2+next(0,2):1;
