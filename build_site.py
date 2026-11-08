@@ -35,6 +35,7 @@ def topic_href(category, topic, depth=0):
 def frame(title, category, heading, intro, body, depth=0, section=None, current=None):
     prefix='../'*depth
     nav=''.join(f'<a href="{prefix}{SLUGS[n]}/index.html" class="{"active" if n==category else ""}">{e(n)}</a>' for n in NAV)
+    nav += f'<a href="{prefix}apps/index.html">Apps</a>'
     if category:
         data=DATA[category]
         ready=''.join(f'<a href="{topic_href(category,t,depth)}" class="{"active" if t["slug"]==current else ""}">{e(t["title"])}</a>' for t in data['topics'] if t['ready'])
@@ -44,7 +45,7 @@ def frame(title, category, heading, intro, body, depth=0, section=None, current=
         aside=f'<h2>{e(category)} topics</h2><a href="{prefix}{SLUGS[category]}/index.html" class="{"active" if current is None else ""}">Overview</a>{ready}<span class="aside-caption">Later topics</span>{future}'
     else:
         aside='<h2>Ready lessons</h2>'+''.join(f'<a href="{topic_href(n,t,depth)}">{e(t["title"])}</a>' for n,d in DATA.items() for t in d['topics'] if t['ready'])
-    aside = '<a href="'+prefix+'unifying/index.html" class="submenu-link">Unifying Strand: six ways of thinking</a>' + aside
+    aside = '<a href="'+prefix+'apps/index.html" class="submenu-link">Browse all Maths Apps</a><a href="'+prefix+'unifying/index.html" class="submenu-link">Unifying Strand: six ways of thinking</a>' + aside
     crumb='<span class="breadcrumb"><a href="'+prefix+'index.html">Maths</a>'+((' / <a href="'+prefix+SLUGS[category]+'/index.html">'+e(category)+'</a>') if category else '')+'</span>'
     extra_css = f'<link rel="stylesheet" href="{prefix}assets/sets-explorer.css">' if current == 'sets-explorer' else (f'<link rel="stylesheet" href="{prefix}assets/sets-learning.css">' if current == 'sets' else '')
     extra_js = f'<script src="{prefix}assets/sets-explorer.js"></script>' if current == 'sets-explorer' else (f'<script src="{prefix}assets/sets-learning.js"></script>' if current == 'sets' else '')
@@ -70,7 +71,7 @@ def frame(title, category, heading, intro, body, depth=0, section=None, current=
 def home():
     tiles=''.join(f'<a class="tile" href="{SLUGS[n]}/index.html"><strong>{e(n)}</strong><small>{e(DATA[n]["introduction"])}</small></a>' for n in NAV)
     ready=''.join(f'<li><a href="{topic_href(n,t)}">{e(t["title"])}</a> <span class="small-note">({e(n)})</span></li>' for n,d in DATA.items() for t in d['topics'] if t['ready'])
-    body=f'<p class="lead">One mathematics collection, from foundational ideas to advanced topics. Select a mathematical strand, then a lesson. Different year groups and levels belong within the same topic rather than in separate books.</p><div class="tile-grid">{tiles}</div><h2>Unifying Strand</h2><p><a href="unifying/index.html">Six ways of thinking: understand, represent, connect, solve, prove and communicate.</a></p><h2>Teaching tools</h2><div class="tile-grid"><a class="tile" href="tools/teaching-studio/index.html"><strong>Teaching Studio</strong><small>Open webpages beside a document camera or writing surface; annotate and record lessons.</small></a></div><h2>Ready for classroom use</h2><ul>{ready}</ul><p class="note">Additional topics appear in side menus as future sections, clearly distinguished from completed lessons. Nothing is presented as ready until it contains real content.</p>'
+    body=f'<p class="lead">One mathematics collection, from foundational ideas to advanced topics. Select a mathematical strand, then a lesson. Different year groups and levels belong within the same topic rather than in separate books.</p><div class="tile-grid">{tiles}</div><h2>Unifying Strand</h2><p><a href="unifying/index.html">Six ways of thinking: understand, represent, connect, solve, prove and communicate.</a></p><h2>Teaching tools</h2><div class="tile-grid"><a class="tile" href="apps/index.html"><strong>Maths Apps</strong><small>Find interactive apps by mathematical topic: sets, geometry, algebra and trigonometry.</small></a><a class="tile" href="tools/teaching-studio/index.html"><strong>Teaching Studio</strong><small>Open webpages beside a document camera or writing surface; annotate and record lessons.</small></a></div><h2>Ready for classroom use</h2><ul>{ready}</ul><p class="note">Additional topics appear in side menus as future sections, clearly distinguished from completed lessons. Nothing is presented as ready until it contains real content.</p>'
     output(ROOT/'index.html',frame('Home',None,'Maths','Explore, teach and practise mathematics in one place.',body,depth=0))
 
 
@@ -84,9 +85,11 @@ def build():
         slug=SLUGS[category]
         tiles=''.join(f'<a class="tile" href="{('../'+t["app"]) if t.get("app") else t["slug"]+"/index.html"}"><strong>{e(t["title"])}</strong><small>{e(t.get("description","Open the complete teaching page"))}</small></a>' for t in data['topics'] if t['ready'])
         if category == 'Number':
+            tiles += '<a class="tile" href="../apps/sets/one-set-venn.html"><strong>One-set Venn</strong><small>Start visually with one circle and draggable elements.</small></a>'
             tiles += '<a class="tile" href="sets/explorer.html"><strong>Explore two sets</strong><small>Interactive Venn diagram: move, overlap and compare sets.</small></a>'
             tiles += '<a class="tile" href="../apps/complex-numbers/index.html"><strong>Complex Numbers Explorer</strong><small>Argand diagram and arithmetic in rectangular form.</small></a>'
         if category == 'Geometry':
+            tiles += '<a class="tile" href="rectangle-variables/app.html"><strong>Rectangle Explorer</strong><small>Drag width and height to change the perimeter and area.</small></a>'
             tiles += '<a class="tile" href="../apps/pythagoras/index.html"><strong>Pythagoras</strong><small>Exact triples, non-triples, surds and missing-side reasoning.</small></a>'
         if category == 'Trigonometry':
             tiles += '<a class="tile" href="../apps/triangle-rules/index.html"><strong>Triangle Rules App</strong><small>Sine and cosine rules in a draggable triangle.</small></a>'

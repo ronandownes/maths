@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Begin sets with one draggable Venn diagram; change between seasons and single-digit multiples of two.">
+<title>One Set: Venn First | Maths Apps</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="stylesheet" href="foundations.css">
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#192d43}
+*{box-sizing:border-box}
+body{background:#f5f8fb;margin:0}
+.venn-app{max-width:820px;margin:0 auto;padding:12px 14px 26px}
+.compact-header{display:flex;align-items:center;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-bottom:9px}
+.compact-header .foundation-brand{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:#174a76;font-weight:800}
+.compact-header .foundation-brand img{width:100px;max-height:35px}
+.compact-header nav{display:flex;flex-wrap:wrap;gap:14px;font-size:.87rem}
+.compact-header nav a{color:#174a76}
+h1{font-size:clamp(1.4rem,3vw,2rem);margin:4px 0}
+p{margin:6px 0 12px}
+.language{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:8px 0;color:#42617a;font-weight:700;font-size:.83rem}
+button{font:inherit;cursor:pointer}
+.language button,.choices button,.actions button{border:1px solid #9eb9d1;border-radius:7px;background:white;color:#174a76;padding:8px 12px}
+.language button[aria-pressed="true"],.choices button[aria-pressed="true"]{background:#174a76;color:white}
+.language #words{margin-left:auto}
+.choices,.actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.diagram-card{background:white;border:1px solid #d0dfe9;border-radius:12px;padding:14px}
+.venn-field{max-width:490px;margin:10px auto;aspect-ratio:1/1;position:relative}
+.set-circle{position:relative;width:100%;height:100%;border:4px solid #194d79;border-radius:50%;background:#eef7fd}
+.set-name{position:absolute;top:14%;left:26%;font-size:clamp(1.5rem,4vw,2rem);font-weight:700;color:#174a76;pointer-events:none}
+.set-element{position:absolute;display:flex;align-items:center;gap:5px;white-space:nowrap;transform:translate(-50%,-50%);border:0;border-radius:7px;background:#fffefa;padding:6px 9px;min-height:36px;color:#1c2934;font-size:clamp(.95rem,2.7vw,1.12rem);font-weight:650;box-shadow:0 1px 4px #95abc080;touch-action:none;user-select:none}
+.set-element .dot{width:8px;height:8px;background:#101d2a;border-radius:50%;display:inline-block;flex:none}
+.set-element:focus-visible{outline:3px solid #e29700;outline-offset:3px}
+.set-notation{font-size:clamp(1.04rem,2.7vw,1.25rem);text-align:center;font-weight:700;overflow-wrap:anywhere}
+.set-cardinality{text-align:center;font-size:1.05rem;margin:5px 0;font-weight:700;color:#174a76}
+.help-text{text-align:center;color:#456174;font-size:.91rem}
+.action-note{font-size:.9rem;color:#36556a}
+dialog{border:1px solid #adc2d4;border-radius:12px;padding:20px;max-width:min(92vw,450px);line-height:1.5;color:#192d43}
+dialog::backdrop{background:#102c45aa}
+dialog dt{font-weight:700;margin-top:9px}
+dialog dd{margin:2px 0 9px}
+#close-words{padding:9px 17px;background:#174a76;color:#fff;border:0;border-radius:7px}
+body.embed .compact-header{display:none}
+body.embed .venn-app{padding:7px}
+body.embed h1{font-size:1.4rem}
+body.embed .diagram-card{padding:8px}
+@media(max-width:480px){.venn-app{padding:8px}.set-element{font-size:.91rem;padding:5px 6px}.set-circle{border-width:3px}}
+</style>
+</head>
+<body>
+<main class="venn-app">
+<header class="compact-header">
+<a class="foundation-brand" href="../../index.html"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"><span>Apps</span></a>
+<nav aria-label="Mathematics navigation"><a href="index.html">Sets apps</a><a href="../../number/sets/index.html">Sets lesson</a><a href="https://ronandownes.github.io/book/sets-first-look.html">Book</a></nav>
+</header>
+<div class="language" role="group" aria-label="Language level">
+<span>Language</span>
+<button type="button" data-literacy="maths" aria-pressed="true">Maths</button>
+<button type="button" data-literacy="eal" aria-pressed="false">EAL</button>
+<button type="button" data-literacy="simple" aria-pressed="false">Simple</button>
+<button id="words" type="button">Words</button>
+</div>
+<h1>One set. One circle.</h1>
+<p id="instruction">A set is a well-defined collection of distinct elements. Order and position do not matter.</p>
+<div class="choices" role="group" aria-label="Choose the elements">
+<button type="button" data-preset="seasons" aria-pressed="true">Four seasons</button>
+<button type="button" data-preset="even" aria-pressed="false">Multiples of 2 (0–9)</button>
+</div>
+<section class="diagram-card" aria-label="Interactive one-set Venn diagram">
+<div class="venn-field"><div class="set-circle" id="set-circle" aria-label="One circle containing the elements of the set"><span class="set-name" id="set-name">A</span><div id="elements"></div></div></div>
+<div class="set-notation" id="notation">A = {spring, summer, autumn, winter}</div>
+<p class="set-cardinality" id="count">#A = 4</p>
+<p class="help-text" id="hint">Drag an element, or use the arrow keys to move it.</p>
+</section>
+<div class="actions"><button type="button" id="rearrange">Rearrange</button><button type="button" id="reset">Reset</button></div>
+<p class="action-note" id="takeaway">The elements can be in any order. All remain inside the set.</p>
+<dialog id="word-dialog" aria-labelledby="word-heading">
+<h2 id="word-heading">Mathematical words</h2>
+<dl>
+<dt>Set</dt><dd>A well-defined collection of distinct objects.</dd>
+<dt>Element</dt><dd>One object belonging to a set.</dd>
+<dt>Cardinality</dt><dd>The number of distinct elements in a set. Written here as #A.</dd>
+<dt>Multiple</dt><dd>A multiple of 2 is a number of the form 2n, where n is an integer. Zero is a multiple of 2 because 2 × 0 = 0.</dd>
+</dl><button type="button" id="close-words">Close</button>
+</dialog>
+</main>
+<script>
+(function(){
+'use strict';
+if(new URLSearchParams(location.search).has('embed'))document.body.classList.add('embed');
+var circle=document.getElementById('set-circle'), layer=document.getElementById('elements');
+var current='seasons', dragging=null, moved=false;
+var presets={
+seasons:{name:'A',labels:['spring','summer','autumn','winter'],coords:[[37,34],[62,38],[63,68],[36,65]]},
+even:{name:'E',labels:['0','2','4','6','8'],coords:[[35,33],[61,30],[68,53],[55,70],[33,65]]}
+};
+var items=[];
+function limit(x,y){
+  var dx=x-50,dy=y-50,d=Math.sqrt(dx*dx+dy*dy),max=30;
+  if(d>max){x=50+dx*max/d;y=50+dy*max/d;}
+  return [x,y];
+}
+function updateNotation(){
+  var label=presets[current].name;
+  document.getElementById('set-name').textContent=label;
+  document.getElementById('notation').textContent=label+' = {'+items.map(function(item){return item.label}).join(', ')+'}';
+  document.getElementById('count').textContent='#'+label+' = '+items.length;
+}
+function moveElement(item,node){
+  node.style.left=item.x+'%';
+  node.style.top=item.y+'%';
+}
+function render(){
+  layer.replaceChildren();
+  items.forEach(function(item){
+    var btn=document.createElement('button');
+    btn.type='button';btn.className='set-element';btn.setAttribute('aria-label','Move '+item.label+' inside set '+presets[current].name);
+    var dot=document.createElement('span');dot.className='dot';dot.setAttribute('aria-hidden','true');
+    var word=document.createElement('span');word.textContent=item.label;
+    btn.append(dot,word);moveElement(item,btn);layer.appendChild(btn);
+    btn.addEventListener('pointerdown',function(e){
+      dragging={item:item,node:btn,id:e.pointerId};
+      btn.setPointerCapture(e.pointerId);e.preventDefault();
+    });
+    btn.addEventListener('pointermove',function(e){
+      if(!dragging||dragging.id!==e.pointerId||dragging.node!==btn)return;
+      var r=circle.getBoundingClientRect();
+      var xy=limit((e.clientX-r.left)*100/r.width,(e.clientY-r.top)*100/r.height);
+      item.x=xy[0];item.y=xy[1];moveElement(item,btn);moved=true;
+    });
+    btn.addEventListener('pointerup',function(e){if(dragging&&dragging.id===e.pointerId)dragging=null});
+    btn.addEventListener('pointercancel',function(){dragging=null});
+    btn.addEventListener('keydown',function(e){
+      var dx=0,dy=0;
+      if(e.key==='ArrowLeft')dx=-3;else if(e.key==='ArrowRight')dx=3;
+      else if(e.key==='ArrowUp')dy=-3;else if(e.key==='ArrowDown')dy=3;
+      else return;
+      e.preventDefault();var xy=limit(item.x+dx,item.y+dy);item.x=xy[0];item.y=xy[1];moveElement(item,btn);
+    });
+  });updateNotation();
+}
+function choosePreset(which){
+  if(!presets[which])return;
+  current=which;items=presets[which].labels.map(function(label,i){
+    return {label:label,x:presets[which].coords[i][0],y:presets[which].coords[i][1]};
+  });
+  document.querySelectorAll('[data-preset]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.preset===which))});
+  render();
+}
+document.querySelectorAll('[data-preset]').forEach(function(b){b.addEventListener('click',function(){choosePreset(b.dataset.preset)})});
+document.getElementById('reset').addEventListener('click',function(){choosePreset(current)});
+document.getElementById('rearrange').addEventListener('click',function(){
+  if(items.length>1){
+    items.unshift(items.pop());
+    var locations=presets[current].coords;
+    items.forEach(function(item,i){item.x=locations[i][0];item.y=locations[i][1]});
+    render();
+  }
+});
+var wording={
+maths:['A set is a well-defined collection of distinct elements. Order and position do not matter.','Drag an element, or use the arrow keys to move it.','The order and position of elements do not affect membership or equality.'],
+eal:['A set is a collection of different items. We can decide what belongs. Each item is an element. Moving it does not change the set.','Drag a word or number. You can also use your keyboard arrows.','Every item stays in the set, whatever its position.'],
+simple:['A set has distinct elements. We know what belongs. Order does not matter.','Drag an element, or use the arrow keys.','Different order. Same set.']
+};
+function setLiteracy(mode){
+  if(!wording[mode])mode='maths';
+  document.getElementById('instruction').textContent=wording[mode][0];
+  document.getElementById('hint').textContent=wording[mode][1];
+  document.getElementById('takeaway').textContent=wording[mode][2];
+  document.querySelectorAll('[data-literacy]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.literacy===mode))});
+  try{localStorage.setItem('maths-literacy',mode)}catch(e){}
+}
+document.querySelectorAll('[data-literacy]').forEach(function(b){b.addEventListener('click',function(){setLiteracy(b.dataset.literacy)})});
+var dlg=document.getElementById('word-dialog');
+document.getElementById('words').addEventListener('click',function(){dlg.showModal()});
+document.getElementById('close-words').addEventListener('click',function(){dlg.close()});
+choosePreset('seasons');
+var saved='maths';try{saved=localStorage.getItem('maths-literacy')||'maths'}catch(e){}
+setLiteracy(saved);
+})();
+</script>
+</body>
+</html>
