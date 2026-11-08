@@ -124,6 +124,13 @@
         "ready": true
       },
       {
+        "slug": "interactive-geometry",
+        "title": "Interactive geometry — axioms and angles",
+        "ready": true,
+        "app": "apps/geometry/index.html",
+        "description": "Two Points Axiom, points and lines, angle explorations and vertically opposite angles."
+      },
+      {
         "slug": "angles",
         "title": "Angles and lines",
         "ready": false
