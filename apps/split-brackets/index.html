@@ -107,6 +107,43 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 .split-math{font:clamp(1.35rem,2.6vw,2.15rem)/1.35 Cambria,Georgia,serif;overflow-wrap:anywhere}
 .split-arrow{font-size:1.55rem;line-height:1.5;color:#276ca9}
 @media(max-width:630px){.split-layout{grid-template-columns:1fr}}
+
+/* Consistent Maths Apps design: grouped panels, calm blue, generous maths canvas. */
+main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px auto 24px;background:#fff}
+.settings-intro{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;min-height:42px}
+.settings-intro span{font-size:.82rem;color:#5d7087}
+.settings{padding:5px 0 10px;gap:8px}
+.setting{border:1px solid #d7e1ee;background:#f9fbfd;border-radius:9px;padding:7px 10px}
+.activity-switch{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:space-between;padding:10px 0}
+.cluster.activities{order:1;justify-self:auto}
+.cluster.procedure{order:2;justify-self:auto;margin-left:auto}
+.cluster.classwork{order:3;flex-basis:100%;align-items:flex-start;justify-self:auto}
+.cluster.classwork .buttons{justify-content:flex-start}
+.cluster h2{font-size:.82rem;color:#59708b}
+.cluster.classwork button[data-slot]:not([data-slot="random"]){border-radius:50%;width:36px;height:36px;min-width:36px;padding:5px}
+.cluster.classwork button[data-slot="random"]{background:#f2f7ff;border-color:#8bb3df;color:#1758a0}
+.example-title{font-size:1.25rem;color:#293c52;margin:9px 0 4px}
+.expression{font:clamp(2.1rem,4vw,3.2rem)/1.3 "Cambria Math",Cambria,Georgia,serif;color:#202936;margin:6px auto 12px}
+.editors{margin:5px auto 14px}
+.diagram,.split-layout,.partials,.working{max-width:1140px}
+.split-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:8px auto}
+.split-card{padding:15px;border:1px solid #cfdeed;border-radius:10px;background:#f8fbff;min-height:160px}
+.split-card strong{color:#4b6686}
+.split-math{font:clamp(1.7rem,3vw,2.5rem)/1.3 "Cambria Math",Cambria,Georgia,serif;color:#22364a}
+.split-arrow{font-size:1.9rem;color:#2d70ac}
+.partials{gap:8px;margin:9px auto}
+.partial{background:#f8fbff;border:1px solid #d6e3f0;min-height:85px}
+.partial strong{color:#55708e}
+.partial .value{color:#293c55;font-family:"Cambria Math",Cambria,Georgia,serif;font-size:clamp(1.42rem,2.6vw,2.2rem)}
+.working{margin:9px auto 0;padding:9px 0 0}
+.working .mathline{color:#273a50}
+.working .boxed-answer{padding:9px;border:2px solid #7488a1;border-radius:5px}
+.transport{border-top:1px solid #e2e9f1;padding-top:12px}
+#splitMain:fullscreen .expression,#splitMain.maths-classroom-focus .expression{font-size:clamp(2.5rem,5vw,4.7rem)}
+#splitMain:fullscreen .split-math,#splitMain.maths-classroom-focus .split-math{font-size:clamp(2.1rem,3.9vw,3.5rem)}
+#splitMain:fullscreen .partial .value,#splitMain.maths-classroom-focus .partial .value{font-size:clamp(1.8rem,3vw,2.8rem)}
+@media(max-width:690px){.cluster.procedure{margin-left:0}.activity-switch{flex-direction:row}.split-layout{grid-template-columns:1fr}.partials{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
