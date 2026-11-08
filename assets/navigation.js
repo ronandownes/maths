@@ -244,6 +244,12 @@
 
     if (path === topic.home) {
       renderSections(document);
+      // Headings without source IDs receive stable IDs here. A browser may have
+      // tried to resolve the URL fragment before those IDs existed.
+      if (location.hash) {
+        const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+        if (target) requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+      }
     } else {
       fetch(url(topic.home))
         .then(response => { if (!response.ok) throw new Error("No section index"); return response.text(); })
