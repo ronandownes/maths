@@ -672,6 +672,18 @@ main{margin:5px auto;padding:10px 19px 18px}
 #mobileSettingsPanel .inline-hcf button[aria-pressed=true]{background:#e8f0fe;border-color:#1a73e8;color:#174ea6}
 @media(max-width:760px){#mobileSettingsPanel #oneOptions{flex-wrap:wrap!important}}
 .work-hcf-note{font:.76rem/1.35 Arial,sans-serif;color:#546478;text-align:center;margin:6px 0 2px}
+/* Focus view: clear the teacher controls without hiding the mathematics. */
+.focus-tools{display:flex;justify-content:flex-end;gap:7px;margin:3px 0 5px}
+.focus-tools button{border:1px solid #b8c7d8;background:#f5f8fc;border-radius:7px;padding:6px 11px;min-height:37px;color:#254362;font-size:.8rem;cursor:pointer;touch-action:manipulation}
+body.maths-only header,body.maths-only #mobileSettingsPanel,body.maths-only .activity-switch,body.maths-only .mobile-settings-toggle,body.maths-only #stepChecklist,body.maths-only #coefficients,body.maths-only #help{display:none!important}
+body.maths-only main{width:min(99%,1800px);max-width:none;margin:0 auto;padding:3px 8px}
+body.maths-only #practiceArea .practice-layout{display:block}
+body.maths-only #practiceArea .practice-working{width:100%;max-width:none}
+body.maths-only #practiceArea .factor-expression{margin:0 auto 7px}
+body.maths-only #mathsOnlyToggle{background:#e9f2ff;border-color:#86acde}
+body.maths-only .focus-tools{position:sticky;top:2px;z-index:100;justify-content:flex-end}
+body.maths-only .focus-tools button{font-size:.72rem;opacity:.8}
+@media print{.focus-tools{display:none!important}}
 </style>
 </head>
 <body>
@@ -680,6 +692,10 @@ main{margin:5px auto;padding:10px 19px 18px}
 <div class="app-heading"><nav class="app-breadcrumb" aria-label="Mathematics location"><a href="../../algebra/index.html">Algebra</a><span aria-hidden="true">›</span><a href="../../algebra/expansions/index.html">Expansions</a></nav><h1 title="Expand polynomials by arranging coefficients in place-value columns">Place Value Expansions of Polynomials</h1></div>
 </header>
 <main>
+<div class="focus-tools" role="toolbar" aria-label="Classroom view controls">
+<button id="mathsOnlyToggle" type="button" aria-pressed="false" title="Hide settings and show only the mathematics">▣ Maths only</button>
+<button id="mathsFullScreen" type="button" title="Full-screen maths presentation">⛶ Full screen</button>
+</div>
 <button id="mobileSettingsToggle" class="mobile-settings-toggle" type="button" aria-expanded="false" aria-controls="mobileSettingsPanel" aria-label="Open question settings">⚙ Settings</button>
 <button id="mobileSettingsBackdrop" class="mobile-settings-backdrop" type="button" aria-label="Close question settings" hidden></button>
 <div class="settings settings-top common-settings" id="mobileSettingsPanel" aria-label="Question settings">
@@ -2447,6 +2463,21 @@ function render(){
  if(assessment.mode==='board')drawBoard();else if(assessment.mode==='worksheet')wsStatus();
 }
 window.addEventListener('resize',connectTableOperands);
+const focusToggle=$('mathsOnlyToggle');
+focusToggle.onclick=()=>{
+ const enabled=document.body.classList.toggle('maths-only');
+ focusToggle.setAttribute('aria-pressed',String(enabled));
+ focusToggle.textContent=enabled?'◧ Show controls':'▣ Maths only';
+ if(enabled&&assessment.mode!=='practice')switchMode('practice');
+ requestAnimationFrame(connectTableOperands);
+};
+$('mathsFullScreen').onclick=()=>{
+ if(document.fullscreenElement)document.exitFullscreen?.();
+ else document.documentElement.requestFullscreen?.().catch(()=>{});
+};
+document.addEventListener('fullscreenchange',()=>{
+ $('mathsFullScreen').textContent=document.fullscreenElement?'↙ Exit full screen':'⛶ Full screen';
+});
 selectQuestion(0);
 })();</script>
 </body>
