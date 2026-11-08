@@ -273,6 +273,24 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 #practicePanel .tex-solution{font-size:clamp(1.85rem,3vw,3.25rem)}
 @media(max-width:699px){#practicePanel .practice-layout{grid-template-columns:minmax(0,1fr)}}
 
+
+.header-actions{display:flex;align-items:center;gap:7px}
+.settings{gap:5px 7px}.settings .setting{gap:4px;padding:5px 7px;align-items:center}.settings .setting>strong{flex:0 0 100%}
+.settings .setting button{min-height:30px;padding:4px 7px;font-size:.75rem}
+.settings select{min-height:30px;border:1px solid #b6c8db;border-radius:6px;background:white;color:#24354b;font-size:.78rem;padding:3px 5px;max-width:115px}
+.compact-select-label{display:flex;align-items:center;gap:4px;font-size:.8rem;color:#48627d}
+.options-setting{position:relative;z-index:15}.options-menu{position:relative}
+.options-menu>summary,.bank-picker>summary{list-style:none;cursor:pointer;border:1px solid #b6c8da;background:white;border-radius:6px;padding:6px 10px;min-height:30px;font-size:.8rem;color:#214d77}
+.options-content{position:absolute;top:calc(100% + 5px);right:0;min-width:175px;display:grid;gap:9px;padding:12px;background:white;border:1px solid #c6d5e5;border-radius:8px;box-shadow:0 8px 24px #0002}
+.options-content label{white-space:nowrap;display:flex;gap:7px;align-items:center;font-size:.84rem}
+.options-content a{font-size:.81rem;color:#215f9b}
+#coefficientEditors[hidden]{display:none!important}
+#splitMain.controls-hidden .settings,#splitMain.controls-hidden .activity-switch{display:none!important}
+.bank-picker{position:relative}.bank-picker>summary{min-width:96px;font-weight:700;white-space:nowrap}
+.bank-grid{position:absolute;z-index:30;top:calc(100% + 5px);left:0;display:grid;grid-template-columns:repeat(7,32px);gap:3px;padding:9px;background:white;border:1px solid #c1d0e1;border-radius:8px;box-shadow:0 7px 22px #0002}
+.bank-grid button{min-width:30px!important;width:30px!important;height:31px!important;padding:2px!important;border-radius:5px!important;font-size:.75rem!important}
+.bank-grid .bank-axis{display:flex;justify-content:center;align-items:center;font-size:.7rem;color:#63788d;font-weight:700}
+.bank-grid button[aria-pressed="true"]{background:#215f9b!important;color:white!important}
 </style>
 </head>
 <body>
@@ -281,24 +299,19 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 <div><a class="crumb" href="../../algebra/index.html">Algebra</a> · <a class="crumb" href="../../algebra/expansions/index.html">Expansions</a> <h1>Brackets</h1><p class="tagline">Distributive property · expand and factorise</p></div>
 </header>
 <main id="splitMain">
-<div class="settings-intro"><span>Algebra › Expansions › Split the Brackets</span><button id="classroomFullscreenBtn" type="button" class="maths-classroom-toggle">Full screen</button></div>
+<div class="settings-intro"><span>Algebra › Expansions › Split the Brackets</span><div class="header-actions"><button id="settingsToggle" type="button">Hide controls</button><button id="classroomFullscreenBtn" type="button" class="maths-classroom-toggle">Full screen</button></div></div>
 <div class="settings" aria-label="Question settings">
-<div class="setting"><strong>Factor pattern</strong><div class="factor-choice" role="group" aria-label="Factor patterns">
-<button data-pattern="mb">Mono × Bin</button><button data-pattern="mt">Mono × Tri</button><button data-pattern="ll" aria-pressed="true">Lin × Lin</button><button data-pattern="lq">Lin × Quad</button><button data-pattern="qq">Quad × Quad</button><button data-pattern="lc">Lin × Cubic</button></div></div>
-<div class="setting"><strong>Variables</strong><button id="sameVarBtn">1 var</button><button id="differentVarBtn" aria-pressed="true">2 vars</button></div>
-<div class="setting"><strong>Method</strong><button id="expandBtn" aria-pressed="true">Expand</button><button id="factorBtn" aria-pressed="false">Factorise</button></div>
-<div class="setting"><strong>Options</strong><button id="hcfBtn" type="button" aria-pressed="false">HCF Off</button><button id="monicBtn" type="button" aria-pressed="false">Monic Off</button></div>
+<div class="setting"><strong>Factors</strong><div class="factor-choice"><button data-pattern="mb">Mono × Bin</button><button data-pattern="mt">Mono × Tri</button><button data-pattern="ll">Lin × Lin</button><button data-pattern="lq">Lin × Quad</button><button data-pattern="qq">Quad × Quad</button><button data-pattern="lc">Lin × Cubic</button></div></div>
+<div class="setting"><strong>Variables</strong><button id="sameVarBtn">1 var</button><button id="differentVarBtn">2 vars</button></div>
+<div class="setting"><strong>Method</strong><button id="expandBtn">Expand</button><button id="factorBtn">Factorise</button></div>
+<div class="setting"><strong>1s</strong><button data-ones="off" title="No selected coefficients equal to 1">Off</button><button data-ones="lead">Lead</button><button data-ones="middle">Middle</button><button data-ones="trail">Trail</button><select id="doublePattern" aria-label="Two coefficients equal to 1"><option value="">2 ×</option><option value="lead">2 · Lead</option><option value="trail">2 · Trail</option><option value="inner">2 · Inner</option><option value="outer">2 · Outer</option><option value="first">2 · First</option><option value="second">2 · Second</option></select><button data-ones="triple">3 ×</button></div>
 <div class="setting"><strong>Level</strong><button data-level="1">1</button><button data-level="2">2</button><button data-level="3">3</button></div>
-<div class="setting"><strong>Signs</strong><button data-sign="positive">++</button><button data-sign="negative">−−</button><button data-sign="mixed">Mixed</button><button data-sign="random">Random</button></div>
+<div class="setting"><strong>Signs</strong><label class="compact-select-label">1st <select id="signA" aria-label="First factor signs"></select></label><label class="compact-select-label">2nd <select id="signB" aria-label="Second factor signs"></select></label></div>
+<div class="setting"><strong>Challenge</strong><select id="challengeSelect"><option value="none">Off</option><option value="qc">Quad × Cubic</option><option value="cc">Cubic × Cubic</option></select></div>
+<div class="setting options-setting"><strong>More</strong><details class="options-menu"><summary>Options</summary><div class="options-content"><label><input id="hcfCheck" type="checkbox"> HCF</label><label><input id="centralZeroCheck" type="checkbox"> Central 0</label><label><input id="manualCheck" type="checkbox"> Manual</label><a href="../shared/polynomial-settings.html">Shared settings</a></div></details></div>
 </div>
 <div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
-<div class="cluster classwork"><h2>Question banks</h2><div class="buttons" id="bankButtons">
-<button data-slot="0">1</button><button data-slot="1">2</button><button data-slot="2">3</button>
-<button data-slot="3">4</button><button data-slot="4">5</button><button data-slot="5">6</button>
-<button id="bankPrevious" type="button" aria-label="Previous question">‹</button>
-<span id="bankPosition" aria-live="polite">Q 1 / 6</span>
-<button id="bankNext" type="button" aria-label="Next question">›</button>
-<button data-slot="random" type="button">Random</button></div></div>
+<div class="cluster classwork"><h2>Set / Question</h2><div class="buttons bank-strip"><details class="bank-picker" id="bankPicker"><summary id="bankSummary">Set 1 · Q 1</summary><div id="bankGrid" class="bank-grid" aria-label="Six sets of six questions"></div></details><button id="bankPrevious" type="button" aria-label="Previous question">‹</button><button id="bankNext" type="button" aria-label="Next question">›</button><button id="bankRandom" type="button">Random</button></div></div>
 <div class="cluster activities"><h2>Activities</h2><div class="buttons"><button id="instructionBtn">Instruction</button><button id="practiceBtn">Practice</button><button id="displayBtn">Display</button><button id="gameBtn">Game</button><button id="quizBtn">Quiz</button><button id="testBtn">Test</button><button id="worksheetsBtn">Sheets</button></div></div>
 
 </div>
@@ -307,7 +320,7 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 <div class="practice-maths">
 <div class="example-title" id="questionNumber"></div>
 <div class="expression" id="prompt"></div>
-<div class="editors" id="coefficientEditors" aria-label="Editable factor coefficients"></div>
+<div class="editors" id="coefficientEditors" aria-label="Editable factor coefficients" hidden></div>
 <div class="diagram" id="diagram" aria-label="Two distributive groups and four products"></div>
 <div id="partials" class="partials" aria-label="Four separate products"></div>
 
