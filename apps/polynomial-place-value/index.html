@@ -640,14 +640,21 @@ main{margin:5px auto;padding:10px 19px 18px}
 .game-panel>.primary{display:block;margin:12px auto;font-size:1.15rem}
 @media(prefers-reduced-motion:reduce){.race-bubble{animation:none;transition:none}.race-fill{transition:none}}
 
-/* Single-step scaffold: Explain is optional reasoning; Rephrase offers equivalent wording. */
-.step-support-controls{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin:0 0 7px 37px}
-.step-support-controls .step-explain-button,.step-support-controls .step-rephrase-button{margin:0;min-height:34px;padding:4px 10px;border:1px solid transparent;border-radius:6px;background:transparent;color:#215b96;font-size:.87rem;font-weight:600}
-.step-support-controls button:hover{background:#eff5fc;text-decoration:underline}
-.step-support-controls button:focus-visible{outline:3px solid #78aaff;outline-offset:1px}
-.step-support-controls button[aria-expanded=true],.step-support-controls button[aria-pressed=true]{background:#eff5fc;border-color:#c1d5e9;text-decoration:none}
+/* Light-touch, optional reading aids alongside the selected step.
+   No blue action styling, borders or coloured backgrounds. */
+.step-row{display:flex;align-items:center;flex-wrap:wrap;gap:0 6px;width:100%;min-width:0;border-bottom:1px solid #e6eaf0}
+.step-row .checklist-item{flex:1 1 180px;min-width:0;width:auto;border-bottom:0}
+.step-row .checklist-item:last-child{border-bottom:0}
+.step-row .step-support-controls{display:inline-flex;flex:0 0 auto;align-items:center;gap:8px;margin:0 0 0 auto;padding:0 0 2px}
+.step-row .step-support-controls button,
+.step-row .step-support-controls .step-explain-button,
+.step-row .step-support-controls .step-rephrase-button{font:400 .75rem/1.2 Arial,Helvetica,sans-serif;letter-spacing:0;color:#737d89;background:transparent;border:0;border-radius:2px;box-shadow:none;min-height:27px;margin:0;padding:4px 2px;text-decoration:none}
+.step-row .step-support-controls button:hover{background:transparent;color:#404a56;text-decoration:underline}
+.step-row .step-support-controls button:focus-visible{outline:2px solid #5f7185;outline-offset:1px}
+.step-row .step-support-controls button[aria-expanded=true],
+.step-row .step-support-controls button[aria-pressed=true]{background:transparent;color:#49535e;border:0;text-decoration:underline;font-weight:400}
 .step-checklist .step-current-tip{display:block;margin:0 0 12px 37px;padding:5px 0 5px 11px;max-width:48ch;border:0;border-left:3px solid #a1c3e5;border-radius:0;background:transparent;color:#324761;font-size:1.02rem;line-height:1.42}
-@media(max-width:390px){.step-support-controls{margin-left:29px;gap:3px}.step-support-controls button{font-size:.82rem;padding:5px 8px}.step-checklist .step-current-tip{margin-left:29px}}
+@media(max-width:390px){.step-row .step-support-controls{gap:6px}.step-row .step-support-controls button{font-size:.74rem}.step-checklist .step-current-tip{margin-left:29px}}
 </style>
 </head>
 <body>
@@ -1081,7 +1088,9 @@ function draw(){
     state.groupCount=n;state.groupAll=true;
     render();
    };
-   checklist.append(entry);
+   // Keep optional reading aids beside the step, not in a separate prominent row.
+   const stepRow=el('div',undefined,'step-row');
+   stepRow.append(entry);checklist.append(stepRow);
    // Once a step has been selected, give two optional, independent supports.
    if(step>0&&i===step-1&&i<6){
     const controls=el('div',undefined,'step-support-controls');
@@ -1096,7 +1105,7 @@ function draw(){
     rephrase.type='button';rephrase.setAttribute('aria-pressed',String(rephrased));
     rephrase.title='Change the way this step is worded, not the mathematics';
     rephrase.onclick=()=>{state.rephrasedStep=rephrased?-1:i;render()};
-    controls.append(explain,rephrase);checklist.append(controls);
+    controls.append(explain,rephrase);stepRow.append(controls);
     if(explanationOpen){
      const tip=el('p',rephrased?everydayInstructions[i]:instructions[i],'step-current-tip');
      tip.setAttribute('role','note');checklist.append(tip);
