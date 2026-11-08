@@ -262,13 +262,23 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 <main id="splitMain">
 <div class="settings-intro"><span>Algebra › Expansions › Split the Brackets</span><button id="classroomFullscreenBtn" type="button" class="maths-classroom-toggle">Full screen</button></div>
 <div class="settings" aria-label="Question settings">
+<div class="setting"><strong>Factor pattern</strong><div class="factor-choice" role="group" aria-label="Factor patterns">
+<button data-pattern="ll" aria-pressed="true">Lin × Lin</button><button data-pattern="lq">Lin × Quad</button><button data-pattern="qq">Quad × Quad</button><button data-pattern="lc">Lin × Cubic</button></div></div>
+<div class="setting"><strong>Variables</strong><button id="sameVarBtn">Same variable</button><button id="differentVarBtn" aria-pressed="true">Different variables</button></div>
 <div class="setting"><strong>Method</strong><button id="expandBtn" aria-pressed="true">Expand</button><button id="factorBtn" aria-pressed="false">Factorise</button></div>
+<div class="setting"><strong>HCF</strong><button id="hcfBtn" type="button" aria-pressed="false" title="Generate HCF examples and take out any HCF before distribution">Off</button></div>
 <div class="setting"><strong>Level</strong><button data-level="1">1</button><button data-level="2">2</button><button data-level="3">3</button></div>
-<div class="setting"><strong>Sign pattern</strong><button data-sign="positive">Positive</button><button data-sign="negative">Negative non-leading</button><button data-sign="mixed">Mixed</button><button data-sign="random">Random</button></div>
+<div class="setting"><strong>Signs</strong><button data-sign="positive">++</button><button data-sign="negative">−−</button><button data-sign="mixed">Mixed</button><button data-sign="random">Random</button></div>
 </div>
 <div class="activity-switch" aria-label="Classwork, activities and procedural fluency">
-<div class="cluster classwork"><h2>Question banks</h2><div class="buttons"><button data-slot="0">1</button><button data-slot="1">2</button><button data-slot="2">3</button><button data-slot="3">4</button><button data-slot="random">Random</button></div></div>
-<div class="cluster activities"><h2>Activities</h2><div class="buttons"><button id="practiceBtn">Practice</button><button id="displayBtn">Display</button><button id="quizBtn">Quiz</button><button id="testBtn">Test</button><button id="worksheetsBtn">Worksheets</button></div></div>
+<div class="cluster classwork"><h2>Question banks</h2><div class="buttons" id="bankButtons">
+<button data-slot="0">1</button><button data-slot="1">2</button><button data-slot="2">3</button>
+<button data-slot="3">4</button><button data-slot="4">5</button><button data-slot="5">6</button>
+<button id="bankPrevious" type="button" aria-label="Previous question">‹</button>
+<span id="bankPosition" aria-live="polite">Q 1 / 6</span>
+<button id="bankNext" type="button" aria-label="Next question">›</button>
+<button data-slot="random" type="button">Random</button></div></div>
+<div class="cluster activities"><h2>Activities</h2><div class="buttons"><button id="instructionBtn">Instruction</button><button id="practiceBtn">Practice</button><button id="displayBtn">Display</button><button id="gameBtn">Game</button><button id="quizBtn">Quiz</button><button id="testBtn">Test</button><button id="worksheetsBtn">Sheets</button></div></div>
 <div class="cluster procedure"><h2>Procedural fluency</h2><div class="buttons"><button id="stepsBtn">Step by step</button><button id="workedBtn">Worked</button><button id="resetBtn">Restart steps</button></div></div>
 </div>
 <section id="practicePanel" aria-label="Split the Brackets practice">
@@ -276,22 +286,18 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 <div class="practice-maths">
 <div class="example-title" id="questionNumber"></div>
 <div class="expression" id="prompt"></div>
-<div class="editors" aria-label="Editable factor coefficients">
-<label>Coefficient of x <input id="coefA" type="number" min="1" max="99" step="1" aria-label="Coefficient of x"></label>
-<label>First constant <input id="coefB" type="number" min="-99" max="99" step="1" aria-label="First constant"></label>
-<label>Coefficient of y <input id="coefC" type="number" min="1" max="99" step="1" aria-label="Coefficient of y"></label>
-<label>Second constant <input id="coefD" type="number" min="-99" max="99" step="1" aria-label="Second constant"></label>
+<div class="editors" id="coefficientEditors" aria-label="Editable factor coefficients"></div>
 </div>
 <div class="diagram" id="diagram" aria-label="Two distributive groups and four products"></div>
 <div id="partials" class="partials" aria-label="Four separate products"></div>
-<p class="status" id="status" aria-live="polite"></p>
+
 <div class="method-options" id="groupOptions" hidden><button data-group="intact">Groups intact</button><button data-group="swapped">Swap middle terms</button></div>
 <div class="working" id="working" aria-live="polite"></div>
 <p class="pedagogy" id="pedagogy">The distributive property gives the same product whether we expand directly or split into groups.</p>
 </div>
 <aside class="step-sidebar" id="stepSidebar" aria-label="Step-by-step navigation">
 <div class="steps-heading">Steps</div>
-<div id="stepItems" class="step-items" aria-label="Select a step"></div>
+<div id="stepItems" class="step-items" aria-label="Select a step"></div><p class="status" id="status" aria-live="polite"></p>
 <nav class="transport" aria-label="Move through the working">
 <button id="backStep" type="button">← Previous</button>
 <button id="nextStep" class="primary" type="button">Next →</button>
@@ -322,53 +328,126 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 'use strict';
 const $=id=>document.getElementById(id);
  const classroom=MathsClassroomFullscreen.attach({target:'#splitMain',button:'#classroomFullscreenBtn'});
-const state={level:2,sign:'positive',slot:0,seq:0,direction:'expand',mode:'practice',view:'step',step:0,group:'intact',q:null};
+const state={level:1,sign:'positive',pattern:'ll',variableMode:'different',hcfEnabled:false,slot:0,questionIndex:0,seq:0,direction:'expand',mode:'practice',view:'step',step:0,group:'intact',q:null};
 const board={cols:1,rows:1,offset:0,answers:false,cache:[]};
 const assessment={mode:null,questions:[],selected:[],completed:false,quizIndex:0};
 const positions=[['First group, first product','ax × cy'],['First group, second product','ax × d'],['Second group, first product','b × cy'],['Second group, second product','b × d']];
 function rand(seed){let x=(seed>>>0)||1234567;return (min,max)=>{x^=x<<13;x^=x>>>17;x^=x<<5;x>>>=0;return min+(x%(max-min+1))};}
-function randomSign(next){return ['positive','negative','mixed'][next(0,2)];}
-function getSign(){return state.slot===0?'positive':state.slot===1?'negative':state.slot===2||state.slot===3?'mixed':state.sign;}
+const PATTERNS={ll:[1,1],lq:[1,2],qq:[2,2],lc:[1,3]};
+const BANKS=[
+ {pattern:'ll',level:1,sign:'positive'},
+ {pattern:'ll',level:1,sign:'negative'},
+ {pattern:'lq',level:2,sign:'mixed'},
+ {pattern:'qq',level:2,sign:'mixed'},
+ {pattern:'lc',level:3,sign:'random'},
+ {pattern:'any',level:3,sign:'random'}
+];
+function gcd(a,b){
+ a=Math.abs(a);b=Math.abs(b);
+ while(b){const remainder=a%b;a=b;b=remainder}
+ return a;
+}
+function gcdArray(a){return a.reduce((g,n)=>gcd(g,n),0)||1}
+function hcfAnalysis(q){
+ const A=q.polyA||[q.a,q.b],B=q.polyB||[q.c,q.d];
+ const first=gcdArray(A),second=gcdArray(B);
+ return {first,second,factor:first*second,needed:first*second>1,
+   reduced:{...q,polyA:A.map(v=>v/first),polyB:B.map(v=>v/second)}};
+}
+function primitiveCoefficients(degree,range,next){
+ const a=Array.from({length:degree+1},()=>next(1,range));
+ if(a.every(x=>x%2===0))a[a.length-1]=1;
+ let g=gcdArray(a);
+ if(g>1)a[a.length-1]=a[a.length-1]+1;
+ if(gcdArray(a)>1)a[a.length-1]=1;
+ return a;
+}
+function randomSign(next){return ['positive','negative','mixed'][next(0,2)]}
 function generator(index=0,offset=0){
  const slot=typeof state.slot==='number'?state.slot:17;
- const next=rand((91931+state.level*7717+slot*6217+state.seq*10333+offset*50077+index*8819)>>>0);
- const range=state.level===1?3:state.level===2?7:12;
- const a=next(1,range),c=next(1,range);
- let b=next(1,range),d=next(1,range);
- const sign=getSign()==='random'?randomSign(next):getSign();
- if(sign==='negative'){b=-b;d=-d}
- else if(sign==='mixed'){if(next(0,1)){b=-b}else{d=-d}}
- return {a,b,c,d};
+ const seed=(91931+state.level*7717+slot*6217+state.seq*10333+
+  offset*50077+index*8819)>>>0,next=rand(seed);
+ const pattern=state.pattern==='any'?['ll','lq','qq','lc'][index%4]:state.pattern;
+ const [degreeA,degreeB]=PATTERNS[pattern];
+ const range=state.level===1?3:state.level===2?6:10;
+ let A=primitiveCoefficients(degreeA,range,next),B=primitiveCoefficients(degreeB,range,next);
+ const sign=state.sign==='random'?randomSign(next):state.sign;
+ if(sign==='negative'){A[A.length-1]*=-1;B[B.length-1]*=-1}
+ else if(sign==='mixed'){if(next(0,1))A[A.length-1]*=-1;else B[B.length-1]*=-1}
+ if(state.hcfEnabled){
+  const style=(index+slot+state.seq)%3;const kA=style===1?1:2+next(0,1);
+  const kB=style===0?1:2+next(0,1);
+  A=A.map(x=>x*kA);B=B.map(x=>x*kB);
+ }
+ return {a:A[0],b:A[A.length-1],c:B[0],d:B[B.length-1],
+  polyA:A,polyB:B,pattern,variableMode:state.variableMode};
 }
-function products(q){return [q.a*q.c,q.a*q.d,q.b*q.c,q.b*q.d]}
+function monomial(x,y){
+ let out='';
+ if(x)out+='x'+(x===1?'':'^'+x);
+ if(y)out+='y'+(y===1?'':'^'+y);
+ return out;
+}
+function formatPolynomial(a,letter){
+ return a.map((coefficient,i)=>({value:coefficient,var:monomial(letter==='x'?a.length-1-i:0,letter==='y'?a.length-1-i:0)}))
+  .filter(item=>item.value!==0).map((item,i)=>fmtTerm(item.value,item.var,i===0)).join('')||'0';
+}
+function binomial(a,letter,b){return '('+fmtTerm(a,letter,true)+fmtTerm(b,'',false)+')'}
+function factored(q){
+ const A=q.polyA||[q.a,q.b],B=q.polyB||[q.c,q.d];
+ return '('+formatPolynomial(A,'x')+')('+formatPolynomial(B,q.variableMode==='same'?'x':'y')+')';
+}
+function pairTerms(q){
+ const A=q.polyA||[q.a,q.b],B=q.polyB||[q.c,q.d];
+ const same=q.variableMode==='same';
+ const rows=[];
+ A.forEach((a,i)=>B.forEach((b,j)=>{
+  const px=A.length-1-i,py=B.length-1-j;
+  rows.push({value:a*b,x:px+(same?py:0),y:same?0:py,group:i});
+ }));
+ return rows;
+}
+function sumTerms(terms,collect){
+ let items=terms.filter(t=>t.value!==0);
+ if(collect){
+  const byPower=new Map();
+  for(const t of items){const key=t.x+':'+t.y;
+   if(!byPower.has(key))byPower.set(key,{value:0,x:t.x,y:t.y});
+   byPower.get(key).value+=t.value;
+  }
+  items=[...byPower.values()].filter(t=>t.value!==0)
+   .sort((a,b)=>(b.x+b.y)-(a.x+a.y)||b.x-a.x||b.y-a.y);
+ }
+ return items.map((t,i)=>fmtTerm(t.value,monomial(t.x,t.y),i===0)).join('')||'0';
+}
+function expanded(q,swap=false){
+ const terms=pairTerms(q);
+ if(swap&&terms.length===4)return sumTerms([terms[0],terms[2],terms[1],terms[3]],false);
+ return sumTerms(terms,true);
+}
+function products(q){return pairTerms(q).map(t=>t.value)}
 function fmtTerm(value,variable,first){
  const abs=Math.abs(value);
  const body=(variable&&abs===1?'':String(abs))+variable;
  const sign=value<0?(first?'−':' − '):(first?'':' + ');
  return sign+body;
 }
-function binomial(a,letter,b){return '('+fmtTerm(a,letter,true)+fmtTerm(b,'',false)+')'}
-function factored(q){return binomial(q.a,'x',q.b)+binomial(q.c,'y',q.d)}
-function expanded(q,swap=false){
- const p=products(q),terms=[{n:p[0],v:'xy'},{n:p[1],v:'x'},{n:p[2],v:'y'},{n:p[3],v:''}];
- const order=swap?[0,2,1,3]:[0,1,2,3];
- return order.map((i,j)=>fmtTerm(terms[i].n,terms[i].v,j===0)).join('');
-}
 function grouping(q,swap){
- const p=products(q);
- const groups=swap?[[0,2],[1,3]]:[[0,1],[2,3]];
- const v=['xy','x','y',''];
- return groups.map(group=>'('+group.map((i,j)=>fmtTerm(p[i],v[i],j===0)).join('')+')').join(' + ');
+ const p=products(q),groups=swap?[[0,2],[1,3]]:[[0,1],[2,3]];
+ const terms=pairTerms(q);
+ return groups.map(group=>'('+sumTerms(group.map(i=>terms[i]),false)+')').join(' + ');
 }
 function groupsFactored(q,swap){
- const lead=swap?fmtTerm(q.c,'y',true):fmtTerm(q.a,'x',true);
+ const y=q.variableMode==='same'?'x':'y';
+ const lead=swap?fmtTerm(q.c,y,true):fmtTerm(q.a,'x',true);
  const tail=swap?fmtTerm(q.d,'',false):fmtTerm(q.b,'',false);
- const same=swap?binomial(q.a,'x',q.b):binomial(q.c,'y',q.d);
+ const same=swap?binomial(q.a,'x',q.b):binomial(q.c,y,q.d);
  return lead+same+tail+same;
 }
 function divisionHint(q,swap){
+ const y=q.variableMode==='same'?'x':'y';
  if(swap)return fmtTerm(q.a*q.d,'x',true)+' ÷ '+fmtTerm(q.a,'x',true)+' = '+fmtTerm(q.d,'',true);
- return fmtTerm(q.b*q.c,'y',true)+' ÷ '+fmtTerm(q.c,'y',true)+' = '+fmtTerm(q.b,'',true);
+ return fmtTerm(q.b*q.c,y,true)+' ÷ '+fmtTerm(q.c,y,true)+' = '+fmtTerm(q.b,'',true);
 }
 function safeText(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function resetBoard(){board.offset=0;board.cache=[]}
