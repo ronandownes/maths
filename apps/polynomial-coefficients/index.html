@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Polynomial Coefficients | Expanding Brackets | Maths</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#20252b;background:#f1f3f5}
+*{box-sizing:border-box}body{margin:0;line-height:1.5}
+header{background:white;border-bottom:1px solid #d8dde3;padding:14px clamp(15px,3vw,30px)}
+header a{color:#345b81;font-size:.9rem;text-decoration:none}h1{font-size:1.5rem;margin:5px 0}
+main{width:min(900px,calc(100% - 24px));margin:18px auto;background:white;padding:clamp(16px,3vw,30px);border:1px solid #dfe3e8;border-radius:10px}
+p{margin:10px 0 18px}.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+fieldset{border:1px solid #d5dce5;border-radius:9px;padding:12px}
+legend{font-weight:750;padding:0 7px}.fields{display:flex;gap:7px;flex-wrap:wrap}.fields label{display:block;font-size:.88rem;font-weight:650;flex:1 1 70px}
+.fields input{display:block;margin-top:5px;width:100%;font:1.15rem Cambria,Georgia,serif;padding:9px;border:1px solid #b8c2cc;border-radius:6px}
+.math{font:clamp(1.17rem,2.9vw,1.8rem)/1.5 Cambria,"Cambria Math",Georgia,serif}
+.expression{background:#f8fafc;border:1px solid #dfe7f0;border-radius:8px;text-align:center;padding:16px 10px;margin:20px 0}
+button{font:700 .94rem Arial,sans-serif;border:1px solid #b7c0cb;border-radius:7px;padding:10px 13px;background:white;cursor:pointer;color:inherit}
+button.primary{background:#202124;color:white;border-color:#202124}button:disabled{opacity:.45;cursor:default}
+.buttons{display:flex;gap:8px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;margin:18px 0 10px}
+th,td{border-bottom:1px solid #dde3e9;padding:12px 10px;text-align:left;vertical-align:top}
+th{font-size:.86rem;background:#f6f8fa}
+td:nth-child(1){white-space:nowrap;font:1.3rem Cambria,Georgia,serif}
+td:nth-child(2),td:nth-child(3){font:1.14rem/1.5 Cambria,Georgia,serif}
+.note{color:#596778;font-size:.91rem}
+#answer{border-left:4px solid #353d47;padding:13px 15px;background:#f5f7f9;margin:13px 0}
+#answer[hidden]{display:none}
+@media(max-width:650px){.controls{grid-template-columns:1fr}th,td{padding:9px 6px;font-size:.9rem!important}}
+@media print{header,.buttons{display:none}main{border:0}}
+</style>
+</head>
+<body>
+<header><a href="../../algebra/expansions/index.html">Algebra → Expanding Brackets</a><h1>Polynomial Coefficients</h1></header>
+<main>
+<p>Multiply two polynomials by <strong>collecting contributions to each power of x</strong>. The coefficient of <em>x</em><sup>k</sup> comes from every pair of terms whose powers add to <em>k</em>.</p>
+<div class="controls">
+<fieldset><legend>First polynomial A(x)</legend><div class="fields">
+<label>x² coefficient<input id="a2" type="number" step="1" value="2"></label>
+<label>x coefficient<input id="a1" type="number" step="1" value="3"></label>
+<label>Constant<input id="a0" type="number" step="1" value="4"></label>
+</div></fieldset>
+<fieldset><legend>Second polynomial B(x)</legend><div class="fields">
+<label>x² coefficient<input id="b2" type="number" step="1" value="0"></label>
+<label>x coefficient<input id="b1" type="number" step="1" value="5"></label>
+<label>Constant<input id="b0" type="number" step="1" value="6"></label>
+</div></fieldset>
+</div>
+<div id="expression" class="expression math" aria-live="polite"></div>
+<p class="note">A zero x² coefficient makes the factor linear. A zero coefficient is a place-holder; it does not create a term in the simplified answer.</p>
+<h2>Reveal the coefficients</h2>
+<div class="buttons">
+<button id="next" class="primary">Next coefficient</button>
+<button id="all">Show all</button>
+<button id="reset">Reset</button>
+<button id="random">New example</button>
+</div>
+<table aria-label="Contributions to each power" aria-live="polite">
+<thead><tr><th>Power</th><th>Contributions</th><th>Coefficient</th></tr></thead><tbody id="rows"></tbody>
+</table>
+<div id="answer" hidden><strong>Expanded polynomial</strong><div class="math" id="product"></div></div>
+<p class="note">The polynomial place-value method arranges the same products in aligned columns. This activity concentrates on the <strong>coefficient calculations</strong>.</p>
+</main>
+<script>
+(() => {
+"use strict";
+const $=id=>document.getElementById(id);
+let count=0;
+const power=k=>k===0?"":k===1?"x":"x"+["","", "²","³","⁴"][k];
+function fmtPolynomial(a){const terms=[];for(let k=a.length-1;k>=0;k--){const n=a[k];if(!n)continue;const mag=Math.abs(n),body=(k===0?String(mag):(mag===1?"":String(mag))+power(k));terms.push((n<0?(terms.length?" − ":"−"):(terms.length?" + ":""))+body);}return terms.join("")||"0";}
+function input(name){const n=Number($(name).value);return Number.isFinite(n)?Math.max(-50,Math.min(50,Math.trunc(n))):0;}
+function numbers(prefix){return [0,1,2].map(i=>input(prefix+i));}
+function contributions(a,b,k){const xs=[];for(let i=0;i<=2;i++)for(let j=0;j<=2;j++)if(i+j===k)xs.push({i,j,v:a[i]*b[j]});return xs;}
+function show(){const a=numbers("a"),b=numbers("b");
+$("expression").textContent="("+fmtPolynomial(a)+")("+fmtPolynomial(b)+")";
+const out=[0,0,0,0,0],body=$("rows");body.replaceChildren();
+for(let k=4;k>=0;k--){const parts=contributions(a,b,k);out[k]=parts.reduce((sum,p)=>sum+p.v,0);const idx=4-k;if(idx>=count)continue;
+const tr=document.createElement("tr"),p=document.createElement("td"),calc=document.createElement("td"),total=document.createElement("td");
+p.textContent=k===0?"Constant":power(k);
+calc.textContent=parts.map(({i,j,v})=>"("+a[i]+"×"+b[j]+")").join(" + ");
+total.textContent=String(out[k]);tr.append(p,calc,total);body.append(tr);
+}
+$("answer").hidden=count<5;$("product").textContent=fmtPolynomial(out);
+$("next").disabled=count>=5;$("next").textContent=count>=5?"Complete":"Next coefficient ("+(count+1)+"/5)";
+}
+$("next").addEventListener("click",()=>{count=Math.min(5,count+1);show();});
+$("all").addEventListener("click",()=>{count=5;show();});
+$("reset").addEventListener("click",()=>{count=0;show();});
+$("random").addEventListener("click",()=>{for(const p of ["a","b"])for(let i=0;i<=2;i++)$(p+i).value=Math.floor(Math.random()*11)-5;count=0;show();});
+for(const p of ["a","b"])for(let i=0;i<=2;i++)$(p+i).addEventListener("input",()=>{count=0;show();});
+show();
+})();
+</script>
+<script src="../../assets/navigation.js" defer></script>
+</body></html>
