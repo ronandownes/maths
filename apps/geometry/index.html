@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Geometry Player — Maths Apps</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="stylesheet" href="shared/site.css">
+
+<style>
+:root{--ink:#202936;--blue:#1565c0;--muted:#657084;--border:#b8c2cf;--bg:#f3f6fa;--panel:#fff}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.player-page{max-width:1280px;margin:0 auto;padding:12px 14px 24px}.sequence-wrap{overflow:hidden;margin:0 0 10px}.sequence-row{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 8px;scrollbar-width:thin}.sequence-row a{flex:1 0 145px;min-width:145px;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #cbd3dd;border-radius:10px;background:#fff;color:var(--ink);text-decoration:none;font-weight:800;line-height:1.12}.sequence-row a:hover,.sequence-row a:focus-visible{border-color:#7ea4d3;outline:2px solid #b8d2ef;outline-offset:1px}.sequence-row a[aria-current="page"]{border-color:var(--blue);background:#eef5ff}.sequence-row .appendix-tab{flex-basis:130px;min-width:130px;border-style:dashed}.step-no{display:grid;place-items:center;flex:0 0 28px;height:28px;border-radius:50%;background:#e9edf2;color:#455160;font-size:.84rem;font-weight:900}.sequence-row a[aria-current="page"] .step-no{background:var(--blue);color:#fff}.step-copy{display:block;min-width:0}.step-copy small{display:block;color:var(--muted);font-size:.69rem;font-weight:850;text-transform:uppercase;letter-spacing:.04em;margin-bottom:1px}.step-copy span{display:block;white-space:normal}.player-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin:0 0 9px}.eyebrow{margin:0 0 2px;color:var(--muted);font-size:.84rem;font-weight:850;text-transform:uppercase;letter-spacing:.06em}h1{margin:0;font-size:clamp(1.45rem,3vw,2.25rem);line-height:1.05}.player-head-actions{display:flex;gap:8px}.btn,.stage-dock button,.stage-dock a,.stage-dock select{min-height:42px;padding:7px 11px;border:1px solid #aab5c3;border-radius:9px;background:#fff;color:var(--ink);font:inherit;font-weight:800;text-decoration:none}.btn,.stage-dock button,.stage-dock a{cursor:pointer;display:inline-flex;align-items:center;justify-content:center}.btn:hover,.btn:focus-visible,.stage-dock button:hover,.stage-dock button:focus-visible,.stage-dock a:hover,.stage-dock a:focus-visible,.stage-dock select:focus-visible{outline:2px solid #8db2df;outline-offset:2px}.primary{background:#eef5ff!important;border-color:#8fb3df!important}
+.stage{position:relative;display:grid;grid-template-rows:auto minmax(0,1fr);background:#fff;border:2px solid var(--border);border-radius:13px;overflow:hidden;height:min(80vh,920px);min-height:640px}.stage-dock{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #d9e0e8;background:#f8fafc;z-index:5}.stage-dock .dock-title{font-weight:900;margin-right:auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stage-dock select{max-width:230px}.stage iframe{display:block;width:100%;height:100%;min-height:0;border:0;background:var(--bg)}.stage:fullscreen,.stage:-webkit-full-screen{width:100vw;height:100vh;min-height:0;border:0;border-radius:0;background:var(--bg)}.stage:fullscreen .stage-dock,.stage:-webkit-full-screen .stage-dock{padding:10px 12px}.stage:fullscreen iframe,.stage:-webkit-full-screen iframe{height:100%}
+.lesson-nav{display:flex;justify-content:space-between;gap:10px;margin-top:9px}.lesson-nav .btn{min-width:120px}.disabled{visibility:hidden}.focus-mode{overflow:hidden}.focus-mode .site-shell,.focus-mode .sequence-wrap,.focus-mode .player-head,.focus-mode .lesson-nav{display:none!important}.focus-mode .player-page{max-width:none;padding:0;margin:0}.focus-mode .stage{position:fixed;inset:0;width:100vw;height:100dvh;min-height:0;border:0;border-radius:0;z-index:9999}
+@media(max-width:760px){.player-page{padding:8px 8px 16px}.player-head{align-items:stretch;flex-direction:column;gap:7px}.player-head-actions .btn{flex:1}.stage{height:78vh;min-height:560px}.stage-dock{flex-wrap:wrap}.stage-dock .dock-title{width:100%;flex-basis:100%}.stage-dock select{flex:1;max-width:none}.stage-dock .appendix-link{display:none}.sequence-row a{flex-basis:138px;min-width:138px}}
+</style>
+</head>
+<body>
+<header class="site-shell"><div class="site-shell-inner"><a class="site-brand" href="../../index.html"><span class="site-logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Maths Apps</span></a><nav class="site-nav"><a href="../../index.html">Maths</a><a href="../../geometry/index.html">Geometry</a></nav></div></header>
+<main class="player-page">
+  <div class="sequence-wrap"><nav id="sequenceRow" class="sequence-row" aria-label="Geometry sequence"></nav></div>
+  <div class="player-head">
+    <div><p id="eyebrow" class="eyebrow"></p><h1 id="lessonTitle">Geometry</h1></div>
+    <div class="player-head-actions"><a class="btn" href="../../geometry/index.html">Geometry topics</a><button id="fullscreenBtn" class="btn primary" type="button">Full screen</button></div>
+  </div>
+  <section id="stage" class="stage" aria-label="Interactive geometry lesson">
+    <div class="stage-dock" aria-label="Student workspace controls">
+      <span id="dockTitle" class="dock-title">Geometry</span>
+      <select id="lessonSelect" aria-label="Choose geometry activity"></select>
+      <button id="dockPrev" type="button" aria-label="Previous activity">←</button>
+      <button id="dockNext" type="button" aria-label="Next activity">→</button>
+      <a class="appendix-link" href="../../geometry/index.html">Geometry topics</a>
+      <button id="dockFullscreen" class="primary" type="button">Full screen</button>
+    </div>
+    <iframe id="lessonFrame" title="Geometry lesson" allowfullscreen></iframe>
+  </section>
+  <nav class="lesson-nav" aria-label="Previous and next geometry lesson"><a id="prevBtn" class="btn" href="#">← Previous</a><a id="nextBtn" class="btn" href="#">Next →</a></nav>
+</main>
+<script>
+const LESSONS=[
+  {id:'terms',label:'Terms',kind:'Foundation',src:'terms/'},
+  {id:'notation',label:'Points & Lines',kind:'Notation 1',src:'points-lines/'},
+  {id:'axiom',label:'Two Points',kind:'Axiom 1',src:'two-points/'},
+  {id:'parts',label:'Parts of an Angle',kind:'Angle',src:'parts-of-an-angle/'},
+  {id:'angles',label:'Exploring Angles',kind:'Angle',src:'exploring-angles/'},
+  {id:'theorem',label:'Vertically Opposite',kind:'Theorem 1',src:'vertically-opposite/'}
+];
+const params=new URLSearchParams(location.search);let lessonId=params.get('lesson')||'axiom';let index=LESSONS.findIndex(x=>x.id===lessonId);if(index<0)index=0;const lesson=LESSONS[index];
+const $=id=>document.getElementById(id),sequenceRow=$('sequenceRow'),lessonTitle=$('lessonTitle'),eyebrow=$('eyebrow'),frame=$('lessonFrame'),stage=$('stage'),fullscreenBtn=$('fullscreenBtn'),dockFullscreen=$('dockFullscreen'),prevBtn=$('prevBtn'),nextBtn=$('nextBtn'),dockPrev=$('dockPrev'),dockNext=$('dockNext'),lessonSelect=$('lessonSelect'),dockTitle=$('dockTitle');
+const lessonHref=id=>`?lesson=${encodeURIComponent(id)}`;
+const appendix=document.createElement('a');appendix.className='appendix-tab';appendix.href='../../geometry/index.html';appendix.innerHTML='<span class="step-no">B</span><span class="step-copy"><small>Reference</small><span>Geometry topics</span></span>';sequenceRow.appendChild(appendix);
+LESSONS.forEach((item,i)=>{const a=document.createElement('a');a.href=lessonHref(item.id);if(item.id===lesson.id)a.setAttribute('aria-current','page');a.innerHTML=`<span class="step-no">${i+1}</span><span class="step-copy"><small>${item.kind}</small><span>${item.label}</span></span>`;sequenceRow.appendChild(a);const o=document.createElement('option');o.value=item.id;o.textContent=`${i+1}. ${item.label}`;if(item.id===lesson.id)o.selected=true;lessonSelect.appendChild(o)});
+lessonTitle.textContent=lesson.label;dockTitle.textContent=lesson.label;eyebrow.textContent=`${lesson.kind} · Step ${index+1} of ${LESSONS.length}`;document.title=`${lesson.label} — Maths Apps`;frame.title=lesson.label;frame.src=lesson.src;
+function go(i){if(i>=0&&i<LESSONS.length)location.href=lessonHref(LESSONS[i].id)}
+lessonSelect.addEventListener('change',()=>location.href=lessonHref(lessonSelect.value));dockPrev.disabled=index===0;dockNext.disabled=index===LESSONS.length-1;dockPrev.addEventListener('click',()=>go(index-1));dockNext.addEventListener('click',()=>go(index+1));
+if(index===0){prevBtn.classList.add('disabled');prevBtn.removeAttribute('href')}else prevBtn.href=lessonHref(LESSONS[index-1].id);if(index===LESSONS.length-1){nextBtn.classList.add('disabled');nextBtn.removeAttribute('href')}else nextBtn.href=lessonHref(LESSONS[index+1].id);
+const embeddedCss=`
+html{background:#f3f6fa!important}body.geometry-player-embedded{background:#f3f6fa!important;min-height:100%!important}body.geometry-player-embedded>.site-shell{display:none!important}body.geometry-player-embedded main{max-width:none!important;width:100%!important;margin:0!important;padding:10px 14px 28px!important}body.geometry-player-embedded main>h1,body.geometry-player-embedded main>.kicker,body.geometry-player-embedded main>p.kicker,body.geometry-player-embedded main>.subhead{display:none!important}body.geometry-player-embedded .toolbar,body.geometry-player-embedded .namebar{gap:7px!important;justify-content:center!important;margin:5px 0 8px!important;position:sticky!important;top:0!important;z-index:20!important;background:#f3f6faee!important;padding:5px!important;backdrop-filter:blur(4px)}body.geometry-player-embedded button{min-height:44px!important;padding:7px 11px!important;border-radius:9px!important;font-size:clamp(.95rem,1.7vw,1.12rem)!important;font-weight:800!important}body.geometry-player-embedded svg{display:block!important;width:100%!important;height:auto!important;max-height:calc(100dvh - 165px)!important;min-height:360px!important;margin:0 auto!important;border:2px solid #aab5c3!important;border-radius:12px!important;background:#fff!important}body.geometry-player-embedded .status{font-size:clamp(1.15rem,2.6vw,1.8rem)!important;line-height:1.2!important;font-weight:900!important;text-align:center!important;margin:8px 0!important}body.geometry-player-embedded .definition,body.geometry-player-embedded .card,body.geometry-player-embedded .quiz,body.geometry-player-embedded .note,body.geometry-player-embedded .learning-note,body.geometry-player-embedded .build-panel{border-radius:10px!important}body.geometry-player-embedded .definition,body.geometry-player-embedded .card,body.geometry-player-embedded .quiz,body.geometry-player-embedded .learning-note{margin-top:10px!important}body.geometry-player-embedded .exploration-intro{display:none!important}@media(min-width:900px) and (min-height:700px){body.geometry-player-embedded main{padding:8px 12px 20px!important}body.geometry-player-embedded svg{max-height:calc(100dvh - 145px)!important}}@media(max-width:640px){body.geometry-player-embedded main{padding:8px 8px 24px!important}body.geometry-player-embedded svg{min-height:300px!important;max-height:calc(100dvh - 205px)!important}body.geometry-player-embedded button{min-height:42px!important}}
+`;
+function polishEmbeddedLesson(){try{const doc=frame.contentDocument;if(!doc||!doc.body)return;doc.body.classList.add('geometry-player-embedded');let style=doc.getElementById('geometry-player-style');if(!style){style=doc.createElement('style');style.id='geometry-player-style';style.textContent=embeddedCss;doc.head.appendChild(style)}}catch(err){console.warn('Could not apply embedded lesson styling.',err)}}frame.addEventListener('load',polishEmbeddedLesson);
+function isFullscreen(){return document.fullscreenElement===stage||document.webkitFullscreenElement===stage}function setFullscreenLabels(){const active=isFullscreen()||document.body.classList.contains('focus-mode');fullscreenBtn.textContent=active?'Exit full screen':'Full screen';dockFullscreen.textContent=active?'Exit':'Full screen'}
+async function enterFullscreen(){try{if(stage.requestFullscreen){await stage.requestFullscreen();return}if(stage.webkitRequestFullscreen){stage.webkitRequestFullscreen();return}}catch(err){console.warn('Native fullscreen unavailable; using focus mode.',err)}document.body.classList.add('focus-mode');setFullscreenLabels()}
+async function leaveFullscreen(){if(document.fullscreenElement&&document.exitFullscreen){await document.exitFullscreen();return}if(document.webkitFullscreenElement&&document.webkitExitFullscreen){document.webkitExitFullscreen();return}document.body.classList.remove('focus-mode');setFullscreenLabels()}
+async function toggleFullscreen(){if(isFullscreen()||document.body.classList.contains('focus-mode'))await leaveFullscreen();else await enterFullscreen()}
+fullscreenBtn.addEventListener('click',toggleFullscreen);dockFullscreen.addEventListener('click',toggleFullscreen);document.addEventListener('fullscreenchange',()=>{document.body.classList.remove('focus-mode');setFullscreenLabels()});document.addEventListener('webkitfullscreenchange',()=>{document.body.classList.remove('focus-mode');setFullscreenLabels()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('focus-mode'))leaveFullscreen()});setFullscreenLabels();
+</script>
+</body>
+</html>
