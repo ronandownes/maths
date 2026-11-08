@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Free mathematics assessment tools and school-safe Google Classroom workflow.">
+<title>Assessment tools | Maths</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="stylesheet" href="../../assets/styles.css">
+<style>
+body {background:#f5f7fa}
+.assessment-shell{max-width:970px;margin:2rem auto;padding:0 1rem}
+.assessment-shell header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+.assessment-shell header img{width:46px;height:46px}
+.assessment-shell .panel{background:white;border:1px solid #d9dfe6;border-radius:14px;padding:clamp(1rem,4vw,2rem);margin:1rem 0}
+.assessment-shell .kicker{color:#435b73;text-transform:uppercase;font-weight:700;font-size:.78rem;letter-spacing:.08em}
+.assessment-shell h1{font-size:clamp(1.8rem,4vw,2.5rem);margin:.25rem 0 .7rem}
+.assessment-shell h2{font-size:1.3rem;margin:0 0 .7rem}
+.assessment-shell p{max-width:73ch;line-height:1.55}
+.assessment-shell .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:1rem}
+.assessment-shell .tool{border:1px solid #d9dfe6;border-radius:12px;padding:1.1rem}
+.assessment-shell .tool h3{margin:0 0 .4rem}
+.assessment-shell .tag{font-size:.78rem;color:#405569;background:#eef3f8;border-radius:20px;padding:.25rem .55rem}
+.assessment-shell .tool p{margin:.5rem 0 1rem}
+.assessment-shell .primary,.assessment-shell .secondary{display:inline-block;border-radius:8px;padding:.55rem .85rem;text-decoration:none;font-weight:600}
+.assessment-shell .primary{background:#195b81;color:white}
+.assessment-shell .secondary{border:1px solid #8aa2b8;color:#21445a;background:white}
+.assessment-shell .links{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.assessment-shell label{display:block;font-weight:600;margin:.6rem 0 .25rem}
+.assessment-shell select{font:inherit;width:100%;max-width:560px;padding:.55rem;background:white;border:1px solid #8999a8;border-radius:6px}
+.assessment-shell button{font:inherit;cursor:pointer}
+.assessment-shell .message{min-height:1.2rem;font-size:.9rem}
+.assessment-shell .note{border-left:4px solid #477b93;background:#eef5f7;padding:.75rem 1rem}
+.assessment-shell li{margin:.4rem 0}
+@media print{body{background:white}.assessment-shell .panel{border:none}.assessment-shell button{display:none}}
+</style>
+</head>
+<body>
+<div class="assessment-shell">
+<header><a href="../../index.html" aria-label="Maths home"><img alt="Maths four-dot logo" src="../../assets/maths-logo.svg"></a><a href="../../index.html">Maths</a><span aria-hidden="true">/</span><strong>Assessment tools</strong></header>
+<main>
+<div class="panel">
+<p class="kicker">Teacher tools · free software</p>
+<h1>Mathematics assessment</h1>
+<p>Choose the assessment engine for the task. This page is a directory and a classroom workflow, not a hosted WeBWorK, STACK, Numbas or Runestone server. No pupil data is collected by this page.</p>
+<div class="grid">
+<section class="tool"><h3>Numbas</h3><span class="tag">Start here · no-cost standalone quizzes</span><p>Create randomised self-marking maths questions. The free editor can export a standalone assessment that runs in a browser. Standalone scores are not stored centrally.</p><div class="links"><a class="primary" href="https://numbas.mathcentre.ac.uk/" target="_blank" rel="noopener noreferrer">Open free editor</a><a class="secondary" href="https://docs.numbas.org.uk/en/latest/" target="_blank" rel="noopener noreferrer">Guide</a></div></section>
+<section class="tool"><h3>WeBWorK</h3><span class="tag">Open problem library · server required</span><p>Large mathematics homework library and detailed answer feedback. The software is free, but a live class needs an approved WeBWorK hosting arrangement.</p><div class="links"><a class="primary" href="https://openwebwork.org/" target="_blank" rel="noopener noreferrer">Explore WeBWorK</a><a class="secondary" href="https://github.com/openwebwork/webwork-open-problem-library" target="_blank" rel="noopener noreferrer">Question library</a></div></section>
+<section class="tool"><h3>STACK</h3><span class="tag">Algebra with Maxima · server required</span><p>Computer algebra can recognise equivalent expressions and give targeted feedback on common errors. Free software; typically delivered through Moodle or an LTI-enabled host.</p><div class="links"><a class="primary" href="https://stack-assessment.org/GetStarted/" target="_blank" rel="noopener noreferrer">Try the demo</a><a class="secondary" href="https://docs.stack-assessment.org/en/" target="_blank" rel="noopener noreferrer">Guide</a></div></section>
+<section class="tool"><h3>Runestone</h3><span class="tag">Interactive textbook courses</span><p>Supports interactive PreTeXt books and instructor courses. Course enrolment and recorded progress require the school to approve the hosted service and pupil data processing.</p><div class="links"><a class="primary" href="https://runestone.academy/ns/books/index" target="_blank" rel="noopener noreferrer">Browse free books</a><a class="secondary" href="https://guide.runestone.academy/" target="_blank" rel="noopener noreferrer">Instructor guide</a></div></section>
+</div>
+</div>
+<div class="panel">
+<h2>Use with Google Classroom</h2>
+<p>The simple, free option is to attach a link to an activity as an assignment or class material. This does not automatically copy scores into Google Classroom. Use your school's approved Classroom account and obtain approval before collecting identifiable pupil results.</p>
+<label for="lesson">Select an existing Maths activity</label>
+<select id="lesson">
+<option value="https://ronandownes.github.io/maths/apps/split-brackets/index.html">Algebra — split brackets</option>
+<option value="https://ronandownes.github.io/maths/apps/polynomial-place-value/index.html">Algebra — place-value multiplication</option>
+<option value="https://ronandownes.github.io/maths/apps/probability/tree-diagrams/index.html">Probability — tree diagrams</option>
+<option value="https://ronandownes.github.io/maths/apps/probability/two-way-tables/index.html">Probability — two-way tables</option>
+<option value="https://ronandownes.github.io/maths/apps/sets/index.html">Number — sets</option>
+</select>
+<p class="links"><button type="button" id="copy-lesson" class="primary">Copy activity link</button><a class="secondary" href="https://classroom.google.com/" target="_blank" rel="noopener noreferrer">Open Google Classroom</a></p>
+<p class="message" role="status" id="copy-status"></p>
+<ol><li>Open your school's Google Classroom course.</li><li>Go to <strong>Classwork → Create → Assignment</strong> (or <strong>Material</strong> for ungraded practice).</li><li>Add the copied URL using <strong>Link</strong> and write your instructions.</li><li>Review the assigned class and pupils, then publish from your own school account.</li></ol>
+<p class="note"><strong>Privacy:</strong> This page uses no analytics or database, and never asks students to enter names. Do not upload identifiable pupil marks or rosters to a personal GitHub repository or third-party service without school authorisation.</p>
+</div>
+</main>
+</div>
+<script>
+(() => {
+  const btn=document.getElementById('copy-lesson');
+  const selected=document.getElementById('lesson');
+  const status=document.getElementById('copy-status');
+  btn.addEventListener('click',async()=>{
+    try{await navigator.clipboard.writeText(selected.value);status.textContent='Activity link copied. Paste it into your Classroom assignment.';}
+    catch{status.textContent='Copy this link: '+selected.value;}
+  });
+})();
+</script>
+</body></html>
