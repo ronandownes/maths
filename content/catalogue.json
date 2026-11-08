@@ -25,7 +25,8 @@
       {
         "slug": "fractions",
         "title": "Fractions and decimals",
-        "ready": false
+        "ready": true,
+        "description": "Fraction ordering, equivalent forms, decimals and the Farey Sequences Explorer."
       },
       {
         "slug": "percentages",
