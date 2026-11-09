@@ -149,7 +149,19 @@ box-shadow:0 12px 28px #16375a66;padding:14px;color:#24476e}
 .ft-sheet footer{color:#647c94;font:12px/1.4 system-ui;margin-top:12px}
 .skip-paper{display:inline-block;margin-left:10px;background:#edf3fa;color:#58718a;
 border-radius:5px;padding:2px 7px;font:750 13px system-ui}
-.mathrow.calculator-display{color:#667c95}.mathrow.truncated-value{color:#315f8b}</style></head>
+.mathrow.calculator-display{color:#667c95}.mathrow.truncated-value{color:#315f8b}
+.unknown{color:#087d6c;font-weight:850}.mathrow.classify{color:#283e54}
+#step-restart{background:#edf5ff;color:#245c91;border-color:#a9c7e9}
+.step-controls{display:flex;flex-wrap:wrap}.step-controls button{flex:1 1 auto;min-width:0}
+#diagram-back{display:none}
+.main.diagram-only{grid-template-columns:minmax(0,1fr)!important;height:100dvh!important;max-height:100dvh!important;overflow:hidden!important}
+.main.diagram-only #symbols-panel,.main.diagram-only #language-panel,.main.diagram-only>.splitter{display:none!important}
+.main.diagram-only #visual-panel{width:100%;height:100%!important;overflow:auto!important}
+.main.diagram-only #visual-panel .diagram{min-height:calc(100% - 40px);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.main.diagram-only #visual-panel svg{width:min(95vw,1300px);max-height:72vh!important;height:75vh}
+.main.diagram-only #visual-panel .resize,.main.diagram-only #visual-panel .diagram-preset{display:none}
+.main.diagram-only #diagram-back{display:inline-flex;align-self:flex-start;margin:9px}
+</style></head>
 <body>
 <button type="button" class="chrome-hotzone" id="chrome-hotzone" aria-label="Reveal settings">Controls ▾</button>
 <div id="app-chrome" class="app-chrome">
@@ -176,7 +188,7 @@ border-radius:5px;padding:2px 7px;font:750 13px system-ui}
 </div>
 </div>
 <main class="main" id="main">
-<section class="panel diagram-panel" id="visual-panel"><div class="panel-head">Visual maths</div><div class="diagram">
+<section class="panel diagram-panel" id="visual-panel"><div class="panel-head">Visual maths</div><div class="diagram"><button id="diagram-back" type="button">← Back to lesson</button>
 <svg id="triangle" viewBox="0 0 500 355" role="img" aria-label="Schematic triangle, not drawn to scale"><title>Schematic triangle</title></svg>
 <div class="diagram-info">Diagram not to scale. Angle category only.</div>
 <div class="diagram-preset"><label for="diagram-size">Diagram size</label><select id="diagram-size"><option value="auto" selected>Auto</option><option value="full">Full</option><option value="large">Large</option><option value="medium">Medium</option><option value="small">Small</option><option value="minimum">Minimum</option><option value="custom" disabled>Custom</option></select></div><div class="resize"><button id="shrink" type="button">Shrink diagram</button><label for="width">Width</label><input id="width" type="range" min="18" max="60" value="38" step="1" aria-label="Adjust diagram width"></div>
@@ -185,7 +197,7 @@ border-radius:5px;padding:2px 7px;font:750 13px system-ui}
 <div id="resize-visual" class="splitter" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize Visual and Symbols" aria-controls="visual-panel symbols-panel" aria-valuemin="18" aria-valuemax="60" aria-valuenow="38" title="Drag to resize · Arrow keys to adjust · Double-click to reset"></div>
 <section class="panel work" id="symbols-panel"><div class="panel-head">Symbolic maths</div><div class="mathboard" id="mathboard" aria-live="polite"><div class="blank">A = ?</div></div></section>
 <div id="resize-language" class="splitter" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize Symbols and Language" aria-controls="symbols-panel language-panel" aria-valuemin="48" aria-valuemax="84" aria-valuenow="76" title="Drag to resize · Arrow keys to adjust · Double-click to reset"></div>
-<section class="panel steps-panel" id="language-panel"><div class="panel-head">Language of maths</div><div class="steps"><div class="step-controls"><button id="back">← Back</button><button class="primary" id="next">Reveal next →</button></div>
+<section class="panel steps-panel" id="language-panel"><div class="panel-head">Language of maths</div><div class="steps"><div class="step-controls"><button id="step-restart" type="button">↺ Restart</button><button id="back">← Back</button><button class="primary" id="next">Reveal next →</button></div>
 <p class="step-progress" id="progress">0 steps revealed</p>
 <div class="instruction-list" id="outline" aria-label="Click any step to reveal the corresponding mathematics"></div></div></section>
 </main>
@@ -262,26 +274,42 @@ function buildSteps(){
  const add=(instruction,math,cls='',result='')=>items.push({instruction,math,cls,result});
  if(task==='angle'){
   const A=angle(),numer=v.b*v.b+v.c*v.c-v.a*v.a,denom=2*v.b*v.c;
-  const type=category(),oppositeSquare=v.a*v.a,otherSquares=v.b*v.b+v.c*v.c;
+  const type=category(),sq=v.a*v.a,other=v.b*v.b+v.c*v.c;
   const sign=type==='right'?'=':type==='obtuse'?'&gt;':'&lt;';
-  const resultSign=type==='right'?'=':type==='obtuse'?'&gt;':'&lt;';
-  const classification=type[0].toUpperCase()+type.slice(1)+' angle';
-  const compareMath='<span class="checkline">'+pow(v.a)+' = '+fmt(oppositeSquare)+' &nbsp;;&nbsp; '+pow(v.b)+' + '+pow(v.c)+' = '+fmt(v.b*v.b)+' + '+fmt(v.c*v.c)+' = '+fmt(otherSquares)+'</span>'+
-  '<span class="checkline">'+fmt(oppositeSquare)+' '+sign+' '+fmt(otherSquares)+' &nbsp; ⇒ &nbsp; A '+sign+' 90°</span>';
-  add('Predict angle A from the squared sides.',compareMath,'prediction','Predicted '+classification.toLowerCase());
-  if(high)add('Write the cosine rule.','a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc cos A');
-  add('Make cos A the subject.','cos A = '+frac('b<sup>2</sup> + c<sup>2</sup> − a<sup>2</sup>','2bc'));
-  add('Substitute the three side lengths.','cos A = '+frac(pow(v.b)+' + '+pow(v.c)+' − '+pow(v.a),'2 × '+fmt(v.b)+' × '+fmt(v.c)));
-  add('Calculate the numerator and denominator.','cos A = '+frac(fmt(numer),fmt(denom)));
-  if(high)add('Apply inverse cosine.','A = cos<sup>−1</sup>('+frac(fmt(numer),fmt(denom))+')');
-  add('On your calculator, use SHIFT then cos (DEG mode).',
-    'A = <span class="keycap">SHIFT</span><span class="keycap">cos</span>('+frac(fmt(numer),fmt(denom))+')');
+  add('Classify the problem: three known sides, one unknown angle.',
+      'a = '+fmt(v.a)+' &nbsp; b = '+fmt(v.b)+' &nbsp; c = '+fmt(v.c)+
+      ' &nbsp; <span class="unknown">A = ?</span>','classify','SSS → cosine rule (angle)');
+  add('Write the cosine rule. The unknown is green.',
+      'a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc <span class="unknown">cos A</span>');
+  const predicted='<span class="checkline">'+pow(v.a)+' = '+fmt(sq)+' &nbsp;;&nbsp; '+
+   pow(v.b)+' + '+pow(v.c)+' = '+fmt(v.b*v.b)+' + '+fmt(v.c*v.c)+' = '+fmt(other)+'</span>'+
+   '<span class="checkline">'+fmt(sq)+' '+sign+' '+fmt(other)+' &nbsp; ⇒ &nbsp; '+
+   '<span class="unknown">A '+sign+' 90°</span></span>';
+  add('Predict whether the angle is acute, right or obtuse.',predicted,'prediction','Predicted '+type+' angle');
+  add('Make cos A the subject.','<span class="unknown">cos A</span> = '+
+      frac('b<sup>2</sup> + c<sup>2</sup> − a<sup>2</sup>','2bc'));
+  add('Substitute the three side lengths.','<span class="unknown">cos A</span> = '+
+      frac(pow(v.b)+' + '+pow(v.c)+' − '+pow(v.a),'2 × '+fmt(v.b)+' × '+fmt(v.c)));
+  add('Calculate the numerator and denominator.','<span class="unknown">cos A</span> = '+
+      frac(fmt(numer),fmt(denom)));
+  const gcd=(a,b)=>{a=Math.abs(Math.round(a));b=Math.abs(Math.round(b));while(b){const t=b;b=a%b;a=t}return a};
+  let top=fmt(numer),bottom=fmt(denom);
+  if([numer,denom].every(x=>Math.abs(x-Math.round(x))<1e-8)){
+    const d=gcd(numer,denom);
+    if(d>1){top=fmt(numer/d);bottom=fmt(denom/d);
+      add('Reduce the fraction to its simplest form.','<span class="unknown">cos A</span> = '+frac(top,bottom));
+    }
+  }
+  add('Apply inverse cosine (cos⁻¹).','<span class="unknown">A</span> = cos<sup>−1</sup>('+frac(top,bottom)+')');
+  add('Enter SHIFT, cos in DEG mode.','<span class="unknown">A</span> = <span class="keycap">SHIFT</span> <span class="keycap">cos</span>('+frac(top,bottom)+')');
   appendStages(A,'A','°',add);
-  add('Check whether the answer is the predicted type of angle.',
-    '<span class="checkline">'+(type==='acute'?'A &lt; 90°':type==='obtuse'?'A &gt; 90°':'A = 90°')+' &nbsp; ✓</span>','prediction');
+  add('Look back: does the answer agree with your prediction?',
+     '<span class="unknown">A ≈ '+A.toFixed(Number(el('dp').value))+'°</span> &nbsp; '+sign+' 90° &nbsp; ✓',
+     'prediction','Look back ✓ '+type+' angle');
  }else{
   const a=side(),sq=a*a,low=Math.abs(v.b-v.c),hi=v.b+v.c;
   const hyp=Math.hypot(v.b,v.c),type=category(),compare=type==='right'?'=':type==='acute'?'&lt;':'&gt;';
+  add('Classify: two sides and an included angle.','b = '+fmt(v.b)+' &nbsp; c = '+fmt(v.c)+' &nbsp; A = '+fmt(v.A)+'° &nbsp; <span class="unknown">a = ?</span>','classify','SAS → cosine rule (side)');
   add('Predict the lower and upper bounds.','|'+fmt(v.b)+' − '+fmt(v.c)+'| &lt; a &lt; '+fmt(v.b)+' + '+fmt(v.c),'prediction');
   if(high)add('Write the cosine rule.','a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc cos A');
   add('Substitute the sides and included angle.','a<sup>2</sup> = '+pow(v.b)+' + '+pow(v.c)+' − 2 × '+fmt(v.b)+' × '+fmt(v.c)+' cos '+fmt(v.A)+'°');
@@ -306,7 +334,7 @@ const sideLabels=task==='angle'?{a:fmt(values.a),b:fmt(values.b),c:fmt(values.c)
  const p=P[k],q=P[l],dx=q[0]-p[0],dy=q[1]-p[1],len=Math.hypot(dx,dy),mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2;
  let nx=-dy/len,ny=dx/len;if((mx-cen[0])*nx+(my-cen[1])*ny<0){nx=-nx;ny=-ny}
  let x=Math.min(474,Math.max(25,mx+nx*29)),y=Math.min(325,Math.max(23,my+ny*29));
- svgNode('text',{x,y,'text-anchor':'middle','dominant-baseline':'middle',fill:name==='a'?'#c63842':'#20558d','font-size':35,'font-weight':750,'paint-order':'stroke',stroke:'#fff','stroke-width':7,'stroke-linejoin':'round'},sideLabels[name]);
+ svgNode('text',{x,y,'text-anchor':'middle','dominant-baseline':'middle',fill:'#263b51','font-size':35,'font-weight':750,'paint-order':'stroke',stroke:'#fff','stroke-width':7,'stroke-linejoin':'round'},sideLabels[name]);
 });
 const A=P.A,B=P.B,C=P.C;
 const ab=Math.atan2(B[1]-A[1],B[0]-A[0]),ac=Math.atan2(C[1]-A[1],C[0]-A[0]);
@@ -344,9 +372,10 @@ el('next').addEventListener('click',()=>{if(n<steps.length){n++;render()}});
 el('back').addEventListener('click',()=>{if(n>0){n--;render()}});
 el('all').addEventListener('click',()=>{n=steps.length;render()});
 el('reset').addEventListener('click',()=>{n=0;render()});
+el('step-restart').addEventListener('click',()=>{n=0;render()});
 el('new').addEventListener('click',makeQuestion);
 for(const key of ['task','level','type'])el(key).addEventListener('change',makeQuestion);
-for(const key of ['detail','dp'])el(key).addEventListener('change',()=>{n=0;buildSteps();render()});
+for(const key of ['detail','dp'])el(key).addEventListener('change',()=>{const old=n,last=old?steps[old-1]?.instruction:null;buildSteps();const index=last?steps.findIndex(x=>x.instruction===last):-1;n=old===0?0:index>=0?index+1:Math.min(old,steps.length);render()});
 el('edit').addEventListener('click',()=>{el('manual').hidden=!el('manual').hidden;syncInput()});
 el('apply').addEventListener('click',()=>{
 const a=Number(el('a').value),b=Number(el('b').value),c=Number(el('c').value);let candidate=task==='angle'?{a,b,c}:{b,c,A:c};const old=values;values=candidate;
@@ -424,6 +453,8 @@ let diagramMode='auto';
 function setDiagramMode(mode){
  if(!(mode in diagramSizes))return;
  diagramMode=mode;el('diagram-size').value=mode;
+ el('main').classList.toggle('diagram-only',mode==='full');
+ if(mode==='full')document.body.classList.add('focus-mode');
  applyColumnWidths(mode==='auto'&&document.body.classList.contains('focus-mode')?18:diagramSizes[mode],languageShare,'visual');
 }
 function markDiagramCustom(){diagramMode='custom';el('diagram-size').value='custom'}
@@ -462,6 +493,7 @@ document.addEventListener('keydown',e=>{
  }
 });
 el('diagram-size').addEventListener('change',e=>setDiagramMode(e.target.value));
+el('diagram-back').addEventListener('click',()=>setDiagramMode('auto'));
 el('width').addEventListener('input',e=>{
  markDiagramCustom();applyColumnWidths(Number(e.target.value),languageShare,'visual');
 });
