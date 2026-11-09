@@ -302,7 +302,7 @@ function editor(){
   const w=custom?(draftWidth[i]||common):common;
   const high=low+w;
   html+='<tr><td>['+nfmt(low)+', '+nfmt(high)+')</td>'+
-    '<td><input data-width="'+i+'" aria-label="Width of class '+(i+1)+'" type="number" min="0.01" max="10000" step="any" value="'+nfmt(w)+'" '+(custom?"":"disabled")+'></td>'+
+    '<td><input data-width="'+i+'" aria-label="Width of class '+(i+1)+'" type="number" min="0.01" max="10000" step="any" value="'+w+'" '+(custom?"":"disabled")+'></td>'+
     '<td><input data-frequency="'+i+'" aria-label="Frequency of class '+(i+1)+'" type="number" min="0" max="100" step="1" value="'+(draftFreq[i]===undefined?5:draftFreq[i])+'"></td></tr>';
   low=high;
  }
