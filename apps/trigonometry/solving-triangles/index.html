@@ -340,7 +340,12 @@ function createWordContext(){
  if(family==='general'){
    if(mode==='cos-side')return 'Two straight routes leave a junction at an angle of '+fmt(v.A)+'°. They measure '+fmt(v.b)+' m and '+fmt(v.c)+' m. Find the distance between their endpoints.';
    if(mode==='sin-side')return 'In a triangular field, side a is '+fmt(v.a)+' m opposite angle A = '+fmt(v.A)+'°. Another angle B is '+fmt(v.B)+'°. Calculate the side opposite B.';
-   if(mode==='sin-angle')return 'A triangle has a side of '+fmt(v.a)+' m opposite angle '+fmt(v.A)+'°, and another side of '+fmt(v.b)+' m. Find the possible angle or angles opposite the second side.';
+   if(mode==='sin-angle')return 'A triangle has a side '+fmt(v.a)+' m opposite angle '+fmt(v.A)+'°, and another side '+fmt(v.b)+' m. Find every possible angle opposite that side.';
+   if(mode==='area-value')return 'Two sides of a triangular garden measure '+fmt(v.b)+' m and '+fmt(v.c)+' m. Their included angle is '+fmt(v.A)+'°. Find its area.';
+   if(mode==='area-side')return 'A triangular sail has area '+fmt(v.K)+' m². One side measures '+fmt(v.b)+' m, with included angle '+fmt(v.A)+'°. Find the other side.';
+   if(mode==='area-angle')return 'A triangle has area '+fmt(v.K)+' m² and sides '+fmt(v.b)+' m and '+fmt(v.c)+' m. Find both possible included angles.';
+   if(mode==='area-heron')return 'A triangular field has sides '+fmt(v.a)+' m, '+fmt(v.b)+' m and '+fmt(v.c)+' m. Find its area.';
+   if(mode==='area-baseheight')return 'The base of a triangle is '+fmt(v.base)+' cm and its perpendicular height is '+fmt(v.height)+' cm. Find the area.';
    return '';
  }
  if(mode==='pyth-hypotenuse')return 'Two paths meet at a right angle. Their lengths are '+fmt(v.O)+' m and '+fmt(v.Adj)+' m. Find the straight-line distance between their far endpoints.';
@@ -771,20 +776,32 @@ function draw(){
  }else{
   let cat=classify(),P={A:[108,275],B:[445,275],C:cat==='obtuse'?[26,48]:cat==='right'?[108,57]:[277,46]},ctr=[(P.A[0]+P.B[0]+P.C[0])/3,(P.A[1]+P.B[1]+P.C[1])/3];
   drawNode('polygon',{points:['A','B','C'].map(k=>P[k].join(',')).join(' '),stroke:'#2868dc','stroke-width':5,fill:'#edf4ff','stroke-linejoin':'round'});
-  const display={a:mode==='cos-angle'?fmt(v.a):mode==='cos-side'?'?':mode==='sin-side'?fmt(v.a):fmt(v.a),
-                 b:mode==='cos-angle'||mode==='cos-side'?fmt(v.b):mode==='sin-side'?'?':fmt(v.b),
-                 c:mode==='cos-angle'||mode==='cos-side'?fmt(v.c):''};
-  drawSide(P.B,P.C,ctr,display.a,'#b92d3e');
-  drawSide(P.A,P.C,ctr,display.b,'#20558d');
-  if(display.c)drawSide(P.A,P.B,ctr,display.c,'#20558d');
+  const areaMode=mode.startsWith('area-');
+  const display=mode==='area-heron'?{a:fmt(v.a),b:fmt(v.b),c:fmt(v.c)}:
+    mode==='area-baseheight'?{a:'',b:'',c:'base '+fmt(v.base)}:
+    mode==='area-side'?{a:'',b:fmt(v.b),c:'?'}:
+    mode==='area-value'||mode==='area-angle'?{a:'',b:fmt(v.b),c:fmt(v.c)}:
+    {a:mode==='cos-angle'?fmt(v.a):mode==='cos-side'?'?':mode==='sin-side'?fmt(v.a):fmt(v.a),
+     b:mode==='cos-angle'||mode==='cos-side'?fmt(v.b):mode==='sin-side'?'?':fmt(v.b),
+     c:mode==='cos-angle'||mode==='cos-side'?fmt(v.c):''};
+  if(display.a)drawSide(P.B,P.C,ctr,display.a,'#263b51');
+  if(display.b)drawSide(P.A,P.C,ctr,display.b,'#263b51');
+  if(display.c)drawSide(P.A,P.B,ctr,display.c,'#263b51');
   const aa=Math.atan2(P.B[1]-P.A[1],P.B[0]-P.A[0]),ac=Math.atan2(P.C[1]-P.A[1],P.C[0]-P.A[0]),rr=43;
   if(cat==='right')drawNode('polyline',{points:'135,275 135,248 108,248',fill:'none',stroke:'#0b8378','stroke-width':3});
   else{let pts=[];for(let k=0;k<=24;k++){let t=ac+(aa-ac)*k/24;pts.push((P.A[0]+rr*Math.cos(t))+','+(P.A[1]+rr*Math.sin(t)));}
    drawNode('polyline',{points:pts.join(' '),fill:'none',stroke:'#078579','stroke-width':3});
   }
   let at=(aa+ac)/2;
-  textAt(P.A[0]+83*Math.cos(at),P.A[1]+83*Math.sin(at),mode==='cos-angle'?'?':fmt(v.A)+'°','#087e72',29);
+  const angleText=mode==='cos-angle'||mode==='area-angle'?'?':
+    mode==='area-heron'||mode==='area-baseheight'?'':fmt(v.A)+'°';
+  if(angleText)textAt(P.A[0]+83*Math.cos(at),P.A[1]+83*Math.sin(at),angleText,'#087e72',29);
   if(mode==='sin-side'||mode==='sin-angle')textAt(P.B[0]-70,P.B[1]-38,mode==='sin-side'?fmt(v.B)+'°':'?','#087e72',25);
+  if(areaMode){
+    const label=mode==='area-angle'||mode==='area-side'?'K = '+fmt(v.K):mode==='area-baseheight'?'height = '+fmt(v.height):'K = ?';
+    textAt(330,327,label,'#087e72',22);
+    if(mode==='area-baseheight')drawNode('line',{x1:P.C[0],y1:P.C[1],x2:P.C[0],y2:P.A[1],stroke:'#087d76','stroke-width':2,'stroke-dasharray':'6 4'});
+  }
   textAt(P.A[0]-24,P.A[1]+26,'A','#72869b',20);
  }
 }
