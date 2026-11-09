@@ -767,6 +767,12 @@ body.maths-only #lessonNavigation{display:flex!important;margin:20px auto}
 @keyframes answer-confetti{0%{transform:translate(-50%,-50%) scale(.5);opacity:1}65%{opacity:1}100%{transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(var(--turn));opacity:0}}
 @media(prefers-reduced-motion:reduce){.answer-effect-mark,.answer-effect-confetti{animation:none!important}.answer-effect-confetti{display:none!important}.answer-effect-mark{box-shadow:none}}
 @media print{.answer-effect{display:none!important}}
+
+/* Accessible classroom grid selected before presenting; each cell auto-fits its maths. */
+.activities-section #displayLayoutSelect{border:1px solid #abbdd0;border-radius:8px;min-height:38px;padding:7px 26px 7px 10px;background:#fff;color:#203854;font:600 .88rem Arial,sans-serif;max-width:170px}
+.activities-section .display-layout-label{margin-top:5px}
+.board-math-line{width:100%;min-width:0;max-width:100%;max-height:100%;align-items:center;justify-content:center}
+.board-expression,.board-answer{max-width:100%;min-width:0}
 </style>
 </head>
 <body>
@@ -806,8 +812,8 @@ LEVEL</label><select id="coefficientSelect"><option value="1">1</option><option 
 </div>
 <div class="activity-switch" aria-label="Exercises, methods and activities">
 <div class="method-select"><label for="methodSelect">Method</label><select id="methodSelect" aria-label="Choose expansion method"><option value="place-value">Place value</option><option value="stacked-margin">Stacked margin</option><option value="horizontal-rainbow">Horizontal rainbow</option><option value="split-brackets">Split brackets</option></select></div>
- <div class="homework-controls"><label class="homework-label" for="exerciseSelect">Exercises</label><select id="exerciseSelect" aria-label="Select exercise"></select><div class="legacy-exercises" hidden><nav class="top-questions" id="questions"></nav><div id="bankQuestionNav"></div></div><div class="exercise-navigation" id="exerciseNav"></div><button type="button" id="nextExercise">Next exercise →</button><button type="button" id="displaySix">Display six</button><button type="button" id="randomQuestion" class="random-question-button" aria-label="Regenerate a random question using current settings" title="Regenerate without changing settings">⟳ Regenerate</button></div>
- <div class="activity-section activities-section"><label class="activity-title" for="activitySelect">Activity</label><select id="activitySelect" aria-label="Activity"><option value="practice">Worked examples</option><option value="instruction">Instruction</option><option value="board">Display</option><option value="game">Game</option><option value="quiz">Quiz</option><option value="test">Test</option><option value="worksheet">Sheets</option></select><div class="activity-actions" aria-label="Choose activity" hidden>
+ <div class="homework-controls"><label class="homework-label" for="exerciseSelect">Exercises</label><select id="exerciseSelect" aria-label="Select exercise"></select><div class="legacy-exercises" hidden><nav class="top-questions" id="questions"></nav><div id="bankQuestionNav"></div></div><div class="exercise-navigation" id="exerciseNav"></div><button type="button" id="nextExercise">Next exercise →</button><button type="button" id="displaySix">Display grid</button><button type="button" id="randomQuestion" class="random-question-button" aria-label="Regenerate a random question using current settings" title="Regenerate without changing settings">⟳ Regenerate</button></div>
+ <div class="activity-section activities-section"><label class="activity-title" for="activitySelect">Activity</label><select id="activitySelect" aria-label="Activity"><option value="practice">Worked examples</option><option value="instruction">Instruction</option><option value="board">Display</option><option value="game">Game</option><option value="quiz">Quiz</option><option value="test">Test</option><option value="worksheet">Sheets</option></select><label class="activity-title display-layout-label" for="displayLayoutSelect">Display grid</label><select id="displayLayoutSelect" aria-label="Number of columns and rows in Display"><option value="2x2">2 × 2</option><option value="3x3">3 × 3</option><option value="3x2">3 × 2</option><option value="2x3">2 × 3</option><option value="1x1">1 × 1</option><option value="4x4">4 × 4</option><option value="custom">Custom</option></select><div class="activity-actions" aria-label="Choose activity" hidden>
   <button id="instructionMode" type="button" aria-pressed="false">Instruction</button>
   <button id="boardMode" type="button" aria-pressed="false">Display</button>
   <button id="practiceMode" type="button" hidden aria-pressed="false">Practice</button>
@@ -1165,8 +1171,17 @@ function syncQuickSelectors(){
  const nextExercise=$('nextExercise');nextExercise.disabled=assessment.started;
  nextExercise.onclick=()=>applyExerciseChoice(inExercise?(state.slot+1)%bankProfiles.length:0,0);
  const display=$('displaySix');display.disabled=assessment.started;
- display.onclick=()=>{boardState.columns=3;boardState.rows=2;boardState.offset=0;switchMode('board')};
+ display.onclick=()=>switchMode('board');
  const activity=$('activitySelect');activity.value=assessment.mode;activity.onchange=()=>switchMode(activity.value);
+ const layout=$('displayLayoutSelect'),layoutKey=boardState.columns+'x'+boardState.rows;
+ layout.value=Array.from(layout.options).some(option=>option.value===layoutKey)?layoutKey:'custom';
+ layout.disabled=assessment.started;
+ layout.onchange=()=>{
+  if(layout.value==='custom')return;
+  const [columns,rows]=layout.value.split('x').map(Number);
+  boardState.columns=columns;boardState.rows=rows;
+  if(assessment.mode==='board')drawBoard();
+ };
 }
 
 function renderSelectors(){
@@ -2149,7 +2164,7 @@ function worksheetOptions(){
  const status=el('span');status.id='wsStatus';go.onclick=printWorksheet;close.onclick=()=>switchMode('practice');
  actions.append(go,close,status);panel.append(actions);wsStatus();
 }
-const boardState={columns:2,rows:2,answers:false,offset:0,columnGap:100,rowGap:20,topMargin:40,
+const boardState={columns:2,rows:2,answers:false,offset:0,columnGap:100,rowGap:20,topMargin:18,
  items:new Map(),nextNumber:1,sourceQuestion:null};
 function resetBoardQuestions(){
  boardState.items.clear();
@@ -2208,35 +2223,46 @@ function boardQuestionAt(row,column){
  boardState.items.set(key,item);
  return item;
 }
+// Responsively cap teacher-set gaps and grow each expression to the largest font that fits.
+function applyBoardSpacing(grid){
+ if(!grid)return;
+ const width=grid.clientWidth||window.innerWidth;
+ const height=grid.clientHeight||window.innerHeight;
+ const x=boardState.columns<=1?0:Math.min(boardState.columnGap,Math.floor(width/(boardState.columns*5)));
+ const y=boardState.rows<=1?0:Math.min(boardState.rowGap,Math.floor(height/(boardState.rows*5)));
+ grid.style.columnGap=x+'px';grid.style.rowGap=y+'px';
+}
 function fitBoardQuestions(){
  const host=$('boardPanel');if(host.hidden)return;
  const grid=host.querySelector('.board-grid');if(!grid)return;
- grid.querySelectorAll('.board-question').forEach(cell=>{
-  const expr=cell.querySelector('.board-expression'),answer=cell.querySelector('.board-answer');
+ applyBoardSpacing(grid);
+ for(const cell of grid.querySelectorAll('.board-question')){
+  const expr=cell.querySelector('.board-expression');
+  const ans=cell.querySelector('.board-answer');
   const line=cell.querySelector('.board-math-line');
-  const width=Math.max(35,cell.clientWidth-20),height=Math.max(35,cell.clientHeight-22-boardState.topMargin);
-  const inline=false; // Always put the answer underneath, including on the one-question board.
-  cell.classList.remove('board-inline-wrap');
-  // Answer uses the same font size as the question, whether inline or stacked.
-  let font=Math.min(230,Math.floor(height*(inline?.45:answer?.33:.70)));
-  function sizeMath(){
+  if(!expr||!line)continue;
+  const paddingTop=Math.min(boardState.topMargin,Math.max(4,Math.floor(cell.clientHeight*.08)));
+  cell.style.paddingTop=paddingTop+'px';
+  const width=Math.max(34,cell.clientWidth-26),height=Math.max(34,cell.clientHeight-paddingTop-22);
+  line.style.gap=(ans?Math.min(16,height*.04):0)+'px';
+  function fits(font){
    expr.style.fontSize=font+'px';
-   if(answer)answer.style.fontSize=font+'px';
+   if(ans)ans.style.fontSize=font+'px';
+   const q=expr.getBoundingClientRect(),r=ans&&ans.getBoundingClientRect();
+   const stack=expr.querySelector('.board-stack-layout');
+   const stackWidth=stack?stack.getBoundingClientRect().width:q.width;
+   return stackWidth<=width+1&&q.width<=width+1&&q.height<=height+1&&
+    (!r||(r.width<=width+1&&r.height<=height+1))&&
+    line.scrollWidth<=width+1&&line.scrollHeight<=height+1;
   }
-  function tooLarge(){
-   if(inline)return line.scrollWidth>width+2||line.scrollHeight>height;
-   return expr.scrollWidth>width+2||
-    expr.scrollHeight+(answer?answer.scrollHeight+7:0)>height||
-    (answer&&answer.scrollWidth>width+2);
+  let low=10,high=Math.min(230,Math.max(16,Math.floor(height*.85))),best=10;
+  while(low<=high){
+   const candidate=Math.floor((low+high)/2);
+   if(fits(candidate)){best=candidate;low=candidate+1}
+   else high=candidate-1;
   }
-  sizeMath();
-  while(font>(inline?20:8)&&tooLarge()){font-=2;sizeMath()}
-  // Extremely long challenge answers can still wrap, but never shrink to illegibility.
-  if(inline&&tooLarge()){
-   cell.classList.add('board-inline-wrap');
-   while(font>14&&tooLarge()){font-=2;sizeMath()}
-  }
- });
+  fits(best);
+ }
 }
 function drawBoard(){
  ensureBoardSource();
@@ -2295,9 +2321,6 @@ function drawBoard(){
    boardState[key]=Number(slider.value);value.textContent=slider.value+'px';
    const boardGrid=host.querySelector('.board-grid');
    if(!boardGrid)return;
-   boardGrid.style.columnGap=boardState.columnGap+'px';
-   boardGrid.style.rowGap=boardState.rowGap+'px';
-   boardGrid.querySelectorAll('.board-question').forEach(cell=>{cell.style.paddingTop=boardState.topMargin+'px'});
    requestAnimationFrame(fitBoardQuestions);
   };
  }
@@ -2316,7 +2339,7 @@ function drawBoard(){
  host.append(controls);
  const grid=el('div',undefined,'board-grid');
  host.append(grid);
- grid.style.columnGap=boardState.columnGap+'px';grid.style.rowGap=boardState.rowGap+'px';
+ applyBoardSpacing(grid);
  let fitPending=false;
  function resizeBoardGrid(){
   const count=boardState.columns*boardState.rows;
@@ -2337,11 +2360,16 @@ function drawBoard(){
     }
     cell.append(number,line);
     cell.classList.toggle('board-question--single',count===1);
-    cell.style.paddingTop=boardState.topMargin+'px';
+    cell.style.paddingTop=Math.min(boardState.topMargin,18)+'px';
     cells.push(cell);
    }
   }
   grid.replaceChildren(...cells);
+  const selector=$('displayLayoutSelect');
+  if(selector){
+   const key=boardState.columns+'x'+boardState.rows;
+   selector.value=Array.from(selector.options).some(option=>option.value===key)?key:'custom';
+  }
   if(!fitPending){
    fitPending=true;
    requestAnimationFrame(()=>{fitPending=false;fitBoardQuestions()});
