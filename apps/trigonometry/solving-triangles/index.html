@@ -218,27 +218,27 @@ function generate(){
  }else{
   const ratio=mode.split('-')[0];
   const theta=level===1?pick([22,33,44,55,66,77]):level===2?rng(200,750)/10:rng(2000,7500)/100;
-  if(mode==='pyth-hypotenuse')v={O:measure(),J:measure()};
+  if(mode==='pyth-hypotenuse')v={O:measure(),Adj:measure()};
   else if(mode==='pyth-leg'){
-    const J=measure(),O=measure();v={H:Math.hypot(J,O),J};
+    const Adj=measure(),O=measure();v={H:Math.hypot(Adj,O),Adj};
     // For level 1 and 2 select a familiar exact right triangle.
-    if(level===1)v={H:5,J:4};
-    if(level===2)v={H:13,J:12};
+    if(level===1)v={H:5,Adj:4};
+    if(level===2)v={H:13,Adj:12};
   }else{
-   const wanted=mode.split('-')[1],knownSide=(wanted==='opposite')?(ratio==='sin'?'H':'J'):(wanted==='hypotenuse')?(ratio==='sin'?'O':'J'):(wanted==='adjacent')?(ratio==='cos'?'H':'O'):'';
+   const wanted=mode.split('-')[1],knownSide=(wanted==='opposite')?(ratio==='sin'?'H':'Adj'):(wanted==='hypotenuse')?(ratio==='sin'?'O':'Adj'):(wanted==='adjacent')?(ratio==='cos'?'H':'O'):'';
    if(wanted==='angle'){
     if(ratio==='sin'||ratio==='cos'){
       // An angle question shows only the two supplied sides.
       let H=measure(),leg=measure();
       if(leg>=H){const t=leg;leg=H;H=t;}
-      if(leg===H)H=H*1.25;
-      v=ratio==='sin'?{O:leg,H}:{J:leg,H};
-    }else v={O:measure(),J:measure()};
+      if(leg===H){if(level===1){leg=8;H=9;}else H=H*1.25;}
+      v=ratio==='sin'?{O:leg,H}:{Adj:leg,H};
+    }else v={O:measure(),Adj:measure()};
    }else{
     v={theta};
     const given=measure();
     if(knownSide==='H')v.H=given;
-    else if(knownSide==='J')v.J=given;
+    else if(knownSide==='Adj')v.Adj=given;
     else v.O=given;
    }
   }
@@ -255,16 +255,16 @@ function valid(){
   const x=v.b*sind(v.A)/v.a;
   return ok(v.a)&&ok(v.b)&&ok(v.A)&&v.A<180&&x>0&&x<=1&&v.A+rad(Math.asin(Math.min(1,x)))<180;
  }
- if(mode==='pyth-hypotenuse')return ok(v.O)&&ok(v.J);
- if(mode==='pyth-leg')return ok(v.H)&&ok(v.J)&&v.H>v.J;
+ if(mode==='pyth-hypotenuse')return ok(v.O)&&ok(v.Adj);
+ if(mode==='pyth-leg')return ok(v.H)&&ok(v.Adj)&&v.H>v.Adj;
  const ending=mode.split('-')[1],ratio=mode.split('-')[0];
  if(ending==='angle'){
-  return ratio==='sin'?ok(v.O)&&ok(v.H)&&v.O<v.H:ratio==='cos'?ok(v.J)&&ok(v.H)&&v.J<v.H:ok(v.O)&&ok(v.J);
+  return ratio==='sin'?ok(v.O)&&ok(v.H)&&v.O<v.H:ratio==='cos'?ok(v.Adj)&&ok(v.H)&&v.Adj<v.H:ok(v.O)&&ok(v.Adj);
  }
  if(!ok(v.theta)||v.theta>=90)return false;
- if(ending==='opposite')return ratio==='sin'?ok(v.H):ok(v.J);
+ if(ending==='opposite')return ratio==='sin'?ok(v.H):ok(v.Adj);
  if(ending==='adjacent')return ratio==='cos'?ok(v.H):ok(v.O);
- if(ending==='hypotenuse')return ratio==='sin'?ok(v.O):ok(v.J);
+ if(ending==='hypotenuse')return ratio==='sin'?ok(v.O):ok(v.Adj);
  return false;
 }
 function getKeys(){
@@ -274,17 +274,17 @@ function getKeys(){
   if(mode==='sin-side')return ['a','A','B'];
   return ['a','b','A'];
  }
- if(mode==='pyth-hypotenuse')return ['O','J'];
- if(mode==='pyth-leg')return ['H','J'];
+ if(mode==='pyth-hypotenuse')return ['O','Adj'];
+ if(mode==='pyth-leg')return ['H','Adj'];
  const ending=mode.split('-')[1],ratio=mode.split('-')[0];
- if(ending==='angle')return ratio==='sin'?['O','H']:ratio==='cos'?['J','H']:['O','J'];
- if(ending==='opposite')return ratio==='sin'?['theta','H']:['theta','J'];
+ if(ending==='angle')return ratio==='sin'?['O','H']:ratio==='cos'?['Adj','H']:['O','Adj'];
+ if(ending==='opposite')return ratio==='sin'?['theta','H']:['theta','Adj'];
  if(ending==='adjacent')return ratio==='cos'?['theta','H']:['theta','O'];
- if(ending==='hypotenuse')return ratio==='sin'?['theta','O']:['theta','J'];
+ if(ending==='hypotenuse')return ratio==='sin'?['theta','O']:['theta','Adj'];
  return [];
 }
 function labelKey(key){
- return {a:'Side a',b:'Side b',c:'Side c',A:'Angle A (°)',B:'Angle B (°)',O:'Opposite',J:'Adjacent',H:'Hypotenuse',theta:'Angle θ (°)'}[key]||key;
+ return {a:'Side a',b:'Side b',c:'Side c',A:'Angle A (°)',B:'Angle B (°)',O:'Opposite',Adj:'Adjacent',H:'Hypotenuse',theta:'Angle θ (°)'}[key]||key;
 }
 function syncInputs(){
  const keys=getKeys();
@@ -307,19 +307,19 @@ function solve(){
   const first=rad(Math.asin(Math.min(1,s))),second=180-first;
   return {value:first,symbol:'B',unit:'°',alternative:v.A+second<180-1e-8&&Math.abs(first-second)>1e-7?second:null};
  }
- if(mode==='pyth-hypotenuse')return {value:Math.hypot(v.O,v.J),symbol:'H',unit:''};
- if(mode==='pyth-leg')return {value:Math.sqrt(Math.max(0,v.H*v.H-v.J*v.J)),symbol:'O',unit:''};
+ if(mode==='pyth-hypotenuse')return {value:Math.hypot(v.O,v.Adj),symbol:'H',unit:''};
+ if(mode==='pyth-leg')return {value:Math.sqrt(Math.max(0,v.H*v.H-v.Adj*v.Adj)),symbol:'O',unit:''};
  const [ratio,ending]=mode.split('-');
  if(ending==='angle'){
-  const val=ratio==='sin'?rad(Math.asin(v.O/v.H)):ratio==='cos'?rad(Math.acos(v.J/v.H)):rad(Math.atan(v.O/v.J));
+  const val=ratio==='sin'?rad(Math.asin(v.O/v.H)):ratio==='cos'?rad(Math.acos(v.Adj/v.H)):rad(Math.atan(v.O/v.Adj));
   return {value:val,symbol:'θ',unit:'°'};
  }
  const theta=v.theta,fn=ratio==='sin'?sind(theta):ratio==='cos'?cosd(theta):tand(theta);
  let val;
- if(ending==='opposite')val=ratio==='sin'?v.H*fn:v.J*fn;
+ if(ending==='opposite')val=ratio==='sin'?v.H*fn:v.Adj*fn;
  if(ending==='adjacent')val=ratio==='cos'?v.H*fn:v.O/fn;
- if(ending==='hypotenuse')val=ratio==='sin'?v.O/fn:v.J/fn;
- return {value:val,symbol:ending==='opposite'?'O':ending==='adjacent'?'J':'H',unit:''};
+ if(ending==='hypotenuse')val=ratio==='sin'?v.O/fn:v.Adj/fn;
+ return {value:val,symbol:ending==='opposite'?'O':ending==='adjacent'?'Adj':'H',unit:''};
 }
 function classify(){
  if(family!=='general')return 'right';
@@ -336,10 +336,10 @@ function numStage(value,symbol,unit,add,reference=''){
  const rounded=(Math.round((value+Number.EPSILON)*power)/power).toFixed(dp);
  const digit=truncated.slice(-1),up=Number(digit)>=5;
  const marked=truncated.slice(0,-1)+'<span class="cutmark" data-arrow="'+(up?'↑':'↓')+'">'+digit+'</span>';
- add('Calculator value. Skip with pen and paper.',symbol+' ≈ '+full+unit+' <span class="skip-paper">Skip with pen and paper</span>','calculator-display');
- add('Truncate to '+extra+' decimal place'+(extra===1?'':'s')+' (one more than '+dp+' d.p.).',
+ add('Real number — calculator value; skip with pen and paper.',symbol+' ≈ '+full+unit+' <span class="skip-paper">Skip with pen and paper</span>','calculator-display');
+ add('Truncated number: keep '+extra+' decimal place'+(extra===1?'':'s')+' (one more than '+dp+' d.p.).',
      symbol+' ≈ '+marked+unit,'truncated-value');
- add('Round to '+dp+' decimal place'+(dp===1?'':'s')+' and box the answer.',
+ add('Rounded number: use '+dp+' decimal place'+(dp===1?'':'s')+' and box the answer.',
      symbol+' ≈ <span class="box">'+rounded+unit+'</span>','final');
 }
 function buildSteps(){
@@ -388,21 +388,21 @@ function buildSteps(){
  }else{
   const parts=mode.split('-'),ratio=parts[0],kind=parts[1];
   if(ratio==='pyth'){
-   const equation='H<sup>2</sup> = O<sup>2</sup> + J<sup>2</sup>';
+   const equation='H<sup>2</sup> = O<sup>2</sup> + Adj<sup>2</sup>';
    if(high)add('Write Pythagoras’ theorem.',equation);
    if(kind==='hypotenuse'){
-    add('Substitute the two shorter sides.','H<sup>2</sup> = '+pwr(v.O)+' + '+pwr(v.J));
-    add('Calculate the square.','H<sup>2</sup> = '+fmt(v.O*v.O+v.J*v.J));
-    add('Take the positive square root.','H = √('+fmt(v.O*v.O+v.J*v.J)+')');
+    add('Substitute the two shorter sides.','H<sup>2</sup> = '+pwr(v.O)+' + '+pwr(v.Adj));
+    add('Calculate the square.','H<sup>2</sup> = '+fmt(v.O*v.O+v.Adj*v.Adj));
+    add('Take the positive square root.','H = √('+fmt(v.O*v.O+v.Adj*v.Adj)+')');
    }else{
-    add('Rearrange to make the missing side the subject.','O<sup>2</sup> = H<sup>2</sup> − J<sup>2</sup>');
-    add('Substitute the known sides.','O<sup>2</sup> = '+pwr(v.H)+' − '+pwr(v.J));
-    add('Calculate the difference and take the square root.','O = √('+fmt(v.H*v.H-v.J*v.J)+')');
+    add('Rearrange to make the missing side the subject.','O<sup>2</sup> = H<sup>2</sup> − Adj<sup>2</sup>');
+    add('Substitute the known sides.','O<sup>2</sup> = '+pwr(v.H)+' − '+pwr(v.Adj));
+    add('Calculate the difference and take the square root.','O = √('+fmt(v.H*v.H-v.Adj*v.Adj)+')');
    }
    numStage(z.value,z.symbol,z.unit,add);
-   add('Check the hypotenuse is longest.',kind==='hypotenuse'?'H &gt; O &nbsp; and &nbsp; H &gt; J &nbsp; ✓':'H &gt; O &nbsp; ✓','prediction');
+   add('Check the hypotenuse is longest.',kind==='hypotenuse'?'H &gt; O &nbsp; and &nbsp; H &gt; Adj &nbsp; ✓':'H &gt; O &nbsp; ✓','prediction');
   }else{
-   const names={sin:'sin',cos:'cos',tan:'tan'}, ratios={sin:['O','H'],cos:['J','H'],tan:['O','J']};
+   const names={sin:'sin',cos:'cos',tan:'tan'}, ratios={sin:['O','H'],cos:['Adj','H'],tan:['O','Adj']};
    const top=ratios[ratio][0],bottom=ratios[ratio][1],R=names[ratio];
    const tag={sin:'SOH',cos:'CAH',tan:'TOA'}[ratio];
    if(high)add('Recall '+tag+'.',R+' θ = '+frac(top,bottom));
@@ -454,9 +454,9 @@ function draw(){
   const P={A:[89,277],B:[419,277],C:[419,60]},ctr=[310,204];
   drawNode('polygon',{points:Object.values(P).map(t=>t.join(',')).join(' '),stroke:'#2868dc','stroke-width':5,fill:'#edf4ff','stroke-linejoin':'round'});
   const get=k=>k in v?fmt(v[k]):k===z.symbol?'?':'';
-  drawSide(P.B,P.C,ctr,get('O')||'O','#bc3344');
-  drawSide(P.A,P.B,ctr,get('J')||'J','#20558d');
-  drawSide(P.A,P.C,ctr,get('H')||'H','#20558d');
+  drawSide(P.B,P.C,ctr,'O '+(get('O')||''),'#bc3344');
+  drawSide(P.A,P.B,ctr,'Adj '+(get('Adj')||''),'#20558d');
+  drawSide(P.A,P.C,ctr,'H '+(get('H')||''),'#20558d');
   drawNode('polyline',{points:'390,277 390,248 419,248',fill:'none',stroke:'#0b8378','stroke-width':4});
   textAt(170,242,v.theta!==undefined?fmt(v.theta)+'°':z.symbol==='θ'?'?':'θ','#087d76',30);
   textAt(69,296,'A','#6c8298',18);
