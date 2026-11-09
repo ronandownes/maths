@@ -148,12 +148,38 @@ body.focus-mode .diagram svg{max-height:min(58vh,470px)}
  body.focus-mode .chrome-hotzone{display:none!important}
  body.focus-mode .main{height:auto!important;max-height:none!important;overflow:visible!important}
  body.focus-mode .main>.panel{overflow:visible!important}}
-</style></head>
+.ft-quick{position:relative;display:inline-block;align-self:center}.ft-quick summary{cursor:pointer;list-style:none;
+border:1px solid #b4c6d7;border-radius:8px;padding:9px 12px;background:#fff;color:#1b466f;font:800 15px system-ui}
+.ft-quick summary::-webkit-details-marker{display:none}.ft-quick[open] summary{background:#e9f3ff}
+.ft-sheet{position:absolute;z-index:190;top:calc(100% + 7px);right:0;width:min(440px,90vw);
+max-height:70vh;overflow:auto;background:#fff;border:2px solid #bed0e6;border-radius:8px;
+box-shadow:0 12px 28px #16375a66;padding:14px;color:#24476e}
+.ft-sheet header{font:850 19px system-ui;border-bottom:2px solid #ccdcee;padding:0 0 8px}
+.ft-sheet header small{display:block;color:#7890a8;font-size:12px}
+.ft-sheet h4{font:750 14px system-ui;color:#326b9b;margin:12px 0 4px}
+.ft-sheet p{font:20px/1.35 Cambria,Georgia,serif;margin:2px 0 7px}
+.ft-sheet table{border-collapse:collapse;width:100%;font:17px Cambria,serif}
+.ft-sheet th,.ft-sheet td{border:1px solid #d3ddec;padding:5px;text-align:center}
+.ft-sheet footer{color:#647c94;font:12px/1.4 system-ui;margin-top:12px}
+.skip-paper{display:inline-block;margin-left:10px;background:#edf3fa;color:#58718a;
+border-radius:5px;padding:2px 7px;font:750 13px system-ui}
+.mathrow.calculator-display{color:#667c95}.mathrow.truncated-value{color:#315f8b}</style></head>
 <body>
 <button type="button" class="chrome-hotzone" id="chrome-hotzone" aria-label="Reveal settings">Controls ▾</button>
 <div id="app-chrome" class="app-chrome">
 <header class="top"><div class="brand"><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div><div class="crumb"><a href="../../../index.html">Maths Apps</a> / <a href="../../../trigonometry/index.html">Trigonometry</a></div><h1>Solving Triangles</h1></div></div>
-<div class="top-actions"><button id="edit">Data input</button><button id="all" aria-pressed="true">Show work</button><button id="reset" aria-pressed="false">Step by step</button><button id="restart">Start again</button><button id="screen">Full screen</button><button class="primary" id="new">↻ New question</button></div></header>
+<div class="top-actions"><details class="ft-quick"><summary title="Typeset Formulae and Tables reference">F&amp;T</summary>
+<div class="ft-sheet" role="region" aria-label="Formulae and Tables quick reference">
+<header>Formulae and Tables <small>Irish examination booklet</small></header>
+<h4>Triangle · p. 16</h4><p>a² = b² + c² − 2bc cos A</p><p>a/sin A = b/sin B = c/sin C</p><p>Area = ½ ab sin C</p>
+<h4>Right triangle · p. 16</h4><p>sin A = opposite/hypotenuse</p><p>cos A = adjacent/hypotenuse</p><p>tan A = opposite/adjacent</p><p>c² = a² + b²</p>
+<h4>Area · p. 9</h4><p>Area = √[s(s−a)(s−b)(s−c)]</p><p>s = (a+b+c)/2</p>
+<h4>Exact values · p. 13</h4><table><thead><tr><th></th><th>30°</th><th>45°</th><th>60°</th></tr></thead>
+<tbody><tr><th>sin</th><td>½</td><td>1/√2</td><td>√3/2</td></tr>
+<tr><th>cos</th><td>√3/2</td><td>1/√2</td><td>½</td></tr>
+<tr><th>tan</th><td>1/√3</td><td>1</td><td>√3</td></tr></tbody></table>
+<footer>Further identities: compound/double angles (p. 14); products and sums (p. 15)</footer>
+</div></details><button id="edit">Data input</button><button id="all" aria-pressed="true">Show work</button><button id="reset" aria-pressed="false">Step by step</button><button id="restart">Start again</button><button id="screen">Full screen</button><button class="primary" id="new">↻ New question</button></div></header>
 <div class="family-picker" role="group" aria-label="Triangle family">
 <button id="general" class="family-button selected" aria-pressed="true">General triangles</button>
 <button id="right" class="family-button" aria-pressed="false">Right-angled triangles</button>
@@ -387,17 +413,22 @@ function classify(){
  }
  return mode==='cos-side'?v.A===90?'right':v.A<90?'acute':'obtuse':v.A>=90?'obtuse':'acute';
 }
-function numStage(value,symbol,unit,add,reference=''){
- const dp=Number(el('dp').value),power=10**dp,extra=dp+1;
- const full=value.toFixed(Math.min(12,dp+8))+'…';
- const truncated=(Math.trunc(value*10**extra+1e-10)/10**extra).toFixed(extra);
- const rounded=(Math.round((value+Number.EPSILON)*power)/power).toFixed(dp);
- const digit=truncated.slice(-1),up=Number(digit)>=5;
- const marked=truncated.slice(0,-1)+'<span class="cutmark" data-arrow="'+(up?'↑':'↓')+'">'+digit+'</span>';
- add('Real number — calculator value; skip with pen and paper.',symbol+' ≈ '+full+unit+' <span class="skip-paper">Skip with pen and paper</span>','calculator-display');
- add('Truncated number: keep '+extra+' decimal place'+(extra===1?'':'s')+' (one more than '+dp+' d.p.).',
-     symbol+' ≈ '+marked+unit,'truncated-value');
- add('Rounded number: use '+dp+' decimal place'+(dp===1?'':'s')+' and box the answer.',
+function numStage(value,symbol,unit,add){
+ const dp=Number(el('dp').value),extra=dp+1,near=Math.round(value);
+ if(Math.abs(value-near)<1e-9){
+   add('Exact answer: no rounding is needed.',symbol+' = <span class="box">'+near+unit+'</span>','final');
+   return;
+ }
+ const calculator=value.toFixed(Math.min(12,dp+7))+'…';
+ const cut=Math.trunc((value+1e-12)*10**extra)/10**extra;
+ const trunc=cut.toFixed(extra),digit=Number(trunc.slice(-1));
+ const mark=trunc.slice(0,-1)+'<span class="cutmark" data-arrow="'+(digit>=5?'↑':'↓')+'">'+digit+'</span>';
+ const rounded=(Math.round((value+Number.EPSILON)*10**dp)/10**dp).toFixed(dp);
+ add('Real number (calculator). Skip with pen and paper.',
+     symbol+' ≈ '+calculator+unit+' <span class="skip-paper">Skip with pen and paper</span>','calculator-display');
+ add('Truncate to '+extra+' decimal place'+(extra===1?'':'s')+' (one extra digit).',
+     symbol+' ≈ '+mark+unit,'truncated-value');
+ add('Round to '+dp+' decimal place'+(dp===1?'':'s')+' and box the answer.',
      symbol+' ≈ <span class="box">'+rounded+unit+'</span>','final');
 }
 function buildSteps(){
@@ -423,6 +454,7 @@ function buildSteps(){
    add('Predict the side-length bounds.','|'+fmt(v.b)+' − '+fmt(v.c)+'| &lt; a &lt; '+fmt(v.b)+' + '+fmt(v.c),'prediction');
    if(high)add('Write the cosine rule.','a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc cos A');
    add('Substitute the sides and included angle.','a<sup>2</sup> = '+pwr(v.b)+' + '+pwr(v.c)+' − 2 × '+fmt(v.b)+' × '+fmt(v.c)+' cos '+fmt(v.A)+'°');
+   if(v.A===90)add('At 90°, cosine rule becomes Pythagoras.','cos 90° = 0 &nbsp; ⇒ &nbsp; a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup>');
    add('Calculate the square of the missing side.','a<sup>2</sup> ≈ '+(z.value*z.value).toFixed(Math.min(8,Number(el('dp').value)+2)));
    add('Take the positive square root.','a = √('+pwr(v.b)+' + '+pwr(v.c)+' − 2 × '+fmt(v.b)+' × '+fmt(v.c)+' cos '+fmt(v.A)+'°)');
    numStage(z.value,z.symbol,z.unit,add);
@@ -450,6 +482,7 @@ function buildSteps(){
   const parts=mode.split('-'),ratio=parts[0],kind=parts[1];
   if(ratio==='pyth'){
    const equation='H<sup>2</sup> = O<sup>2</sup> + Adj<sup>2</sup>';
+   if(high)add('Cosine rule with a right angle: cos 90° = 0.','c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> − 2ab cos 90° = a<sup>2</sup> + b<sup>2</sup>');
    if(high)add('Write Pythagoras’ theorem.',equation);
    if(kind==='hypotenuse'){
     add('Substitute the two shorter sides.','H<sup>2</sup> = '+pwr(v.O)+' + '+pwr(v.Adj));
