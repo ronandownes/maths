@@ -790,7 +790,7 @@ LEVEL</label><select id="coefficientSelect"><option value="1">1</option><option 
 </div>
 <div class="activity-switch" aria-label="Exercises, methods and activities">
 <div class="method-select"><label for="methodSelect">Method</label><select id="methodSelect" aria-label="Choose expansion method"><option value="place-value">Place value</option><option value="stacked-margin">Stacked margin</option><option value="horizontal-rainbow">Horizontal rainbow</option><option value="split-brackets">Split brackets</option></select></div>
- <div class="homework-controls"><label class="homework-label" for="exerciseSelect">Exercises</label><select id="exerciseSelect" aria-label="Select exercise"></select><div class="legacy-exercises" hidden><nav class="top-questions" id="questions"></nav><div id="bankQuestionNav"></div></div><div class="exercise-navigation" id="exerciseNav"></div><button type="button" id="nextExercise">Next exercise →</button><button type="button" id="displaySix">Display six</button><button type="button" id="randomQuestion" class="random-question-button" aria-label="Random question with current settings">Random</button></div>
+ <div class="homework-controls"><label class="homework-label" for="exerciseSelect">Exercises</label><select id="exerciseSelect" aria-label="Select exercise"></select><div class="legacy-exercises" hidden><nav class="top-questions" id="questions"></nav><div id="bankQuestionNav"></div></div><div class="exercise-navigation" id="exerciseNav"></div><button type="button" id="nextExercise">Next exercise →</button><button type="button" id="displaySix">Display six</button><button type="button" id="randomQuestion" class="random-question-button" aria-label="Regenerate a random question using current settings" title="Regenerate without changing settings">⟳ Regenerate</button></div>
  <div class="activity-section activities-section"><label class="activity-title" for="activitySelect">Activity</label><select id="activitySelect" aria-label="Activity"><option value="practice">Worked examples</option><option value="instruction">Instruction</option><option value="board">Display</option><option value="game">Game</option><option value="quiz">Quiz</option><option value="test">Test</option><option value="worksheet">Sheets</option></select><div class="activity-actions" aria-label="Choose activity" hidden>
   <button id="instructionMode" type="button" aria-pressed="false">Instruction</button>
   <button id="boardMode" type="button" aria-pressed="false">Display</button>
@@ -994,10 +994,11 @@ function makeQuestion(next,signOverride=null){
  const sign=signOverride||(state.sign==='random'?chooseSign(next):state.sign);
  const level=state.level,pick=items=>items[next(0,items.length-1)];
  const seq=(start,end)=>Array.from({length:end-start+1},(_,i)=>i+start);
- const pool=level===1?seq(2,11):
-  level===2?[...seq(2,25),...seq(30,35),37,...seq(40,45)]:
-  [...seq(2,59),...seq(60,65),...seq(70,75),...seq(80,85),...seq(90,95)];
- const limitedBy=max=>max>50?[2]:max>35?[2,3]:max>19?[2,3,4]:pool;
+ const pool1=[2,2,2,2,2,3,3,3,4,5,5,6,7,8,9,10,11];
+ const pool2=[...pool1,13,14,15,21,22,23,24,31,32,33,34,41,42,43,44];
+ const pool=level===1?pool1:level===2?pool2:
+  [...pool2,...seq(16,20),...seq(25,30),...seq(35,40),...seq(45,59),...seq(60,65),...seq(70,75),...seq(80,85),...seq(90,95)];
+ const limitedBy=max=>max>40?[2]:max>30?[2,3]:max>20?[2,3,4]:pool1;
  for(let trial=0;trial<2500;trial++){
   const largeFirst=next(0,1)===0;
   const a=Array.from({length:na},()=>pick(largeFirst?pool:[2,3,4]));
