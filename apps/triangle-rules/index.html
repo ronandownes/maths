@@ -90,7 +90,7 @@ cosAngle:{title:'Find the included angle',rule:'COSINE RULE',fields:[['a','BC',2
 sinSide:{title:'Find the unknown side',rule:'SINE RULE',fields:[['a','BC',20],['A','Angle A',179],['B','Angle B',179]],hint:'C: pull along AC to change BC; sideways to change angle A. B: change angle B.'},
 sinAngle:{title:'Find the unknown angle',rule:'SINE RULE',fields:[['a','BC',20],['b','AC',20],['A','Angle A',179]],hint:'C: pull along AC to change AC; sideways to change angle A. B: change BC.'},
 hidden:{title:'Find a third angle, then a side',rule:'SINE RULE',fields:[['a','BC',20],['A','Angle A',179],['C','Angle C',179]],hint:'C: pull along AC to change BC; sideways to change angle A. B: change angle C.'}};
-const state={mode:'cosSide',review:false,step:0,branch:0,projector:false,bigLabels:false,pan:{x:0,y:0},values:{cosSide:{b:11,c:17,A:72},cosAngle:{a:10,b:8,c:7},sinSide:{a:10,A:43,B:68},sinAngle:{a:10,b:14,A:30},hidden:{a:12,A:48,C:67}}};
+const state={mode:'cosSide',review:false,step:0,branch:0,projector:false,bigLabels:false,pan:{x:0,y:0},values:{cosSide:{b:11,c:17,A:72},cosAngle:{a:18,b:10,c:14},sinSide:{a:10,A:43,B:68},sinAngle:{a:10,b:14,A:30},hidden:{a:12,A:48,C:67}}};
 let drag=null,geometry=null,scale=14.5;
 function solve(){const v=state.values[state.mode];let {a,b,c,A,B,C}=v,err='',options=[];
 if(state.mode==='cosSide'){a=Math.sqrt(b*b+c*c-2*b*c*cos(A));B=degrees(Math.acos(clamp((a*a+c*c-b*b)/(2*a*c),-1,1)));C=180-A-B;}
@@ -117,12 +117,36 @@ case 'cosSide':{
  const check=['Check it makes sense',`${lo} < a < ${hi}  ✓   and   a ${comparator} √(${v.b}² + ${v.c}²) ≈ ${hyp.toFixed(2)}`,`Actual unrounded a = ${raw}… lies within the strict bounds. ${v.A===90?'At 90°, Pythagoras agrees.':v.A<90?'Acute A: less than the Pythagorean 90° side.':'Obtuse A: greater than the Pythagorean 90° side.'}`,'check'];
  return $('detail').value==='short'?[bounds,formula,paper,final,check]:[bounds,rule,formula,paper,calculator,exact,final,check];
  }
- case 'cosAngle':return[
-['Recognise the rule','Three known sides → Cosine Rule (find an angle).','The angle opposite side a is required.'],
-['Formula','A = cos⁻¹((b² + c² − a²) / (2bc))','Use inverse cosine.'],
-['Substitute',`A = cos⁻¹((${v.b}² + ${v.c}² − ${v.a}²) / (2 × ${v.b} × ${v.c}))`,'Calculator in degree mode.'],
-['Answer',`A ≈ ${fmt(z.A)}°`,'Round to two decimal places.']];
-case 'sinSide':return[
+ case 'cosAngle':{
+ // Three known side lengths. All working is generated afresh for this mode.
+ const dp=Number($('precision').value),factor=10**dp,method=$('rounding').value;
+ const cut=Math.trunc((z.A+1e-12)*factor)/factor;
+ const rounded=Math.round((z.A+Number.EPSILON)*factor)/factor;
+ const result=method==='truncate'?cut:rounded;
+ const shown=result.toFixed(dp),raw=z.A.toFixed(Math.min(10,dp+6));
+ const direction=Math.abs(rounded-cut)<1e-9?'down':'up';
+ const numerator=v.b*v.b+v.c*v.c-v.a*v.a,denominator=2*v.b*v.c,ratio=numerator/denominator;
+ const type=v.a*v.a<v.b*v.b+v.c*v.c?'acute':v.a*v.a>v.b*v.b+v.c*v.c?'obtuse':'right';
+ const sign=type==='acute'?'<':type==='obtuse'?'>':'=';
+ const adjective=type==='acute'?'less than 90°':type==='obtuse'?'greater than 90°':'equal to 90°';
+ const recognise=['Recognise the situation','Three known sides (SSS) → Cosine Rule','We want angle A, opposite side a.'];
+ const triangle=['Check that a triangle is possible',`${v.a} + ${v.b} > ${v.c};  ${v.a} + ${v.c} > ${v.b};  ${v.b} + ${v.c} > ${v.a}  ✓`,'The sum of any two sides must exceed the third.'];
+ const predict=['Predict the angle',`${v.a}² ${sign} ${v.b}² + ${v.c}²  →  A is ${type} (${adjective})`,'Compare the square of the opposite side with the sum of the squares of the adjacent sides.','prediction'];
+ const formula=['Cosine Rule','a² = b² + c² − 2bc cos A','Start with the cosine rule for the side opposite angle A.'];
+ const rearrange=['Rearrange','cos A = (b² + c² − a²) / (2bc)','Move 2bc cos A to one side, then divide by 2bc.'];
+ const paper=['Substitute on paper',`cos A = (${v.b}² + ${v.c}² − ${v.a}²) / (2 × ${v.b} × ${v.c})`,'Keep the entire numerator together and the entire denominator together.'];
+ const simplify=['Simplify',`cos A = ${numerator} / ${denominator} = ${ratio.toFixed(6)}…`,'The cosine ratio must lie between −1 and 1.'];
+ const inverse=['Inverse cosine','A = cos⁻¹((b² + c² − a²) / (2bc))','cos⁻¹ means inverse cosine, not 1 ÷ cos.'];
+ const calculator=['Calculator entry',`A = cos⁻¹((${v.b}² + ${v.c}² − ${v.a}²) ÷ (2 × ${v.b} × ${v.c}))`,'Use DEG mode. Put brackets around the full numerator and denominator.'];
+ const unrounded=['Calculator result',`A = ${raw}…°`,'Do not round until the final step.'];
+ const boxed=['Box the answer',`${raw}…°  →  ${shown}°`,method==='truncate'?`Truncate to ${dp} decimal place(s), discarding the remaining digits.`:`Round to ${dp} decimal place(s): ${direction}.`,'answer'];
+ const compare= v.a===v.b?'a = b, so A = B':v.a>v.b?'a > b, so A > B':'a < b, so A < B';
+ const check=['Check it makes sense',`0° < ${shown}° < 180°  ✓  ·  ${type}  ✓`,`${v.a}² ${sign} ${v.b}² + ${v.c}², so A must be ${adjective}. Also ${compare}: a larger side faces a larger angle. Check the actual unrounded value near boundaries.`,'check'];
+ return $('detail').value==='short'
+   ?[triangle,predict,rearrange,paper,boxed,check]
+   :[recognise,triangle,predict,formula,rearrange,paper,simplify,inverse,calculator,unrounded,boxed,check];
+ }
+ case 'sinSide':return[
 ['Recognise the rule','Known side–opposite angle pair → Sine Rule.','A side and its opposite angle are both known.'],
 ['Formula','b = a sin B / sin A','Match each side with its opposite angle.'],
 ['Substitute',`b = ${v.a} sin ${v.B}° / sin ${v.A}°`,'Calculator in degree mode.'],
@@ -139,7 +163,7 @@ default:return[
 ['Recognise Sine Rule','b = a sin B / sin A','Use the known opposite pair.'],
 ['Substitute',`b = ${v.a} sin ${fmt(z.B)}° / sin ${v.A}°`,'Calculator in degree mode.'],
 ['Answer',`b ≈ ${showLength(z.b)}`,'Round to two decimal places.']];}}
-function fields(){const mode=modes[state.mode];$('shape').disabled=state.mode!=='cosSide';$('question').textContent=mode.title;$('tag').textContent=mode.rule;$('hint').textContent=mode.hint;
+function fields(){const mode=modes[state.mode];$('shape').disabled=!(state.mode==='cosSide'||state.mode==='cosAngle');$('question').textContent=mode.title;$('tag').textContent=mode.rule;$('hint').textContent=mode.hint;
 $('fields').innerHTML=mode.fields.map(([key,label,max])=>`<div class="field"><span class="fieldname">${label}</span><button data-field="${key}" data-delta="-1" aria-label="Decrease ${label}">−</button><output id="tri3-out-${key}">${state.values[state.mode][key]}${max===179?'°':''}</output><button data-field="${key}" data-delta="1" aria-label="Increase ${label}">+</button></div>`).join('');}
 const ns='http://www.w3.org/2000/svg';function svgEl(tag,props={},value){const e=document.createElementNS(ns,tag);for(const[k,v]of Object.entries(props))e.setAttribute(k,String(v));if(value!==undefined)e.textContent=value;svg.appendChild(e);return e;}
 function caption(x,y,label,color='#16457a',fontSize=30){svgEl('text',{x,y,fill:color,'font-size':fontSize,'font-family':'system-ui,-apple-system,Segoe UI,sans-serif','font-weight':850,'text-anchor':'middle','dominant-baseline':'central','paint-order':'stroke',stroke:'#ffffff','stroke-width':8,'stroke-linejoin':'round'},label);}
@@ -197,7 +221,22 @@ card.className='workitem'+(part[3]?' '+part[3]:'')+(part[0]==='Box the answer'?'
 function setParam(key,raw,valid=true){const field=modes[state.mode].fields.find(t=>t[0]===key);if(!field)return false;const v=state.values[state.mode],old=v[key],n=clamp(Math.round(raw),1,field[2]);if(old===n)return true;v[key]=n;if(valid&&solve().err){v[key]=old;return false;}state.step=0;if(!drag)scale=fit(solve());updateDisplay();return true;}
 function switchMode(m){state.review=m==='random';state.mode=state.review?'cosSide':m;state.step=0;state.branch=0;drag=null;state.pan={x:0,y:0};$('mode').value=m;if(state.review){randomise();return;}scale=fit(solve());fields();$('dragstatus').textContent='Drag A to move the diagram; drag B or C to adjust one measurement.';updateDisplay();}
 function randomise(){let v={};const m=state.review?['cosSide','cosAngle','sinSide','sinAngle','hidden'][randomInt(0,4)]:state.mode;state.mode=m;if(m==='cosSide'){const category=$('shape').value,kind=category==='random'?['acute','right','obtuse'][randomInt(0,2)]:category;v={b:randomInt(2,20),c:randomInt(2,20),A:kind==='right'?90:kind==='acute'?randomInt(25,89):randomInt(91,155)};}
-if(m==='cosAngle'){for(let i=0;i<300;i++){const a=randomInt(3,20),b=randomInt(3,20),c=randomInt(3,20);if(a+b>c&&a+c>b&&b+c>a){v={a,b,c};break;}}if(!v.a)v={a:10,b:8,c:7};}
+if(m==='cosAngle'){
+ const category=$('shape').value,kind=category==='random'?['acute','right','obtuse'][randomInt(0,2)]:category;
+ if(kind==='right'){
+   const triples=[[3,4,5],[5,12,13],[8,15,17],[6,8,10],[9,12,15],[12,16,20]];
+   const t=triples[randomInt(0,triples.length-1)];
+   const swap=Math.random()<.5;v={a:t[2],b:t[swap?0:1],c:t[swap?1:0]};
+ } else {
+   for(let i=0;i<1200;i++){
+     const b=randomInt(3,20),c=randomInt(3,20);
+     const a=randomInt(Math.max(2,Math.abs(b-c)+1),Math.min(20,b+c-1));
+     const angle=degrees(Math.acos(clamp((b*b+c*c-a*a)/(2*b*c),-1,1)));
+     if((kind==='acute'&&angle>=25&&angle<89.8)||(kind==='obtuse'&&angle>90.2&&angle<=155)){v={a,b,c};break;}
+   }
+   if(!v.a)v=kind==='acute'?{a:12,b:13,c:14}:{a:18,b:10,c:14};
+ }
+}
 if(m==='sinSide'){let A=randomInt(25,95);v={a:randomInt(3,20),A,B:randomInt(20,Math.min(140,160-A))};}
 if(m==='sinAngle'){for(let i=0;i<300;i++){let A=randomInt(25,105),a=randomInt(3,20),b=randomInt(3,20),t=b*sin(A)/a;if(t<=1&&A+degrees(Math.asin(t))<175){v={A,a,b};break;}}if(!v.a)v={a:10,b:14,A:30};}
 if(m==='hidden'){let A=randomInt(25,100);v={a:randomInt(3,20),A,C:randomInt(25,Math.min(135,160-A))};}
@@ -239,7 +278,9 @@ $('projector').addEventListener('click',()=>{state.projector=!state.projector;ro
 $('labels').addEventListener('click',()=>{state.bigLabels=!state.bigLabels;$('labels').textContent=state.bigLabels?'A− Standard labels':'A+ Larger labels';updateDisplay();});
 $('branches').addEventListener('click',e=>{const b=e.target.closest('[data-branch]');if(b){state.branch=Number(b.dataset.branch);updateDisplay();}});
 svg.addEventListener('pointerdown',startDrag);svg.addEventListener('pointermove',moveDrag);svg.addEventListener('pointerup',endDrag);svg.addEventListener('pointercancel',endDrag);
-scale=fit(solve());fields();updateDisplay();
+const deepMode=new URLSearchParams(window.location.search).get('mode');
+ if(['cosSide','cosAngle','sinSide','sinAngle','hidden'].includes(deepMode))switchMode(deepMode);
+ else {scale=fit(solve());fields();updateDisplay();}
 })();
 </script><script src="../shared/unifying-strand.js"></script><script>MathsUnifying.mount({context:'trigonometry',bookHref:'https://ronandownes.github.io/book/chapter-trigonometry.html#trig-intro'});</script><script src="../../assets/navigation.js" defer></script>
 </body></html>
