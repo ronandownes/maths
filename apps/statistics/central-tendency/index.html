@@ -15,7 +15,7 @@ p{margin:.4rem 0 .8rem}.muted{color:#577083}.panel{border:1px solid var(--line);
 input,select{background:#fff;border:1px solid #9cafc2;border-radius:8px;padding:8px 9px;font:600 1rem system-ui,sans-serif;color:var(--ink);min-height:43px}
 select{min-width:105px}input[type=number]{width:96px}
 button{min-height:42px;cursor:pointer;background:#fff;border:1px solid #b0c5d9;border-radius:8px;padding:8px 12px;font:700 .93rem system-ui,sans-serif;color:#245c91}
-button.primary{background:#215e97;border-color:#215e97;color:#fff}button:hover{filter:brightness(.96)}
+button.primary{background:#215e97;border-color:#215e97;color:#fff}button:hover{filter:brightness(.96)}button:disabled{cursor:not-allowed;opacity:.45}
 button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid #79b9ed;outline-offset:2px}
 .switch{display:inline-flex;gap:6px;align-items:center;font-weight:650;font-size:.89rem;margin:6px 9px 4px 0}
 .switch input{min-height:0;width:18px;height:18px;accent-color:#245e99}
@@ -184,6 +184,10 @@ function plot(){
 }
 function render(){
  const s=stats(state.data);
+ $('plus').disabled=state.data.some(x=>x===MAX);
+ $('minus').disabled=state.data.some(x=>x===MIN);
+ $('plus').title=$('plus').disabled?'Cannot add 1 to all while a value is already 20':'Add 1 to every value';
+ $('minus').title=$('minus').disabled?'Cannot subtract 1 from all while a value is already 0':'Subtract 1 from every value';
  plot();
  $('dataDisplay').hidden=false;
  $('numbers').textContent=($('display').value==='sorted'?s.sorted:state.data).join('   ');
@@ -209,8 +213,8 @@ function render(){
 function setReveals(value){for(const id of ['revealMean','revealMedian','revealMode'])$(id).checked=value}
 $('size').onchange=()=>setData(randomData(Number($('size').value)));
 $('random').onclick=()=>setData(randomData(Number($('size').value)));
-$('plus').onclick=()=>{state.data=state.data.map(x=>clamp(x+1));dataChanged()};
-$('minus').onclick=()=>{state.data=state.data.map(x=>clamp(x-1));dataChanged()};
+$('plus').onclick=()=>{if(state.data.every(x=>x<MAX)){state.data=state.data.map(x=>x+1);dataChanged()}};
+$('minus').onclick=()=>{if(state.data.every(x=>x>MIN)){state.data=state.data.map(x=>x-1);dataChanged()}};
 $('reset').onclick=()=>{state.data=state.initial.slice();dataChanged()};
 $('makeBaseline').onclick=()=>{state.baseline=state.data.slice();$('trackShift').checked=true;render()};
 $('print').onclick=()=>window.print();
