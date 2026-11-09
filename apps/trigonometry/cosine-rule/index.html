@@ -2,7 +2,7 @@
 <html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cosine Rule · Maths Apps</title><link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
 <style>
-:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#183452;background:#f2f5f8;--ink:#183452;--blue:#2868dc;--line:#dce5ed;--w:23%}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#183452;background:#f2f5f8;--ink:#183452;--blue:#2868dc;--line:#dce5ed;--w:38%}
 *{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer;border:1px solid #c4d3e4;background:#fff;border-radius:9px;padding:8px 12px;color:#1b466f;font-weight:700}button:hover{background:#f1f6ff}button:disabled{opacity:.36;cursor:not-allowed}.primary{background:#2868dc;color:white;border-color:#2868dc}.primary:hover{background:#1556c7}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #9bc3ff;outline-offset:2px}
 .top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:9px clamp(12px,2vw,28px);background:white;border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:13px}.dots{display:grid;grid-template-columns:repeat(2,9px);gap:4px}.dots i{width:9px;height:9px;border-radius:50%;background:#e63329}.dots i:nth-child(2){background:#3fae49}.dots i:nth-child(3){background:#2d7dd2}.dots i:nth-child(4){background:#1a1a1a}
@@ -68,6 +68,19 @@
  .mathrow.current{font-size:clamp(28px,6vw,42px)}
 }
 
+
+/* Start with an enlarged diagram; keep all three columns at desktop widths. */
+.main{grid-template-columns:minmax(175px,var(--w)) minmax(0,1fr) minmax(215px,23%)}
+.resize{gap:7px;flex-wrap:wrap}.resize button{background:#edf5ff;color:#1c5494;border-color:#b8cdec;white-space:nowrap;font-size:13px;padding:7px 10px}
+.resize label{font-size:12px;min-width:34px}.resize input{flex:1 1 80px;min-width:75px}
+.diagram svg{max-height:480px}
+.mathrow .keycap{display:inline-block;vertical-align:middle;padding:1px 6px;margin:0 4px;border:2px solid #8b9eba;border-radius:5px;background:#f5f8fd;color:#234a78;font:800 .75em/1.3 system-ui}
+.mathrow .math-primary{margin:0}
+.mathrow .round-final{margin-top:12px}
+.mathrow .round-alternative{font-size:.6em;margin-top:5px}
+.mathrow .cutmark::before{top:-.65em}
+@media(min-width:691px) and (max-width:1100px){.main{grid-template-columns:minmax(165px,var(--w)) minmax(0,1fr) minmax(205px,24%)}}
+@media(max-width:690px){.main{grid-template-columns:1fr!important}}
 </style></head>
 <body>
 <header class="top"><div class="brand"><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div><div class="crumb"><a href="../../../index.html">Maths Apps</a> / <a href="../../../trigonometry/index.html">Trigonometry</a></div><h1>Cosine Rule</h1></div></div>
@@ -84,7 +97,7 @@
 <section class="panel diagram-panel"><div class="panel-head">Diagram</div><div class="diagram">
 <svg id="triangle" viewBox="0 0 500 355" role="img" aria-label="Schematic triangle, not drawn to scale"><title>Schematic triangle</title></svg>
 <div class="diagram-info">Diagram not to scale. Angle category only.</div>
-<div class="resize"><label for="width">Diagram width</label><input id="width" type="range" min="18" max="36" value="23" step="1"></div>
+<div class="resize"><button id="shrink" type="button">Shrink diagram</button><label for="width">Width</label><input id="width" type="range" min="18" max="43" value="38" step="1" aria-label="Adjust diagram width"></div>
 <div class="manual" id="manual" hidden><div class="inputs"><label id="label-a">a<input id="a" type="number" step="any" min="0"></label><label>b<input id="b" type="number" step="any" min="0"></label><label><span id="label-c">c</span><input id="c" type="number" step="any" min="0"></label></div><div class="validation" id="validation" role="status"></div><button id="apply">Apply values</button></div>
 </div></section>
 <section class="panel work"><div class="panel-head">Mathematics</div><div class="mathboard" id="mathboard" aria-live="polite"><div class="blank">A = ?</div></div></section>
@@ -144,57 +157,60 @@ n=0;syncInput();buildSteps();render();
 function syncInput(){el('label-a').hidden=task==='side';el('label-c').textContent=task==='angle'?'c':'A (degrees)';el('a').value=task==='angle'?values.a:'';el('b').value=values.b;el('c').value=task==='angle'?values.c:values.A;el('validation').textContent='';}
 function formatFixed(value,places){return value.toFixed(places)}
 function roundDetails(value,symbol,suffix){
- const dp=+el('dp').value,factor=10**dp,cut=Math.trunc((value+1e-11)*factor)/factor,nearest=Math.round((value+Number.EPSILON)*factor)/factor;
- const up=nearest>cut+1e-10,raw=value.toFixed(Math.min(10,dp+6)),period=raw.indexOf('.'),pos=dp===0?period+1:period+dp+1;
- const marked=raw.slice(0,pos)+'<span class="cutmark" data-arrow="'+(up?'↑':'↓')+'">'+raw.charAt(pos)+'</span>'+raw.slice(pos+1)+'…';
- const active=el('round').value==='truncate'?cut:nearest;
- const ceil=Math.ceil((value-1e-11)*factor)/factor;
- const floor=cut,upper=ceil.toFixed(dp),lower=floor.toFixed(dp);
+ const dp=+el('dp').value,factor=10**dp;
+ const cut=Math.trunc((value+1e-12)*factor)/factor;
+ const nearest=Math.round((value+Number.EPSILON)*factor)/factor;
+ const up=nearest>cut+1e-10;
+ const raw=value.toFixed(Math.min(12,dp+6));
+ const period=raw.indexOf('.'),pos=dp===0?period+1:period+dp+1;
+ const trimmed=raw.slice(0,pos+1);
+ const marked=trimmed.slice(0,-1)+'<span class="cutmark" data-arrow="'+(up?'↑':'↓')+'">'+trimmed.slice(-1)+'</span>…';
+ const result=el('round').value==='truncate'?cut:nearest;
  const alternative=el('round').value==='truncate'?nearest:cut;
- const altSymbol=el('round').value==='truncate'?'≈':'=';
- const mainSymbol=el('round').value==='truncate'?'=':'≈';
- return {marked,result:active.toFixed(dp),mainSymbol,altSymbol,alternative:alternative.toFixed(dp),upper,lower,up,suffix};
+ return {marked,result:result.toFixed(dp),alternative:alternative.toFixed(dp), up,suffix};
+}
+function previewNumber(value,extra=1){
+ const dp=+el('dp').value;
+ return value.toFixed(Math.min(12,dp+Math.max(1,extra)))+'…';
 }
 function finalMath(value,symbol,suffix){
  const r=roundDetails(value,symbol,suffix);
- const candidate='↑ '+r.upper+'&nbsp;&nbsp; ↓ '+r.lower;
- return '<div class="math-primary">'+symbol+' = '+r.marked+'</div>'+
- '<div class="math-sub">'+candidate+suffix+'</div>'+
- '<div class="round-final">'+symbol+' '+r.mainSymbol+' <span class="box">'+r.result+suffix+'</span></div>'+
- '<div class="round-alternative">'+symbol+' '+r.altSymbol+' '+r.alternative+suffix+'</div>';
+ return '<span class="math-primary">'+symbol+' = '+r.marked+'</span>'+
+  '<span class="round-final">'+symbol+' ≈ <span class="box">'+r.result+suffix+'</span></span>'+
+  (r.alternative!==r.result?'<span class="round-alternative">'+(r.up?'↓ ':'↑ ')+r.alternative+suffix+'</span>':'');
 }
 function buildSteps(){
  const v=values,high=el('detail').value==='high',items=[];
  const add=(instruction,math,cls='',result='')=>items.push({instruction,math,cls,result});
  if(task==='angle'){
-  const A=angle(),numer=v.b*v.b+v.c*v.c-v.a*v.a,denom=2*v.b*v.c,sorted=[v.a,v.b,v.c].sort((x,y)=>x-y);
-  const type=category(),sign=type==='right'?'=':type==='obtuse'?'>':'<';
-  add('Order the three sides.',sorted.map(fmt).join(' ≤ '));
-  const oppositeSquare=v.a*v.a,otherSquares=v.b*v.b+v.c*v.c;
-  const comparison=pow(v.a)+' = '+fmt(oppositeSquare)+' '+(sign==='<'?'&lt;':sign==='>'?'&gt;':'=')+' '+fmt(otherSquares)+' = '+pow(v.b)+' + '+pow(v.c);
-  const conclusion='A '+(type==='acute'?'&lt;':type==='obtuse'?'&gt;':'=')+' 90°';
+  const A=angle(),numer=v.b*v.b+v.c*v.c-v.a*v.a,denom=2*v.b*v.c;
+  const type=category(),oppositeSquare=v.a*v.a,otherSquares=v.b*v.b+v.c*v.c;
+  const sign=type==='right'?'=':type==='obtuse'?'&gt;':'&lt;';
+  const resultSign=type==='right'?'=':type==='obtuse'?'&gt;':'&lt;';
   const classification=type[0].toUpperCase()+type.slice(1)+' angle';
-  add('Classify angle A.',comparison+' &nbsp; ⇒ &nbsp; '+conclusion,'prediction',classification);
+  const compareMath=pow(v.a)+' ('+fmt(oppositeSquare)+') '+sign+' '+pow(v.b)+' + '+pow(v.c)+' ('+fmt(otherSquares)+')';
+  add('Classify angle A.',compareMath+' &nbsp; ⇒ &nbsp; A '+resultSign+' 90°','prediction',classification);
   if(high)add('Write the cosine rule.','a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc cos A');
   add('Make cos A the subject.','cos A = '+frac('b<sup>2</sup> + c<sup>2</sup> − a<sup>2</sup>','2bc'));
-  add('Substitute the lengths on paper.','cos A = '+frac(pow(v.b)+' + '+pow(v.c)+' − '+pow(v.a),'2 × '+fmt(v.b)+' × '+fmt(v.c)));
-  if(high)add('Simplify the numerator and denominator.','cos A = '+frac(fmt(numer),fmt(denom)));
+  add('Substitute the three side lengths.','cos A = '+frac(pow(v.b)+' + '+pow(v.c)+' − '+pow(v.a),'2 × '+fmt(v.b)+' × '+fmt(v.c)));
+  add('Calculate the numerator and denominator.','cos A = '+frac(fmt(numer),fmt(denom)));
   if(high)add('Apply inverse cosine.','A = cos<sup>−1</sup>('+frac(fmt(numer),fmt(denom))+')');
-  add('Enter the complete calculation in degree mode.','A = cos<sup>−1</sup>('+frac(pow(v.b)+' + '+pow(v.c)+' − '+pow(v.a),'2 × '+fmt(v.b)+' × '+fmt(v.c))+')');
-  if(high)add('Read the unrounded angle.', 'A = '+A.toFixed(8)+'…°');
-  add('Look at the first discarded digit. Round up or down; compare the alternative and box the answer.',finalMath(A,'A','°'),'final');
-  add('Check the angle against your prediction.','<span class="checkline">0° &lt; '+A.toFixed(4)+'° &lt; 180° &nbsp; ✓</span><span class="checkline">'+(type==='acute'?'A &lt; 90°':type==='obtuse'?'A &gt; 90°':'A = 90°')+' &nbsp; ✓</span>','prediction');
+  add('On your calculator, use SHIFT then cos (DEG mode).',
+    'A = <span class="keycap">SHIFT</span><span class="keycap">cos</span>('+frac(fmt(numer),fmt(denom))+')');
+  add('Read one extra digit; round up or down and box the answer.',finalMath(A,'A','°'),'final');
+  add('Check whether the answer is the predicted type of angle.',
+    '<span class="checkline">'+(type==='acute'?'A &lt; 90°':type==='obtuse'?'A &gt; 90°':'A = 90°')+' &nbsp; ✓</span>','prediction');
  }else{
   const a=side(),sq=a*a,low=Math.abs(v.b-v.c),hi=v.b+v.c;
   const hyp=Math.hypot(v.b,v.c),type=category(),compare=type==='right'?'=':type==='acute'?'&lt;':'&gt;';
   add('Predict the lower and upper bounds.','|'+fmt(v.b)+' − '+fmt(v.c)+'| &lt; a &lt; '+fmt(v.b)+' + '+fmt(v.c),'prediction');
   if(high)add('Write the cosine rule.','a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc cos A');
   add('Substitute the sides and included angle.','a<sup>2</sup> = '+pow(v.b)+' + '+pow(v.c)+' − 2 × '+fmt(v.b)+' × '+fmt(v.c)+' cos '+fmt(v.A)+'°');
-  add('Calculate the value of a squared.','a<sup>2</sup> = '+sq.toFixed(7)+'…');
-  if(high)add('Take the positive square root.','a = √('+sq.toFixed(7)+'…)');
+  add('Calculate the value of a squared.','a<sup>2</sup> = '+sq.toFixed(Math.min(8,+el('dp').value+1))+'…');
+  if(high)add('Take the positive square root.','a = √('+sq.toFixed(Math.min(8,+el('dp').value+1))+'…)');
   add('Enter the entire square-root expression in degree mode.','a = √('+pow(v.b)+' + '+pow(v.c)+' − 2 × '+fmt(v.b)+' × '+fmt(v.c)+' cos '+fmt(v.A)+'°)');
-  if(high)add('Read the unrounded side length.','a = '+a.toFixed(8)+'…');
-  add('Look at the first discarded digit. Round up or down; compare the alternative and box the answer.',finalMath(a,'a',''),'final');
+  if(high)add('Read one extra digit of the side length.','a = '+previewNumber(a));
+  add('Round up or down, then box the answer.',finalMath(a,'a',''),'final');
   add('Check the triangle bounds and the 90° comparison.','<span class="checkline">'+fmt(low)+' &lt; '+a.toFixed(4)+' &lt; '+fmt(hi)+' &nbsp; ✓</span><span class="checkline">'+a.toFixed(4)+' '+compare+' √('+pow(v.b)+' + '+pow(v.c)+') &nbsp; ✓</span>','prediction');
  }
  steps=items;n=Math.min(n,steps.length);
@@ -257,7 +273,16 @@ const a=Number(el('a').value),b=Number(el('b').value),c=Number(el('c').value);le
 if(!validate()){values=old;el('validation').textContent=task==='angle'?'Enter three positive sides satisfying the triangle inequality.':'Enter two positive sides and an angle strictly between 0° and 180°.';return}
 el('validation').textContent='';n=0;buildSteps();render();
 });
-el('width').addEventListener('input',e=>document.documentElement.style.setProperty('--w',e.target.value+'%'));
+function setDiagramWidth(value){
+  const pct=Math.max(18,Math.min(43,Number(value)));
+  document.documentElement.style.setProperty('--w',pct+'%');
+  el('width').value=String(pct);
+  el('shrink').textContent=pct<=21?'Expand diagram':'Shrink diagram';
+  el('shrink').setAttribute('aria-label',pct<=21?'Expand diagram to 38 percent of screen width':'Shrink diagram to 20 percent of screen width');
+}
+el('width').addEventListener('input',e=>setDiagramWidth(e.target.value));
+el('shrink').addEventListener('click',()=>setDiagramWidth(Number(el('width').value)<=21?38:20));
+setDiagramWidth(38);
 el('screen').addEventListener('click',()=>{if(document.fullscreenElement){document.exitFullscreen()}else{document.documentElement.requestFullscreen?.()}});
 const params=new URLSearchParams(location.search);if(params.get('task')==='side'){el('task').value='side';makeQuestion()}else{task='angle';level=1;values={a:8,b:9,c:7};syncInput();buildSteps();render()}
 })();
