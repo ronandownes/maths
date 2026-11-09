@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cosine Rule · Maths Apps</title><link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#183452;background:#f2f5f8;--ink:#183452;--blue:#2868dc;--line:#dce5ed;--w:28%}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer;border:1px solid #c4d3e4;background:#fff;border-radius:9px;padding:8px 12px;color:#1b466f;font-weight:700}button:hover{background:#f1f6ff}button:disabled{opacity:.36;cursor:not-allowed}.primary{background:#2868dc;color:white;border-color:#2868dc}.primary:hover{background:#1556c7}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #9bc3ff;outline-offset:2px}
+.top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:9px clamp(12px,2vw,28px);background:white;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:13px}.dots{display:grid;grid-template-columns:repeat(2,9px);gap:4px}.dots i{width:9px;height:9px;border-radius:50%;background:#e63329}.dots i:nth-child(2){background:#3fae49}.dots i:nth-child(3){background:#2d7dd2}.dots i:nth-child(4){background:#1a1a1a}
+.crumb{font-size:13px;font-weight:750}.crumb a{color:#376da1}h1{margin:2px 0;font-size:clamp(20px,2.3vw,28px);letter-spacing:-.02em}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}.settings{display:flex;gap:9px;align-items:end;flex-wrap:wrap;padding:10px clamp(12px,2vw,28px);background:#f9fbfe;border-bottom:1px solid var(--line)}
+.settings label{display:grid;gap:4px;color:#506985;font-size:12px;font-weight:800}.settings select{border:1px solid #c7d4e0;border-radius:7px;background:white;color:#173c63;padding:7px 10px;min-width:104px;font-size:15px}
+.main{display:grid;grid-template-columns:minmax(210px,var(--w)) minmax(330px,1fr) minmax(205px,24%);gap:10px;padding:10px clamp(10px,1vw,18px);min-height:calc(100vh - 153px);align-items:start}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;min-width:0;overflow:hidden}
+.panel-head{padding:10px 13px;border-bottom:1px solid #e8edf3;color:#52708d;font-size:12px;font-weight:850;letter-spacing:.09em;text-transform:uppercase}
+.diagram{padding:9px}.diagram svg{width:100%;height:auto;display:block;max-height:395px}.resize{display:flex;align-items:center;gap:8px;color:#6b8197;font-size:12px;padding:5px 7px}.resize input{width:100%;accent-color:#2868dc}
+.diagram-info{font-size:12px;color:#71869c;padding:3px 7px 8px}.manual{margin:8px 3px 4px;border-top:1px solid #e1e8f1;padding:10px 5px}.manual[hidden]{display:none}.manual .inputs{display:flex;gap:6px;flex-wrap:wrap}.manual label{display:grid;gap:3px;flex:1;min-width:66px;font-size:14px;font-weight:800;color:#446382}.manual input{width:100%;min-width:0;border:1px solid #c4d2e0;border-radius:6px;padding:6px;font-size:18px;color:#244e79}.validation{min-height:18px;font-size:12px;color:#a73431}
+.work{min-height:600px}.mathboard{padding:15px clamp(13px,2.2vw,30px);min-height:555px;display:flex;flex-direction:column;gap:0}
+.mathrow{font:clamp(22px,2.25vw,39px)/1.47 "Cambria Math",Cambria,Georgia,serif;color:#123d78;border-bottom:1px solid #eef1f4;padding:9px 2px 11px;white-space:normal;overflow-wrap:anywhere}
+.mathrow:first-child{padding-top:0}.mathrow.prediction{color:#a65c21}.mathrow.final{font-weight:750}.mathrow .box{display:inline-block;border:3px solid #087b63;color:#056b54;border-radius:4px;padding:2px 13px}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.88em;line-height:1.12;margin:0 5px}.frac .num{padding:0 7px 4px;border-bottom:2px solid currentColor}.frac .den{padding:4px 7px 0}sup{font-size:.58em;vertical-align:super}
+.blank{margin:auto;color:#7990a4;font-size:clamp(17px,2vw,24px);text-align:center;line-height:1.5}
+.steps{padding:12px;display:flex;flex-direction:column;gap:11px}.step-title{font-size:21px;font-weight:850;color:#254867;margin:0}.step-next{border:2px solid #a9c6f0;background:#f2f7ff;border-radius:9px;padding:14px;font-size:clamp(16px,1.5vw,23px);font-weight:750;color:#174c8b;line-height:1.35;min-height:140px}.next-label{font-size:11px;letter-spacing:.09em;color:#5d80a9;margin-bottom:12px}.step-controls{display:flex;gap:7px;flex-wrap:wrap}.step-controls button{flex:1}.step-progress{font-size:13px;color:#71859b;font-weight:800}.mini-list{border-top:1px solid #e3eaf2;padding-top:8px;display:grid;gap:5px}.mini-list div{font-size:13px;color:#62768e;padding:5px 7px;border-radius:6px}.mini-list div.done{color:#0c7164;background:#edf8f4}.mini-list div.active{font-weight:850;color:#245fc5;background:#eef5ff}
+@media(max-width:1040px){.main{grid-template-columns:minmax(195px,30%) minmax(350px,1fr)}.steps-panel{grid-column:1/-1}.steps{display:grid;grid-template-columns:1fr 1fr;gap:10px}.step-next{min-height:90px}.mini-list{grid-column:1/-1;display:flex;flex-wrap:wrap}.mini-list div{flex:1 1 110px}.work,.mathboard{min-height:380px}}
+@media(max-width:690px){.main{grid-template-columns:1fr}.steps-panel{grid-column:auto}.diagram svg{max-height:285px}.mathrow{font-size:clamp(22px,5vw,30px)}.steps{display:flex}.work,.mathboard{min-height:280px}.main{padding:6px}.settings{gap:6px}.settings label{flex:1 1 120px}.settings select{width:100%}.top-actions button{font-size:12px}}
+@media print{body{background:white}.settings,.top-actions,.resize,.steps-panel,.manual,.diagram-info{display:none!important}.main{grid-template-columns:28% 72%;padding:0}.panel{border:0}.mathboard{min-height:0}.mathrow{font-size:28px}}
+</style></head>
+<body>
+<header class="top"><div class="brand"><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div><div class="crumb"><a href="../../../index.html">Maths Apps</a> / <a href="../../../trigonometry/index.html">Trigonometry</a></div><h1>Cosine Rule</h1></div></div>
+<div class="top-actions"><button id="edit">Data input</button><button id="all">Show all</button><button id="reset">Hide maths</button><button id="screen">Full screen</button><button class="primary" id="new">↻ New question</button></div></header>
+<div class="settings">
+<label>Find<select id="task"><option value="angle" selected>Angle</option><option value="side">Side</option></select></label>
+<label>Difficulty<select id="level"><option value="1" selected>Level 1 · easy</option><option value="2">Level 2 · intermediate</option><option value="3">Level 3 · challenge</option></select></label>
+<label>Triangle<select id="type"><option value="random">Random</option><option value="acute">Acute</option><option value="obtuse">Obtuse</option><option value="right">Right angle</option></select></label>
+<label>Working<select id="detail"><option value="high">High steps</option><option value="short">Short steps</option></select></label>
+<label>Answer<select id="dp"><option value="0">0 d.p.</option><option value="1" selected>1 d.p.</option><option value="2">2 d.p.</option><option value="3">3 d.p.</option></select></label>
+<label>Number<select id="round"><option value="round">Round</option><option value="truncate">Truncate</option></select></label>
+</div>
+<main class="main" id="main">
+<section class="panel diagram-panel"><div class="panel-head">Diagram</div><div class="diagram">
+<svg id="triangle" viewBox="0 0 500 355" role="img" aria-label="Schematic triangle, not drawn to scale"><title>Schematic triangle</title></svg>
+<div class="diagram-info">Diagram not to scale. Angle category only.</div>
+<div class="resize"><label for="width">Diagram width</label><input id="width" type="range" min="20" max="43" value="28" step="1"></div>
+<div class="manual" id="manual" hidden><div class="inputs"><label>a<input id="a" type="number" step="any" min="0"></label><label>b<input id="b" type="number" step="any" min="0"></label><label>c / A°<input id="c" type="number" step="any" min="0"></label></div><div class="validation" id="validation" role="status"></div><button id="apply">Apply values</button></div>
+</div></section>
+<section class="panel work"><div class="panel-head">Mathematics</div><div class="mathboard" id="mathboard" aria-live="polite"><div class="blank">Which rule? What do you know?</div></div></section>
+<section class="panel steps-panel"><div class="panel-head">Steps</div><div class="steps">
+<h2 class="step-title" id="steptitle">Next instruction</h2><div class="step-next" id="nextinstruction"><div class="next-label">NEXT STEP</div><div id="instruction"></div></div>
+<div><div class="step-controls"><button id="back">← Back</button><button class="primary" id="next">Reveal →</button></div><p class="step-progress" id="progress">0 steps revealed</p></div>
+<div class="mini-list" id="outline"></div></div></section>
+</main>
+<script>
+(function(){
+'use strict';
+const el=id=>document.getElementById(id),cos=d=>Math.cos(d*Math.PI/180),deg=r=>r*180/Math.PI;
+let task='angle',level=1,n=0,values={a:8,b:9,c:7},steps=[];
+const choice=(arr)=>arr[Math.floor(Math.random()*arr.length)];
+const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pwr=(x)=>Number(x.toPrecision(3));
+const fmt=(x)=>Number(x.toFixed(7)).toString();
+const pow=x=>fmt(x)+'<sup>2</sup>';
+const frac=(top,bottom)=>'<span class="frac"><span class="num">'+top+'</span><span class="den">'+bottom+'</span></span>';
+function roundResult(x){const dp=+el('dp').value,factor=10**dp,result=el('round').value==='truncate'?Math.trunc((x+1e-12)*factor)/factor:Math.round((x+Number.EPSILON)*factor)/factor;return result.toFixed(dp)}
+function category(){if(task==='side')return values.A===90?'right':values.A<90?'acute':'obtuse';const {a,b,c}=values,compare=a*a-b*b-c*c;return Math.abs(compare)<1e-8?'right':compare<0?'acute':'obtuse'}
+function angle(){const {a,b,c}=values;return deg(Math.acos(Math.max(-1,Math.min(1,(b*b+c*c-a*a)/(2*b*c)))))}
+function side(){const {b,c,A}=values;return Math.sqrt(Math.max(0,b*b+c*c-2*b*c*cos(A)))}
+function validate(){const v=values;if(task==='angle')return v.a>0&&v.b>0&&v.c>0&&v.a<v.b+v.c&&v.b<v.a+v.c&&v.c<v.a+v.b;return v.b>0&&v.c>0&&v.A>0&&v.A<180}
+function makeQuestion(){
+task=el('task').value;level=+el('level').value;const request=el('type').value;
+const kind=request==='random'?choice(['acute','obtuse','right']):request;
+if(task==='angle'){
+  if(kind==='right'){
+    const t=level===1?choice([[3,4,5]]):level===2?choice([[5,12,13],[8,15,17],[9,12,15]]):choice([[30,40,50],[120,160,200],[0.3,0.4,0.5]]);
+    values={a:t[2],b:t[0],c:t[1]};
+  }else{
+    let found=null;const max=level===1?9:level===2?99:999;
+    for(let i=0;i<3500;i++){
+      const b=level===1?rint(2,9):level===2?rint(10,99):pwr(10**(-1+Math.random()*3)*rint(12,95));
+      const c=level===1?rint(2,9):level===2?rint(10,99):pwr(10**(-1+Math.random()*3)*rint(12,95));
+      const a=level===1?rint(2,9):level===2?rint(10,99):pwr(10**(-1+Math.random()*3)*rint(12,95));
+      if(a>=b+c||b>=a+c||c>=a+b||a<=Math.abs(b-c))continue;
+      const A=deg(Math.acos((b*b+c*c-a*a)/(2*b*c)));
+      if((kind==='acute'&&A>=28&&A<=75)||(kind==='obtuse'&&A>=108&&A<=155)){found={a,b,c};break}
+    }
+    values=found|| (kind==='acute'?{a:8,b:9,c:7}:{a:9,b:5,c:6});
+  }
+}else{
+  const b=level===1?rint(2,9):level===2?rint(10,99):pwr(10**(-1+Math.random()*3)*rint(12,95));
+  const c=level===1?rint(2,9):level===2?rint(10,99):pwr(10**(-1+Math.random()*3)*rint(12,95));
+  let A;
+  if(kind==='right')A=90;
+  else if(level===1){
+    // Two-digit repeated-digit angles are necessarily acute. In the obtuse case use their supplements.
+    let k=choice([33,44,55,66,77]);A=kind==='obtuse'?180-k:k;
+  }else if(level===2)A=+(kind==='acute'?(rint(300,750)/10).toFixed(1):(rint(1080,1550)/10).toFixed(1));
+  else A=+(kind==='acute'?(rint(2800,7500)/100).toFixed(2):(rint(10800,15500)/100).toFixed(2));
+  values={b,c,A};
+}
+n=0;syncInput();buildSteps();render();
+}
+function syncInput(){el('a').value=task==='angle'?values.a:'';el('b').value=values.b;el('c').value=task==='angle'?values.c:values.A;el('c').previousSibling;el('validation').textContent='';}
+function buildSteps(){
+const v=values,high=el('detail').value==='high',items=[];
+const add=(instruction,math,cls='')=>items.push({instruction,math,cls});
+if(task==='angle'){
+  const A=angle(),numer=v.b*v.b+v.c*v.c-v.a*v.a,denom=2*v.b*v.c,rat=numer/denom,sorted=[v.a,v.b,v.c].sort((x,y)=>x-y);
+  add('Order the three sides.',sorted.map(fmt).join(' ≤ '));
+  const symbol=category()==='right'?'=':category()==='obtuse'?'>':'<';
+  add('Predict: acute, obtuse or right angle.',pow(v.a)+' '+symbol+' '+pow(v.b)+' + '+pow(v.c),'prediction');
+  if(high)add('Write the Cosine Rule.','a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc cos A');
+  add('Rearrange to make cos A the subject.','cos A = '+frac('b<sup>2</sup> + c<sup>2</sup> − a<sup>2</sup>','2bc'));
+  add('Substitute the three sides.','cos A = '+frac(pow(v.b)+' + '+pow(v.c)+' − '+pow(v.a),'2 × '+fmt(v.b)+' × '+fmt(v.c)));
+  if(high)add('Simplify the fraction.','cos A = '+frac(fmt(numer),fmt(denom)));
+  if(high)add('Apply inverse cosine.','A = cos<sup>−1</sup>('+frac(fmt(numer),fmt(denom))+')');
+  add('Enter the full expression on your calculator.','A = cos<sup>−1</sup>('+frac(pow(v.b)+' + '+pow(v.c)+' − '+pow(v.a),'2 × '+fmt(v.b)+' × '+fmt(v.c))+')');
+  if(high)add('Read the unrounded answer.','A = '+A.toFixed(7)+'…°');
+  add('Round or truncate. Box the answer.','A = '+A.toFixed(6)+'…° &nbsp; → &nbsp; <span class="box">'+roundResult(A)+'°</span>','final');
+  add('Check the answer agrees with your prediction.','0° < A < 180° &nbsp; ✓ &nbsp; · &nbsp; '+(category()==='acute'?'A < 90°':category()==='obtuse'?'A > 90°':'A = 90°')+' &nbsp; ✓','prediction');
+}else{
+ const a=side(),low=Math.abs(v.b-v.c),hi=v.b+v.c;
+ add('Predict the range of the unknown side.',fmt(low)+' < a < '+fmt(hi),'prediction');
+ if(high)add('Write the Cosine Rule.','a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc cos A');
+ add('Substitute the sides and included angle.','a<sup>2</sup> = '+pow(v.b)+' + '+pow(v.c)+' − 2 × '+fmt(v.b)+' × '+fmt(v.c)+' cos '+fmt(v.A)+'°');
+ if(high)add('Make a the subject.','a = √('+pow(v.b)+' + '+pow(v.c)+' − 2 × '+fmt(v.b)+' × '+fmt(v.c)+' cos '+fmt(v.A)+'°)');
+ add('Enter the square root expression on the calculator.','a = √('+pow(v.b)+' + '+pow(v.c)+' − 2 × '+fmt(v.b)+' × '+fmt(v.c)+' cos '+fmt(v.A)+'°)');
+ if(high)add('Keep the full calculator answer.','a = '+a.toFixed(7)+'…');
+ add('Round or truncate. Box the answer.','a = '+a.toFixed(6)+'… &nbsp; → &nbsp; <span class="box">'+roundResult(a)+'</span>','final');
+ add('Check your answer lies between the bounds.',fmt(low)+' < a < '+fmt(hi)+' &nbsp; ✓','prediction');
+}
+steps=items;n=Math.min(n,steps.length);
+}
+function svgNode(tag,attrs,text){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(text!==undefined)e.textContent=text;el('triangle').append(e);return e}
+function draw(){
+const svg=el('triangle');svg.replaceChildren();
+svgNode('rect',{x:1,y:1,width:498,height:353,rx:12,fill:'#ffffff'});
+const kind=category(),P={A:[107,260],B:[444,260],C:kind==='acute'?[275,48]:kind==='obtuse'?[28,49]:[107,43]};
+const cen=[(P.A[0]+P.B[0]+P.C[0])/3,(P.A[1]+P.B[1]+P.C[1])/3];
+svgNode('polygon',{points:['A','B','C'].map(k=>P[k].join(',')).join(' '),fill:'#edf4ff',stroke:'#2f69c4','stroke-width':5,'stroke-linejoin':'round'});
+const sideLabels=task==='angle'?{a:fmt(values.a),b:fmt(values.b),c:fmt(values.c)}:{a:'?',b:fmt(values.b),c:fmt(values.c)};
+[['a','B','C'],['b','A','C'],['c','A','B']].forEach(([name,k,l])=>{
+ const p=P[k],q=P[l],dx=q[0]-p[0],dy=q[1]-p[1],len=Math.hypot(dx,dy),mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2;
+ let nx=-dy/len,ny=dx/len;if((mx-cen[0])*nx+(my-cen[1])*ny<0){nx=-nx;ny=-ny}
+ let x=Math.min(474,Math.max(25,mx+nx*29)),y=Math.min(325,Math.max(23,my+ny*29));
+ svgNode('text',{x,y,'text-anchor':'middle','dominant-baseline':'middle',fill:name==='a'?'#c63842':'#20558d','font-size':35,'font-weight':750,'paint-order':'stroke',stroke:'#fff','stroke-width':7,'stroke-linejoin':'round'},sideLabels[name]);
+});
+const A=P.A,B=P.B,C=P.C;
+const ab=Math.atan2(B[1]-A[1],B[0]-A[0]),ac=Math.atan2(C[1]-A[1],C[0]-A[0]);
+if(kind==='right'){svgNode('polyline',{points:(A[0]+29)+','+A[1]+' '+(A[0]+29)+','+(A[1]-29)+' '+A[0]+','+(A[1]-29),fill:'none',stroke:'#087c72','stroke-width':3});}
+else{let points=[];for(let i=0;i<=25;i++){let t=ac+(ab-ac)*i/25;points.push((A[0]+53*Math.cos(t))+','+(A[1]+53*Math.sin(t)))}svgNode('polyline',{points:points.join(' '),stroke:'#087c72','stroke-width':4,fill:'none'});}
+let alpha=(ab+ac)/2, tx=A[0]+82*Math.cos(alpha),ty=A[1]+82*Math.sin(alpha);
+svgNode('text',{x:tx,y:ty,'text-anchor':'middle','dominant-baseline':'middle','font-size':28,'font-weight':800,fill:'#06786d','paint-order':'stroke',stroke:'#fff','stroke-width':6},task==='angle'?'?':fmt(values.A)+'°');
+for(const key of ['A','B','C']){const p=P[key];svgNode('circle',{cx:p[0],cy:p[1],r:5,fill:'#1d629b'});}
+svgNode('text',{x:P.A[0]-25,y:P.A[1]+29,'font-size':19,fill:'#687e98'},'A');
+}
+function render(){
+draw();const board=el('mathboard');board.replaceChildren();if(n===0)board.innerHTML='<div class="blank">Which rule? What do you know?</div>';
+else for(let i=0;i<n;i++){const d=document.createElement('div');d.className='mathrow '+steps[i].cls;d.innerHTML=steps[i].math;board.append(d)}
+el('instruction').textContent=n>=steps.length?'Complete. Check the final result.':steps[n].instruction;
+el('next').disabled=n>=steps.length;el('back').disabled=n===0;el('progress').textContent=n+' of '+steps.length+' revealed';
+el('outline').replaceChildren();steps.forEach((s,i)=>{const d=document.createElement('div');d.textContent=(i+1)+'. '+s.instruction;d.className=i<n?'done':i===n?'active':'';el('outline').append(d)});
+}
+el('next').addEventListener('click',()=>{if(n<steps.length){n++;render()}});
+el('back').addEventListener('click',()=>{if(n>0){n--;render()}});
+el('all').addEventListener('click',()=>{n=steps.length;render()});
+el('reset').addEventListener('click',()=>{n=0;render()});
+el('new').addEventListener('click',makeQuestion);
+for(const key of ['task','level','type'])el(key).addEventListener('change',makeQuestion);
+for(const key of ['detail','dp','round'])el(key).addEventListener('change',()=>{n=0;buildSteps();render()});
+el('edit').addEventListener('click',()=>{el('manual').hidden=!el('manual').hidden;syncInput()});
+el('apply').addEventListener('click',()=>{
+const a=Number(el('a').value),b=Number(el('b').value),c=Number(el('c').value);let candidate=task==='angle'?{a,b,c}:{b,c,A:c};const old=values;values=candidate;
+if(!validate()){values=old;el('validation').textContent=task==='angle'?'Enter three positive sides satisfying the triangle inequality.':'Enter two positive sides and an angle strictly between 0° and 180°.';return}
+el('validation').textContent='';n=0;buildSteps();render();
+});
+el('width').addEventListener('input',e=>document.documentElement.style.setProperty('--w',e.target.value+'%'));
+el('screen').addEventListener('click',()=>{if(document.fullscreenElement){document.exitFullscreen()}else{document.documentElement.requestFullscreen?.()}});
+const params=new URLSearchParams(location.search);if(params.get('task')==='side')el('task').value='side';makeQuestion();
+})();
+</script></body></html>
