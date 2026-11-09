@@ -201,11 +201,11 @@
         "description": "Compare all three ratios and practise choosing the right one."
       },
       {
-        "slug": "cosine-rule-app",
-        "title": "Cosine Rule — classroom app",
+        "slug": "solving-triangles",
+        "title": "Solving Triangles",
         "ready": true,
-        "app": "apps/trigonometry/cosine-rule/index.html",
-        "description": "Three-column classroom activity: diagram, mathematical working and advance step instructions, with Level 1–3 data."
+        "app": "apps/trigonometry/solving-triangles/index.html",
+        "description": "General and right-angled triangles: cosine rule, sine rule, SOHCAHTOA and Pythagoras, with a three-column classroom view."
       },
       {
         "slug": "triangle-rules",
