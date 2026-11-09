@@ -757,6 +757,18 @@ body:not(.maths-only) #focusNext{display:none!important}
 .lesson-navigation #nextWorkedExample{background:#1c5e9c;color:#fff;border-color:#1c5e9c}
 body.maths-only #lessonNavigation{display:flex!important;margin:20px auto}
 @media print{#lessonNavigation{display:none!important}}
+
+.answer-effect{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;overflow:hidden;z-index:99998}
+.answer-effect-mark{display:grid;place-items:center;width:116px;height:116px;border:5px solid;border-radius:50%;font:bold 79px Arial,sans-serif;box-shadow:0 9px 32px #24354d30}
+.answer-effect--correct .answer-effect-mark{color:#12804b;background:#ddf9eb;border-color:#40a875;animation:answer-pop .56s ease-out both}
+.answer-effect--wrong .answer-effect-mark{color:#b2293d;background:#ffe5ea;border-color:#d45b70;animation:answer-shake .43s ease-out both}
+.answer-effect-confetti{position:absolute;top:50%;left:50%;width:11px;height:19px;border-radius:2px;background:var(--tint);animation:answer-confetti 1.08s ease-out forwards;opacity:0}
+.race-feedback--wrong{color:#af2437!important;font-weight:750!important}
+@keyframes answer-pop{0%{transform:scale(.4);opacity:0}52%{transform:scale(1.14);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes answer-shake{0%{transform:translateX(0) scale(.7);opacity:0}25%{transform:translateX(-14px) scale(1);opacity:1}45%{transform:translateX(11px)}65%{transform:translateX(-8px)}85%{transform:translateX(4px)}100%{transform:translateX(0);opacity:1}}
+@keyframes answer-confetti{0%{transform:translate(-50%,-50%) scale(.5);opacity:1}65%{opacity:1}100%{transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(var(--turn));opacity:0}}
+@media(prefers-reduced-motion:reduce){.answer-effect-mark,.answer-effect-confetti{animation:none!important}.answer-effect-confetti{display:none!important}.answer-effect-mark{box-shadow:none}}
+@media print{.answer-effect{display:none!important}}
 </style>
 </head>
 <body>
@@ -1098,9 +1110,9 @@ function syncQuickSelectors(){
  const types=factorTypes.concat(beyondChoices);
  type.replaceChildren(...types.map(([v,t])=>new Option(t,v)),new Option('Mixed','mixed'));
  type.value=state.factorRandom?'mixed':state.type;type.disabled=assessment.started;
- if(state.method==='stacked-margin')Array.from(type.options).forEach(option=>{option.disabled=option.value!=='ll'});
+ if(state.method==='stacked-margin')Array.from(type.options).forEach(option=>{option.disabled=!['ll','ql'].includes(option.value)});
  type.onchange=()=>{
-  if(state.method==='stacked-margin'&&type.value!=='ll'){type.value='ll';return}
+  if(state.method==='stacked-margin'&&!['ll','ql'].includes(type.value)){type.value=state.type;return}
   state.factorRandom=type.value==='mixed';
   if(!state.factorRandom){state.type=type.value;state.coreType=state.type}
   state.signHigh=null;state.signLow=null;refreshSelectedQuestion();assessmentConfigChanged();
@@ -1163,7 +1175,7 @@ function renderSelectors(){
  const method=$('methodSelect');method.value=state.method;
  method.onchange=()=>{
   state.method=method.value;
-  if(state.method==='stacked-margin'&&state.type!=='ll'){
+  if(state.method==='stacked-margin'&&!['ll','ql'].includes(state.type)){
    state.type='ll';state.coreType='ll';state.factorRandom=false;state.signHigh=null;state.signLow=null;
    refreshSelectedQuestion();
   }else render();
@@ -1407,7 +1419,7 @@ function drawAlternativeMethod(){
    worked.append(line);
   });
  }else if(state.method==='stacked-margin'){
-  // Stacked margin is currently restricted to a 2 × 2 expression.
+  // Stacked margin is currently supported for 2 × 2 and 2 × 3.
   terms(second).reverse().forEach(t=>{
    const line=document.createElement('div');line.className='alt-method-line alt-stacked-row';
    line.innerHTML='<span class="alt-method-side">'+signedTerm(t.coefficient,t.power)+' × ('+poly(first)+')</span><span>=</span><span>'+poly(first.map(v=>v*t.coefficient).concat(Array(t.power).fill(0)))+'</span>';
@@ -1650,6 +1662,31 @@ function el(tag,textValue,className){
 function playQuizSound(correct){
  MathsAssessment.playSound(correct,assessment.sound);
 }
+let currentAnswerEffect=null;
+function showAnswerFeedback(correct){
+ if(currentAnswerEffect){currentAnswerEffect.remove();currentAnswerEffect=null}
+ const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const stage=document.createElement('div');
+ stage.className='answer-effect '+(correct?'answer-effect--correct':'answer-effect--wrong');
+ stage.setAttribute('aria-hidden','true');
+ const mark=document.createElement('span');mark.className='answer-effect-mark';
+ mark.textContent=correct?'✓':'✕';stage.append(mark);
+ if(correct&&!reduced){
+  const colours=['#f3b73d','#349fd9','#42b383','#d85c92','#8968d6','#ef783f'];
+  for(let i=0;i<26;i++){
+   const item=document.createElement('span');item.className='answer-effect-confetti';
+   const angle=2*Math.PI*i/26+(Math.random()-.5)*.2;
+   const distance=95+Math.random()*200;
+   item.style.setProperty('--x',Math.round(Math.cos(angle)*distance)+'px');
+   item.style.setProperty('--y',Math.round(Math.sin(angle)*distance)+'px');
+   item.style.setProperty('--turn',Math.round((Math.random()-.5)*800)+'deg');
+   item.style.setProperty('--tint',colours[i%colours.length]);
+   stage.append(item);
+  }
+ }
+ document.body.append(stage);currentAnswerEffect=stage;
+ window.setTimeout(()=>{stage.remove();if(currentAnswerEffect===stage)currentAnswerEffect=null},reduced?450:correct?1200:720);
+}
 function testExpression(q){
  const factors=q.a.length>q.b.length?[q.b,q.a]:[q.a,q.b];
  return (q.scalar&&q.scalar!==1?minus(q.scalar)+'':'')+factors.map(f=>'('+poly(f)+')').join(' ');
@@ -1876,6 +1913,7 @@ function drawTest(){
       (assessment.quizType==='working'?assessment.workChoices[i][v].valid:
        assessment.choices[i][v].every((c,j)=>c===expanded(assessment.questions[i])[j])));
      drawTest();
+     showAnswerFeedback(correct);
      playQuizSound(allComplete?'fanfare':!correct&&assessment.attempts[index]>=2?'final-wrong':correct);
     };
     answers.append(choice);
@@ -1952,6 +1990,7 @@ function drawTest(){
       const values=expanded(question);
       return assessment.responses[k].every((v,j)=>/^-?\d+$/.test(v.trim())&&Number(v)===values[j]);
      });
+     showAnswerFeedback(correctNow);
      playQuizSound(complete?'fanfare':correctNow?true:assessment.attempts[index]>=2?'final-wrong':false);
     };
     section.append(check);
@@ -2712,9 +2751,11 @@ function drawRace(){
   const values=inputs.map(x=>x.value.trim()===''?NaN:Number(x.value));
   if(values.some(x=>!Number.isInteger(x))){status.textContent='Enter an integer in every coefficient box.';return}
   if(values.every((x,i)=>x===expected[i])){
-   race.index++;race.feedback='Correct — keep going!';drawRace();
+   race.index++;race.feedback='Correct — keep going!';drawRace();showAnswerFeedback(true);playQuizSound(true);
   }else{
    race.wrong++;
+   showAnswerFeedback(false);playQuizSound(false);
+   status.classList.add('race-feedback--wrong');
    status.textContent=race.wrong%2===0?'Stop guessing. Start thinking: check the column totals and signs.':'Not yet. Check each partial product and combine like powers.';
   }
  }
