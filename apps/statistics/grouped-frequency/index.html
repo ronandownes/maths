@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Grouped Frequency Distribution Explorer | Maths Apps</title>
+<link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+<style>
+:root{--ink:#203449;--muted:#5c6e80;--blue:#205c92;--pale:#f4f8fc;--line:#d5e0ea;--green:#207653;--red:#ae3946;--focus:#dbeeff}
+*{box-sizing:border-box}
+body{margin:0;background:#f3f6f9;color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{display:flex;align-items:center;gap:15px;padding:10px clamp(12px,3vw,32px);background:#fff;border-bottom:1px solid var(--line)}
+header img{width:156px;max-width:36vw;display:block}
+header nav{display:flex;gap:8px;flex-wrap:wrap;font-size:.87rem}
+a{color:var(--blue)}header nav a{text-decoration:none}header nav a:hover{text-decoration:underline}
+main{max-width:1550px;margin:auto;padding:clamp(10px,1.5vw,22px)}
+h1{font-size:clamp(1.7rem,2.6vw,2.3rem);letter-spacing:-.025em;margin:0 0 3px}
+h2{font-size:clamp(1.05rem,1.4vw,1.28rem);margin:0}
+h3{margin:0;font-size:1.06rem}
+p{margin:.3em 0 .8em}
+.muted{color:var(--muted)}.small{font-size:.82rem}
+.card{background:white;border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 5px #22344d09}
+.intro{padding:17px 20px;margin-bottom:11px}
+.toolbar,.actions,.configrow{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.toolbar{margin-top:13px}
+button,select,input{font:inherit}
+button{min-height:40px;padding:7px 13px;border:1px solid #afc4d6;border-radius:8px;background:white;color:#234e76;font-size:.9rem;font-weight:700;cursor:pointer}
+button:hover{background:#eef6fe}
+button.primary{background:var(--blue);border-color:var(--blue);color:white}
+button.primary:hover{background:#164772}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #81baed;outline-offset:2px}
+select,input[type=number],input[type=text]{min-height:39px;border:1px solid #aebdca;border-radius:7px;padding:6px 9px;background:white;color:var(--ink)}
+label.field{display:flex;flex-direction:column;gap:3px;font-size:.8rem;font-weight:750;color:#526b80}
+label.field input{width:98px}
+label.field select{min-width:115px}
+label.check{display:inline-flex;align-items:center;gap:8px;font-size:.9rem}
+button.secondary-active{background:#dcecf9;border-color:#6796bc;color:#184a74}
+#teacherSettings{padding:10px 18px;margin-bottom:11px}
+#teacherSettings summary{cursor:pointer;font-weight:750;padding:6px 0}
+#teacherSettings .configrow{align-items:end;padding:10px 0}
+.configwrap{max-height:210px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+table.editor{width:100%;border-collapse:collapse}
+.editor th{position:sticky;top:0;background:#eef4fa;text-align:left;font-size:.78rem}
+.editor th,.editor td{padding:5px 9px;border-bottom:1px solid var(--line)}
+.editor input{width:110px;min-width:78px}
+.editor input:disabled{background:#f1f5f9;color:#718397}
+.notice{font-size:.78rem;color:#6b7886}
+#settingsStatus{min-height:18px;font-size:.83rem;color:var(--red)}
+.workspace{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(330px,.8fr);align-items:start;gap:12px}
+.board,.steps{padding:clamp(12px,1.5vw,22px);min-width:0}
+.board-head{display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap}
+.tiny-pill{background:#e6f1fb;color:#245b86;padding:5px 10px;border-radius:99px;font-size:.78rem;font-weight:800;white-space:nowrap}
+.lesson-table-wrap{overflow-x:auto;margin-top:13px}
+table.math{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed;text-align:center;font:clamp(1.15rem,1.85vw,1.75rem)/1.3 Georgia,"Cambria Math",serif;font-variant-numeric:tabular-nums}
+.math th{font:800 clamp(.85rem,1.12vw,1.06rem) system-ui,sans-serif;color:#3f5a70;background:#eef3f8;white-space:normal}
+.math th,.math td{border-bottom:1px solid #dbe3ea;border-right:1px solid #e4eaf0;padding:clamp(7px,.9vw,14px) 6px;height:58px}
+.math th:first-child,.math td:first-child{border-left:1px solid #dbe3ea}
+.math thead th{border-top:1px solid #dbe3ea}
+.math thead th:first-child{border-top-left-radius:9px}.math thead th:last-child{border-top-right-radius:9px}
+.math tbody tr:nth-child(even){background:#fafcfd}
+.math .activecol{background:#e2f0ff!important;color:#1b527e}
+.math td.activecol{background:#eaf5ff!important}
+.math th:nth-child(1){width:34%}.math th:nth-child(2){width:16%}.math th:nth-child(3){width:24%}.math th:nth-child(4){width:26%}
+.math .sumband{font:800 clamp(.91rem,1.3vw,1.1rem) system-ui,sans-serif;background:#f3f7fb}
+.math .fvalue{color:#215b91;font-weight:700}.math .fxvalue{color:#19644e}
+.math input{font:inherit;max-width:95%;width:105px;text-align:center;padding:3px;min-height:42px;border:2px solid #97b6d2}
+.math input.good{border-color:#3c946e;background:#f0fff7}.math input.bad{border-color:#c14b58;background:#fff2f2}
+.dash{color:#a4b2bd}.math .sumtitle{text-align:right;padding-right:14px}
+.math .hidden-cell{color:#aab6bf}
+.underboard{border-top:1px solid var(--line);margin-top:15px;padding-top:12px}
+.formula{font:clamp(1.45rem,2.1vw,2rem)/1.5 Georgia,"Cambria Math",serif;text-align:center;padding:8px 4px}
+.note{border-left:4px solid #85abd0;background:#f5f9fd;padding:9px 12px;font-size:.85rem;color:#405c73;border-radius:3px}
+.step-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.progress{font-size:.79rem;color:#5c7489;font-weight:800}
+.step-track{display:flex;gap:5px;margin:12px 0}
+.step-dot{height:6px;border-radius:99px;background:#e0e8f0;flex:1}
+.step-dot.done{background:#3579b1}
+.step-text{min-height:168px}
+.step-text h3{font-size:clamp(1.13rem,1.6vw,1.4rem);margin:8px 0}
+.step-text p{font-size:.96rem;line-height:1.6}
+.samplecalc{background:#f1f7fc;border-radius:10px;padding:12px;margin:10px 0;font:clamp(1.06rem,1.6vw,1.35rem) Georgia,serif;text-align:center;overflow-wrap:anywhere}
+.practice-box{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+.practice-box input{width:135px;max-width:100%;margin:5px 6px 5px 0;font-size:1.1rem}
+.feedback{min-height:23px;font-size:.88rem;font-weight:720;margin:6px 0;color:#4a6680}
+.feedback.good{color:var(--green)}.feedback.bad{color:var(--red)}
+.actions{margin-top:12px}
+#studentModeNote{margin-top:14px}
+.footnote{padding:12px 4px;color:#63788c;font-size:.8rem}
+[hidden]{display:none!important}
+@media(max-width:980px){.workspace{grid-template-columns:1fr}.step-text{min-height:0}header img{width:130px}}
+@media(max-width:590px){main{padding:8px}.intro,.board,.steps{padding:12px}.math th,.math td{height:48px;padding:6px 3px}.math input{width:65px;font-size:1rem}.math{font-size:1.08rem}.configrow{gap:9px}header{padding:8px 12px}}
+@media(min-width:1700px){main{max-width:1750px}.math{font-size:2.1rem}.math td{height:78px}}
+@media print{
+ @page{size:A4 landscape;margin:11mm}
+ body{background:#fff;font-size:11pt}header,.toolbar,#teacherSettings,.actions,.no-print,#feedback{display:none!important}
+ main{padding:0;max-width:100%}.intro{border:0;box-shadow:none;padding:0 0 7px}.workspace{display:grid;grid-template-columns:1.6fr .9fr}
+ .card{box-shadow:none;border:1px solid #aaa}.board,.steps{padding:8px}.math{font-size:15pt}.math td{height:42px;padding:4px}
+ .math input{border:0;border-bottom:1px solid #666;width:60px;border-radius:0}.footnote{font-size:8pt}
+}
+</style>
+</head>
+<body>
+<header>
+<a href="../../../index.html" aria-label="Maths Apps home"><img src="../../../assets/maths-logo.svg" alt="Maths — four coloured dots"></a>
+<nav><a href="../../../index.html">Maths Apps</a><span>›</span><a href="../../../statistics/index.html">Statistics</a><span>›</span><strong>Grouped frequency</strong></nav>
+</header>
+<main>
+<section class="intro card">
+<h1>Grouped Frequency Distributions</h1>
+<p class="muted">Class intervals → midpoints → frequency products → estimated mean.</p>
+<div class="toolbar no-print">
+<label class="field">Lesson mode
+<select id="mode"><option value="teacher">Worked example</option><option value="student">Students calculate</option></select>
+</label>
+<button id="previous" type="button">← Previous step</button>
+<button class="primary" id="next" type="button">Next step →</button>
+<button id="newExercise" type="button">Next exercise ↻</button>
+<button id="loadExample" type="button">Use example data</button>
+<button id="fullscreen" type="button">Full screen</button>
+<button id="print" type="button">Print / PDF</button>
+</div>
+</section>
+<details id="teacherSettings" class="card no-print">
+<summary>Configure exercise · intervals, class widths and frequencies</summary>
+<div class="configrow">
+<label class="field">Number of classes<input id="bins" type="number" min="2" max="12" step="1" value="5"></label>
+<label class="field">Starting boundary<input id="start" type="number" min="-10000" max="10000" step="any" value="0"></label>
+<label class="field">Common class width<input id="width" type="number" min="0.01" max="10000" step="any" value="10"></label>
+<label class="check"><input type="checkbox" id="customWidths"> Allow different class widths</label>
+</div>
+<p class="notice">Edit the frequencies below. Select different class widths to adjust each interval independently. All intervals remain contiguous and non-overlapping.</p>
+<div class="configwrap"><table class="editor"><thead><tr><th>Class</th><th>Class width</th><th>Frequency</th></tr></thead><tbody id="editRows"></tbody></table></div>
+<div class="actions">
+<button class="primary" id="apply" type="button">Apply settings</button>
+<button id="randomise" type="button">Generate new frequencies</button>
+<span class="notice">Frequencies are whole numbers from 0 to 100; total frequency must be positive.</span>
+</div>
+<div id="settingsStatus" role="status" aria-live="polite"></div>
+</details>
+<div class="workspace">
+<section class="board card" aria-label="Grouped frequency table">
+<div class="board-head">
+<div><h2>Frequency table</h2><p id="tableCaption" class="muted small"></p></div>
+<span id="exerciseLabel" class="tiny-pill">Example 1</span>
+</div>
+<div class="lesson-table-wrap">
+<table class="math" aria-label="Class intervals, frequencies, midpoints and frequency products">
+<thead><tr><th id="head-class">Class interval</th><th id="head-f">Frequency<br><i>f</i></th><th id="head-mid">Midpoint<br><i>x</i></th><th id="head-product">Product<br><i>fx</i></th></tr></thead>
+<tbody id="dataRows"></tbody>
+<tfoot id="totalRows"></tfoot>
+</table>
+</div>
+<div class="underboard">
+<div id="formulaLine" class="formula"></div>
+<div class="note">For grouped data, the original individual values are unknown. The mean calculated using midpoints is an <strong>estimate</strong>, not necessarily the exact mean.</div>
+</div>
+</section>
+<aside class="steps card" aria-label="Step-by-step explanation">
+<div class="step-top"><h2>Working and explanation</h2><span id="stepCount" class="progress">Step 1 of 5</span></div>
+<div class="step-track" id="stepTrack" aria-hidden="true"></div>
+<div id="stepText" class="step-text" aria-live="polite"></div>
+<div class="practice-box" id="practiceBox" hidden>
+<div id="meanEntry"></div>
+<div class="actions"><button id="check" class="primary" type="button">Check this step</button><button id="reveal" type="button">Reveal this step</button><button id="clear" type="button">Clear my answers</button></div>
+<p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+</div>
+<div class="actions no-print"><button id="asidePrev" type="button">← Previous</button><button id="asideNext" class="primary" type="button">Next step →</button></div>
+<p id="studentModeNote" class="small muted">Reveal one stage at a time. The next exercise generates a different frequency distribution.</p>
+</aside>
+</div>
+<p class="footnote">Intervals use [lower, upper): the lower boundary is included and the upper boundary excluded. The same class widths are used to calculate the midpoints. Only the last displayed answer is rounded.</p>
+</main>
+<script>
+(function(){
+"use strict";
+const byId=id=>document.getElementById(id);
+const STEPS=[
+ ["Identify the classes","Read each class interval and its frequency. Every observation belongs in exactly one interval."],
+ ["Find each class midpoint","Add the two class boundaries and divide by 2. Use the midpoint as a representative value for that class."],
+ ["Multiply by the frequency","For each interval, multiply the midpoint by its frequency to obtain fx."],
+ ["Calculate both totals","Add the frequencies to find Σf. Separately, add the products to find Σfx."],
+ ["Estimate the mean","Divide Σfx by Σf. The result is an estimate because the observations within each interval are not known."]
+];
+const S={bins:5,start:0,width:10,custom:false,widths:[10,10,10,10,10],freqs:[2,3,5,4,1],mode:"teacher",step:0,exercise:1,entries:{mid:{},product:{},sumF:"",sumFX:"",mean:""},revealed:{},feedback:"",feedbackKind:""};
+let draftWidth=S.widths.slice(),draftFreq=S.freqs.slice();
+const clamp=(x,lo,hi)=>Math.min(hi,Math.max(lo,x));
+const nfmt=n=>(Math.round((n+Number.EPSILON)*10000)/10000).toLocaleString("en-IE",{maximumFractionDigits:4});
+const approx=n=>(Math.round((n+Number.EPSILON)*100)/100).toLocaleString("en-IE",{minimumFractionDigits:0,maximumFractionDigits:2});
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function rows(){
+ let low=S.start;
+ return S.freqs.map((f,i)=>{
+  const width=S.custom?S.widths[i]:S.width;
+  const high=low+width;
+  const midpoint=(low+high)/2;
+  const row={low,high,midpoint,f,product:f*midpoint,index:i};
+  low=high;return row;
+ });
+}
+function data(){
+ const r=rows(),sumF=r.reduce((a,x)=>a+x.f,0),sumFX=r.reduce((a,x)=>a+x.product,0);
+ return {r,sumF,sumFX,mean:sumF?sumFX/sumF:null};
+}
+function clearWork(){
+ S.entries={mid:{},product:{},sumF:"",sumFX:"",mean:""};
+ S.revealed={};S.feedback="";S.feedbackKind="";S.step=0;
+}
+function saveEntries(){
+ document.querySelectorAll("[data-mid]").forEach(el=>{S.entries.mid[el.dataset.mid]=el.value});
+ document.querySelectorAll("[data-product]").forEach(el=>{S.entries.product[el.dataset.product]=el.value});
+ if(byId("sumFEntry"))S.entries.sumF=byId("sumFEntry").value;
+ if(byId("sumFXEntry"))S.entries.sumFX=byId("sumFXEntry").value;
+ if(byId("meanInput"))S.entries.mean=byId("meanInput").value;
+}
+function entry(kind,i){
+ const v=esc(S.entries[kind][i]||"");
+ const dataAttr=kind==="mid"?"data-mid":"data-product";
+ const label=kind==="mid"?"midpoint":"frequency product";
+ return '<input type="text" inputmode="decimal" '+dataAttr+'="'+i+'" aria-label="Enter '+label+' for class '+(i+1)+'" value="'+v+'">';
+}
+function valueCell(kind,i,answer,visible){
+ if(!visible)return '<span class="dash">—</span>';
+ if(S.mode==="teacher"||S.revealed[kind==="mid"?1:2])return nfmt(answer);
+ return entry(kind,i);
+}
+function footerCell(kind,answer){
+ if(S.step<3)return '<span class="dash">—</span>';
+ if(S.mode==="teacher"||S.revealed[3])return nfmt(answer);
+ const id=kind==="sumF"?"sumFEntry":"sumFXEntry";
+ return '<input type="text" inputmode="decimal" id="'+id+'" aria-label="Enter '+kind+'" value="'+esc(S.entries[kind])+'">';
+}
+function setStep(n){saveEntries();S.step=clamp(n,0,4);S.feedback="";S.feedbackKind="";render();}
+function render(){
+ const d=data(),r=d.r;
+ byId("mode").value=S.mode;
+ byId("previous").disabled=S.step===0;
+ byId("next").disabled=S.step===4;
+ byId("asidePrev").disabled=S.step===0;
+ byId("asideNext").disabled=S.step===4;
+ byId("stepCount").textContent="Step "+(S.step+1)+" of 5";
+ byId("stepTrack").innerHTML=STEPS.map((_,i)=>'<span class="step-dot '+(i<=S.step?"done":"")+'"></span>').join("");
+ byId("exerciseLabel").textContent="Exercise "+S.exercise;
+ byId("tableCaption").textContent=S.bins+" contiguous classes · "+d.sumF+" observations · "+(S.mode==="teacher"?"worked example":"student practice");
+ byId("head-mid").classList.toggle("activecol",S.step===1);
+ byId("head-product").classList.toggle("activecol",S.step===2);
+ byId("head-f").classList.toggle("activecol",S.step===3);
+ let html="";
+ r.forEach((x,i)=>{
+  html+='<tr><td>['+nfmt(x.low)+', '+nfmt(x.high)+')</td>'+
+   '<td class="fvalue '+(S.step===3?"activecol":"")+'">'+x.f+'</td>'+
+   '<td class="'+(S.step===1?"activecol":"")+'">'+valueCell("mid",i,x.midpoint,S.step>=1)+'</td>'+
+   '<td class="'+(S.step===2?"activecol":"")+'">'+valueCell("product",i,x.product,S.step>=2)+'</td></tr>';
+ });
+ byId("dataRows").innerHTML=html;
+ byId("totalRows").innerHTML='<tr class="sumband"><td class="sumtitle">Totals</td><td>'+footerCell("sumF",d.sumF)+'</td><td></td><td>'+footerCell("sumFX",d.sumFX)+'</td></tr>';
+ const step=STEPS[S.step];
+ let sample="",description="";
+ if(S.step===0){sample='Every class has a lower and upper boundary.';description="The frequency tells us how many values fall into that class.";}
+ if(S.step===1){sample='x = (lower boundary + upper boundary) ÷ 2';
+  if(S.mode==="teacher")description="First class: ("+nfmt(r[0].low)+" + "+nfmt(r[0].high)+") ÷ 2 = "+nfmt(r[0].midpoint)+".";}
+ if(S.step===2){sample='fx = frequency × midpoint';
+  if(S.mode==="teacher")description="First class: "+nfmt(r[0].f)+" × "+nfmt(r[0].midpoint)+" = "+nfmt(r[0].product)+".";}
+ if(S.step===3){sample=S.mode==="teacher"?"Σf = "+nfmt(d.sumF)+"   |   Σfx = "+nfmt(d.sumFX):"Σf = ?   |   Σfx = ?";}
+ if(S.step===4){sample=S.mode==="teacher"||S.revealed[4]?"x̄ ≈ "+nfmt(d.sumFX)+" ÷ "+nfmt(d.sumF)+" = "+approx(d.mean):"x̄ ≈ Σfx ÷ Σf";
+  if(S.mode==="teacher"||S.revealed[4])description="Estimated mean ≈ "+approx(d.mean)+". The nearest whole number is "+Math.round(d.mean)+".";}
+ byId("stepText").innerHTML='<h3>'+step[0]+'</h3><p>'+step[1]+'</p><div class="samplecalc">'+sample+'</div>'+(description?'<p class="muted">'+description+'</p>':"");
+ const showFormula=S.step>=4;
+ byId("formulaLine").innerHTML=showFormula&&(S.mode==="teacher"||S.revealed[4])?
+  '<span>x̄ ≈ <span style="white-space:nowrap">'+nfmt(d.sumFX)+' / '+nfmt(d.sumF)+'</span> ≈ <strong>'+approx(d.mean)+'</strong></span>':
+  '<span>x̄ ≈ Σfx / Σf</span>';
+ const student=S.mode==="student";
+ byId("practiceBox").hidden=!student;
+ byId("check").disabled=S.step===0;
+ byId("reveal").disabled=S.step===0;
+ byId("meanEntry").innerHTML=student&&S.step===4&&!S.revealed[4]?
+  '<label class="field">Your estimated mean (to 2 d.p.)<input id="meanInput" type="text" inputmode="decimal" value="'+esc(S.entries.mean)+'" aria-label="Enter estimated mean"></label>':
+  "";
+ byId("feedback").textContent=S.feedback;
+ byId("feedback").className="feedback "+S.feedbackKind;
+ byId("studentModeNote").textContent=student?
+  "Enter your answers in the table. Check or reveal the current step; continue when ready.":
+  "Use Next step to reveal the calculation one stage at a time. Next exercise creates fresh frequencies.";
+}
+function captureEditors(){
+ const widths=[],freqs=[];
+ byId("editRows").querySelectorAll("tr").forEach((tr,i)=>{
+  const w=Number(tr.querySelector("[data-width]").value);
+  const f=Number(tr.querySelector("[data-frequency]").value);
+  widths[i]=Number.isFinite(w)?w:10;
+  freqs[i]=Number.isFinite(f)?f:0;
+ });
+ if(widths.length){draftWidth=widths;draftFreq=freqs;}
+}
+function editor(){
+ const bins=clamp(Math.round(Number(byId("bins").value)||5),2,12);
+ const common=Number(byId("width").value)||10,custom=byId("customWidths").checked;
+ let low=Number(byId("start").value)||0;
+ let html="";
+ for(let i=0;i<bins;i++){
+  const w=custom?(draftWidth[i]||common):common;
+  const high=low+w;
+  html+='<tr><td>['+nfmt(low)+', '+nfmt(high)+')</td>'+
+    '<td><input data-width="'+i+'" aria-label="Width of class '+(i+1)+'" type="number" min="0.01" max="10000" step="any" value="'+nfmt(w)+'" '+(custom?"":"disabled")+'></td>'+
+    '<td><input data-frequency="'+i+'" aria-label="Frequency of class '+(i+1)+'" type="number" min="0" max="100" step="1" value="'+(draftFreq[i]===undefined?5:draftFreq[i])+'"></td></tr>';
+  low=high;
+ }
+ byId("editRows").innerHTML=html;
+}
+function configFromState(){
+ byId("bins").value=S.bins;byId("start").value=S.start;byId("width").value=S.width;
+ byId("customWidths").checked=S.custom;
+ draftWidth=S.widths.slice();draftFreq=S.freqs.slice();editor();
+}
+function apply(){
+ captureEditors();
+ const bins=Number(byId("bins").value),start=Number(byId("start").value),width=Number(byId("width").value);
+ const custom=byId("customWidths").checked;
+ let error="";
+ if(!Number.isInteger(bins)||bins<2||bins>12)error="Use between 2 and 12 classes.";
+ else if(!Number.isFinite(start)||start < -10000||start>10000)error="Enter a valid starting boundary.";
+ else if(!Number.isFinite(width)||width<=0||width>10000)error="Common width must be greater than 0.";
+ else if(draftFreq.slice(0,bins).some(f=>!Number.isInteger(f)||f<0||f>100))error="Every frequency must be a whole number from 0 to 100.";
+ else if(!draftFreq.slice(0,bins).some(f=>f>0))error="The total frequency must be greater than zero.";
+ else if(custom&&draftWidth.slice(0,bins).some(w=>!Number.isFinite(w)||w<=0||w>10000))error="Every class width must be greater than 0.";
+ byId("settingsStatus").textContent=error;
+ if(error)return;
+ saveEntries();
+ S.bins=bins;S.start=start;S.width=width;S.custom=custom;
+ S.freqs=Array.from({length:bins},(_,i)=>draftFreq[i]===undefined?5:draftFreq[i]);
+ S.widths=Array.from({length:bins},(_,i)=>custom?(draftWidth[i]||width):width);
+ S.exercise++;clearWork();configFromState();render();
+ byId("teacherSettings").open=false;
+}
+function fresh(){
+ saveEntries();
+ const bins=S.bins;
+ const centre=(bins-1)/2;
+ S.freqs=Array.from({length:bins},(_,i)=>{
+  const peak=Math.max(0,1-Math.abs(i-centre)/Math.max(1,centre+0.5));
+  return clamp(Math.round(1+Math.random()*6+peak*Math.random()*8),0,100);
+ });
+ S.exercise++;clearWork();configFromState();render();
+}
+function loadExample(){
+ S.bins=5;S.start=0;S.width=10;S.custom=false;
+ S.widths=[10,10,10,10,10];S.freqs=[2,3,5,4,1];
+ S.exercise++;clearWork();configFromState();render();
+}
+function numeric(v){
+ const str=String(v).trim().replace(/,/g,"");
+ return str===""?NaN:Number(str);
+}
+function check(){
+ saveEntries();
+ if(S.step===0)return;
+ const d=data(),errors=[];
+ const matches=(a,b)=>Number.isFinite(a)&&Math.abs(a-b)<=0.011;
+ if(S.step===1)d.r.forEach((x,i)=>{if(!matches(numeric(S.entries.mid[i]),x.midpoint))errors.push(i+1)});
+ if(S.step===2)d.r.forEach((x,i)=>{if(!matches(numeric(S.entries.product[i]),x.product))errors.push(i+1)});
+ if(S.step===3){
+  if(!matches(numeric(S.entries.sumF),d.sumF))errors.push("Σf");
+  if(!matches(numeric(S.entries.sumFX),d.sumFX))errors.push("Σfx");
+ }
+ if(S.step===4&&!matches(numeric(S.entries.mean),d.mean))errors.push("estimated mean");
+ if(errors.length){
+  S.feedback="Check "+(S.step<=2?"class(es) ":"")+errors.join(", ")+".";
+  S.feedbackKind="bad";
+ }else{
+  S.feedback="Correct. "+(S.step===4?"You have calculated the estimated mean.":"Move to the next step.");
+  S.feedbackKind="good";
+ }
+ render();
+}
+function reveal(){
+ saveEntries();if(S.step===0)return;
+ S.revealed[S.step]=true;S.feedback="This step is revealed.";S.feedbackKind="good";render();
+}
+byId("mode").addEventListener("change",e=>{saveEntries();S.mode=e.target.value;S.feedback="";render();});
+byId("previous").addEventListener("click",()=>setStep(S.step-1));
+byId("next").addEventListener("click",()=>setStep(S.step+1));
+byId("asidePrev").addEventListener("click",()=>setStep(S.step-1));
+byId("asideNext").addEventListener("click",()=>setStep(S.step+1));
+byId("newExercise").addEventListener("click",fresh);
+byId("loadExample").addEventListener("click",loadExample);
+byId("check").addEventListener("click",check);
+byId("reveal").addEventListener("click",reveal);
+byId("clear").addEventListener("click",()=>{S.entries={mid:{},product:{},sumF:"",sumFX:"",mean:""};S.revealed={};S.feedback="";render();});
+byId("apply").addEventListener("click",apply);
+byId("randomise").addEventListener("click",()=>{
+ captureEditors();
+ draftFreq=Array.from({length:clamp(Math.round(Number(byId("bins").value)||5),2,12)},()=>Math.floor(1+Math.random()*14));
+ editor();byId("settingsStatus").textContent="Frequencies changed in settings. Select Apply settings to use them.";
+});
+["bins","customWidths","width","start"].forEach(id=>byId(id).addEventListener("change",()=>{captureEditors();editor();}));
+byId("editRows").addEventListener("change",e=>{if(e.target.hasAttribute("data-width")){captureEditors();editor();}});
+byId("print").addEventListener("click",()=>window.print());
+byId("fullscreen").addEventListener("click",()=>{
+ if(document.fullscreenElement)document.exitFullscreen();
+ else if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen();
+});
+document.addEventListener("fullscreenchange",()=>{byId("fullscreen").textContent=document.fullscreenElement?"Exit full screen":"Full screen";});
+configFromState();render();
+})();
+</script>
+</body>
+</html>
