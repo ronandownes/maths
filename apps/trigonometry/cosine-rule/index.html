@@ -40,7 +40,7 @@
 <svg id="triangle" viewBox="0 0 500 355" role="img" aria-label="Schematic triangle, not drawn to scale"><title>Schematic triangle</title></svg>
 <div class="diagram-info">Diagram not to scale. Angle category only.</div>
 <div class="resize"><label for="width">Diagram width</label><input id="width" type="range" min="20" max="43" value="28" step="1"></div>
-<div class="manual" id="manual" hidden><div class="inputs"><label>a<input id="a" type="number" step="any" min="0"></label><label>b<input id="b" type="number" step="any" min="0"></label><label>c / A°<input id="c" type="number" step="any" min="0"></label></div><div class="validation" id="validation" role="status"></div><button id="apply">Apply values</button></div>
+<div class="manual" id="manual" hidden><div class="inputs"><label id="label-a">a<input id="a" type="number" step="any" min="0"></label><label>b<input id="b" type="number" step="any" min="0"></label><label><span id="label-c">c</span><input id="c" type="number" step="any" min="0"></label></div><div class="validation" id="validation" role="status"></div><button id="apply">Apply values</button></div>
 </div></section>
 <section class="panel work"><div class="panel-head">Mathematics</div><div class="mathboard" id="mathboard" aria-live="polite"><div class="blank">Which rule? What do you know?</div></div></section>
 <section class="panel steps-panel"><div class="panel-head">Steps</div><div class="steps">
@@ -90,14 +90,14 @@ if(task==='angle'){
   if(kind==='right')A=90;
   else if(level===1){
     // Two-digit repeated-digit angles are necessarily acute. In the obtuse case use their supplements.
-    let k=choice([33,44,55,66,77]);A=kind==='obtuse'?180-k:k;
+    let k=choice([11,22,33,44,55,66,77]);A=kind==='obtuse'?180-k:k;
   }else if(level===2)A=+(kind==='acute'?(rint(300,750)/10).toFixed(1):(rint(1080,1550)/10).toFixed(1));
   else A=+(kind==='acute'?(rint(2800,7500)/100).toFixed(2):(rint(10800,15500)/100).toFixed(2));
   values={b,c,A};
 }
 n=0;syncInput();buildSteps();render();
 }
-function syncInput(){el('a').value=task==='angle'?values.a:'';el('b').value=values.b;el('c').value=task==='angle'?values.c:values.A;el('c').previousSibling;el('validation').textContent='';}
+function syncInput(){el('label-a').hidden=task==='side';el('label-c').textContent=task==='angle'?'c':'A (degrees)';el('a').value=task==='angle'?values.a:'';el('b').value=values.b;el('c').value=task==='angle'?values.c:values.A;el('validation').textContent='';}
 function buildSteps(){
 const v=values,high=el('detail').value==='high',items=[];
 const add=(instruction,math,cls='')=>items.push({instruction,math,cls});
@@ -173,6 +173,6 @@ el('validation').textContent='';n=0;buildSteps();render();
 });
 el('width').addEventListener('input',e=>document.documentElement.style.setProperty('--w',e.target.value+'%'));
 el('screen').addEventListener('click',()=>{if(document.fullscreenElement){document.exitFullscreen()}else{document.documentElement.requestFullscreen?.()}});
-const params=new URLSearchParams(location.search);if(params.get('task')==='side')el('task').value='side';makeQuestion();
+const params=new URLSearchParams(location.search);if(params.get('task')==='side'){el('task').value='side';makeQuestion()}else{task='angle';level=1;values={a:8,b:9,c:7};syncInput();buildSteps();render()}
 })();
 </script></body></html>
