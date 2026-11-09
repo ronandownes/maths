@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Stem-and-leaf plots | Maths Apps</title>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{--ink:#213449;--blue:#245d96;--muted:#586e84;--line:#d2dfea;--bg:#f4f7fb;--green:#267b54}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+header{display:flex;align-items:center;gap:14px;background:#fff;border-bottom:1px solid var(--line);padding:10px clamp(12px,3vw,36px)}
+header img{width:155px;max-width:38vw}header nav{display:flex;flex-wrap:wrap;gap:8px;font-size:.9rem}
+a{color:var(--blue)}header nav a{text-decoration:none}header nav a:hover{text-decoration:underline}
+main{max-width:1430px;margin:auto;padding:clamp(10px,2vw,22px)}
+h1{font-size:clamp(1.6rem,3vw,2.2rem);margin:.1em 0}p{margin:.35rem 0 1rem}
+h2{font-size:1.12rem;margin:0 0 .55em}h3{font-size:1rem;margin:.6em 0}
+.panel{border:1px solid var(--line);border-radius:12px;background:#fff;padding:clamp(12px,1.5vw,20px);margin-bottom:12px}
+.controls,.actions{display:flex;align-items:end;gap:10px;flex-wrap:wrap}
+.control{display:flex;flex-direction:column;gap:4px;font-size:.83rem;font-weight:750;color:var(--muted)}
+select,input[type=number],input[type=text]{border:1px solid #9db4ca;border-radius:8px;background:#fff;min-height:42px;padding:7px 10px;color:var(--ink);font:600 1rem system-ui,sans-serif}
+select{min-width:130px}input[type=number]{width:105px}button{min-height:42px;padding:8px 13px;border-radius:9px;border:1px solid #a9c1d7;background:#fff;color:#234e77;font-size:.94rem;font-weight:720;cursor:pointer}
+button:hover{background:#e9f4ff}button.primary{color:#fff;background:#245d96;border-color:#245d96}button.primary:hover{background:#194875}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #82b7ed;outline-offset:2px}
+.muted,.note{color:var(--muted)}.note{font-size:.86rem}.actions{margin-top:10px}
+.teacher-settings{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#f8fbff}
+.teacher-settings summary{font-weight:750;cursor:pointer;padding:4px 0}.parameters{display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:12px;margin-top:10px}
+.dataset-config{border:1px solid #d7e5ef;background:#fff;border-radius:9px;padding:10px}
+.dataset-config h3{margin:0 0 8px}.dataset-config .controls{gap:8px}.dataset-config label{font-size:.78rem}
+#compareControls[hidden],#stats[hidden],#sortedPanel[hidden],#dataPanel[hidden],.hidden[hidden]{display:none!important}
+.board{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(230px,.7fr);gap:14px}
+@media(max-width:920px){.board{grid-template-columns:1fr}}
+.data-row{font-family:"Cambria Math",Georgia,serif;font-size:clamp(.98rem,1.6vw,1.35rem);overflow-wrap:anywhere;border-top:1px solid #e2eaf3;padding:7px 0}
+.data-row strong{display:block;font:700 .78rem system-ui,sans-serif;color:var(--muted);margin-bottom:4px}
+.plot-wrap{overflow-x:auto}
+.stem{border-collapse:collapse;margin:5px auto 4px;min-width:min(100%,380px);table-layout:fixed;font:clamp(1.08rem,2.2vw,1.8rem)/1.22 "Cambria Math",Georgia,serif}
+.stem th{font:700 .80rem system-ui,sans-serif;color:#456079;white-space:nowrap;padding:8px 9px}
+.stem td{border-top:1px solid #e4ebf1;padding:5px 12px;vertical-align:middle;height:47px;white-space:nowrap}
+.stem .stem-middle{font-weight:800;text-align:center;border-left:2px solid #678097;border-right:2px solid #678097;background:#f5f9fd;min-width:74px}
+.stem .leaf{text-align:left;min-width:120px;letter-spacing:.14em}
+.stem .leaf.left{text-align:right;color:#b45634}
+.stem .leaf.right{color:#216f73}
+.stem .leaf input{width:100%;min-width:130px;font:600 1.08rem "Cambria Math",Georgia,serif;letter-spacing:.16em;height:40px}
+.stem .leaf.left input{text-align:right}.stem .leaf input.correct{border:2px solid #2d9863;background:#edfff6}
+.stem .leaf input.incorrect{border:2px solid #bd3843;background:#fff0f2}
+.stem.one .leaf.left,.stem.one th.left{display:none}
+.stem caption{caption-side:bottom;font:.84rem system-ui,sans-serif;color:var(--muted);padding:10px}
+.legend{display:inline-block;border:1px solid #ccd8e3;padding:6px 12px;border-radius:6px;margin:10px 0;font:1rem "Cambria Math",Georgia,serif}
+.pill{display:inline-flex;background:#edf4fb;color:#27577e;border:1px solid #d4e5f4;border-radius:20px;padding:3px 9px;font-size:.79rem;font-weight:700}
+.feedback{margin-top:10px;min-height:25px;font-weight:750}.feedback.good{color:var(--green)}.feedback.bad{color:#b33547}
+.answer-hint{display:block;color:#687d90;font:500 .73rem system-ui,sans-serif;letter-spacing:0;margin-top:3px;white-space:normal}
+.stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.stat{padding:10px;border:1px solid #dce7f1;border-radius:8px;background:#f8fbff}
+.stat dt{color:var(--muted);font-size:.8rem}.stat dd{font-weight:800;font-size:1.04rem;margin:0}
+#compareControls .dataset-config:nth-child(2) h3{color:#247575}
+.task-list{padding-left:21px;margin:7px 0;line-height:1.7}.task-list li{padding:2px 0}
+.toolbar-right{margin-left:auto}#rawData,#sortedData{max-height:310px;overflow:auto}
+@media(max-width:680px){.parameters{grid-template-columns:1fr}.stem .leaf{min-width:95px}.stem .leaf input{min-width:86px}.controls>*{flex:1 1 auto}.toolbar-right{margin-left:0}.stat-grid{grid-template-columns:1fr}}
+@media print{
+ @page{size:A4 portrait;margin:12mm}body{background:#fff;font-size:11pt}
+ header,.no-print,.teacher-settings,button,#feedback{display:none!important}
+ main{max-width:100%;padding:0}.panel{border:0;padding:5mm 0;margin:0;break-inside:avoid}
+ .board{display:block}.stem{font-size:18pt}.stem td{height:32px}
+ .data-row{font-size:11pt}.note{font-size:9pt}
+ input{border:0!important;background:#fff!important}
+}
+</style>
+</head>
+<body>
+<header><a href="../../../index.html"><img alt="Irish School Maths — four dots" src="../../../assets/maths-logo.svg"></a>
+<nav><a href="../../../index.html">Apps</a><span>›</span><a href="../../../statistics/index.html">Statistics</a><span>›</span><strong>Stem-and-leaf plots</strong></nav></header>
+<main>
+<div class="panel">
+<h1>Stem-and-leaf plots</h1>
+<p class="muted">Arrange numerical data, build a one-sided or back-to-back plot, and compare centre and spread.</p>
+<div class="controls no-print">
+<label class="control">Diagram<select id="diagram"><option value="one">One-sided</option><option value="two">Back-to-back comparison</option></select></label>
+<label class="control">Activity<select id="activity"><option value="complete">Show completed plot</option><option value="blank">Students construct</option><option value="partial">Partly completed</option></select></label>
+<button class="primary" id="regenerate" type="button">⟳ Regenerate data</button>
+<button id="toggleAnswers" type="button">Show answers</button>
+<button id="toggleData" type="button">Hide raw data</button>
+<button id="toggleSorted" type="button">Show sorted data</button>
+<button id="print" type="button">Print / PDF</button>
+</div>
+<div style="margin-top:12px" class="no-print">
+<details class="teacher-settings" id="settings" open><summary>Teacher settings · sampling, centre and spread</summary>
+<div class="parameters">
+<section class="dataset-config"><h3>Dataset A</h3><div class="controls">
+<label class="control">Sample size<input id="aN" type="number" min="5" max="60" step="1" value="25"></label>
+<label class="control">Target mean<input id="aMean" type="number" min="0" max="99" step="1" value="48"></label>
+<label class="control">Target spread (SD)<input id="aSD" type="number" min="1" max="35" step="1" value="15"></label>
+</div></section>
+<section class="dataset-config" id="compareControls"><h3>Dataset B</h3><div class="controls">
+<label class="control">Sample size<input id="bN" type="number" min="5" max="60" step="1" value="25"></label>
+<label class="control">Target mean<input id="bMean" type="number" min="0" max="99" step="1" value="58"></label>
+<label class="control">Target spread (SD)<input id="bSD" type="number" min="1" max="35" step="1" value="11"></label>
+</div></section>
+</div><p class="note">Each dataset is sampled independently. Mean and SD set the generating distribution, not exact sample statistics. Values are rounded to whole numbers from 0 to 99. Sampling variation is intentional.</p>
+</details>
+</div>
+</div>
+<div class="board">
+<section class="panel"><h2 id="plotTitle">Dataset A · Stem-and-leaf</h2>
+<div class="plot-wrap"><table class="stem one" id="plot"><caption id="plotCaption"></caption><thead><tr><th class="left">A · Leaves</th><th>Stem (tens)</th><th>B · Leaves</th></tr></thead><tbody id="plotBody"></tbody></table></div>
+<div class="legend" id="key">Key: 5 | 3 means 53</div>
+<div class="actions no-print"><button id="check" type="button" class="primary" hidden>Check my plot</button><button id="showStats" type="button">Show statistics</button><button id="resetEntries" type="button" hidden>Clear entries</button></div>
+<p id="feedback" class="feedback" role="status" aria-live="polite"></p></section>
+<section class="panel">
+<h2>Data and investigation</h2>
+<div id="dataPanel"><div id="rawData"></div></div>
+<div id="sortedPanel"><div id="sortedData"></div></div>
+<section id="stats" hidden><h3>Sample statistics</h3><div class="stat-grid" id="statGrid"></div></section>
+<h3>Investigate</h3><ol id="tasks" class="task-list"></ol>
+<p class="note">Back-to-back convention: A's leaves decrease from left to right towards the stem; B's leaves increase away from the stem. Always include a key.</p>
+</section>
+</div>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const state={one:false,mode:'complete',dataA:[],dataB:[],showAnswers:false,showData:true,showSorted:false,showStats:false,inputs:{}};
+function clamp(n,min,max,fallback){n=Number(n);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback}
+function gaussian(){const u=1-Math.random(),v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function sample(prefix){
+ const n=clamp($(prefix+'N').value,5,60,25)|0;
+ const centre=clamp($(prefix+'Mean').value,0,99,50);
+ const sd=clamp($(prefix+'SD').value,1,35,12);
+ $(prefix+'N').value=n;$(prefix+'Mean').value=centre;$(prefix+'SD').value=sd;
+ return Array.from({length:n},()=>Math.round(clamp(centre+sd*gaussian(),0,99,centre)));
+}
+function sorted(data){return [...data].sort((a,b)=>a-b)}
+function summary(data){
+ const a=sorted(data),n=a.length,mean=data.reduce((s,x)=>s+x,0)/n;
+ const median=n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2;
+ const sd=Math.sqrt(data.reduce((s,x)=>s+(x-mean)**2,0)/(n-1));
+ return {n,mean,median,sd,min:a[0],max:a[n-1],range:a[n-1]-a[0]};
+}
+function leafMap(data,reverse=false){
+ const m=new Map();
+ for(const x of sorted(data)){const stem=Math.floor(x/10),leaf=x%10;if(!m.has(stem))m.set(stem,[]);m.get(stem).push(leaf)}
+ if(reverse)for(const arr of m.values())arr.reverse();
+ return m;
+}
+function newSample(){
+ state.dataA=sample('a');state.dataB=sample('b');state.inputs={};
+ state.showAnswers=false;$('feedback').textContent='';$('feedback').className='feedback';
+ render();
+}
+function showGroup(){state.one=$('diagram').value==='one';$('compareControls').hidden=state.one;render()}
+function viewCells(group,stem,leaves,rowIndex){
+ const id=group+':'+stem;
+ const cell=document.createElement('td');cell.className='leaf '+(group==='A'?'left':'right');
+ const given=state.mode==='complete'||(state.mode==='partial'&&((rowIndex+(group==='A'?0:1))%3===0));
+ if(given){cell.textContent=leaves.join(' ');if(!leaves.length)cell.textContent='—';return cell}
+ const input=document.createElement('input');input.type='text';input.autocomplete='off';input.inputMode='numeric';
+ input.setAttribute('aria-label','Dataset '+group+', stem '+stem+', enter leaves in '+(group==='A'?'descending':'ascending')+' order');
+ input.placeholder=leaves.length?'Enter leaves':'—';
+ input.value=state.inputs[id]??'';
+ input.addEventListener('input',()=>{state.inputs[id]=input.value;input.classList.remove('correct','incorrect');$('feedback').textContent=''});
+ cell.append(input);
+ if(state.showAnswers){const hint=document.createElement('small');hint.className='answer-hint';hint.textContent='Answer: '+(leaves.join(' ')||'no leaves');cell.append(hint)}
+ return cell;
+}
+function render(){
+ state.mode=$('activity').value;
+ const two=!state.one;
+ $('plot').classList.toggle('one',!two);$('compareControls').hidden=!two;
+ $('plotTitle').textContent=two?'Back-to-back · Dataset A and Dataset B':'Dataset A · Stem-and-leaf';
+ $('plotCaption').textContent=two?'Dataset A | common tens stems | Dataset B':'One dataset · tens and units';
+ const mapA=leafMap(state.dataA,two),mapB=leafMap(state.dataB);
+ const all=two?state.dataA.concat(state.dataB):state.dataA;
+ const stems=sorted(all).map(x=>Math.floor(x/10));
+ const first=stems[0]??0,last=stems[stems.length-1]??9;
+ const body=$('plotBody');body.replaceChildren();
+ for(let stem=first;stem<=last;stem++){
+  const tr=document.createElement('tr'),i=stem-first;
+  tr.append(viewCells('A',stem,mapA.get(stem)||[],i));
+  const centre=document.createElement('td');centre.className='stem-middle';centre.textContent=stem;tr.append(centre);
+  tr.append(viewCells('B',stem,mapB.get(stem)||[],i));body.append(tr);
+ }
+ $('key').textContent=two?'Key: 3 | 5 means 53 in A; 5 | 3 means 53 in B':'Key: 5 | 3 means 53';
+ const student=state.mode!=='complete';
+ $('check').hidden=!student;$('resetEntries').hidden=!student;
+ $('toggleAnswers').textContent=state.showAnswers?'Hide answers':'Show answers';
+ $('toggleData').textContent=state.showData?'Hide raw data':'Show raw data';
+ $('toggleSorted').textContent=state.showSorted?'Hide sorted data':'Show sorted data';
+ $('showStats').textContent=state.showStats?'Hide statistics':'Show statistics';
+ $('stats').hidden=!state.showStats;$('dataPanel').hidden=!state.showData;$('sortedPanel').hidden=!state.showSorted;
+ const sets=[['A',state.dataA],...(two?[['B',state.dataB]]:[])];
+ const makeList=(data)=>data.join(', ');
+ $('rawData').innerHTML=sets.map(([name,data])=>'<div class="data-row"><strong>Dataset '+name+' · Raw data ('+data.length+')</strong>'+makeList(data)+'</div>').join('');
+ $('sortedData').innerHTML=sets.map(([name,data])=>'<div class="data-row"><strong>Dataset '+name+' · Ordered data</strong>'+makeList(sorted(data))+'</div>').join('');
+ const stats=[];
+ for(const [name,data] of sets){
+  const a=summary(data);
+  for(const [key,value] of [['n',a.n],['Mean',a.mean.toFixed(1)],['Median',a.median],['Range',a.range],['Sample SD',a.sd.toFixed(1)]]){
+   const box=document.createElement('div');box.className='stat';
+   const dt=document.createElement('dt');dt.textContent=name+' · '+key;
+   const dd=document.createElement('dd');dd.textContent=value;box.append(dt,dd);stats.push(box);
+  }
+ }
+ $('statGrid').replaceChildren(...stats);
+ const tasks=two?[
+  'Construct the leaves in the correct order on both sides of the stems.',
+  'Which dataset has the greater median? Explain using the plots.',
+  'Which dataset has the larger range? Explain your answer.',
+  'Which appears more spread out? Is the difference in centre the same as the difference in spread?',
+  'Generate new samples without changing the settings. Which conclusions persist?'
+ ]:[
+  'Construct the ordered leaves for every stem.',
+  'Find the minimum, maximum and range.',
+  'Find the median from the ordered values.',
+  'Identify any gaps, clusters or unusual values.',
+  'Regenerate: what changes, and what remains similar?'
+ ];
+ $('tasks').replaceChildren(...tasks.map(t=>{const li=document.createElement('li');li.textContent=t;return li}));
+}
+function readLeaves(raw){const str=raw.trim();if(!str)return [];if(!/^[0-9\s,;|]*$/.test(str))return null;return (str.match(/[0-9]/g)||[]).map(Number)}
+function checkPlot(){
+ const two=!state.one,maps={A:leafMap(state.dataA,two),B:leafMap(state.dataB)};
+ let correct=0,total=0,incorrect=0;
+ document.querySelectorAll('#plot input').forEach(input=>{
+  const match=input.getAttribute('aria-label').match(/^Dataset ([AB]), stem (\d+)/);
+  if(!match)return;
+  const group=match[1],stem=Number(match[2]),target=maps[group].get(stem)||[];
+  const entered=readLeaves(input.value),okay=entered!==null&&entered.length===target.length&&entered.every((x,i)=>x===target[i]);
+  input.classList.toggle('correct',okay);input.classList.toggle('incorrect',!okay);
+  if(okay)correct++;else incorrect++;total++;
+ });
+ $('feedback').textContent=incorrect?'Correct rows: '+correct+' / '+total+'. Recheck the highlighted rows and the order of leaves.':'All '+total+' editable rows correct. ✓';
+ $('feedback').className='feedback '+(incorrect?'bad':'good');
+}
+$('diagram').addEventListener('change',()=>{state.inputs={};showGroup()});
+$('activity').addEventListener('change',()=>{state.inputs={};state.showAnswers=false;render()});
+$('regenerate').addEventListener('click',newSample);
+$('toggleAnswers').addEventListener('click',()=>{state.showAnswers=!state.showAnswers;render()});
+$('toggleData').addEventListener('click',()=>{state.showData=!state.showData;render()});
+$('toggleSorted').addEventListener('click',()=>{state.showSorted=!state.showSorted;render()});
+$('showStats').addEventListener('click',()=>{state.showStats=!state.showStats;render()});
+$('check').addEventListener('click',checkPlot);
+$('resetEntries').addEventListener('click',()=>{state.inputs={};$('feedback').textContent='';render()});
+$('print').addEventListener('click',()=>window.print());
+for(const id of ['aN','aMean','aSD','bN','bMean','bSD'])$(id).addEventListener('change',newSample);
+newSample();
+</script></body></html>
