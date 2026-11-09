@@ -97,7 +97,7 @@ select,input{padding:8px 9px;min-height:43px}input[type=number]{width:96px;text-
 <section id="working" class="workspace" aria-label="Lowest and highest prime powers">
 <div class="work-head"><h2>Select the lowest and highest powers</h2><small>Power 0 means the factor is absent. Exponent 1 is shown.</small></div>
 <div class="power-scroll"><table class="power-table"><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div>
-<p class="steps-note">HCF: take the <strong>lowest exponent</strong> in every column. LCM: take the <strong>highest exponent</strong>. Any factor raised to 0 is omitted from the final product.</p>
+<p class="steps-note">For each prime or letter, compare the exponents across the expressions. HCF: take the <strong>lowest exponent</strong>. LCM: take the <strong>highest exponent</strong>. A factor with exponent 0 is omitted from the final product.</p>
 <div class="practice-fields no-print" id="practiceFields">
 <div class="field"><label for="guessH">Your HCF</label><input id="guessH" type="text" placeholder="e.g. 6xy^2" autocomplete="off"></div>
 <div class="field"><label for="guessL">Your LCM</label><input id="guessL" type="text" placeholder="e.g. 36x^3y^4" autocomplete="off"></div>
@@ -242,7 +242,12 @@ function newRandom(){
   return n;
  };
  const n=state.three?3:2,common=state.letters?random(1,6):random(1,8);
- state.items=Array.from({length:n},()=>({n:Math.min(999,common*make()),x:state.letters?random(0,5):0,y:state.letters?random(0,4):0}));
+ state.items=Array.from({length:n},()=>{
+  let coefficient=common*make(),attempt=0;
+  while(coefficient>999&&attempt++<50)coefficient=common*make();
+  if(coefficient>999)coefficient=common*random(2,25);
+  return {n:coefficient,x:state.letters?random(0,5):0,y:state.letters?random(0,4):0};
+ });
  $('example').value='custom';state.feedback='';initialisePicks(state.mode==='worked');
  $('guessH').value='';$('guessL').value='';render();
 }
@@ -251,7 +256,7 @@ function onItemChange(index,key,input){
  const legal=key==='n'?Number.isSafeInteger(v)&&v>=1&&v<=999:Number.isInteger(v)&&v>=0&&v<=9;
  if(!legal){input.setAttribute('aria-invalid','true');return}
  input.removeAttribute('aria-invalid');
- state.items[index][key]=v;state.feedback='';
+ state.items[index][key]=v;state.feedback='';state.example=null;
  $('example').value='custom';initialisePicks(state.mode==='worked');render();
 }
 function makeInputs(){
