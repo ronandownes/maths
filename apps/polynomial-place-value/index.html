@@ -779,6 +779,20 @@ body.maths-only #lessonNavigation{display:flex!important;margin:20px auto}
 #boardPanel .board-exit:hover,#boardPanel .board-exit:focus-visible{background:#17446f;outline-offset:3px}
 #boardPanel:fullscreen .board-exit{display:inline-flex!important}
 @media print{#boardPanel .board-exit{display:none!important}}
+
+/* Small selectors, and clear distinction between one more question and a NEW exercise. */
+#mobileSettingsPanel .quick-fields{gap:6px!important;column-gap:8px!important}
+#mobileSettingsPanel #unitSelect{width:105px!important;min-width:0!important;max-width:105px!important}
+#mobileSettingsPanel #zeroSelect{width:102px!important;min-width:0!important;max-width:102px!important}
+#mobileSettingsPanel #hcfSelect{width:105px!important;min-width:0!important;max-width:105px!important}
+#mobileSettingsPanel #coefficientSelect{width:71px!important;min-width:0!important;max-width:71px!important}
+.coefficient-quick-pair{display:flex;gap:4px;align-items:center}
+#quickManual{border:1px solid #9bafc4;background:#fff;color:#235a8a;border-radius:8px;padding:7px;min-height:42px;font-size:.78rem;font-weight:700;white-space:nowrap}
+#quickManual[aria-pressed="true"]{background:#ddecfc;border-color:#2b70b1}
+#nextExercise,#nextLessonExercise{border:2px solid #1d568e!important;background:#1e5b97!important;color:#fff!important;font-weight:750!important}
+#exerciseNav .exercise-position{font-size:.8rem;max-width:220px;line-height:1.3;white-space:normal}
+#exerciseSelect{min-width:165px;max-width:260px}
+@media(max-width:760px){#mobileSettingsPanel #unitSelect,#mobileSettingsPanel #zeroSelect,#mobileSettingsPanel #hcfSelect{width:100%!important;max-width:none!important}}
 </style>
 </head>
 <body>
@@ -800,7 +814,7 @@ body.maths-only #lessonNavigation{display:flex!important;margin:20px auto}
 <div class="quick-field"><label for="factorSelect" title="Pairs count potential terms, not polynomial degrees">FACTOR
 TERMS</label><select id="factorSelect" aria-label="Number of terms in factors"></select></div>
 <div class="quick-field"><label for="coefficientSelect">COEF.
-LEVEL</label><select id="coefficientSelect"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="manual">Manual</option></select></div>
+LEVEL</label><div class="coefficient-quick-pair"><select id="coefficientSelect"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="manual">Manual</option></select><button id="quickManual" type="button" title="Change individual coefficients of this example" aria-pressed="false">✎ Edit</button></div></div>
 <div class="quick-field"><span>Signs</span><div class="quick-signs"><label>Higher<select id="signHigh" aria-label="Signs of higher-degree factor"></select></label><label>Lower<select id="signLow" aria-label="Signs of lower-degree factor"></select></label></div></div>
 <div class="quick-field"><label for="unitSelect" title="Unit coefficients include, but are not limited to, monic leading coefficients">UNIT 1s</label><select id="unitSelect" aria-label="Positions of coefficients of one"></select></div>
 <div class="quick-field"><label for="zeroSelect">Zeros</label><select id="zeroSelect" aria-label="Missing coefficients"></select></div>
@@ -906,8 +920,8 @@ const signTypes=[['positive','Positive'],['negative','Negative'],['mixed','Mixed
 const signChoices=[['positive','All +'],['negative','Non-leading −'],['mixed','Mixed + / −'],['random','Random']];
 const levels=[[1,'1'],[2,'2'],[3,'3']];
 // Equivalent inner/outer and first/second factor cases alternate randomly.
-const oneModes=[['off','Off'],['firsts','First'],['lasts','Last'],['inner','Inners'],['outer','Outers'],['factorFirst','First factor'],['factorSecond','Second factor'],['onlyOne','One'],['triple','Three'],['threeFirst','Three – first'],['threeLast','Three – last'],['allExcept','All minus one'],['all','All']];
-const zeroModes=[['off','Off'],['middle','Interior zero'],['trailing','Constant zero'],['random','Random hole'],['multiple','Multiple holes']];
+const oneModes=[['off','Off'],['firsts','First'],['lasts','Last'],['inner','Inners'],['outer','Outers'],['factorFirst','Left'],['factorSecond','Right'],['onlyOne','One'],['triple','Three'],['all','All']];
+const zeroModes=[['off','Off'],['middle','Middle'],['trailing','Constant'],['random','Random'],['multiple','Multiple']];
 // A bank introduces ONE deliberate change at a time: internal signs, arithmetic, then degree.
 // Selecting a bank applies its teaching defaults; the settings above remain teacher overrides.
 const bankProfiles=[
@@ -998,6 +1012,10 @@ function applyZeroPattern(a,b,mode,next){
  let positions=[a,b].flatMap(row=>row.map((v,i)=>[row,i]).filter(([r,i])=>i>0&&r[i]!==0));
  if(mode==='middle')positions=positions.filter(([r,i])=>i<r.length-1);
  if(mode==='trailing')positions=positions.filter(([r,i])=>i===r.length-1);
+ if(mode==='multiple'){
+  const middles=positions.filter(([r,i])=>i<r.length-1);
+  if(middles.length)positions=middles;
+ }
  if(!positions.length)return;
  const count=mode==='multiple'?Math.min(3,positions.length):1;
  for(let t=0;t<count;t++){
@@ -1102,10 +1120,10 @@ function individualProducts(a,b){
 const factorSizes={ll:[2,2],ql:[3,2],qq:[3,3],l3:[4,2],l4:[5,2],l5:[6,2],q3:[4,3],q4:[5,3],q5:[6,3],'44':[5,5],m3:[3,2],m4:[4,2],m5:[5,2]};
 const monomialTypes=['m3','m4','m5'];
 const signPatterns=n=>n<=1?['']:Array.from({length:Math.pow(2,n-1)},(_,v)=>Array.from({length:n-1},(_,i)=>v&(1<<(n-2-i))?'−':'+').join(''));
-function applyExerciseChoice(number,index){
+function applyExerciseChoice(number,index,resetPreset=false){
  if(assessment.started)return;
  const p=bankProfiles[number];if(!p)return;
- if(state.slot!==number){
+ if(resetPreset||state.slot!==number){
   state.type=p.type;state.coreType=p.type;state.factorRandom=!!p.mixed;state.level=p.level;
   state.oneMode=p.oneMode||'off';state.sign=p.sign;state.signHigh=null;state.signLow=null;
   state.zeroMode='off';state.hcfMode='off';state.hcfNumber='random';state.constantOn=false;state.manual=false;
@@ -1129,6 +1147,9 @@ function syncQuickSelectors(){
  };
  const difficulty=$('coefficientSelect');
  difficulty.value=state.manual?'manual':String(state.level);difficulty.disabled=assessment.started;
+ const edit=$('quickManual');edit.disabled=assessment.started;edit.setAttribute('aria-pressed',String(state.manual));
+ edit.textContent=state.manual?'✓ Editing':'✎ Edit';
+ edit.onclick=()=>{if(assessment.started)return;state.manual=!state.manual;render()};
  difficulty.onchange=()=>{
   state.manual=difficulty.value==='manual';
   if(!state.manual){state.level=Number(difficulty.value);refreshSelectedQuestion();assessmentConfigChanged()}
@@ -1142,7 +1163,7 @@ function syncQuickSelectors(){
  zero.onchange=()=>{state.zeroMode=zero.value;refreshSelectedQuestion();assessmentConfigChanged()};
  const hcf=$('hcfSelect'),hnum=$('hcfNumber');
  const note=$('configurationNote');const unitHcf=state.oneMode!=='off'&&['first','second','both'].includes(state.hcfMode);
- const unitZero=state.zeroMode==='trailing'&&['lasts','inner','outer','all','allExcept','triple','threeLast'].includes(state.oneMode);
+ const unitZero=state.zeroMode==='trailing'&&['lasts','inner','outer','all','triple'].includes(state.oneMode);
  note.hidden=!unitHcf&&!unitZero;
  note.textContent=[unitHcf?'Unit coefficients are chosen before HCF distribution, so visible coefficients may change.':'',unitZero?'A coefficient cannot be both zero and a unit: the zero takes precedence.':''].filter(Boolean).join(' ');
  hcf.value=state.hcfMode;hnum.value=state.hcfNumber;
@@ -1162,20 +1183,22 @@ function syncQuickSelectors(){
   };
  });
  const exercise=$('exerciseSelect');
- exercise.replaceChildren(...bankProfiles.map((p,i)=>new Option('Exercise '+(i+1),String(i))),new Option('Custom / Random','fresh'));
+ exercise.replaceChildren(...bankProfiles.map((p,i)=>new Option('Exercise '+(i+1)+' · '+p.name,String(i))),new Option('Custom / Random','fresh'));
  exercise.value=Number.isInteger(state.slot)?String(state.slot):'fresh';exercise.disabled=assessment.started;
- exercise.onchange=()=>exercise.value==='fresh'?freshQuestion():applyExerciseChoice(Number(exercise.value),0);
+ exercise.onchange=()=>exercise.value==='fresh'?freshQuestion():applyExerciseChoice(Number(exercise.value),0,true);
  const nav=$('exerciseNav');nav.replaceChildren();
  const inExercise=Number.isInteger(state.slot);
  const back=el('button','‹');back.type='button';back.disabled=!inExercise||state.bankQuestion===0||assessment.started;
  back.title='Previous question';back.onclick=()=>applyExerciseChoice(state.slot,state.bankQuestion-1);
  const exerciseLetter=n=>{let result='';for(n++;n>0;n=Math.floor((n-1)/26))result=String.fromCharCode(65+(n-1)%26)+result;return result};
- const label=el('span',inExercise?(state.bankQuestion===0?'Worked example':'Your turn · '+exerciseLetter(state.bankQuestion-1)):'Random example','exercise-position');
- const next=el('button','Next question →');next.type='button';next.disabled=assessment.started;
+ const label=el('span',inExercise?(state.bankQuestion===0?'Example · '+bankProfiles[state.slot].name:'Question '+exerciseLetter(state.bankQuestion-1)+' · '+bankProfiles[state.slot].name):'Custom question','exercise-position');
+ const next=el('button','Another question →');next.type='button';next.disabled=assessment.started;
+ next.title='New question in this SAME exercise — the mathematical settings stay the same';
  next.onclick=()=>inExercise?applyExerciseChoice(state.slot,state.bankQuestion+1):freshQuestion();
  nav.append(back,label,next);
  const nextExercise=$('nextExercise');nextExercise.disabled=assessment.started;
- nextExercise.onclick=()=>applyExerciseChoice(inExercise?(state.slot+1)%bankProfiles.length:0,0);
+ nextExercise.title='Advance to the NEXT planned exercise with a different focus and its own settings';
+ nextExercise.onclick=()=>applyExerciseChoice(inExercise?(state.slot+1)%bankProfiles.length:0,0,true);
  const display=$('displaySix');display.disabled=assessment.started;
  display.onclick=()=>switchMode('board');
  const activity=$('activitySelect');activity.value=assessment.mode;activity.onchange=()=>switchMode(activity.value);
