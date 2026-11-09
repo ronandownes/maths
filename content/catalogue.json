@@ -226,6 +226,13 @@
         "ready": true
       },
       {
+        "slug": "grouped-frequency",
+        "title": "Grouped frequency distributions",
+        "ready": true,
+        "app": "apps/statistics/grouped-frequency/index.html",
+        "description": "Configure class widths and frequencies; reveal midpoint calculations and estimated mean step by step; student practice and checking"
+      },
+      {
         "slug": "central-tendency",
         "title": "Measures of central tendency",
         "ready": true,
