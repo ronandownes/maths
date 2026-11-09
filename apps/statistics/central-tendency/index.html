@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Measures of central tendency | Maths Apps</title>
+<link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+<style>
+:root{--ink:#1c3047;--blue:#245d96;--red:#bd3540;--green:#267d47;--line:#d1dfea;--bg:#f3f7fb;--pale:#fef9da}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:16px/1.5 system-ui,Segoe UI,Arial,sans-serif;color:var(--ink)}
+header{display:flex;align-items:center;gap:15px;flex-wrap:wrap;border-bottom:1px solid #d2deea;background:#fff;padding:10px clamp(12px,3vw,30px)}
+header img{width:163px;max-width:38vw}header nav{display:flex;gap:8px;flex-wrap:wrap;font-size:.9rem}a{color:#245d96}
+main{max-width:1410px;margin:auto;padding:clamp(10px,2vw,20px)}
+h1{font-size:clamp(1.65rem,3vw,2.2rem);margin:.1em 0}h2{font-size:1.1rem;margin:0 0 8px}
+p{margin:.4rem 0 .8rem}.muted{color:#577083}.panel{border:1px solid var(--line);border-radius:12px;background:#fff;padding:clamp(12px,2vw,22px);margin:0 0 12px}
+.toolbar{display:flex;flex-wrap:wrap;align-items:end;gap:9px}
+.control{display:flex;flex-direction:column;gap:3px;font-size:.81rem;font-weight:750;color:#5a6e83}
+input,select{background:#fff;border:1px solid #9cafc2;border-radius:8px;padding:8px 9px;font:600 1rem system-ui,sans-serif;color:var(--ink);min-height:43px}
+select{min-width:105px}input[type=number]{width:96px}
+button{min-height:42px;cursor:pointer;background:#fff;border:1px solid #b0c5d9;border-radius:8px;padding:8px 12px;font:700 .93rem system-ui,sans-serif;color:#245c91}
+button.primary{background:#215e97;border-color:#215e97;color:#fff}button:hover{filter:brightness(.96)}
+button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid #79b9ed;outline-offset:2px}
+.switch{display:inline-flex;gap:6px;align-items:center;font-weight:650;font-size:.89rem;margin:6px 9px 4px 0}
+.switch input{min-height:0;width:18px;height:18px;accent-color:#245e99}
+#plot{width:100%;height:auto;display:block;max-height:min(47vh,400px);touch-action:none;user-select:none}
+.svg-dot{cursor:grab;touch-action:none}.svg-dot:active{cursor:grabbing}
+.dot-label{font:700 13px system-ui,sans-serif;fill:#24496d}
+.plot-mark-mean{stroke:#d84c36}.plot-mark-median{stroke:#2859cf}.plot-mark-mode{stroke:#229447}
+#pointSummary{font-size:.9rem;color:#526b80;min-height:24px}
+.data-list{font:clamp(1.1rem,1.9vw,1.45rem)/1.5 Georgia,"Cambria Math",serif;letter-spacing:.025em;padding:11px 8px;border-radius:7px;background:#f4f8fc;overflow-wrap:anywhere;min-height:56px}
+.stat-panel{background:var(--pale);border:1px solid #e6ddae;border-radius:11px;padding:14px 18px}
+.stats-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:840px){.stats-grid{grid-template-columns:1fr}}
+.stat{border:1px solid #e0e1cc;border-radius:9px;background:#fffef3;padding:11px 15px;min-height:92px}
+.stat .name{display:flex;align-items:center;gap:7px;font-weight:800}
+.stat .number{font:700 clamp(1.4rem,2.6vw,2.1rem) Georgia,serif;margin:5px 0 0}
+.stat small{color:#5d7181;font-size:.8rem;display:block;overflow-wrap:anywhere}
+.stat.mean .name{color:#c4472d}.stat.median .name{color:#2c58c7}.stat.mode .name{color:#1d8348}
+.stat[aria-hidden=true] .number,.stat[aria-hidden=true] small{visibility:hidden}
+.explain{font-size:.84rem;color:#576f82}
+.summary-table{width:100%;border-collapse:collapse;font-size:.89rem;text-align:left}
+.summary-table th,.summary-table td{border-bottom:1px solid #dae4ed;padding:7px}
+.summary-table th{color:#506980}
+.badge{display:inline-block;background:#e6f2fc;border-radius:30px;border:1px solid #d0e4f7;padding:2px 9px;font-size:.8rem;font-weight:750}
+.controls-end{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 0}
+#shiftStudy[hidden],#studentTask[hidden],#dataDisplay[hidden]{display:none!important}
+#studentTask{padding:12px;background:#f2f8fe;border:1px solid #d0e3f5;border-radius:8px}
+#studentTask input{max-width:105px}
+#feedback{font-weight:750;min-height:25px}
+#feedback.good{color:#1c814f}#feedback.bad{color:#b63246}
+@media print{@page{size:A4 landscape;margin:9mm}body{background:#fff}main{max-width:none;padding:0}header,.no-print{display:none!important}.panel{border:0;margin:0;break-inside:avoid;padding:3mm 0}#plot{height:80mm;max-height:none}.stat-panel{break-inside:avoid}}
+</style></head>
+<body>
+<header><a href="../../../index.html"><img src="../../../assets/maths-logo.svg" alt="Irish School Maths — four dots"></a><nav>
+<a href="../../../index.html">Apps</a> › <a href="../../../statistics/index.html">Statistics</a> › <strong>Measures of central tendency</strong></nav></header>
+<main>
+<section class="panel">
+<h1>Measures of central tendency</h1>
+<p class="muted">Move the data points. Watch the distribution change, then investigate the mean, median and mode.</p>
+<div class="toolbar no-print">
+<label class="control">Number of data points<select id="size">
+<option value="5">5</option><option value="6">6</option><option value="7" selected>7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="15">15</option><option value="20">20</option>
+</select></label>
+<button id="random" class="primary" type="button">⟳ Random data</button>
+<button id="plus" type="button">+1 to all</button>
+<button id="minus" type="button">−1 from all</button>
+<label class="control">Display<select id="display"><option value="sorted">Sorted</option><option value="original">Original order</option></select></label>
+<label class="control">Task<select id="task"><option value="explore">Explore</option><option value="predict">Find the statistics</option></select></label>
+<button id="reset" type="button">Reset</button>
+<button id="print" type="button">Print</button>
+</div>
+</section>
+<section class="panel">
+<h2>Interactive dot plot</h2>
+<svg id="plot" viewBox="0 0 1080 305" role="img" aria-label="Dot plot from 0 to 20; data points can be dragged horizontally"></svg>
+<div id="pointSummary">Drag a grey dot along the number line, or focus a dot and use the left and right arrow keys.</div>
+<div class="no-print">
+<label class="switch"><input type="checkbox" id="showMean" checked><span>Mean line</span></label>
+<label class="switch"><input type="checkbox" id="showMedian" checked><span>Median line</span></label>
+<label class="switch"><input type="checkbox" id="showMode" checked><span>Mode markers</span></label>
+<label class="switch"><input type="checkbox" id="showValues" checked><span>Show values</span></label>
+</div>
+</section>
+<section class="panel" id="dataDisplay">
+<h2>Data</h2><div class="data-list" id="numbers"></div>
+</section>
+<section class="panel stat-panel">
+<h2>Measures of centre</h2>
+<div class="controls-end no-print" style="margin:0 0 12px">
+<label class="switch"><input type="checkbox" id="revealMean" checked>Show mean</label>
+<label class="switch"><input type="checkbox" id="revealMedian" checked>Show median</label>
+<label class="switch"><input type="checkbox" id="revealMode" checked>Show mode</label>
+<label class="switch"><input type="checkbox" id="revealWorking">Show mean calculation</label>
+</div>
+<div class="stats-grid">
+<div class="stat mean" id="meanBox"><div class="name">● Mean</div><div class="number" id="meanValue"></div><small id="meanWorking"></small></div>
+<div class="stat median" id="medianBox"><div class="name">● Median</div><div class="number" id="medianValue"></div><small id="medianDetail"></small></div>
+<div class="stat mode" id="modeBox"><div class="name">● Mode</div><div class="number" id="modeValue"></div><small id="modeDetail"></small></div>
+</div>
+<div id="studentTask" hidden><p>Calculate the three measures before revealing them.</p>
+<div class="toolbar"><label class="control">Mean<input id="guessMean" type="text" inputmode="decimal" placeholder="?"></label><label class="control">Median<input id="guessMedian" type="text" inputmode="decimal" placeholder="?"></label><label class="control">Mode(s)<input id="guessMode" type="text" placeholder="e.g. 10, 13"></label><button id="check" class="primary">Check answers</button><button id="showAnswers">Reveal</button></div>
+<p class="explain">For multiple modes, enter every modal value separated by commas. If no value occurs more often than another, enter “none”.</p><p id="feedback" role="status" aria-live="polite"></p></div>
+</section>
+<section class="panel">
+<h2>What happens when every value changes?</h2>
+<div class="no-print controls-end">
+<label class="switch"><input type="checkbox" id="trackShift">Compare with original dataset</label>
+<button id="makeBaseline" type="button">Set comparison baseline</button>
+</div>
+<div id="shiftStudy" hidden>
+<table class="summary-table"><thead><tr><th></th><th>Mean</th><th>Median</th><th>Mode(s)</th><th>Range</th></tr></thead><tbody id="comparison"></tbody></table>
+<p class="explain">Adding the same constant to every value shifts the mean, median and each mode by that constant, while leaving the range unchanged. Investigate whether changing just one point has the same effect.</p></div>
+</section>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const state={data:[9,10,10,11,13,13,18],initial:[],baseline:[],showNumbers:true};
+const MAX=20,MIN=0,LEFT=56,RIGHT=1036,Y=244;
+const ns='http://www.w3.org/2000/svg';
+function svg(tag,attrs={},text=''){const e=document.createElementNS(ns,tag);for(const [k,v]of Object.entries(attrs))e.setAttribute(k,String(v));if(text)e.textContent=text;return e}
+function clamp(n){return Math.round(Math.max(MIN,Math.min(MAX,n)))}
+function randomData(n){const mean=7+Math.random()*7;return Array.from({length:n},()=>clamp(mean+(Math.random()+Math.random()+Math.random()-1.5)*11))}
+function stats(a){
+ const sorted=[...a].sort((x,y)=>x-y),n=a.length,total=a.reduce((s,x)=>s+x,0);
+ const mean=total/n,median=n%2?sorted[Math.floor(n/2)]:(sorted[n/2-1]+sorted[n/2])/2;
+ const freq=new Map();for(const v of a)freq.set(v,(freq.get(v)||0)+1);
+ const largest=Math.max(...freq.values());
+ const modes=[...freq].filter(([,k])=>k===largest).map(([x])=>x).sort((x,y)=>x-y);
+ // If all values are unique, no mode is preferred.
+ return {sorted,mean,median,modes:largest===1?[]:modes,total,n,range:sorted[n-1]-sorted[0],maxFrequency:largest};
+}
+function fmt(v){return Number.isInteger(v)?String(v):Number(v.toFixed(2)).toString()}
+function xPos(v){return LEFT+(RIGHT-LEFT)*v/MAX}
+function xValue(px){return clamp((px-LEFT)/(RIGHT-LEFT)*MAX)}
+function dataChanged(){
+ $('feedback').textContent='';render();
+}
+function setData(data){state.data=data.slice();state.initial=data.slice();state.baseline=data.slice();$('size').value=String(data.length);dataChanged()}
+function appendLine(root,x1,y1,x2,y2,color='#d4dce5',width=1){root.append(svg('line',{x1,y1,x2,y2,stroke:color,'stroke-width':width}))}
+function plot(){
+ const root=$('plot');root.replaceChildren();
+ const guide=svg('g');
+ for(let i=0;i<=20;i++){
+  const x=xPos(i);
+  appendLine(guide,x,38,x,247,i%5===0?'#dde5ed':'#edf1f5',i%5===0?1.2:.65);
+ }
+ for(let row=0;row<=6;row++)appendLine(guide,LEFT,47+row*29,RIGHT,47+row*29,'#e5ebf0',1);
+ appendLine(guide,LEFT,249,RIGHT+10,249,'#263544',2);
+ for(let i=0;i<=20;i++){const x=xPos(i);appendLine(guide,x,246,x,254,'#293d50',1);guide.append(svg('text',{x,y:274,'text-anchor':'middle',fill:'#314354','font-size':'17','font-family':'Arial'},String(i)))}
+ root.append(guide);
+ const m=stats(state.data),markers=svg('g');
+ if($('showMean').checked){const x=xPos(m.mean);appendLine(markers,x,73,x,248,'#d44e30',4);markers.append(svg('text',{x,y:62,'text-anchor':'middle',fill:'#b7402b','font-family':'Arial','font-size':16,'font-weight':700},'Mean '+fmt(m.mean)))}
+ if($('showMedian').checked){const x=xPos(m.median);appendLine(markers,x,96,x,247,'#2859bf',3);markers.append(svg('text',{x,y:87,'text-anchor':'middle',fill:'#2452ae','font-family':'Arial','font-size':16,'font-weight':700},'Median '+fmt(m.median)))}
+ if($('showMode').checked&&m.modes.length)for(const mode of m.modes){const x=xPos(mode);markers.append(svg('circle',{cx:x,cy:242,r:20,fill:'none',stroke:'#2b9349','stroke-width':3}))}
+ root.append(markers);
+ const points=svg('g'),counts=new Map();
+ for(let i=0;i<state.data.length;i++){
+  const v=state.data[i],height=counts.get(v)||0;counts.set(v,height+1);
+  const px=xPos(v),py=235-height*21;
+  const g=svg('g',{tabindex:'0',role:'slider','aria-label':'Data point '+(i+1),'aria-valuemin':MIN,'aria-valuemax':MAX,'aria-valuenow':v,'aria-valuetext':String(v)});
+  g.classList.add('svg-dot');
+  g.append(svg('circle',{cx:px,cy:py,r:10,fill:'#81909b',stroke:'#41586b','stroke-width':1.6}));
+  if($('showValues').checked)g.append(svg('text',{x:px,y:py-14,'text-anchor':'middle',class:'dot-label'},String(v)));
+  g.addEventListener('keydown',ev=>{
+   if(ev.key==='ArrowLeft'||ev.key==='ArrowRight'){
+    ev.preventDefault();state.data[i]=clamp(state.data[i]+(ev.key==='ArrowRight'?1:-1));dataChanged();
+    const next=$('plot').querySelectorAll('[role=slider]')[i];next?.focus();
+   }
+  });
+  g.addEventListener('pointerdown',ev=>{
+   ev.preventDefault();g.setPointerCapture(ev.pointerId);
+   function move(event){
+    const r=root.getBoundingClientRect(),newX=(event.clientX-r.left)*1080/r.width;
+    const target=xValue(newX);
+    if(state.data[i]!==target){state.data[i]=target;g.setAttribute('aria-valuenow',target)}
+    const xv=xPos(target);g.querySelector('circle').setAttribute('cx',xv);
+    const label=g.querySelector('text');if(label){label.setAttribute('x',xv);label.textContent=String(target)}
+   }
+   function end(){g.removeEventListener('pointermove',move);g.removeEventListener('pointerup',end);g.removeEventListener('pointercancel',end);dataChanged()}
+   g.addEventListener('pointermove',move);g.addEventListener('pointerup',end);g.addEventListener('pointercancel',end);move(ev);
+  });
+  points.append(g);
+ }
+ root.append(points);
+ $('pointSummary').textContent=state.data.length+' points · drag to change a value (0–20); arrow keys also work · '+(m.maxFrequency===1?'all values distinct':('maximum frequency '+m.maxFrequency));
+}
+function render(){
+ const s=stats(state.data);
+ plot();
+ $('dataDisplay').hidden=false;
+ $('numbers').textContent=($('display').value==='sorted'?s.sorted:state.data).join('   ');
+ $('meanValue').textContent=fmt(s.mean);$('medianValue').textContent=fmt(s.median);
+ $('modeValue').textContent=s.modes.length?s.modes.join(', '):'No mode';
+ $('meanWorking').textContent=$('revealWorking').checked?'('+state.data.join(' + ')+') ÷ '+s.n+' = '+fmt(s.mean):'Sum ÷ number of data values';
+ $('medianDetail').textContent=s.n%2?'Middle ordered value':'Mean of the two middle ordered values';
+ $('modeDetail').textContent=s.modes.length?'Occurs '+s.maxFrequency+' times':'Every value occurs once';
+ for(const [box,checked] of [['meanBox','revealMean'],['medianBox','revealMedian'],['modeBox','revealMode']])$(box).setAttribute('aria-hidden',String(!$ (checked).checked));
+ $('studentTask').hidden=$('task').value!=='predict';
+ $('comparison').replaceChildren();
+ if($('trackShift').checked){
+  for(const [name,data]of [['Baseline',state.baseline],['Current',state.data]]){
+   const x=stats(data),tr=document.createElement('tr');
+   for(const value of [name,fmt(x.mean),fmt(x.median),x.modes.join(', ')||'No mode',x.range]){
+    const cell=document.createElement(name==='Baseline'?'th':'td');cell.textContent=value;tr.append(cell)
+   }
+   $('comparison').append(tr);
+  }
+ }
+ $('shiftStudy').hidden=!$('trackShift').checked;
+}
+function setReveals(value){for(const id of ['revealMean','revealMedian','revealMode'])$(id).checked=value}
+$('size').onchange=()=>setData(randomData(Number($('size').value)));
+$('random').onclick=()=>setData(randomData(Number($('size').value)));
+$('plus').onclick=()=>{state.data=state.data.map(x=>clamp(x+1));dataChanged()};
+$('minus').onclick=()=>{state.data=state.data.map(x=>clamp(x-1));dataChanged()};
+$('reset').onclick=()=>{state.data=state.initial.slice();dataChanged()};
+$('makeBaseline').onclick=()=>{state.baseline=state.data.slice();$('trackShift').checked=true;render()};
+$('print').onclick=()=>window.print();
+$('display').onchange=render;
+$('task').onchange=()=>{setReveals($('task').value!=='predict');$('guessMean').value='';$('guessMedian').value='';$('guessMode').value='';dataChanged()};
+for(const id of ['showMean','showMedian','showMode','showValues','revealMean','revealMedian','revealMode','revealWorking','trackShift'])$(id).onchange=render;
+$('showAnswers').onclick=()=>{setReveals(true);render()};
+$('check').onclick=()=>{
+ const s=stats(state.data),mean=parseFloat($('guessMean').value.replace(',','.')),median=parseFloat($('guessMedian').value.replace(',','.'));
+ const entered=$('guessMode').value.trim().toLowerCase();
+ const modes=(entered==='none'||entered==='no mode')?[]:(entered.match(/\d+/g)||[]).map(Number).sort((a,b)=>a-b);
+ const modeCorrect=modes.length===s.modes.length&&modes.every((v,i)=>v===s.modes[i]);
+ const meanCorrect=Number.isFinite(mean)&&Math.abs(mean-s.mean)<.011,medianCorrect=median===s.median;
+ const all=meanCorrect&&medianCorrect&&modeCorrect;
+ $('feedback').textContent=all?'All three correct. ✓':(meanCorrect?'Mean ✓  ':'Mean ✕  ')+(medianCorrect?'Median ✓  ':'Median ✕  ')+(modeCorrect?'Mode ✓':'Mode ✕');
+ $('feedback').className=all?'good':'bad';
+};
+render();
+</script>
+</body></html>
