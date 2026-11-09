@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Maths Apps — Triangle Rules (v4)</title>
+<html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Magic Trigonometry · Triangle Rules · Maths Apps</title>
 <style>
 #tri3{--ink:#193552;--blue:#2868dc;--red:#cd313b;--teal:#077d72;--line:#dce5f1;--muted:#647990;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#f3f7fc;border-radius:15px;padding:13px;max-width:1500px;margin:auto}
 #tri3 *{box-sizing:border-box}#tri3 button,#tri3 select{font:inherit}#tri3 button{cursor:pointer}#tri3 button:focus-visible,#tri3 select:focus-visible{outline:3px solid #83b7ff;outline-offset:2px}
@@ -46,18 +46,35 @@
 #tri3 .dotlogo i{width:9px;height:9px;background:#275fbb;border-radius:50%}
 #tri3 .dotlogo i:nth-child(2),#tri3 .dotlogo i:nth-child(3){background:#0d857c}
 #tri3 .footnote{font-size:15px}
+#tri3 .control-strip{display:flex;align-items:end;flex-wrap:wrap;gap:10px;background:#fff;border:1px solid #dce5f1;border-radius:12px;padding:10px;margin-bottom:10px}
+#tri3 .control-strip label{display:grid;gap:4px;font:800 14px system-ui;color:#4b6580}
+#tri3 .control-strip select{font-size:16px;max-width:none;min-width:105px;padding:7px}
+#tri3 .control-strip #tri3-mode{min-width:210px}
+#tri3 .control-strip select:disabled{opacity:.5}
+#tri3 .workitem.answer{background:#effaf4;border-left-color:#087e66}
+#tri3 .workitem.answer .workmath{display:inline-block;border:3px solid #087e66;border-radius:6px;padding:8px 14px;color:#086347;font-weight:800}
+#tri3 .workitem.check{background:#f3f8ff}
+#tri3 .workitem.prediction{background:#fffaf1;border-left-color:#c7872a}
+@media(max-width:740px){#tri3 .control-strip label{flex:1 1 145px}#tri3 .control-strip #tri3-mode{min-width:155px}}
+@media print{#tri3 .control-strip,#tri3 .actions,#tri3 .fields{display:none!important}#tri3 .columns{grid-template-columns:1fr 1fr}}
 @media(max-width:920px){#tri3 .columns{grid-template-columns:1fr}#tri3 .solution{min-height:unset}#tri3 .workmath{font-size:25px}}
 @media(max-width:740px){#tri3 .tab{font-size:14px}#tri3 .btn{font-size:14px}#tri3 .worktitle{font-size:16px}#tri3 .worknote{font-size:16px}#tri3 .workmath{font-size:24px}}
 </style></head><body>
 <div id="tri3">
-<div class="bar"><div class="brand"><span class="dotlogo" aria-label="Four-dot branding motif"><i></i><i></i><i></i><i></i></span><div><nav class="eyebrow" aria-label="Site links"><a href="../../index.html">Apps</a> · <a href="../../trigonometry/index.html">Trigonometry</a> · <a href="https://ronandownes.github.io/book/chapter-trigonometry.html#trig-intro" target="_blank" rel="noopener">Book section</a></nav><h2>Triangle Rules</h2></div></div><div class="actions"><button class="btn" id="tri3-fit">Fit diagram</button><button class="btn" id="tri3-labels">A+ Larger labels</button><button class="btn" id="tri3-projector">◫ Projector</button><button class="btn primary" id="tri3-random">↻ New question</button></div></div>
-<div class="tabs" id="tri3-tabs"><button class="tab active" data-mode="cosSide">Cosine · Side</button><button class="tab" data-mode="cosAngle">Cosine · Angle</button><button class="tab" data-mode="sinSide">Sine · Side</button><button class="tab" data-mode="sinAngle">Sine · Angle</button><button class="tab" data-mode="hidden">Sine · Hidden angle</button></div>
+<div class="bar"><div class="brand"><span class="dotlogo" aria-label="Four-dot branding motif"><i></i><i></i><i></i><i></i></span><div><nav class="eyebrow" aria-label="Site links"><a href="../../index.html">Apps</a> · <a href="../../trigonometry/index.html">Trigonometry</a> · <a href="https://ronandownes.github.io/book/chapter-trigonometry.html#trig-intro" target="_blank" rel="noopener">Book section</a></nav><h2>Magic Trigonometry · Triangle Rules</h2></div></div><div class="actions"><button class="btn" id="tri3-fit">Fit diagram</button><button class="btn" id="tri3-labels">A+ Larger labels</button><button class="btn" id="tri3-projector">◫ Projector</button><button class="btn primary" id="tri3-random">↻ New question</button></div></div>
+<div class="control-strip" aria-label="Question and working options">
+<label>Question type<select id="tri3-mode"><option value="random">Random review</option><option value="cosSide" selected>Cosine rule · find side</option><option value="cosAngle">Cosine rule · find angle</option><option value="sinSide">Sine rule · find side</option><option value="sinAngle">Sine rule · find angle</option><option value="hidden">Sine rule · hidden angle</option></select></label>
+<label>Included angle<select id="tri3-shape"><option value="random">Random</option><option value="acute">Acute</option><option value="right">Right · 90°</option><option value="obtuse">Obtuse</option></select></label>
+<label>Working<select id="tri3-detail"><option value="full">High detail</option><option value="short">Short steps</option></select></label>
+<label>Accuracy<select id="tri3-precision"><option value="0">Whole number</option><option value="1">1 d.p.</option><option value="2" selected>2 d.p.</option><option value="3">3 d.p.</option></select></label>
+<label>Final step<select id="tri3-rounding"><option value="round">Round</option><option value="truncate">Truncate</option></select></label>
+</div>
 <div class="columns">
 <section class="panel"><div class="panelhead"><h3 id="tri3-question">Find the opposite side</h3><span class="tag" id="tri3-tag">COSINE RULE</span></div>
 <div class="settingrow"><label class="units" for="tri3-units">Length units <select id="tri3-units"><option value="">No units</option><option value="mm">millimetres (mm)</option><option value="cm">centimetres (cm)</option><option value="m">metres (m)</option><option value="km">kilometres (km)</option><option value="in">inches (in)</option><option value="ft">feet (ft)</option></select></label><span class="tag" style="background:#ecf3ff;color:#355c91">Whole numbers · 1–20</span></div>
 <div id="tri3-branches" class="branches" hidden><span>Two possible triangles:</span><button data-branch="0" class="active">1</button><button data-branch="1">2</button></div><div class="warn" id="tri3-warn" hidden></div>
 <svg id="tri3-svg" viewBox="0 0 760 470" role="img" aria-label="Large triangle with three draggable vertices; A repositions the entire triangle"></svg><div class="hint" id="tri3-hint">Drag A to reposition the triangle. Drag B or C to adjust measurements.</div><div class="readout" id="tri3-dragstatus" aria-live="polite">Drag A to move the diagram. Drag C along the side for length or across it for angle.</div><div class="fields" id="tri3-fields"></div></section>
-<section class="panel solution"><div class="solhead"><h3>Worked solution</h3><div class="actions"><button class="btn" id="tri3-hide">Hide</button><button class="btn next" id="tri3-next">Reveal rule →</button></div></div><div class="status" id="tri3-status">Which rule would you choose?</div>
+<section class="panel solution"><div class="solhead"><h3>Worked solution</h3><div class="actions"><button class="btn" id="tri3-hide">Hide</button><button class="btn" id="tri3-all">Show all</button><button class="btn next" id="tri3-next">Reveal step →</button></div></div><div class="status" id="tri3-status">Which rule would you choose?</div>
 <div class="work-list" id="tri3-work"><div class="workempty">Which rule would you use, and why?<small>Reveal one line at a time. Every revealed line stays visible.</small></div></div><div class="footnote">The first reveal identifies the rule and highlights relevant measurements in red.</div></section>
 </div></div>
 <script>
@@ -73,7 +90,7 @@ cosAngle:{title:'Find the included angle',rule:'COSINE RULE',fields:[['a','BC',2
 sinSide:{title:'Find the unknown side',rule:'SINE RULE',fields:[['a','BC',20],['A','Angle A',179],['B','Angle B',179]],hint:'C: pull along AC to change BC; sideways to change angle A. B: change angle B.'},
 sinAngle:{title:'Find the unknown angle',rule:'SINE RULE',fields:[['a','BC',20],['b','AC',20],['A','Angle A',179]],hint:'C: pull along AC to change AC; sideways to change angle A. B: change BC.'},
 hidden:{title:'Find a third angle, then a side',rule:'SINE RULE',fields:[['a','BC',20],['A','Angle A',179],['C','Angle C',179]],hint:'C: pull along AC to change BC; sideways to change angle A. B: change angle C.'}};
-const state={mode:'cosSide',step:0,branch:0,projector:false,bigLabels:false,pan:{x:0,y:0},values:{cosSide:{b:8,c:11,A:60},cosAngle:{a:10,b:8,c:7},sinSide:{a:10,A:43,B:68},sinAngle:{a:10,b:14,A:30},hidden:{a:12,A:48,C:67}}};
+const state={mode:'cosSide',review:false,step:0,branch:0,projector:false,bigLabels:false,pan:{x:0,y:0},values:{cosSide:{b:11,c:17,A:72},cosAngle:{a:10,b:8,c:7},sinSide:{a:10,A:43,B:68},sinAngle:{a:10,b:14,A:30},hidden:{a:12,A:48,C:67}}};
 let drag=null,geometry=null,scale=14.5;
 function solve(){const v=state.values[state.mode];let {a,b,c,A,B,C}=v,err='',options=[];
 if(state.mode==='cosSide'){a=Math.sqrt(b*b+c*c-2*b*c*cos(A));B=degrees(Math.acos(clamp((a*a+c*c-b*b)/(2*a*c),-1,1)));C=180-A-B;}
@@ -82,12 +99,25 @@ if(state.mode==='sinSide'||state.mode==='hidden'){if(state.mode==='hidden')B=180
 if(state.mode==='sinAngle'){const ratio=b*sin(A)/a;if(ratio>1+1e-10)err='No triangle is possible: sin B would exceed 1.';else{const t=degrees(Math.asin(clamp(ratio,0,1)));for(const x of [t,180-t])if(A+x<180-1e-8&&!options.some(o=>Math.abs(o-x)<1e-7))options.push(x);if(!options.length)err='These measurements cannot form a triangle.';else{state.branch=Math.min(state.branch,options.length-1);B=options[state.branch];C=180-A-B;c=a*sin(C)/sin(A);}}}
 return{v,a,b,c,A,B,C,err,options};}
 function steps(z){const v=z.v;switch(state.mode){
-case 'cosSide':return[
-['Recognise the rule','Find the length of the side opposite the included angle → Cosine Rule.','Two sides and the angle between them are known. Use the direct square-root form.'],
-['Formula','a = √(b² + c² − 2bc cos A)','The unknown side is opposite angle A.'],
-['Substitute',`a = √(${v.b}² + ${v.c}² − 2 × ${v.b} × ${v.c} × cos ${v.A}°)`,'Calculator in degree mode.'],
-['Answer',`a ≈ ${showLength(z.a)}`,'Round to two decimal places.']];
-case 'cosAngle':return[
+case 'cosSide':{
+ const dp=Number($('precision').value),factor=10**dp,method=$('rounding').value;
+ const truncated=Math.trunc((z.a+1e-12)*factor)/factor;
+ const rounded=Math.round((z.a+Number.EPSILON)*factor)/factor;
+ const result=method==='truncate'?truncated:rounded,shown=result.toFixed(dp),raw=z.a.toFixed(Math.min(9,dp+5));
+ const direction=Math.abs(rounded-truncated)<1e-9?'down':'up';
+ const suffix=unit()?' '+unit():'';
+ const lo=Math.abs(v.b-v.c),hi=v.b+v.c,hyp=Math.hypot(v.b,v.c),comparator=v.A===90?'=':v.A<90?'<':'>';
+ const bounds=['Predict the range',`|${v.b} − ${v.c}| = ${lo} < a < ${hi} = ${v.b} + ${v.c}`,'The third side must be greater than the difference and less than the sum.','prediction'];
+ const rule=['Choose the rule','Two sides + the included angle → Cosine Rule','The unknown side is opposite the included angle.'];
+ const formula=['Formula','a² = b² + c² − 2bc cos A','Use the squared form, then take the positive square root.'];
+ const paper=['Substitute on paper',`a² = ${v.b}² + ${v.c}² − 2 × ${v.b} × ${v.c} × cos ${v.A}°`,'Write the equation carefully.'];
+ const calculator=['Calculator entry',`a = √(${v.b}² + ${v.c}² − 2 × ${v.b} × ${v.c} × cos(${v.A}°))`,'DEG mode. The whole expression belongs under the square root.'];
+ const exact=['Calculator result',`a = ${raw}…${suffix}`,'Keep the unrounded value for the next step.'];
+ const final=['Box the answer',`${raw}… → ${shown}${suffix}`,method==='truncate'?`Truncate to ${dp} decimal place(s): discard extra digits.`:`Round to ${dp} decimal place(s): ${direction}.`,'answer'];
+ const check=['Check it makes sense',`${lo} < a < ${hi}  ✓   and   a ${comparator} √(${v.b}² + ${v.c}²) ≈ ${hyp.toFixed(2)}`,`Actual unrounded a = ${raw}… lies within the strict bounds. ${v.A===90?'At 90°, Pythagoras agrees.':v.A<90?'Acute A: less than the Pythagorean 90° side.':'Obtuse A: greater than the Pythagorean 90° side.'}`,'check'];
+ return $('detail').value==='short'?[bounds,formula,paper,final,check]:[bounds,rule,formula,paper,calculator,exact,final,check];
+ }
+ case 'cosAngle':return[
 ['Recognise the rule','Three known sides → Cosine Rule (find an angle).','The angle opposite side a is required.'],
 ['Formula','A = cos⁻¹((b² + c² − a²) / (2bc))','Use inverse cosine.'],
 ['Substitute',`A = cos⁻¹((${v.b}² + ${v.c}² − ${v.a}²) / (2 × ${v.b} × ${v.c}))`,'Calculator in degree mode.'],
@@ -109,7 +139,7 @@ default:return[
 ['Recognise Sine Rule','b = a sin B / sin A','Use the known opposite pair.'],
 ['Substitute',`b = ${v.a} sin ${fmt(z.B)}° / sin ${v.A}°`,'Calculator in degree mode.'],
 ['Answer',`b ≈ ${showLength(z.b)}`,'Round to two decimal places.']];}}
-function fields(){const mode=modes[state.mode];$('question').textContent=mode.title;$('tag').textContent=mode.rule;$('hint').textContent=mode.hint;
+function fields(){const mode=modes[state.mode];$('shape').disabled=state.mode!=='cosSide';$('question').textContent=mode.title;$('tag').textContent=mode.rule;$('hint').textContent=mode.hint;
 $('fields').innerHTML=mode.fields.map(([key,label,max])=>`<div class="field"><span class="fieldname">${label}</span><button data-field="${key}" data-delta="-1" aria-label="Decrease ${label}">−</button><output id="tri3-out-${key}">${state.values[state.mode][key]}${max===179?'°':''}</output><button data-field="${key}" data-delta="1" aria-label="Increase ${label}">+</button></div>`).join('');}
 const ns='http://www.w3.org/2000/svg';function svgEl(tag,props={},value){const e=document.createElementNS(ns,tag);for(const[k,v]of Object.entries(props))e.setAttribute(k,String(v));if(value!==undefined)e.textContent=value;svg.appendChild(e);return e;}
 function caption(x,y,label,color='#16457a',fontSize=30){svgEl('text',{x,y,fill:color,'font-size':fontSize,'font-family':'system-ui,-apple-system,Segoe UI,sans-serif','font-weight':850,'text-anchor':'middle','dominant-baseline':'central','paint-order':'stroke',stroke:'#ffffff','stroke-width':8,'stroke-linejoin':'round'},label);}
@@ -156,17 +186,17 @@ $('warn').hidden=!z.err;$('warn').textContent=z.err;
 $('branches').hidden=!(state.mode==='sinAngle'&&z.options.length===2&&!z.err);
 $('branches').querySelectorAll('[data-branch]').forEach(b=>b.classList.toggle('active',Number(b.dataset.branch)===state.branch));
 draw(z);for(const[key,,max]of modes[state.mode].fields){const o=$('out-'+key);if(o)o.textContent=state.values[state.mode][key]+(max===179?'°':'');}
-$('next').disabled=!!z.err||n>=items.length;$('hide').disabled=n===0;$('next').textContent=n===0?'Reveal rule →':n===items.length?'Complete ✓':'Next step →';
+$('next').disabled=!!z.err||n>=items.length;$('all').disabled=!!z.err||n>=items.length;$('hide').disabled=n===0;$('next').textContent=n===0?'Reveal rule →':n===items.length?'Complete ✓':'Next step →';
 $('status').textContent=z.err?'Correct the given measurements.':n===0?'Which rule would you choose?':`Step ${n} of ${items.length}`;
 const work=$('work');work.replaceChildren();
 if(n===0){const p=document.createElement('div');p.className='workempty';p.textContent='Which rule would you use, and why?';const small=document.createElement('small');small.textContent='Reveal one line at a time. Every line stays visible.';p.appendChild(small);work.appendChild(p);return;}
 items.slice(0,n).forEach((part,i)=>{
 const card=document.createElement('div'),title=document.createElement('div'),math=document.createElement('div'),note=document.createElement('div');
-card.className='workitem'+(i===0?' recognise':'')+(i===items.length-1?' final':'');title.className='worktitle';title.textContent=(i+1)+'. '+part[0];math.className='workmath';math.textContent=part[1];note.className='worknote';note.textContent=part[2];card.append(title,math,note);work.appendChild(card);
+card.className='workitem'+(part[3]?' '+part[3]:'')+(part[0]==='Box the answer'?' final':'')+(i===0&&part[0].startsWith('Recognise')?' recognise':'');title.className='worktitle';title.textContent=(i+1)+'. '+part[0];math.className='workmath';math.textContent=part[1];note.className='worknote';note.textContent=part[2];card.append(title,math,note);work.appendChild(card);
 });}
 function setParam(key,raw,valid=true){const field=modes[state.mode].fields.find(t=>t[0]===key);if(!field)return false;const v=state.values[state.mode],old=v[key],n=clamp(Math.round(raw),1,field[2]);if(old===n)return true;v[key]=n;if(valid&&solve().err){v[key]=old;return false;}state.step=0;if(!drag)scale=fit(solve());updateDisplay();return true;}
-function switchMode(m){state.mode=m;state.step=0;state.branch=0;drag=null;state.pan={x:0,y:0};scale=fit(solve());$('tabs').querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));fields();$('dragstatus').textContent='Drag A to move the diagram; drag B or C to adjust one measurement.';updateDisplay();}
-function randomise(){let v={};const m=state.mode;if(m==='cosSide')v={b:randomInt(2,20),c:randomInt(2,20),A:randomInt(20,155)};
+function switchMode(m){state.review=m==='random';state.mode=state.review?'cosSide':m;state.step=0;state.branch=0;drag=null;state.pan={x:0,y:0};$('mode').value=m;if(state.review){randomise();return;}scale=fit(solve());fields();$('dragstatus').textContent='Drag A to move the diagram; drag B or C to adjust one measurement.';updateDisplay();}
+function randomise(){let v={};const m=state.review?['cosSide','cosAngle','sinSide','sinAngle','hidden'][randomInt(0,4)]:state.mode;state.mode=m;if(m==='cosSide'){const category=$('shape').value,kind=category==='random'?['acute','right','obtuse'][randomInt(0,2)]:category;v={b:randomInt(2,20),c:randomInt(2,20),A:kind==='right'?90:kind==='acute'?randomInt(25,89):randomInt(91,155)};}
 if(m==='cosAngle'){for(let i=0;i<300;i++){const a=randomInt(3,20),b=randomInt(3,20),c=randomInt(3,20);if(a+b>c&&a+c>b&&b+c>a){v={a,b,c};break;}}if(!v.a)v={a:10,b:8,c:7};}
 if(m==='sinSide'){let A=randomInt(25,95);v={a:randomInt(3,20),A,B:randomInt(20,Math.min(140,160-A))};}
 if(m==='sinAngle'){for(let i=0;i<300;i++){let A=randomInt(25,105),a=randomInt(3,20),b=randomInt(3,20),t=b*sin(A)/a;if(t<=1&&A+degrees(Math.asin(t))<175){v={A,a,b};break;}}if(!v.a)v={a:10,b:14,A:30};}
@@ -200,9 +230,9 @@ const targetA=clamp(d.initialZ.A+delta,1,179);const newA=Math.sqrt(v.b*v.b+v.c*v
 }else{setParam('A',v.A+delta);$('dragstatus').textContent='ANGLE A ONLY · AC length stays exactly fixed. Release to switch.';}
 }}
 function endDrag(e){if(!drag||drag.id!==e.pointerId)return;drag=null;scale=fit(solve());updateDisplay();$('dragstatus').textContent='Ready: drag A to move the diagram; drag B or C to change a measurement.';}
-$('tabs').addEventListener('click',e=>{const b=e.target.closest('[data-mode]');if(b)switchMode(b.dataset.mode);});
+$('mode').addEventListener('change',e=>switchMode(e.target.value));$('shape').addEventListener('change',randomise);for(const key of ['detail','precision','rounding'])$(key).addEventListener('change',()=>{state.step=0;updateDisplay();});
 $('fields').addEventListener('click',e=>{const b=e.target.closest('[data-field]');if(b)setParam(b.dataset.field,state.values[state.mode][b.dataset.field]+Number(b.dataset.delta),false);});
-$('next').addEventListener('click',()=>{state.step++;updateDisplay();});$('hide').addEventListener('click',()=>{state.step=0;updateDisplay();});
+$('next').addEventListener('click',()=>{state.step++;updateDisplay();});$('hide').addEventListener('click',()=>{state.step=0;updateDisplay();});$('all').addEventListener('click',()=>{state.step=steps(solve()).length;updateDisplay();});
 $('random').addEventListener('click',randomise);
 $('fit').addEventListener('click',()=>{state.pan={x:0,y:0};scale=fit(solve());updateDisplay();$('dragstatus').textContent='Zoomed to fill the available diagram area.';});$('units').addEventListener('change',updateDisplay);
 $('projector').addEventListener('click',()=>{state.projector=!state.projector;root.classList.toggle('projector',state.projector);$('projector').textContent=state.projector?'▣ Standard view':'◫ Projector';});
