@@ -165,12 +165,16 @@ function finalMath(value,symbol,suffix){
 }
 function buildSteps(){
  const v=values,high=el('detail').value==='high',items=[];
- const add=(instruction,math,cls='')=>items.push({instruction,math,cls});
+ const add=(instruction,math,cls='',result='')=>items.push({instruction,math,cls,result});
  if(task==='angle'){
   const A=angle(),numer=v.b*v.b+v.c*v.c-v.a*v.a,denom=2*v.b*v.c,sorted=[v.a,v.b,v.c].sort((x,y)=>x-y);
   const type=category(),sign=type==='right'?'=':type==='obtuse'?'>':'<';
   add('Order the three sides.',sorted.map(fmt).join(' ≤ '));
-  add('Predict whether the angle is acute, obtuse or right.',pow(v.a)+' '+sign+' '+pow(v.b)+' + '+pow(v.c),'prediction');
+  const oppositeSquare=v.a*v.a,otherSquares=v.b*v.b+v.c*v.c;
+  const comparison=pow(v.a)+' = '+fmt(oppositeSquare)+' '+(sign==='<'?'&lt;':sign==='>'?'&gt;':'=')+' '+fmt(otherSquares)+' = '+pow(v.b)+' + '+pow(v.c);
+  const conclusion='A '+(type==='acute'?'&lt;':type==='obtuse'?'&gt;':'=')+' 90°';
+  const classification=type[0].toUpperCase()+type.slice(1)+' angle';
+  add('Classify angle A.',comparison+' &nbsp; ⇒ &nbsp; '+conclusion,'prediction',classification);
   if(high)add('Write the cosine rule.','a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc cos A');
   add('Make cos A the subject.','cos A = '+frac('b<sup>2</sup> + c<sup>2</sup> − a<sup>2</sup>','2bc'));
   add('Substitute the lengths on paper.','cos A = '+frac(pow(v.b)+' + '+pow(v.c)+' − '+pow(v.a),'2 × '+fmt(v.b)+' × '+fmt(v.c)));
@@ -232,7 +236,7 @@ function render(){
   const button=document.createElement('button');button.type='button';
   button.className='step-button '+(i<n?'done':i===n?'next-step':'later');
   const num=document.createElement('span');num.className='step-number';num.textContent=(i<n?'✓':i+1)+'.';
-  const label=document.createElement('span');label.textContent=s.instruction;
+  const label=document.createElement('span');label.textContent=i<n&&s.result?s.result:s.instruction;
   button.append(num,label);
   button.setAttribute('aria-current',i===n?'step':'false');
   button.setAttribute('aria-label','Step '+(i+1)+': '+s.instruction+'. Click to reveal mathematics through this step.');
