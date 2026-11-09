@@ -227,7 +227,13 @@ function generate(){
   }else{
    const wanted=mode.split('-')[1],knownSide=(wanted==='opposite')?(ratio==='sin'?'H':'J'):(wanted==='hypotenuse')?(ratio==='sin'?'O':'J'):(wanted==='adjacent')?(ratio==='cos'?'H':'O'):'';
    if(wanted==='angle'){
-    const O=measure(),J=measure();v={O,J,H:Math.hypot(O,J)};
+    if(ratio==='sin'||ratio==='cos'){
+      // An angle question shows only the two supplied sides.
+      let H=measure(),leg=measure();
+      if(leg>=H){const t=leg;leg=H;H=t;}
+      if(leg===H)H=H*1.25;
+      v=ratio==='sin'?{O:leg,H}:{J:leg,H};
+    }else v={O:measure(),J:measure()};
    }else{
     v={theta};
     const given=measure();
