@@ -226,6 +226,13 @@
         "ready": true
       },
       {
+        "slug": "central-tendency",
+        "title": "Measures of central tendency",
+        "ready": true,
+        "app": "apps/statistics/central-tendency/index.html",
+        "description": "Draggable dot plot, mean, median, modes, sorting and changing all data values"
+      },
+      {
         "slug": "stem-and-leaf",
         "title": "Stem-and-leaf plots",
         "ready": true,
