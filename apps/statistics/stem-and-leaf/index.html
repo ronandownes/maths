@@ -116,7 +116,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-const state={one:false,mode:'complete',dataA:[],dataB:[],showAnswers:false,showData:true,showSorted:false,showStats:false,inputs:{}};
+const state={one:true,mode:'complete',dataA:[],dataB:[],showAnswers:false,showData:true,showSorted:false,showStats:false,inputs:{}};
 function clamp(n,min,max,fallback){n=Number(n);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback}
 function gaussian(){const u=1-Math.random(),v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
 function sample(prefix){
@@ -174,7 +174,7 @@ function render(){
   const tr=document.createElement('tr'),i=stem-first;
   tr.append(viewCells('A',stem,mapA.get(stem)||[],i));
   const centre=document.createElement('td');centre.className='stem-middle';centre.textContent=stem;tr.append(centre);
-  tr.append(viewCells('B',stem,mapB.get(stem)||[],i));body.append(tr);
+  tr.append(viewCells(two?'B':'A',stem,(two?mapB:mapA).get(stem)||[],i));body.append(tr);
  }
  $('key').textContent=two?'Key: 3 | 5 means 53 in A; 5 | 3 means 53 in B':'Key: 5 | 3 means 53';
  const student=state.mode!=='complete';
