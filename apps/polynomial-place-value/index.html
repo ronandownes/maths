@@ -773,6 +773,12 @@ body.maths-only #lessonNavigation{display:flex!important;margin:20px auto}
 .activities-section .display-layout-label{margin-top:5px}
 .board-math-line{width:100%;min-width:0;max-width:100%;max-height:100%;align-items:center;justify-content:center}
 .board-expression,.board-answer{max-width:100%;min-width:0}
+
+/* Always-visible classroom escape route, including fullscreen presentation. */
+#boardPanel .board-exit{position:absolute;left:19px;bottom:17px;z-index:25;display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 17px;border:2px solid #315c8c;border-radius:12px;color:#fff;background:#24588e;font:700 .93rem Arial,sans-serif;box-shadow:0 3px 14px #203b5a3d;cursor:pointer;touch-action:manipulation}
+#boardPanel .board-exit:hover,#boardPanel .board-exit:focus-visible{background:#17446f;outline-offset:3px}
+#boardPanel:fullscreen .board-exit{display:inline-flex!important}
+@media print{#boardPanel .board-exit{display:none!important}}
 </style>
 </head>
 <body>
@@ -2335,8 +2341,18 @@ function drawBoard(){
  const full=el('button','Present ⛶');full.type='button';
  full.onclick=()=>{if(document.fullscreenElement===host)document.exitFullscreen?.();else host.requestFullscreen?.().then(()=>requestAnimationFrame(fitBoardQuestions)).catch(()=>{})};
  controls.append(full);
- const close=el('button','Close');close.type='button';close.onclick=()=>switchMode('practice');controls.append(close);
- host.append(controls);
+ const close=el('button','✕ Close display','board-exit');
+ close.id='closeDisplay';
+ close.type='button';
+ close.title='Leave Display and return to the worked example (Esc)';
+ close.setAttribute('aria-label','Close display; Escape also exits');
+ close.onclick=()=>{
+  const end=()=>switchMode('practice');
+  if(document.fullscreenElement===host&&document.exitFullscreen){
+   document.exitFullscreen().then(end).catch(end);
+  }else end();
+ };
+ host.append(controls,close);
  const grid=el('div',undefined,'board-grid');
  host.append(grid);
  applyBoardSpacing(grid);
