@@ -95,6 +95,20 @@
 .mathrow .round-alternative{display:none}.mathrow .math-sub{display:none}
 .main{min-height:calc(100vh - 205px)}
 @media(max-width:690px){.family-button{flex:1}.settings #task{min-width:150px}.skip-paper{display:block;margin:4px 0}}
+
+/* Resizable representation columns — Visual | Symbols | Language */
+:root{--visual-fr:38fr;--symbols-fr:38fr;--language-fr:24fr}
+.main{display:grid;grid-template-columns:minmax(0,var(--visual-fr)) 12px minmax(0,var(--symbols-fr)) 12px minmax(0,var(--language-fr));column-gap:0;row-gap:9px;align-items:start}
+.main>.panel{min-width:0}
+.main>.splitter{position:relative;align-self:stretch;min-height:320px;cursor:col-resize;touch-action:none;user-select:none;background:transparent;outline-offset:-2px;z-index:5}
+.main>.splitter::after{content:"";position:absolute;inset:0;left:5px;width:2px;background:#c7d4e4;border-radius:2px;transition:background .15s}
+.main>.splitter::before{content:"⋮";position:absolute;left:0;top:39%;width:12px;height:48px;display:flex;align-items:center;justify-content:center;color:#32619b;background:#e7eef9;border:1px solid #b6c9e3;border-radius:6px;z-index:1;font-size:21px;line-height:1}
+.main>.splitter:hover::after,.main>.splitter:focus-visible::after,.main>.splitter.dragging::after{background:#2868dc}
+.main>.splitter:focus-visible{outline:3px solid #76abed}
+body.resizing-columns{cursor:col-resize!important;user-select:none!important}
+@media(max-width:740px){.main{grid-template-columns:minmax(0,1fr)!important;gap:9px}.main>.splitter{display:none!important}}
+@media print{.main{grid-template-columns:30% 70%!important;gap:0!important}.main>.splitter{display:none!important}}
+
 </style></head>
 <body>
 <header class="top"><div class="brand"><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div><div class="crumb"><a href="../../../index.html">Maths Apps</a> / <a href="../../../trigonometry/index.html">Trigonometry</a></div><h1>Solving Triangles</h1></div></div>
@@ -111,14 +125,16 @@
 <label>Decimal places<select id="dp"><option value="0">0 d.p.</option><option value="1">1 d.p.</option><option value="2" selected>2 d.p.</option><option value="3">3 d.p.</option></select></label>
 </div>
 <main class="main" id="main">
-<section class="panel diagram-panel"><div class="panel-head">Diagram</div><div class="diagram">
+<section class="panel diagram-panel" id="visual-panel"><div class="panel-head">Visual</div><div class="diagram">
 <svg id="triangle" viewBox="0 0 500 355" role="img" aria-label="Schematic triangle, not drawn to scale"><title>Schematic triangle</title></svg>
 <div class="diagram-info" id="diagram-info">Diagram not to scale. Angle category only.</div>
-<div class="resize"><button id="shrink" type="button">Shrink diagram</button><label for="width">Width</label><input id="width" type="range" min="18" max="43" value="38" step="1" aria-label="Adjust diagram width"></div>
+<div class="resize"><button id="shrink" type="button">Shrink diagram</button><label for="width">Width</label><input id="width" type="range" min="18" max="60" value="38" step="1" aria-label="Adjust diagram width"></div>
 <div class="manual" id="manual" hidden><div class="inputs"><label id="label-a"><span id="la">a</span><input id="a" type="number" step="any" min="0"></label><label id="label-b"><span id="lb">b</span><input id="b" type="number" step="any" min="0"></label><label id="label-c"><span id="lc">c</span><input id="c" type="number" step="any" min="0"></label></div><div class="validation" id="validation" role="status"></div><button id="apply">Apply values</button></div>
 </div></section>
-<section class="panel work"><div class="panel-head">Mathematics</div><div class="mathboard" id="mathboard" aria-live="polite"><div class="blank">A = ?</div></div></section>
-<section class="panel steps-panel"><div class="panel-head">Steps</div><div class="steps"><div class="step-controls"><button id="back">← Back</button><button class="primary" id="next">Reveal next →</button></div>
+<div id="resize-visual" class="splitter" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize Visual and Symbols" aria-controls="visual-panel symbols-panel" aria-valuemin="18" aria-valuemax="60" aria-valuenow="38" title="Drag to resize · Arrow keys to adjust · Double-click to reset"></div>
+<section class="panel work" id="symbols-panel"><div class="panel-head">Symbols</div><div class="mathboard" id="mathboard" aria-live="polite"><div class="blank">A = ?</div></div></section>
+<div id="resize-language" class="splitter" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize Symbols and Language" aria-controls="symbols-panel language-panel" aria-valuemin="48" aria-valuemax="84" aria-valuenow="76" title="Drag to resize · Arrow keys to adjust · Double-click to reset"></div>
+<section class="panel steps-panel" id="language-panel"><div class="panel-head">Language</div><div class="steps"><div class="step-controls"><button id="back">← Back</button><button class="primary" id="next">Reveal next →</button></div>
 <p class="step-progress" id="progress">0 steps revealed</p>
 <div class="instruction-list" id="outline" aria-label="Click any step to reveal the corresponding mathematics"></div></div></section>
 </main>
@@ -528,14 +544,72 @@ el('apply').addEventListener('click',()=>{
  if(!valid()){v=prev;el('validation').textContent='Check positive lengths, valid angles and triangle constraints.';return;}
  refresh();
 });
-function setWidth(pct){
- const width=Math.max(18,Math.min(43,Number(pct)));
- document.documentElement.style.setProperty('--w',width+'%');
- el('width').value=String(width);
- el('shrink').textContent=width<=21?'Expand diagram':'Shrink diagram';
+
+/* Draggable and keyboard-accessible splitters. The existing width slider remains active. */
+const layout=document.getElementById('main'),resizeVisual=document.getElementById('resize-visual'),resizeLanguage=document.getElementById('resize-language');
+let visualShare=38,languageShare=24;
+const clampShare=(n,min,max)=>Math.max(min,Math.min(max,n));
+function applyColumnWidths(v,l,priority='visual'){
+ let visual=clampShare(Number(v),18,60),language=clampShare(Number(l),16,52);
+ if(visual+language>78){
+  if(priority==='language')language=78-visual;
+  else visual=78-language;
+ }
+ visualShare=clampShare(visual,18,60);
+ languageShare=clampShare(language,16,52);
+ document.documentElement.style.setProperty('--visual-fr',visualShare+'fr');
+ document.documentElement.style.setProperty('--symbols-fr',(100-visualShare-languageShare)+'fr');
+ document.documentElement.style.setProperty('--language-fr',languageShare+'fr');
+ el('width').value=String(Math.round(visualShare));
+ el('shrink').textContent=visualShare<=21?'Expand diagram':'Shrink diagram';
+ resizeVisual.setAttribute('aria-valuenow',String(Math.round(visualShare)));
+ resizeVisual.setAttribute('aria-valuetext',Math.round(visualShare)+'% Visual');
+ resizeLanguage.setAttribute('aria-valuenow',String(Math.round(100-languageShare)));
+ resizeLanguage.setAttribute('aria-valuetext',Math.round(languageShare)+'% Language');
 }
-el('width').addEventListener('input',e=>setWidth(e.target.value));
-el('shrink').addEventListener('click',()=>setWidth(Number(el('width').value)<=21?38:20));
+function resizeColumn(kind,change){
+ if(kind==='visual')applyColumnWidths(visualShare+change,languageShare,'visual');
+ else applyColumnWidths(visualShare,languageShare-change,'language');
+}
+for(const [handle,kind] of [[resizeVisual,'visual'],[resizeLanguage,'language']]){
+ let start=null;
+ handle.addEventListener('pointerdown',e=>{
+  if(e.button!==0&&e.pointerType==='mouse')return;
+  const rects=[el('visual-panel').getBoundingClientRect(),el('symbols-panel').getBoundingClientRect(),el('language-panel').getBoundingClientRect()];
+  const pixelWidth=rects.reduce((sum,r)=>sum+r.width,0)||layout.clientWidth;
+  start={pointer:e.pointerId,x:e.clientX,v:visualShare,l:languageShare,pixelWidth};
+  handle.setPointerCapture(e.pointerId);
+  handle.classList.add('dragging');
+  document.body.classList.add('resizing-columns');
+  e.preventDefault();
+ });
+ handle.addEventListener('pointermove',e=>{
+  if(!start||e.pointerId!==start.pointer)return;
+  const delta=100*(e.clientX-start.x)/start.pixelWidth;
+  if(kind==='visual')applyColumnWidths(start.v+delta,start.l,'visual');
+  else applyColumnWidths(start.v,start.l-delta,'language');
+ });
+ function stop(e){
+  if(start&&e.pointerId===start.pointer){
+   start=null;handle.classList.remove('dragging');document.body.classList.remove('resizing-columns');
+   if(handle.hasPointerCapture(e.pointerId))handle.releasePointerCapture(e.pointerId);
+  }
+ }
+ handle.addEventListener('pointerup',stop);
+ handle.addEventListener('pointercancel',stop);
+ handle.addEventListener('lostpointercapture',()=>{start=null;handle.classList.remove('dragging');document.body.classList.remove('resizing-columns')});
+ handle.addEventListener('keydown',e=>{
+  if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight'&&e.key!=='Home')return;
+  e.preventDefault();
+  if(e.key==='Home'){applyColumnWidths(38,24);return}
+  const amount=(e.shiftKey?5:2)*(e.key==='ArrowRight'?1:-1);
+  resizeColumn(kind,amount);
+ });
+ handle.addEventListener('dblclick',()=>applyColumnWidths(38,24));
+}
+el('width').addEventListener('input',e=>applyColumnWidths(Number(e.target.value),languageShare,'visual'));
+el('shrink').addEventListener('click',()=>applyColumnWidths(visualShare<=21?38:20,languageShare,'visual'));
+applyColumnWidths(38,24);
 el('screen').addEventListener('click',()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen?.()});
 setWidth(38);
 opts();
