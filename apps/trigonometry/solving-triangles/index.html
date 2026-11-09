@@ -163,7 +163,18 @@ box-shadow:0 12px 28px #16375a66;padding:14px;color:#24476e}
 .ft-sheet footer{color:#647c94;font:12px/1.4 system-ui;margin-top:12px}
 .skip-paper{display:inline-block;margin-left:10px;background:#edf3fa;color:#58718a;
 border-radius:5px;padding:2px 7px;font:750 13px system-ui}
-.mathrow.calculator-display{color:#667c95}.mathrow.truncated-value{color:#315f8b}</style></head>
+.mathrow.calculator-display{color:#667c95}.mathrow.truncated-value{color:#315f8b}.unknown{color:#087d6c;font-weight:850}.mathrow.classify{color:#283e54}
+#step-restart{background:#edf5ff;color:#245c91;border-color:#a9c7e9}
+.step-controls{display:flex;flex-wrap:wrap}.step-controls button{flex:1 1 auto;min-width:0}
+#diagram-back{display:none}
+.main.diagram-only{grid-template-columns:minmax(0,1fr)!important;height:100dvh!important;max-height:100dvh!important;overflow:hidden!important}
+.main.diagram-only #symbols-panel,.main.diagram-only #language-panel,.main.diagram-only>.splitter{display:none!important}
+.main.diagram-only #visual-panel{width:100%;height:100%!important;overflow:auto!important}
+.main.diagram-only #visual-panel .diagram{min-height:calc(100% - 40px);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.main.diagram-only #visual-panel svg{width:min(95vw,1300px);max-height:72vh!important;height:75vh}
+.main.diagram-only #visual-panel .resize,.main.diagram-only #visual-panel .diagram-preset{display:none}
+.main.diagram-only #diagram-back{display:inline-flex;align-self:flex-start;margin:9px}
+</style></head>
 <body>
 <button type="button" class="chrome-hotzone" id="chrome-hotzone" aria-label="Reveal settings">Controls ▾</button>
 <div id="app-chrome" class="app-chrome">
@@ -193,7 +204,7 @@ border-radius:5px;padding:2px 7px;font:750 13px system-ui}
 </div>
 </div>
 <main class="main" id="main">
-<section class="panel diagram-panel" id="visual-panel"><div class="panel-head">Visual maths</div><div class="diagram">
+<section class="panel diagram-panel" id="visual-panel"><div class="panel-head">Visual maths</div><div class="diagram"><button id="diagram-back" type="button">← Back to lesson</button>
 <svg id="triangle" viewBox="0 0 500 355" role="img" aria-label="Schematic triangle, not drawn to scale"><title>Schematic triangle</title></svg>
 <div class="diagram-info" id="diagram-info">Diagram not to scale. Angle category only.</div>
 <div class="diagram-preset"><label for="diagram-size">Diagram size</label><select id="diagram-size"><option value="auto" selected>Auto</option><option value="full">Full</option><option value="large">Large</option><option value="medium">Medium</option><option value="small">Small</option><option value="minimum">Minimum</option><option value="custom" disabled>Custom</option></select></div><div class="resize"><button id="shrink" type="button">Shrink diagram</button><label for="width">Width</label><input id="width" type="range" min="18" max="60" value="38" step="1" aria-label="Adjust diagram width"></div>
@@ -202,7 +213,7 @@ border-radius:5px;padding:2px 7px;font:750 13px system-ui}
 <div id="resize-visual" class="splitter" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize Visual and Symbols" aria-controls="visual-panel symbols-panel" aria-valuemin="18" aria-valuemax="60" aria-valuenow="38" title="Drag to resize · Arrow keys to adjust · Double-click to reset"></div>
 <section class="panel work" id="symbols-panel"><div class="panel-head">Symbolic maths</div><div class="mathboard" id="mathboard" aria-live="polite"><div class="blank">A = ?</div></div></section>
 <div id="resize-language" class="splitter" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize Symbols and Language" aria-controls="symbols-panel language-panel" aria-valuemin="48" aria-valuemax="84" aria-valuenow="76" title="Drag to resize · Arrow keys to adjust · Double-click to reset"></div>
-<section class="panel steps-panel" id="language-panel"><div class="panel-head">Language of maths</div><div class="steps"><div class="step-controls"><button id="back">← Back</button><button class="primary" id="next">Reveal next →</button></div>
+<section class="panel steps-panel" id="language-panel"><div class="panel-head">Language of maths</div><div class="steps"><div class="step-controls"><button id="step-restart" type="button">↺ Restart</button><button id="back">← Back</button><button class="primary" id="next">Reveal next →</button></div>
 <p class="step-progress" id="progress">0 steps revealed</p>
 <div class="instruction-list" id="outline" aria-label="Click any step to reveal the corresponding mathematics"></div></div></section>
 </main>
@@ -435,22 +446,45 @@ function buildSteps(){
  const high=el('detail').value==='high',z=solve(),items=[];
  const add=(instruction,math,cls='',result='')=>items.push({instruction,math,cls,result});
  if(family==='general'){
-  if(mode==='cos-angle'){
-   const type=classify(),sq=v.a*v.a,other=v.b*v.b+v.c*v.c,sign=type==='acute'?'&lt;':type==='obtuse'?'&gt;':'=';
-   add('Predict angle A from the squared sides.',
-  '<span class="checkline">'+pwr(v.a)+' = '+fmt(sq)+' &nbsp;;&nbsp; '+pwr(v.b)+' + '+pwr(v.c)+' = '+fmt(v.b*v.b)+' + '+fmt(v.c*v.c)+' = '+fmt(other)+'</span>'+
-  '<span class="checkline">'+fmt(sq)+' '+sign+' '+fmt(other)+' &nbsp; ⇒ &nbsp; A '+sign+' 90°</span>',
-  'prediction','Predicted '+type+' angle');
-   if(high)add('Write the cosine rule.','a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc cos A');
-   add('Make cos A the subject.','cos A = '+frac('b<sup>2</sup> + c<sup>2</sup> − a<sup>2</sup>','2bc'));
-   add('Substitute the three side lengths.','cos A = '+frac(pwr(v.b)+' + '+pwr(v.c)+' − '+pwr(v.a),'2 × '+fmt(v.b)+' × '+fmt(v.c)));
-   add('Calculate numerator and denominator.','cos A = '+frac(fmt(v.b*v.b+v.c*v.c-v.a*v.a),fmt(2*v.b*v.c)));
-   if(high)add('Apply inverse cosine.','A = cos<sup>−1</sup>('+frac(fmt(v.b*v.b+v.c*v.c-v.a*v.a),fmt(2*v.b*v.c))+')');
-   add('Enter SHIFT cos in DEG mode.','A = <span class="keycap">SHIFT</span><span class="keycap">cos</span>('+frac(fmt(v.b*v.b+v.c*v.c-v.a*v.a),fmt(2*v.b*v.c))+')');
-   numStage(z.value,z.symbol,z.unit,add);
-   add('Confirm the angle has the predicted classification.','A '+(type==='acute'?'&lt;':type==='obtuse'?'&gt;':'=')+' 90° &nbsp; ✓','prediction');
+ if(mode==='cos-angle'){
+  const A=z.value,numer=v.b*v.b+v.c*v.c-v.a*v.a,denom=2*v.b*v.c;
+  const type=classify(),sq=v.a*v.a,other=v.b*v.b+v.c*v.c;
+  const sign=type==='right'?'=':type==='obtuse'?'&gt;':'&lt;';
+  add('Classify the problem: three known sides, one unknown angle.',
+      'a = '+fmt(v.a)+' &nbsp; b = '+fmt(v.b)+' &nbsp; c = '+fmt(v.c)+
+      ' &nbsp; <span class="unknown">A = ?</span>','classify','SSS → cosine rule (angle)');
+  add('Write the cosine rule. The unknown is green.',
+      'a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc <span class="unknown">cos A</span>');
+  const predicted='<span class="checkline">'+pwr(v.a)+' = '+fmt(sq)+' &nbsp;;&nbsp; '+
+   pwr(v.b)+' + '+pwr(v.c)+' = '+fmt(v.b*v.b)+' + '+fmt(v.c*v.c)+' = '+fmt(other)+'</span>'+
+   '<span class="checkline">'+fmt(sq)+' '+sign+' '+fmt(other)+' &nbsp; ⇒ &nbsp; '+
+   '<span class="unknown">A '+sign+' 90°</span></span>';
+  add('Predict whether the angle is acute, right or obtuse.',predicted,'prediction','Predicted '+type+' angle');
+  add('Make cos A the subject.','<span class="unknown">cos A</span> = '+
+      frac('b<sup>2</sup> + c<sup>2</sup> − a<sup>2</sup>','2bc'));
+  add('Substitute the three side lengths.','<span class="unknown">cos A</span> = '+
+      frac(pwr(v.b)+' + '+pwr(v.c)+' − '+pwr(v.a),'2 × '+fmt(v.b)+' × '+fmt(v.c)));
+  add('Calculate the numerator and denominator.','<span class="unknown">cos A</span> = '+
+      frac(fmt(numer),fmt(denom)));
+  const gcd=(a,b)=>{a=Math.abs(Math.round(a));b=Math.abs(Math.round(b));while(b){const t=b;b=a%b;a=t}return a};
+  let top=fmt(numer),bottom=fmt(denom);
+  if([numer,denom].every(x=>Math.abs(x-Math.round(x))<1e-8)){
+    const d=gcd(numer,denom);
+    if(d>1){top=fmt(numer/d);bottom=fmt(denom/d);
+      add('Reduce the fraction to its simplest form.','<span class="unknown">cos A</span> = '+frac(top,bottom));
+    }
+  }
+  add('Apply inverse cosine (cos⁻¹).','<span class="unknown">A</span> = cos<sup>−1</sup>('+frac(top,bottom)+')');
+  add('Enter SHIFT, cos in DEG mode.','<span class="unknown">A</span> = <span class="keycap">SHIFT</span> <span class="keycap">cos</span>('+frac(top,bottom)+')');
+  numStage(z.value,z.symbol,z.unit,add);
+  add('Look back: does the answer agree with your prediction?',
+     '<span class="unknown">A ≈ '+A.toFixed(Number(el('dp').value))+'°</span> &nbsp; '+sign+' 90° &nbsp; ✓',
+     'prediction','Look back ✓ '+type+' angle');
   }else if(mode==='cos-side'){
    const lo=Math.abs(v.b-v.c),hi=v.b+v.c;
+   add('Classify: two known sides and an included angle.',
+       'b = '+fmt(v.b)+' &nbsp; c = '+fmt(v.c)+' &nbsp; A = '+fmt(v.A)+'° &nbsp; <span class="unknown">a = ?</span>',
+       'classify','SAS → cosine rule (side)');
    add('Predict the side-length bounds.','|'+fmt(v.b)+' − '+fmt(v.c)+'| &lt; a &lt; '+fmt(v.b)+' + '+fmt(v.c),'prediction');
    if(high)add('Write the cosine rule.','a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc cos A');
    add('Substitute the sides and included angle.','a<sup>2</sup> = '+pwr(v.b)+' + '+pwr(v.c)+' − 2 × '+fmt(v.b)+' × '+fmt(v.c)+' cos '+fmt(v.A)+'°');
@@ -460,6 +494,9 @@ function buildSteps(){
    numStage(z.value,z.symbol,z.unit,add);
    add('Check the side length lies within its bounds.',fmt(lo)+' &lt; '+z.value.toFixed(Number(el('dp').value)+1)+' &lt; '+fmt(hi)+' &nbsp; ✓','prediction');
   }else if(mode==='sin-side'){
+   add('Classify: two angles and a known opposite side.',
+       'a = '+fmt(v.a)+' &nbsp; A = '+fmt(v.A)+'° &nbsp; B = '+fmt(v.B)+'° &nbsp; <span class="unknown">b = ?</span>',
+       'classify','Sine rule → find side');
    if(high)add('Identify the side–opposite-angle pair.','a ↔ A &nbsp;;&nbsp; b ↔ B');
    add('Write the sine rule.','a / sin A = b / sin B');
    add('Make the unknown side the subject.','b = '+frac('a sin B','sin A'));
@@ -468,6 +505,9 @@ function buildSteps(){
    numStage(z.value,z.symbol,z.unit,add);
    add('Check the bigger angle faces the bigger side.',(v.B>v.A?'b &gt; a':v.B<v.A?'b &lt; a':'b = a')+' &nbsp; ✓','prediction');
   }else{
+   add('Classify: two sides and a known opposite angle.',
+       'a = '+fmt(v.a)+' &nbsp; b = '+fmt(v.b)+' &nbsp; A = '+fmt(v.A)+'° &nbsp; <span class="unknown">B = ?</span>',
+       'classify','Sine rule → find angle (SSA)');
    if(high)add('Identify the known opposite pair.','a ↔ A &nbsp;;&nbsp; b ↔ B');
    add('Write the sine rule.','a / sin A = b / sin B');
    add('Make sin B the subject.','sin B = '+frac('b sin A','a'));
@@ -480,6 +520,10 @@ function buildSteps(){
   }
  }else{
   const parts=mode.split('-'),ratio=parts[0],kind=parts[1];
+  const known=Object.entries(v).map(([k,x])=>k+' = '+fmt(x)+(k==='theta'?'°':'')).join(' &nbsp; ');
+  add('Classify the right triangle and identify the unknown.',
+      known+' &nbsp; <span class="unknown">'+z.symbol+' = ?</span>',
+      'classify',ratio==='pyth'?'Pythagoras':ratio==='sin'?'SOH':ratio==='cos'?'CAH':'TOA');
   if(ratio==='pyth'){
    const equation='H<sup>2</sup> = O<sup>2</sup> + Adj<sup>2</sup>';
    if(high)add('Cosine rule with a right angle: cos 90° = 0.','c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> − 2ab cos 90° = a<sup>2</sup> + b<sup>2</sup>');
@@ -538,7 +582,7 @@ function drawSide(p,q,center,label,color='#20558d'){
  let dx=q[0]-p[0],dy=q[1]-p[1],len=Math.hypot(dx,dy),nx=-dy/len,ny=dx/len;
  let mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2;
  if((mx-center[0])*nx+(my-center[1])*ny<0){nx=-nx;ny=-ny;}
- textAt(Math.min(476,Math.max(26,mx+nx*35)),Math.min(330,Math.max(28,my+ny*35)),label,color,33);
+ textAt(Math.min(476,Math.max(26,mx+nx*35)),Math.min(330,Math.max(28,my+ny*35)),label,label.includes('?')?'#087d6c':'#263b51',33);
 }
 function draw(){
  const svg=el('triangle');svg.replaceChildren();
@@ -608,11 +652,16 @@ el('general').addEventListener('click',()=>switchFamily('general'));
 el('right').addEventListener('click',()=>switchFamily('right'));
 el('task').addEventListener('change',()=>{mode=el('task').value;generate()});
 for(const k of ['level','type'])el(k).addEventListener('change',generate);
-for(const k of ['detail','dp'])el(k).addEventListener('change',()=>{buildSteps();render()});
+for(const k of ['detail','dp'])el(k).addEventListener('change',()=>{
+ const old=n,wasAll=viewMode==='all',last=old?steps[old-1]?.instruction:null;
+ buildSteps();const index=last?steps.findIndex(s=>s.instruction===last):-1;
+ n=wasAll?steps.length:old===0?0:index>=0?index+1:Math.min(old,steps.length);render();
+});
 el('new').addEventListener('click',generate);
 el('all').addEventListener('click',()=>{viewMode='all';n=steps.length;render()});
 el('reset').addEventListener('click',()=>{viewMode='step';n=0;render()});
 el('restart').addEventListener('click',()=>{viewMode='step';n=0;render()});
+el('step-restart').addEventListener('click',()=>{viewMode='step';n=0;render()});
 el('next').addEventListener('click',()=>{viewMode='step';n=Math.min(steps.length,n+1);render()});
 el('back').addEventListener('click',()=>{viewMode='step';n=Math.max(0,n-1);render()});
 el('edit').addEventListener('click',()=>{el('manual').hidden=!el('manual').hidden;syncInputs()});
@@ -694,6 +743,8 @@ let diagramMode='auto';
 function setDiagramMode(mode){
  if(!(mode in diagramSizes))return;
  diagramMode=mode;el('diagram-size').value=mode;
+ el('main').classList.toggle('diagram-only',mode==='full');
+ if(mode==='full')document.body.classList.add('focus-mode');
  applyColumnWidths(mode==='auto'&&document.body.classList.contains('focus-mode')?18:diagramSizes[mode],languageShare,'visual');
 }
 function markDiagramCustom(){diagramMode='custom';el('diagram-size').value='custom'}
@@ -732,6 +783,7 @@ document.addEventListener('keydown',e=>{
  }
 });
 el('diagram-size').addEventListener('change',e=>setDiagramMode(e.target.value));
+el('diagram-back').addEventListener('click',()=>setDiagramMode('auto'));
 el('width').addEventListener('input',e=>{
  markDiagramCustom();applyColumnWidths(Number(e.target.value),languageShare,'visual');
 });
