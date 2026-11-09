@@ -1,165 +1,405 @@
 <!doctype html>
-<html lang="en-IE">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#fff"><title>HCF and LCM | Maths Apps</title>
+<html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HCF and LCM | Irish School Maths Apps</title><meta name="theme-color" content="#ffffff">
 <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
 <style>
-:root{--ink:#223349;--blue:#205b96;--muted:#5e7186;--line:#d3e0ec;--paper:#fff;--bg:#f4f7fa}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,Arial,sans-serif}
-header{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:15px;padding:10px 3vw}
-header img{width:160px;max-width:37vw}header nav{display:flex;flex-wrap:wrap;gap:9px;font-size:.89rem}a{color:var(--blue)}
-main{max-width:1280px;margin:auto;padding:clamp(12px,2vw,25px)}
-h1{font-size:clamp(1.7rem,3vw,2.4rem);margin:0}h2{font-size:1.17rem;margin:.1em 0 .65em}
-p{margin:.4em 0 1em}.muted{color:var(--muted)}.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:clamp(13px,2vw,22px);margin-bottom:12px}
-.controls{display:flex;align-items:end;gap:10px;flex-wrap:wrap}.control{font-weight:750;font-size:.83rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
-input,select{min-height:44px;border:1px solid #a7bed2;border-radius:8px;padding:8px;font:600 1rem system-ui,sans-serif;color:var(--ink);background:#fff}
-input[type=number]{width:95px}select{min-width:150px}
-button{border-radius:9px;background:#fff;border:1px solid #a7bfd5;color:#24547e;font-size:.95rem;font-weight:720;padding:9px 14px;min-height:44px;cursor:pointer}
-button.primary{background:#245d96;color:#fff;border-color:#245d96}button:hover{filter:brightness(.95)}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #90c3ec;outline-offset:2px}
-.between{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.between{grid-template-columns:1fr}}
-.number{font:700 clamp(2.1rem,5vw,3.7rem)/1.3 "Cambria Math",Georgia,serif;color:#1c4f7f}
-.factor-expression{font:clamp(1.2rem,2.5vw,1.9rem)/1.7 "Cambria Math",Georgia,serif;min-height:52px}
-.prime-list{display:flex;gap:6px;flex-wrap:wrap;min-height:44px}
-.prime{display:inline-flex;justify-content:center;align-items:center;border:1px solid #9bb5cc;border-radius:8px;min-width:39px;padding:4px 8px;font:700 1.32rem "Cambria Math",Georgia,serif}
-.prime.common{background:#dfefff;border-color:#6a9dc8;color:#114e84}
-.prime.onlyA{background:#fff0df;border-color:#dda96e;color:#955119}
-.prime.onlyB{background:#e0f5ee;border-color:#7eb7a3;color:#18684f}
-.circles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:14px}
-.circles .part{border-radius:12px;padding:12px 8px;border:1px solid var(--line);text-align:center;min-height:110px}
-.part strong{display:block;font-size:.91rem;margin-bottom:10px}.part .prime-list{justify-content:center}
-.part.a{background:#fff9f2}.part.middle{background:#eef6ff}.part.b{background:#f2fcf7}
-.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
-.result{border-radius:11px;border:2px solid #cfdeea;padding:14px;text-align:center}
-.result h3{margin:0;font-size:.97rem;color:#526a7f}.result .value{font:700 clamp(2.1rem,4vw,3.5rem)/1.5 "Cambria Math",Georgia,serif}
-.result small{color:var(--muted);font-size:.82rem;overflow-wrap:anywhere}
-.question{margin-top:12px;background:#f8fbff;border:1px solid #d7e6f2;padding:13px;border-radius:10px}
-.question input{width:110px;text-align:center;margin:0 8px}
-.feedback{font-weight:760;min-height:27px;margin-top:10px}.feedback.good{color:#167044}.feedback.bad{color:#b12839}
-.hidden[hidden],#solution[hidden],#working[hidden]{display:none!important}
-.step{background:#f5f8fc;border-left:4px solid #477eaf;padding:9px 13px;margin:8px 0}
-.identity{margin-top:13px;padding:12px;border:1px dashed #9db9ce;border-radius:10px;text-align:center;font:1.32rem "Cambria Math",Georgia,serif}
-@media print{@page{size:A4 portrait;margin:12mm}body{background:#fff}main{max-width:100%;padding:0}.panel{break-inside:avoid;border:0;margin:0;padding:6mm 0}header,.no-print,button{display:none!important}}
-</style>
-</head>
-<body>
-<header><a href="../../../index.html"><img src="../../../assets/maths-logo.svg" alt="Irish School Maths"></a><nav>
-<a href="../../../index.html">Apps</a><span>›</span><a href="../../../number/index.html">Number</a><span>›</span><strong>HCF and LCM</strong></nav></header>
+:root{font-family:Arial,Helvetica,sans-serif;color:#202124;background:#f1f3f4;--ink:#202124;--blue:#174ea6;--teal:#127966;--border:#d9dfe7}
+*{box-sizing:border-box}body{margin:0;color:var(--ink)}
+header{background:#fff;border-bottom:1px solid #dadce0;padding:5px max(16px,calc((100vw - 1150px)/2));display:flex;align-items:center;gap:11px;min-height:52px}
+header img{width:122px;display:block}header a{text-decoration:none;color:#174ea6}
+.apps-name{font-size:1.05rem;font-weight:700;margin-left:-7px;margin-right:10px;white-space:nowrap}
+.heading h1{font-size:1.16rem;font-weight:700;margin:0}.crumb{font-size:.76rem;color:#637286;display:flex;gap:6px}
+main{max-width:1120px;background:#fff;margin:8px auto;padding:18px 24px 35px;border:1px solid #e1e4e8;min-height:75vh}
+p{margin:5px 0 12px;color:#52657a}h2{font-size:1.04rem;color:#32475d;margin:0 0 13px}
+button,input,select{font:inherit;border:1px solid #b8c0ca;background:#fff;color:#26374b;border-radius:7px}
+button{padding:9px 13px;min-height:43px;cursor:pointer;font-weight:650;white-space:normal}
+button:hover{background:#eff5fd}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #78aaff;outline-offset:2px}
+button.primary{background:#174ea6;border-color:#174ea6;color:#fff}button.primary:hover{background:#12408b}
+button.active{background:#e8f0fe;border-color:#568bd1;color:#174ea6}button:disabled{opacity:.42;cursor:default}
+select,input{padding:8px 9px;min-height:43px}input[type=number]{width:96px;text-align:center}
+.settings{display:flex;align-items:end;flex-wrap:wrap;gap:9px 13px;padding:9px 0 14px;border-bottom:1px solid #e3e8ef}
+.field{display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:0}
+.field label,.field>span{color:#54657a;font-size:.80rem;font-weight:700}
+.field select{font-weight:650;max-width:260px}
+.field.long select{min-width:230px}
+.toggle{display:flex;gap:7px;align-items:center;min-height:43px;cursor:pointer;padding:4px 8px;border:1px solid #d1dde9;border-radius:7px;color:#40586f;font-size:.9rem;font-weight:650}
+.toggle input{accent-color:#245db0;width:18px;height:18px;margin:0;min-height:0}
+.settings .divider{border-left:1px solid #d8e2ee;height:44px}
+.examples-bar,.work-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:12px 0}
+#exampleInfo{color:#506b84;font-size:.85rem;font-weight:700}
+.input-row{display:flex;flex-wrap:wrap;gap:14px;align-items:stretch;margin:10px 0 19px}
+.expression-input{display:flex;flex-direction:column;gap:5px;padding:12px 15px;border:1px solid #d9e2ec;background:#fbfcfe;border-radius:9px;flex:1 1 215px}
+.expression-input .name{font-weight:700;color:#496580;font-size:.83rem}
+.number-line{display:flex;gap:9px;align-items:baseline}
+.number-line input{font:700 1.4rem/1.3 "Cambria Math",Georgia,serif;width:96px}
+.variable-inputs{display:flex;gap:8px;flex-wrap:wrap;font-size:.88rem}
+.variable-inputs label{display:flex;align-items:center;gap:5px;font-weight:700;color:#617183}
+.variable-inputs input{font:700 1.02rem "Cambria Math",Georgia,serif;width:56px;padding:5px;min-height:35px}
+.math,.power-table,.equation,.math-factor{font-family:"Cambria Math",Cambria,Georgia,serif}
+.math-factor{font-size:clamp(1.34rem,2.5vw,1.85rem);line-height:1.65;min-height:46px;overflow-wrap:anywhere;color:#23394f}
+.math-factor sup,.math sup,.power-table sup,.equation sup{font-size:.63em;vertical-align:super}
+.factor-row{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline}
+.factor-label{color:#5c6c7e;font:700 .84rem Arial,sans-serif}
+.workspace{border:1px solid var(--border);border-radius:10px;padding:18px 14px;margin-top:9px}
+.work-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.work-head h2{margin:0}.work-head small{color:#62758a}
+.power-scroll{max-width:100%;overflow-x:auto;margin:8px 0}
+.power-table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:520px;text-align:center;font-size:clamp(1.1rem,2vw,1.5rem)}
+.power-table th{padding:12px 8px;border-bottom:2px solid #a8b6c6;font:700 .83rem/1.3 Arial,sans-serif;color:#4c6077}
+.power-table td{padding:11px 7px;border-bottom:1px solid #e0e7ef;font-variant-numeric:tabular-nums}
+.power-table .factor-column{width:13%;font-size:1.35em;color:#253c57}
+.power-table .low-head{background:#eaf3ff;color:#174ea6}.power-table .high-head{background:#e5f6f1;color:#11735e}
+.power-table .choice{background:#fafcff}.power-table .choice.high{background:#f5fcf9}
+.power-table .chosen{font-weight:700;color:#174ea6}.power-table .chosen.high{color:#127966}
+.power-table .none{color:#8b9cae;font:1rem Arial,sans-serif}
+.power-table select{min-width:76px;max-width:100%;border-radius:7px;font-size:1.02rem;font-weight:700;text-align:center;min-height:39px;color:#204b77}
+.power-table select.high{color:#146b60}
+.power-table select.correct{border:2px solid #1f8e62;background:#ecfff4}
+.power-table select.incorrect{border:2px solid #bc3c4a;background:#fff1f2}
+.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0}
+.answer-box{border:1px solid #cad8e8;border-radius:9px;padding:13px 16px;text-align:center;min-width:0}
+.answer-box.hcf{border-top:4px solid #205cb1}.answer-box.lcm{border-top:4px solid #158570}
+.answer-box h3{font:700 .95rem Arial,sans-serif;margin:0 0 7px;color:#3c5069}
+.answer-box .equation{font-size:clamp(1.25rem,2.55vw,1.85rem);overflow-wrap:anywhere;line-height:1.7}
+.answer-box .conclusion{font:750 clamp(1.6rem,3.4vw,2.4rem)/1.3 "Cambria Math",Georgia,serif}
+.identity{padding:14px 10px;text-align:center;border:1px solid #cddbeb;border-radius:8px;background:#f8fbff;color:#284f7a}
+.identity .equation{font-size:clamp(1.15rem,2.3vw,1.75rem);line-height:1.65}
+.identity small{display:block;color:#5c7388;font-size:.78rem;margin-top:4px}
+.practice-fields{display:flex;gap:12px;align-items:end;flex-wrap:wrap;padding:13px 0 4px}
+.practice-fields .field input{width:145px;text-align:left;font-family:"Cambria Math",Georgia,serif;font-size:1.1rem}
+.feedback{font-weight:700;min-height:28px;color:#466680;padding:7px 0}
+.feedback.good{color:#157b52}.feedback.bad{color:#af2636}
+.muted{color:#607388;font-size:.9rem}.steps-note{color:#526c83;font-size:.86rem;text-align:left;margin-top:12px}
+.mark{display:inline-block;font:700 .79rem Arial,sans-serif;background:#edf4fb;color:#245f9b;border-radius:15px;padding:3px 8px}
+[hidden]{display:none!important}
+@media(max-width:720px){main{margin:0;padding:13px 10px}.settings{gap:8px}.results{grid-template-columns:1fr}.workspace{padding:11px 8px}.power-table{min-width:460px;font-size:1.18rem}.power-table th{font-size:.73rem}.input-row{gap:8px}}
+@media print{@page{size:A4 portrait;margin:11mm}body{background:#fff}header,.settings,.examples-bar,.work-actions,.no-print,button{display:none!important}main{max-width:100%;padding:0;border:0;margin:0}.workspace,.expression-input,.answer-box{break-inside:avoid}.power-table{font-size:15pt}.power-scroll{overflow:visible}.results{grid-template-columns:1fr 1fr}.workspace{margin:0}#working[hidden],#answers[hidden]{display:none!important}}
+</style></head>
+<body><header><a href="../../../index.html" aria-label="Maths Apps home"><img src="../../../assets/maths-logo.svg" alt="Maths Apps four-dot logo"></a><span class="apps-name">Apps</span><div class="heading"><nav class="crumb"><a href="../../../number/index.html">Number</a><span>›</span><span>Factors and multiples</span></nav><h1>Highest common factor and lowest common multiple</h1></div></header>
 <main>
-<section class="panel"><h1>Highest common factor &amp; lowest common multiple</h1>
-<p class="muted">Two answers from the same pair of prime-factor lists. The HCF uses factors they share; the LCM uses every prime factor required by either number.</p>
-<div class="controls no-print">
-<label class="control">First number<input id="a" type="number" min="1" max="360" step="1" value="24"></label>
-<label class="control">Second number<input id="b" type="number" min="1" max="360" step="1" value="36"></label>
-<button id="apply" class="primary" type="button">Use numbers</button>
-<label class="control">Generate<select id="kind"><option value="shared">Common factors</option><option value="multiple">One divides the other</option><option value="coprime">No common prime factors</option><option value="mixed">Mixed practice</option></select></label>
-<button id="regenerate" type="button">⟳ New pair</button>
-<button id="toggleWorking" type="button">Show prime factors</button>
-<button id="toggleSolution" type="button">Reveal HCF &amp; LCM</button>
-<button type="button" id="print">Print</button>
-</div></section>
-<div class="between">
-<section class="panel"><h2>First number</h2><div class="number" id="numberA">24</div><div id="factorsA" class="factor-expression">?</div></section>
-<section class="panel"><h2>Second number</h2><div class="number" id="numberB">36</div><div id="factorsB" class="factor-expression">?</div></section>
+<div class="settings" aria-label="Teacher configuration">
+<div class="field"><span>Number of values</span><select id="count" aria-label="Two or three expressions"><option value="2">Two</option><option value="3">Three</option></select></div>
+<label class="toggle" for="letters"><input id="letters" type="checkbox"> Letters on</label>
+<div class="field"><span>Prime factors</span><select id="notation"><option value="powers">Powers</option><option value="expanded">Expanded factors</option></select></div>
+<div class="field long"><span>Examples</span><select id="example" aria-label="Select a planned example"></select></div>
+<button id="nextExample" class="primary">Next example →</button>
+<button id="random" title="Generate a new example with these settings">⟳ Regenerate</button>
 </div>
-<section class="panel" id="working" hidden>
-<h2>Compare the prime factors</h2>
-<div class="circles">
-<div class="part a"><strong>Only in first number</strong><div id="onlyA" class="prime-list"></div></div>
-<div class="part middle"><strong>Common factors</strong><div id="common" class="prime-list"></div></div>
-<div class="part b"><strong>Only in second number</strong><div id="onlyB" class="prime-list"></div></div>
+<div class="examples-bar">
+<div class="field" style="flex-direction:row;align-items:center"><span>Activity</span><select id="activity"><option value="worked">Worked example</option><option value="student">Your turn</option></select></div>
+<button id="showFactors" type="button">Hide factors</button>
+<button id="showSolutions" type="button">Hide answers</button>
+<button id="reset" type="button">Reset selections</button>
+<button id="print" type="button">Print</button>
+<span id="exampleInfo" aria-live="polite"></span>
 </div>
-<p class="muted" style="margin-top:12px;font-size:.88rem">Prime factors are repeated where necessary. For example, two copies of 2 represent 2 × 2.</p>
+<div id="inputRow" class="input-row" aria-label="Expressions and prime factors"></div>
+<section id="working" class="workspace" aria-label="Lowest and highest prime powers">
+<div class="work-head"><h2>Select the lowest and highest powers</h2><small>Power 0 means the factor is absent. Exponent 1 is shown.</small></div>
+<div class="power-scroll"><table class="power-table"><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div>
+<p class="steps-note">HCF: take the <strong>lowest exponent</strong> in every column. LCM: take the <strong>highest exponent</strong>. Any factor raised to 0 is omitted from the final product.</p>
+<div class="practice-fields no-print" id="practiceFields">
+<div class="field"><label for="guessH">Your HCF</label><input id="guessH" type="text" placeholder="e.g. 6xy^2" autocomplete="off"></div>
+<div class="field"><label for="guessL">Your LCM</label><input id="guessL" type="text" placeholder="e.g. 36x^3y^4" autocomplete="off"></div>
+<button id="check" class="primary" type="button">Check powers and answers</button>
+<button id="reveal" type="button">Reveal worked answer</button>
+</div>
+<div id="feedback" class="feedback" aria-live="polite" role="status"></div>
 </section>
-<section class="panel">
-<h2>Find both answers</h2>
-<div class="question no-print"><div class="controls">
-<label class="control">HCF<input id="guessH" type="number" min="1" placeholder="?" aria-label="Your HCF answer"></label>
-<label class="control">LCM<input id="guessL" type="number" min="1" placeholder="?" aria-label="Your LCM answer"></label>
-<button id="check" class="primary" type="button">Check both</button>
-<button id="clear" type="button">Clear answers</button>
-</div><p class="feedback" id="feedback" aria-live="polite" role="status"></p></div>
-<div id="solution" hidden>
-<div class="results"><div class="result"><h3>Highest common factor</h3><div class="value" id="hcf"></div><small id="hcfWork"></small></div>
-<div class="result"><h3>Lowest common multiple</h3><div class="value" id="lcm"></div><small id="lcmWork"></small></div></div>
-<div class="identity" id="identity"></div>
-<div class="step">When one number divides the other, its HCF is the smaller number and its LCM is the larger number.</div>
+<section id="answers" class="workspace" aria-label="HCF LCM and relationship">
+<h2>HCF and LCM</h2><div class="results">
+<div class="answer-box hcf"><h3>HCF · lowest powers</h3><div id="hcfPowers" class="equation"></div><div class="conclusion math" id="hcfValue"></div></div>
+<div class="answer-box lcm"><h3>LCM · highest powers</h3><div id="lcmPowers" class="equation"></div><div class="conclusion math" id="lcmValue"></div></div>
 </div>
+<div class="identity" id="identity"></div>
 </section>
 </main>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-const state={a:24,b:36,working:false,solution:false};
-function gcd(a,b){while(b){[a,b]=[b,a%b]}return a}
-function primeFactors(n){
- if(!Number.isInteger(n)||n<1)throw new Error('Enter a positive whole number');
- const out=[];
- for(let p=2;p*p<=n;p+=(p===2?1:2)){while(n%p===0){out.push(p);n/=p}}
- if(n>1)out.push(n);
- return out;
+const normalExamples=[
+ {name:'Shared powers · 60 and 80',v:[{n:60},{n:80}]},
+ {name:'Several factors · 180 and 220',v:[{n:180},{n:220}]},
+ {name:'Repeated prime powers · 24 and 36',v:[{n:24},{n:36}]},
+ {name:'One divides the other · 16 and 64',v:[{n:16},{n:64}]},
+ {name:'Few common factors · 78 and 70',v:[{n:78},{n:70}]},
+ {name:'Coprime · 7 and 13',v:[{n:7},{n:13}]},
+ {name:'Two primes and higher powers · 72 and 120',v:[{n:72},{n:120}]},
+ {name:'Three numbers · 78, 70, 108',v:[{n:78},{n:70},{n:108}]},
+ {name:'Three numbers · 24, 36, 60',v:[{n:24},{n:36},{n:60}]},
+ {name:'Number 1 · 1 and 48',v:[{n:1},{n:48}]},
+ {name:'Unrelated powers · 45 and 56',v:[{n:45},{n:56}]}
+];
+const algebraExamples=[
+ {name:'Different x and y powers · 12x³y² and 18xy⁴',v:[{n:12,x:3,y:2},{n:18,x:1,y:4}]},
+ {name:'Common x, different y · 24x²y and 36x³y³',v:[{n:24,x:2,y:1},{n:36,x:3,y:3}]},
+ {name:'A factor can be missing · 15x³ and 25y²',v:[{n:15,x:3,y:0},{n:25,x:0,y:2}]},
+ {name:'One monomial divides another · 8x²y and 24x⁵y³',v:[{n:8,x:2,y:1},{n:24,x:5,y:3}]},
+ {name:'Coprime coefficients · 7x²y and 11xy³',v:[{n:7,x:2,y:1},{n:11,x:1,y:3}]},
+ {name:'Shared powers of three factors · 12x³y², 18xy⁴, 30x²y³',v:[{n:12,x:3,y:2},{n:18,x:1,y:4},{n:30,x:2,y:3}]},
+ {name:'Three monomials with missing variables',v:[{n:9,x:2,y:0},{n:6,x:1,y:3},{n:15,x:0,y:2}]},
+ {name:'No common x factor · 20x⁴ and 28y²',v:[{n:20,x:4,y:0},{n:28,x:0,y:2}]}
+];
+const state={items:[],letters:false,three:false,mode:'worked',notation:'powers',showFactors:true,showSolutions:true,example:0,picks:{},feedback:''};
+const cloneItems=items=>items.map(({n,x=0,y=0})=>({n,x,y}));
+const factorise=n=>{
+ if(!Number.isSafeInteger(n)||n<1||n>999)throw new Error('Coefficient must be a whole number between 1 and 999');
+ const factors=new Map();
+ let v=n;
+ for(let p=2;p*p<=v;p+=(p===2?1:2))while(v%p===0){factors.set(p,(factors.get(p)||0)+1);v/=p}
+ if(v>1)factors.set(v,(factors.get(v)||0)+1);
+ return factors;
+};
+function exponentMaps(items,letters){
+ return items.map(item=>{
+  const m=factorise(item.n);
+  if(letters){if(item.x>0)m.set('x',item.x);if(item.y>0)m.set('y',item.y)}
+  return m;
+ });
 }
-function classify(a,b){
- const x=primeFactors(a),y=primeFactors(b),left=[],common=[],right=[],remaining=y.slice();
- for(const p of x){const i=remaining.indexOf(p);if(i===-1)left.push(p);else{common.push(p);remaining.splice(i,1)}}
- right.push(...remaining);
- const product=values=>values.reduce((total,v)=>total*v,1);
- return {x,y,left,right,common,hcf:product(common),lcm:product([...left,...common,...right])};
+function solve(items,letters){
+ const maps=exponentMaps(items,letters),keys=[...new Set(maps.flatMap(m=>[...m.keys()]))];
+ keys.sort((a,b)=>typeof a==='number'&&typeof b==='number'?a-b:typeof a==='number'?-1:typeof b==='number'?1:a.localeCompare(b));
+ const rows=keys.map(key=>{
+  const values=maps.map(map=>map.get(key)||0);
+  return {key,values,low:Math.min(...values),high:Math.max(...values)};
+ });
+ const toMonomial=kind=>{
+  let n=1,x=0,y=0;
+  for(const row of rows){
+   const e=row[kind];
+   if(typeof row.key==='number')n*=row.key**e;
+   else if(row.key==='x')x=e;
+   else if(row.key==='y')y=e;
+  }
+  return {n,x,y};
+ };
+ return {rows,hcf:toMonomial('low'),lcm:toMonomial('high'),maps};
 }
-function chips(values,type,host){
- const target=$(host);target.replaceChildren();
- for(const value of values){const e=document.createElement('span');e.className='prime '+type;e.textContent=value;target.append(e)}
- if(!values.length){const e=document.createElement('span');e.textContent='—';e.className='muted';target.append(e)}
+function factorHTML(key,e,mode='powers'){
+ if(e===0)return '<span class="none">0</span>';
+ const glyph=String(key);
+ if(mode==='powers')return glyph+'<sup>'+e+'</sup>';
+ return Array(e).fill(glyph).join(' × ');
 }
-function formula(factors){return factors.length?factors.join(' × '):'1'}
-function refresh(){
- const a=state.a,b=state.b,info=classify(a,b);
- $('numberA').textContent=a;$('numberB').textContent=b;
- $('factorsA').textContent=state.working?a+' = '+formula(info.x):'?';
- $('factorsB').textContent=state.working?b+' = '+formula(info.y):'?';
- $('working').hidden=!state.working;$('solution').hidden=!state.solution;
- $('toggleWorking').textContent=state.working?'Hide prime factors':'Show prime factors';
- $('toggleSolution').textContent=state.solution?'Hide HCF & LCM':'Reveal HCF & LCM';
- chips(info.left,'onlyA','onlyA');chips(info.common,'common','common');chips(info.right,'onlyB','onlyB');
- $('hcf').textContent=info.hcf;$('lcm').textContent=info.lcm;
- $('hcfWork').textContent='Common primes: '+formula(info.common);
- $('lcmWork').textContent='All required primes: '+formula([...info.left,...info.common,...info.right]);
- $('identity').textContent='HCF × LCM = '+info.hcf+' × '+info.lcm+' = '+a+' × '+b+' = '+(a*b);
+function productHTML(rows,field,mode='powers'){
+ const visible=rows.filter(row=>row[field]>0);
+ return visible.length?visible.map(row=>factorHTML(row.key,row[field],mode)).join(' × '):'1';
 }
-function useNumbers(){
- const a=Number($('a').value),b=Number($('b').value);
- if(!Number.isInteger(a)||!Number.isInteger(b)||a<1||b<1||a>360||b>360){
-  $('feedback').textContent='Choose two whole numbers from 1 to 360.';$('feedback').className='feedback bad';return;
+function monomialHTML({n,x=0,y=0},letters){
+ let out=String(n);
+ if(letters&&(x||y)){
+  out=(n===1?'':out);
+  if(x)out+='x'+(x>1?'<sup>'+x+'</sup>':'');
+  if(y)out+='y'+(y>1?'<sup>'+y+'</sup>':'');
  }
- state.a=a;state.b=b;resetGuess();refresh();
+ return out||'1';
 }
-function randomInt(min,max){return min+Math.floor(Math.random()*(max-min+1))}
-function newPair(){
- let a,b,kind=$('kind').value;if(kind==='mixed')kind=['shared','coprime','multiple'][randomInt(0,2)];
- if(kind==='multiple'){a=randomInt(2,24);b=a*randomInt(2,Math.min(12,Math.floor(360/a)))}
- else if(kind==='shared'){const g=randomInt(2,12);a=g*randomInt(2,Math.min(19,Math.floor(360/g)));b=g*randomInt(2,Math.min(19,Math.floor(360/g)))}
- else{let t=0;do{a=randomInt(12,120);b=randomInt(13,120);t++}while(gcd(a,b)!==1&&t<1000)}
- state.a=a;state.b=b;$('a').value=a;$('b').value=b;
- state.solution=false;state.working=false;resetGuess();refresh();
+function plainMonomial({n,x=0,y=0},letters){
+ return (letters?((n===1&&(x||y))?'':String(n))+ (x?'x'+(x>1?'^'+x:''):'')+(y?'y'+(y>1?'^'+y:''):''):String(n))||'1';
 }
-function resetGuess(){$('guessH').value='';$('guessL').value='';$('feedback').textContent='';$('feedback').className='feedback'}
+function parseMonomial(text,letters){
+ const str=text.toLowerCase().replace(/\s+/g,'').replace(/[×*·]/g,'');
+ if(!letters){if(!/^\d+$/.test(str))return null;return {n:Number(str),x:0,y:0}}
+ const m=str.match(/^(\d+)?(x(?:\^\d+)?)?(y(?:\^\d+)?)?$/);
+ if(!m||(!m[1]&&!m[2]&&!m[3]))return null;
+ const exponent=v=>v?v.includes('^')?Number(v.split('^')[1]):1:0;
+ return {n:m[1]?Number(m[1]):1,x:exponent(m[2]),y:exponent(m[3])};
+}
+const sameMonomial=(a,b)=>a&&a.n===b.n&&a.x===b.x&&a.y===b.y;
+function initialisePicks(reveal=false){
+ state.picks={};
+ const rows=solve(state.items,state.letters).rows;
+ for(const row of rows)state.picks[String(row.key)]={low:reveal?String(row.low):'',high:reveal?String(row.high):''};
+}
+function chooseExample(index){
+ const examples=state.letters?algebraExamples:normalExamples,selected=examples[index];
+ if(!selected)return;
+ state.example=index;
+ state.items=cloneItems(selected.v);
+ state.three=selected.v.length===3;
+ $('count').value=String(selected.v.length);
+ state.feedback='';initialisePicks(state.mode==='worked');
+ $('guessH').value='';$('guessL').value='';
+ render();
+}
+function rebuildExamples(){
+ const examples=state.letters?algebraExamples:normalExamples;
+ $('example').replaceChildren(...examples.map((x,i)=>new Option('Example '+(i+1)+' · '+x.name,String(i))),new Option('Custom / regenerated','custom'));
+}
+function setMode(mode){
+ state.mode=mode;
+ state.showFactors=true;state.showSolutions=mode==='worked';state.feedback='';
+ initialisePicks(mode==='worked');
+ $('guessH').value='';$('guessL').value='';
+ render();
+}
+function newRandom(){
+ const random=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+ const bases=[2,2,2,3,3,5,7,11],make=()=>{
+  let n=1;
+  for(let k=0;k<random(2,4);k++){const p=bases[random(0,bases.length-1)];if(n*p<=360)n*=p}
+  return n;
+ };
+ const n=state.three?3:2,common=state.letters?random(1,6):random(1,8);
+ state.items=Array.from({length:n},()=>({n:Math.min(999,common*make()),x:state.letters?random(0,5):0,y:state.letters?random(0,4):0}));
+ $('example').value='custom';state.feedback='';initialisePicks(state.mode==='worked');
+ $('guessH').value='';$('guessL').value='';render();
+}
+function onItemChange(index,key,input){
+ const v=Number(input.value);
+ const legal=key==='n'?Number.isSafeInteger(v)&&v>=1&&v<=999:Number.isInteger(v)&&v>=0&&v<=9;
+ if(!legal){input.setAttribute('aria-invalid','true');return}
+ input.removeAttribute('aria-invalid');
+ state.items[index][key]=v;state.feedback='';
+ $('example').value='custom';initialisePicks(state.mode==='worked');render();
+}
+function makeInputs(){
+ const host=$('inputRow');host.replaceChildren();
+ for(const [i,item] of state.items.entries()){
+  const card=document.createElement('div');card.className='expression-input';
+  const name=document.createElement('span');name.className='name';name.textContent='Expression '+String.fromCharCode(97+i);
+  const line=document.createElement('div');line.className='number-line';
+  const numeric=document.createElement('input');numeric.type='number';numeric.min='1';numeric.max='999';numeric.step='1';numeric.value=item.n;
+  numeric.setAttribute('aria-label','Numerical coefficient of expression '+String.fromCharCode(97+i));
+  numeric.addEventListener('change',()=>onItemChange(i,'n',numeric));
+  line.append(numeric);
+  if(state.letters){
+   const vars=document.createElement('div');vars.className='variable-inputs';
+   for(const key of ['x','y']){
+    const label=document.createElement('label');label.textContent=key+' power';
+    const e=document.createElement('input');e.type='number';e.min='0';e.max='9';e.step='1';e.value=item[key];
+    e.setAttribute('aria-label',key+' exponent for expression '+String.fromCharCode(97+i));
+    e.addEventListener('change',()=>onItemChange(i,key,e));label.append(e);vars.append(label);
+   }
+   line.append(vars);
+  }
+  const factor=document.createElement('div');factor.className='math-factor';
+  const f=solve([item],state.letters).rows;
+  factor.innerHTML=state.showFactors?productHTML(f,'high',state.notation):'?';
+  card.append(name,line,factor);host.append(card);
+ }
+}
+function makeTable(){
+ const answer=solve(state.items,state.letters),head=$('tableHead'),body=$('tableBody');head.replaceChildren();body.replaceChildren();
+ const tr=document.createElement('tr');
+ const headings=['Factor',...state.items.map((_,i)=>String.fromCharCode(97+i)),'HCF · lowest','LCM · highest'];
+ for(const [i,label] of headings.entries()){const th=document.createElement('th');th.textContent=label;
+  if(i===headings.length-2)th.className='low-head';
+  if(i===headings.length-1)th.className='high-head';
+  tr.append(th);
+ }
+ head.append(tr);
+ for(const row of answer.rows){
+  const tr=document.createElement('tr'),key=String(row.key);
+  const factor=document.createElement('td');factor.className='factor-column';factor.textContent=key;tr.append(factor);
+  row.values.forEach(exp=>{const td=document.createElement('td');td.innerHTML=state.showFactors?(exp?factorHTML(row.key,exp):'<span class="none">— <small>(0)</small></span>'):'?';tr.append(td)});
+  for(const field of ['low','high']){
+   const td=document.createElement('td');td.className='choice '+(field==='high'?'high':'');
+   const option=state.picks[key]||{low:'',high:''};
+   if(state.mode==='worked'){
+    td.className+=' chosen '+(field==='high'?'high':'');
+    td.innerHTML=state.showFactors?factorHTML(row.key,row[field]):'?';
+   }else{
+    const select=document.createElement('select');select.className=field==='high'?'high':'';
+    select.setAttribute('aria-label',(field==='low'?'HCF lowest':'LCM highest')+' exponent of '+key);
+    select.append(new Option('?',''));
+    for(let e=0;e<=Math.max(...row.values);e++)select.append(new Option(String(e),String(e)));
+    select.value=option[field]??'';
+    select.onchange=()=>{state.picks[key][field]=select.value;select.classList.remove('incorrect','correct');state.feedback='';$('feedback').textContent=''};
+    td.append(select);
+   }
+   tr.append(td);
+  }
+  body.append(tr);
+ }
+}
+function showAnswers(){
+ const answer=solve(state.items,state.letters),low=answer.rows,high=answer.rows,letters=state.letters;
+ $('hcfPowers').innerHTML='HCF = '+productHTML(low,'low',state.notation);
+ $('lcmPowers').innerHTML='LCM = '+productHTML(high,'high',state.notation);
+ $('hcfValue').innerHTML='= '+monomialHTML(answer.hcf,letters);
+ $('lcmValue').innerHTML='= '+monomialHTML(answer.lcm,letters);
+ const node=$('identity');node.replaceChildren();
+ if(state.items.length===2){
+  const a=state.items[0],b=state.items[1],cross={
+   n:answer.hcf.n*answer.lcm.n,
+   x:answer.hcf.x+answer.lcm.x,
+   y:answer.hcf.y+answer.lcm.y
+  },prod={n:a.n*b.n,x:a.x+b.x,y:a.y+b.y};
+  const value=document.createElement('div');value.className='equation';
+  value.innerHTML='HCF × LCM = a × b<br>'+
+   monomialHTML(answer.hcf,letters)+' × '+monomialHTML(answer.lcm,letters)+' = '+
+   monomialHTML(a,letters)+' × '+monomialHTML(b,letters)+'<br>= '+monomialHTML(cross,letters);
+  const caption=document.createElement('small');caption.textContent='The product identity holds for two positive integers or two positive-coefficient monomials.';
+  node.append(value,caption);
+  if(cross.n!==prod.n||cross.x!==prod.x||cross.y!==prod.y)throw new Error('Two-expression HCF × LCM invariant failed');
+ }else{
+  const p=document.createElement('small');
+  p.textContent='The HCF × LCM = product identity is a two-number result; it does not generally extend to three numbers.';
+  node.append(p);
+ }
+}
+function render(){
+ $('letters').checked=state.letters;$('count').value=String(state.items.length);$('notation').value=state.notation;
+ $('activity').value=state.mode;
+ $('showFactors').textContent=state.showFactors?'Hide factors':'Show factors';
+ $('showSolutions').textContent=state.showSolutions?'Hide answers':'Show answers';
+ $('exampleInfo').textContent='Example '+(Number.isInteger(state.example)?state.example+1:'—')+' · '+(state.items.length===2?'Two expressions':'Three expressions');
+ makeInputs();makeTable();showAnswers();
+ $('answers').hidden=!state.showSolutions;
+ $('practiceFields').hidden=state.mode!=='student';
+ $('feedback').textContent=state.feedback;
+ $('feedback').className='feedback'+(state.feedback?(state.feedback.startsWith('Correct')?' good':' bad'):'');
+}
 function check(){
- const info=classify(state.a,state.b),h=Number($('guessH').value),l=Number($('guessL').value);
- if(!$('guessH').value||!$('guessL').value){$('feedback').textContent='Enter both HCF and LCM.';$('feedback').className='feedback bad';return}
- const correctH=h===info.hcf,correctL=l===info.lcm;
- $('guessH').style.borderColor=correctH?'#21834d':'#ba3d44';$('guessL').style.borderColor=correctL?'#21834d':'#ba3d44';
- const okay=correctH&&correctL;
- $('feedback').textContent=okay?'Both correct! The two answers are connected by HCF × LCM = first × second. ✓':(correctH?'HCF correct. ':'Check the HCF. ')+(correctL?'LCM correct.':'Check the LCM.');
- $('feedback').className='feedback '+(okay?'good':'bad');
+ const answer=solve(state.items,state.letters),all=answer.rows;
+ let correct=0;
+ for(const row of all){
+  const k=String(row.key),p=state.picks[k];
+  for(const field of ['low','high']){
+   const ok=Number(p[field])===row[field]&&p[field]!=='';
+   const select=[...$('tableBody').querySelectorAll('select')].find(el=>el.getAttribute('aria-label').includes((field==='low'?'HCF lowest':'LCM highest')+' exponent of '+k));
+   if(select){select.classList.toggle('correct',ok);select.classList.toggle('incorrect',!ok)}
+   if(ok)correct++;
+  }
+ }
+ const h=parseMonomial($('guessH').value,state.letters),l=parseMonomial($('guessL').value,state.letters);
+ const finalH=sameMonomial(h,answer.hcf),finalL=sameMonomial(l,answer.lcm);
+ const allSelections=correct===2*all.length;
+ state.feedback=allSelections&&finalH&&finalL?'Correct — every lowest and highest power, HCF and LCM. ✓':
+  'Correct powers: '+correct+' of '+2*all.length+'. HCF: '+(finalH?'correct':'check')+'. LCM: '+(finalL?'correct':'check')+'.';
+ $('feedback').textContent=state.feedback;
+ $('feedback').className='feedback '+(allSelections&&finalH&&finalL?'good':'bad');
+ if(allSelections&&finalH&&finalL){state.showSolutions=true;$('answers').hidden=false;$('showSolutions').textContent='Hide answers'}
 }
-$('apply').addEventListener('click',useNumbers);
-for(const x of ['a','b'])$(x).addEventListener('change',useNumbers);
-$('regenerate').addEventListener('click',newPair);
-$('toggleWorking').addEventListener('click',()=>{state.working=!state.working;refresh()});
-$('toggleSolution').addEventListener('click',()=>{state.solution=!state.solution;refresh()});
-$('check').addEventListener('click',check);
-$('clear').addEventListener('click',()=>{$('guessH').style.borderColor='';$('guessL').style.borderColor='';resetGuess()});
-$('print').addEventListener('click',()=>window.print());
-refresh();
-</script></body></html>
+function nextExample(){
+ const examples=state.letters?algebraExamples:normalExamples;
+ chooseExample(((Number.isInteger(state.example)?state.example:-1)+1)%examples.length);
+}
+$('count').onchange=()=>{
+ const n=Number($('count').value);
+ if(n===state.items.length)return;
+ if(n===3){state.items.push({n:30,x:state.letters?2:0,y:state.letters?3:0})}
+ else state.items=state.items.slice(0,2);
+ state.three=n===3;state.example=null;$('example').value='custom';
+ initialisePicks(state.mode==='worked');render();
+};
+$('letters').onchange=()=>{
+ state.letters=$('letters').checked;
+ rebuildExamples();chooseExample(0);
+};
+$('notation').onchange=()=>{state.notation=$('notation').value;render()};
+$('example').onchange=()=>{if($('example').value!=='custom')chooseExample(Number($('example').value))};
+$('nextExample').onclick=nextExample;
+$('random').onclick=()=>{state.example=null;newRandom()};
+$('activity').onchange=()=>setMode($('activity').value);
+$('showFactors').onclick=()=>{state.showFactors=!state.showFactors;render()};
+$('showSolutions').onclick=()=>{state.showSolutions=!state.showSolutions;render()};
+$('reset').onclick=()=>{initialisePicks(state.mode==='worked');$('guessH').value='';$('guessL').value='';state.feedback='';render()};
+$('check').onclick=check;
+$('reveal').onclick=()=>{state.showSolutions=true;initialisePicks(true);render()};
+$('print').onclick=()=>window.print();
+rebuildExamples();chooseExample(0);
+</script>
+</body></html>
