@@ -2,7 +2,7 @@
 <html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cosine Rule · Maths Apps</title><link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
 <style>
-:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#183452;background:#f2f5f8;--ink:#183452;--blue:#2868dc;--line:#dce5ed;--w:28%}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#183452;background:#f2f5f8;--ink:#183452;--blue:#2868dc;--line:#dce5ed;--w:23%}
 *{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer;border:1px solid #c4d3e4;background:#fff;border-radius:9px;padding:8px 12px;color:#1b466f;font-weight:700}button:hover{background:#f1f6ff}button:disabled{opacity:.36;cursor:not-allowed}.primary{background:#2868dc;color:white;border-color:#2868dc}.primary:hover{background:#1556c7}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #9bc3ff;outline-offset:2px}
 .top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:9px clamp(12px,2vw,28px);background:white;border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:13px}.dots{display:grid;grid-template-columns:repeat(2,9px);gap:4px}.dots i{width:9px;height:9px;border-radius:50%;background:#e63329}.dots i:nth-child(2){background:#3fae49}.dots i:nth-child(3){background:#2d7dd2}.dots i:nth-child(4){background:#1a1a1a}
@@ -27,7 +27,7 @@
 @media print{body{background:white}.settings,.top-actions,.resize,.steps-panel,.manual,.diagram-info{display:none!important}.main{grid-template-columns:28% 72%;padding:0}.panel{border:0}.mathboard{min-height:0}.mathrow{font-size:28px}}
 
 /* Classroom revision: unobstructed three-column workspace, clear type hierarchy */
-.main{grid-template-columns:minmax(172px,var(--w)) minmax(0,1fr) minmax(220px,26%);gap:8px}
+.main{grid-template-columns:minmax(172px,var(--w)) minmax(0,1fr) minmax(215px,24%);gap:8px}
 .panel{border:1px solid #ccd8e8;border-radius:7px}
 .panel-head{padding:9px 12px;background:#f6f9ff;border-bottom:2px solid #d5e0ee;font-size:14px;letter-spacing:.08em}
 .mathboard{padding:16px clamp(10px,1.7vw,25px);min-height:590px}
@@ -84,10 +84,10 @@
 <section class="panel diagram-panel"><div class="panel-head">Diagram</div><div class="diagram">
 <svg id="triangle" viewBox="0 0 500 355" role="img" aria-label="Schematic triangle, not drawn to scale"><title>Schematic triangle</title></svg>
 <div class="diagram-info">Diagram not to scale. Angle category only.</div>
-<div class="resize"><label for="width">Diagram width</label><input id="width" type="range" min="20" max="43" value="28" step="1"></div>
+<div class="resize"><label for="width">Diagram width</label><input id="width" type="range" min="18" max="36" value="23" step="1"></div>
 <div class="manual" id="manual" hidden><div class="inputs"><label id="label-a">a<input id="a" type="number" step="any" min="0"></label><label>b<input id="b" type="number" step="any" min="0"></label><label><span id="label-c">c</span><input id="c" type="number" step="any" min="0"></label></div><div class="validation" id="validation" role="status"></div><button id="apply">Apply values</button></div>
 </div></section>
-<section class="panel work"><div class="panel-head">Mathematics</div><div class="mathboard" id="mathboard" aria-live="polite"><div class="blank">Which rule? What do you know?</div></div></section>
+<section class="panel work"><div class="panel-head">Mathematics</div><div class="mathboard" id="mathboard" aria-live="polite"><div class="blank">A = ?</div></div></section>
 <section class="panel steps-panel"><div class="panel-head">Steps</div><div class="steps"><div class="step-controls"><button id="back">← Back</button><button class="primary" id="next">Reveal next →</button></div>
 <p class="step-progress" id="progress">0 steps revealed</p>
 <div class="instruction-list" id="outline" aria-label="Click any step to reveal the corresponding mathematics"></div></div></section>
@@ -220,7 +220,7 @@ svgNode('text',{x:P.A[0]-25,y:P.A[1]+29,'font-size':19,fill:'#687e98'},'A');
 }
 function render(){
  draw();const board=el('mathboard');board.replaceChildren();
- if(n===0)board.innerHTML='<div class="blank">Click the first instruction in the Steps column to begin.</div>';
+ if(n===0)board.innerHTML='<div class="blank">'+(task==='angle'?'A':'a')+' = ?</div>';
  else steps.slice(0,n).forEach((s,i)=>{
   const row=document.createElement('div');row.className='mathrow '+s.cls+(i===n-1?' current':'');
   row.innerHTML=s.math;board.append(row);
