@@ -172,7 +172,8 @@ function render(){
  const body=$('plotBody');body.replaceChildren();
  for(let stem=first;stem<=last;stem++){
   const tr=document.createElement('tr'),i=stem-first;
-  tr.append(viewCells('A',stem,mapA.get(stem)||[],i));
+  if(two)tr.append(viewCells('A',stem,mapA.get(stem)||[],i));
+  else{const blank=document.createElement('td');blank.className='leaf left';tr.append(blank)}
   const centre=document.createElement('td');centre.className='stem-middle';centre.textContent=stem;tr.append(centre);
   tr.append(viewCells(two?'B':'A',stem,(two?mapB:mapA).get(stem)||[],i));body.append(tr);
  }
