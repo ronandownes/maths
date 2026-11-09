@@ -474,13 +474,11 @@ main{margin:5px auto;padding:10px 19px 18px}
 .board-stack::before{content:"×";position:absolute;left:0;bottom:.10em;font-size:.76em;line-height:1}
 .board-stack-scalar{white-space:nowrap;flex-shrink:0}
 .board-stack sup{font-size:.62em;vertical-align:super;line-height:0}
-/* One-question board: question = answer on one line, with readable fallback. */
+/* At every grid size, including 1 × 1, the worked answer sits below the question. */
 .board-math-line{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:.2em;max-width:100%;min-width:0}
-.board-question--single .board-math-line:has(.board-answer){flex-direction:row;align-items:baseline;gap:.28em;width:max-content;max-width:none;flex-wrap:nowrap}
-.board-question--single .board-math-line .board-expression{flex-shrink:0;flex-wrap:nowrap}
-.board-question--single .board-math-line .board-answer{flex:0 0 auto;width:auto;margin:0;padding:0;flex-wrap:nowrap;justify-content:flex-start}
-.board-question--single.board-inline-wrap .board-math-line{width:100%;max-width:100%;flex-wrap:wrap;align-items:center}
-.board-question--single.board-inline-wrap .board-math-line .board-answer{width:100%;flex:1 1 100%;justify-content:center;flex-wrap:wrap}
+.board-question--single .board-math-line:has(.board-answer){flex-direction:column;align-items:center;gap:clamp(12px,3vh,38px);width:100%;max-width:100%;flex-wrap:nowrap}
+.board-question--single .board-math-line .board-expression{flex:0 1 auto;flex-wrap:nowrap;max-width:100%}
+.board-question--single .board-math-line .board-answer{flex:0 1 auto;width:100%;max-width:100%;margin-top:0;padding:0;flex-wrap:wrap;justify-content:center}
 /* Stable question-bank controls and concise stage guidance */
 .homework-controls{gap:7px;flex-wrap:wrap}
 .bank-question-nav{display:flex;align-items:center;gap:3px;white-space:nowrap}
@@ -2151,7 +2149,19 @@ function worksheetOptions(){
  const status=el('span');status.id='wsStatus';go.onclick=printWorksheet;close.onclick=()=>switchMode('practice');
  actions.append(go,close,status);panel.append(actions);wsStatus();
 }
-const boardState={columns:1,rows:1,answers:false,offset:0,columnGap:56,rowGap:20,topMargin:40};
+const boardState={columns:2,rows:2,answers:false,offset:0,columnGap:100,rowGap:20,topMargin:40,
+ items:new Map(),nextNumber:1,sourceQuestion:null};
+function resetBoardQuestions(){
+ boardState.items.clear();
+ boardState.nextNumber=1;
+}
+function ensureBoardSource(){
+ if(boardState.sourceQuestion!==state.question){
+  boardState.sourceQuestion=state.question;
+  boardState.offset=0;
+  resetBoardQuestions();
+ }
+}
 // Both factors share a single place-value grid, with the higher-degree factor on top.
 function boardStackRow(coefficients,row,highestDegree){
  let earlier=false,html='';
@@ -2185,14 +2195,18 @@ function boardAnswerHTML(q){
  const first=terms.shift()||'<span class="board-answer-term">0</span>';
  return '<span class="board-answer-first"><span class="board-answer-equals">=</span>'+first+'</span>'+terms.join('');
 }
-function boardQuestions(count){
- const signOverride=null; // Display follows the current bank's selected sign or teacher override.
- return Array.from({length:count},(_,i)=>{
-  if(i===0&&boardState.offset===0&&state.question)return {q:state.question,type:state.question.type};
-  const seed=seedFor(900000+boardState.offset*13007+i*991+(Number.isInteger(state.slot)?state.slot*113+state.bankQuestion*379:state.freshCount*123));
-  const q=makeQuestion(seeded(seed),signOverride);
-  return {q,type:q.type};
- });
+// Retain each question's position and label when the classroom grid grows or shrinks.
+function boardQuestionAt(row,column){
+ const key=row+','+column;
+ if(boardState.items.has(key))return boardState.items.get(key);
+ const number=boardState.nextNumber++;
+ const first=number===1&&boardState.offset===0&&state.question;
+ const seed=seedFor(900000+boardState.offset*13007+number*991+
+  (Number.isInteger(state.slot)?state.slot*113+state.bankQuestion*379:state.freshCount*123));
+ const q=first?state.question:makeQuestion(seeded(seed),null);
+ const item={q,type:q.type,number};
+ boardState.items.set(key,item);
+ return item;
 }
 function fitBoardQuestions(){
  const host=$('boardPanel');if(host.hidden)return;
@@ -2201,7 +2215,7 @@ function fitBoardQuestions(){
   const expr=cell.querySelector('.board-expression'),answer=cell.querySelector('.board-answer');
   const line=cell.querySelector('.board-math-line');
   const width=Math.max(35,cell.clientWidth-20),height=Math.max(35,cell.clientHeight-22-boardState.topMargin);
-  const inline=Boolean(answer&&cell.classList.contains('board-question--single'));
+  const inline=false; // Always put the answer underneath, including on the one-question board.
   cell.classList.remove('board-inline-wrap');
   // Answer uses the same font size as the question, whether inline or stacked.
   let font=Math.min(230,Math.floor(height*(inline?.45:answer?.33:.70)));
@@ -2225,21 +2239,31 @@ function fitBoardQuestions(){
  });
 }
 function drawBoard(){
+ ensureBoardSource();
  const host=$('boardPanel');host.replaceChildren();
  const controls=el('div',undefined,'board-controls');
  const heading=el('strong',Number.isInteger(state.slot)?'Exercise '+(state.slot+1)+' · Q '+(state.bankQuestion+1):'New questions');
  controls.append(heading);
- [[1,1],[1,2],[1,3],[3,2],[2,4],[5,3]].forEach(([columns,rows])=>{
+ [[1,1],[2,2],[3,3],[4,4],[1,2],[1,3],[3,2],[2,4],[5,3]].forEach(([columns,rows])=>{
   const btn=el('button',columns+' × '+rows);btn.type='button';
   btn.setAttribute('aria-label',columns+' across, '+rows+' down');
   btn.setAttribute('aria-pressed',String(boardState.columns===columns&&boardState.rows===rows));
-  btn.onclick=()=>{if(boardState.columns===columns&&boardState.rows===rows)boardState.offset++;else{boardState.columns=columns;boardState.rows=rows;boardState.offset=0}drawBoard()};
+  btn.onclick=()=>{if(boardState.columns===columns&&boardState.rows===rows)return;boardState.columns=columns;boardState.rows=rows;drawBoard()};
   controls.append(btn);
  });
  const transpose=el('button','Transpose ⇄');transpose.type='button';
  transpose.title='Swap columns and rows while keeping the same questions';
  transpose.setAttribute('aria-label','Transpose grid: swap columns and rows');
- transpose.onclick=()=>{[boardState.columns,boardState.rows]=[boardState.rows,boardState.columns];drawBoard()};controls.append(transpose);
+ transpose.onclick=()=>{
+  const moved=new Map();
+  for(const [key,item] of boardState.items){
+   const [row,column]=key.split(',').map(Number);
+   moved.set(column+','+row,item);
+  }
+  boardState.items=moved;
+  [boardState.columns,boardState.rows]=[boardState.rows,boardState.columns];
+  drawBoard();
+ };controls.append(transpose);
  const custom=el('div',undefined,'board-custom');
  custom.append(el('span','Custom','board-custom-label'));
  const sliderStack=el('div',undefined,'board-range-stack');
@@ -2284,7 +2308,7 @@ function drawBoard(){
  answers.type='button';answers.setAttribute('aria-pressed',String(boardState.answers));answers.onclick=()=>{boardState.answers=!boardState.answers;drawBoard()};
  controls.append(answers);
  const next=el('button','New questions');next.type='button';
- next.onclick=()=>{boardState.offset++;drawBoard()};controls.append(next);
+ next.onclick=()=>{boardState.offset++;resetBoardQuestions();drawBoard()};controls.append(next);
  const full=el('button','Present ⛶');full.type='button';
  full.onclick=()=>{if(document.fullscreenElement===host)document.exitFullscreen?.();else host.requestFullscreen?.().then(()=>requestAnimationFrame(fitBoardQuestions)).catch(()=>{})};
  controls.append(full);
@@ -2293,32 +2317,31 @@ function drawBoard(){
  const grid=el('div',undefined,'board-grid');
  host.append(grid);
  grid.style.columnGap=boardState.columnGap+'px';grid.style.rowGap=boardState.rowGap+'px';
- const cellCache=[];
  let fitPending=false;
  function resizeBoardGrid(){
   const count=boardState.columns*boardState.rows;
   grid.style.gridTemplateColumns='repeat('+boardState.columns+',minmax(0,1fr))';
   grid.style.gridTemplateRows='repeat('+boardState.rows+',minmax(0,1fr))';
-  if(cellCache.length<count){
-   const questions=boardQuestions(count);
-   for(let i=cellCache.length;i<count;i++){
-    const item=questions[i],cell=el('article',undefined,'board-question');
-    const number=el('span',String(i+1)+'.','board-number');
+  const cells=[];
+  for(let row=0;row<boardState.rows;row++){
+   for(let column=0;column<boardState.columns;column++){
+    const item=boardQuestionAt(row,column);
+    const cell=el('article',undefined,'board-question');
+    const number=el('span',String(item.number)+'.','board-number');
     const line=el('div',undefined,'board-math-line');
     const expression=el('div',undefined,'board-expression');
-    expression.innerHTML=boardFormula(item.q);
-    line.append(expression);
+    expression.innerHTML=boardFormula(item.q);line.append(expression);
     if(boardState.answers){
      const answer=el('div',undefined,'board-answer');
      answer.innerHTML=boardAnswerHTML(item.q);line.append(answer);
     }
     cell.append(number,line);
-    cellCache.push(cell);
+    cell.classList.toggle('board-question--single',count===1);
+    cell.style.paddingTop=boardState.topMargin+'px';
+    cells.push(cell);
    }
   }
-  grid.replaceChildren(...cellCache.slice(0,count));
- grid.querySelectorAll('.board-question').forEach(cell=>{cell.style.paddingTop=boardState.topMargin+'px'});
-  cellCache.forEach(cell=>cell.classList.toggle('board-question--single',count===1));
+  grid.replaceChildren(...cells);
   if(!fitPending){
    fitPending=true;
    requestAnimationFrame(()=>{fitPending=false;fitBoardQuestions()});
@@ -2332,7 +2355,7 @@ document.addEventListener('keydown',event=>{
  if(assessment.mode==='board'&&event.key==='Escape'&&!document.fullscreenElement){event.preventDefault();switchMode('practice');return}
  if(document.fullscreenElement!==$('boardPanel')||event.target.matches('input,textarea,select'))return;
  const key=event.key.toLowerCase();
- if(key==='n'||key==='arrowright'){event.preventDefault();boardState.offset++;drawBoard()}
+ if(key==='n'||key==='arrowright'){event.preventDefault();boardState.offset++;resetBoardQuestions();drawBoard()}
  if(key==='a'){event.preventDefault();boardState.answers=!boardState.answers;drawBoard()}
 });
 function worksheetRowsPerSide(){
