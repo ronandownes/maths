@@ -251,7 +251,7 @@ function wordTriangle(request){
  const sorted=[...choice(candidates.length?candidates:wordTriples)].sort((x,y)=>x-y);
  const rank=request==='obtuse'||request==='right'?2:wordRankCycle++%3;
  const remaining=sorted.filter((v,i)=>i!==rank);
- const a=sorted[rank],sides=sorted.join(', '),unit=wordVariantCycle%2===0?'cm':'m';
+ const a=sorted[rank],sides=sorted.join(', '),variant=wordVariantCycle%8,unit=['cm','cm','cm','cm','m','cm','m','cm'][variant];
  const names=['smallest','middle-sized','largest'],opps=['shortest','middle-length','longest'];
  const rankName=names[rank],sideName=opps[rank];
  const variants=[
@@ -264,7 +264,7 @@ function wordTriangle(request){
   'A surveyor records the sides of a triangle as '+sides+' '+unit+'. Calculate the angle opposite the '+sideName+' side.',
   'A triangle has sides '+sides+' '+unit+'. Find '+(rank===1?'the angle that is neither the smallest nor the largest':rank===0?'the least of its three interior angles':'the greatest of its three interior angles')+'.'
  ];
- return {values:{a,b:remaining[0],c:remaining[1]},rank,text:variants[wordVariantCycle++%8]};
+ return {values:{a,b:remaining[0],c:remaining[1]},rank,text:variants[(wordVariantCycle++,variant)]};
 }
 function updateProblem(){const p=el('word-problem');p.hidden=level!==4||!wordText;p.textContent=p.hidden?'':wordText;}
 function makeQuestion(){
@@ -288,8 +288,8 @@ if(task==='angle'){
     values=found|| (kind==='acute'?{a:8,b:9,c:7}:{a:9,b:5,c:6});
   }
 }else{
-  const b=level===1?rint(2,9):level===2?rint(10,99):pwr(10**(-1+Math.random()*3)*rint(12,95));
-  const c=level===1?rint(2,9):level===2?rint(10,99):pwr(10**(-1+Math.random()*3)*rint(12,95));
+  const b=level===1?rint(2,9):level===2?rint(10,99):level===4?rint(12,60):pwr(10**(-1+Math.random()*3)*rint(12,95));
+  const c=level===1?rint(2,9):level===2?rint(10,99):level===4?rint(12,60):pwr(10**(-1+Math.random()*3)*rint(12,95));
   let A;
   if(kind==='right')A=90;
   else if(level===1){
@@ -328,9 +328,13 @@ function buildSteps(){
   const A=angle(),numer=v.b*v.b+v.c*v.c-v.a*v.a,denom=2*v.b*v.c;
   const type=category(),sq=v.a*v.a,other=v.b*v.b+v.c*v.c;
   const sign=type==='right'?'=':type==='obtuse'?'&gt;':'&lt;';
+  const sortedSides=[v.a,v.b,v.c].sort((x,y)=>x-y),rank=sortedSides.findIndex(x=>Math.abs(x-v.a)<1e-8);
+  const extra=level===4?'<span class="checkline">'+sortedSides.map(fmt).join(' &lt; ')+
+      ' &nbsp; ⇒ &nbsp; a = '+fmt(v.a)+'</span>':'';
   add('Classify the problem: three known sides, one unknown angle.',
       'a = '+fmt(v.a)+' &nbsp; b = '+fmt(v.b)+' &nbsp; c = '+fmt(v.c)+
-      ' &nbsp; <span class="unknown">A = ?</span>','classify','SSS → cosine rule (angle)');
+      ' &nbsp; <span class="unknown">A = ?</span>'+extra,
+      'classify',level===4?['Shortest','Middle','Longest'][rank]+' side → angle A':'SSS → cosine rule (angle)');
   add('Write the cosine rule. The unknown is green.',
       'a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc <span class="unknown">cos A</span>');
   const predicted='<span class="checkline">'+pow(v.a)+' = '+fmt(sq)+' &nbsp;;&nbsp; '+
