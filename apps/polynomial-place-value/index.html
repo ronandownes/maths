@@ -751,6 +751,12 @@ body:not(.maths-only) #focusNext{display:none!important}
 #mobileSettingsPanel #factorSelect{min-width:0!important;width:94px!important;max-width:94px!important}
 #mobileSettingsPanel #hcfNumber{display:none!important}
 .live-concept{max-width:1100px;margin:4px auto 12px;text-align:center;font:.91rem/1.45 Arial,sans-serif;color:#425d7a}
+
+.lesson-navigation{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:19px auto 5px;padding:7px 0;max-width:1000px}
+.lesson-navigation button{border:1px solid #aac0d6;border-radius:9px;min-height:44px;padding:9px 15px;font-weight:700;color:#1b4c78;touch-action:manipulation}
+.lesson-navigation #nextWorkedExample{background:#1c5e9c;color:#fff;border-color:#1c5e9c}
+body.maths-only #lessonNavigation{display:flex!important;margin:20px auto}
+@media print{#lessonNavigation{display:none!important}}
 </style>
 </head>
 <body>
@@ -814,6 +820,11 @@ LEVEL</label><select id="coefficientSelect"><option value="1">1</option><option 
   <h2 id="heading" hidden></h2>
   <p id="help"></p>
   <section class="canvas" id="canvas" aria-live="polite"></section>
+<div id="lessonNavigation" class="lesson-navigation" aria-label="Worked example navigation">
+<button id="nextWorkedExample" type="button" title="Generate the next example in this exercise">Next example →</button>
+<button id="nextLessonExercise" type="button" title="Go to the first example of the next exercise">Next exercise →</button>
+<button id="regenerateWorkedExample" type="button" title="Generate another question with these settings">⟳ Regenerate</button>
+</div>
  </div>
  <aside id="stepChecklist" class="step-checklist" hidden aria-label="Step-by-step progress"></aside>
 </div>
@@ -1087,7 +1098,9 @@ function syncQuickSelectors(){
  const types=factorTypes.concat(beyondChoices);
  type.replaceChildren(...types.map(([v,t])=>new Option(t,v)),new Option('Mixed','mixed'));
  type.value=state.factorRandom?'mixed':state.type;type.disabled=assessment.started;
+ if(state.method==='stacked-margin')Array.from(type.options).forEach(option=>{option.disabled=option.value!=='ll'});
  type.onchange=()=>{
+  if(state.method==='stacked-margin'&&type.value!=='ll'){type.value='ll';return}
   state.factorRandom=type.value==='mixed';
   if(!state.factorRandom){state.type=type.value;state.coreType=state.type}
   state.signHigh=null;state.signLow=null;refreshSelectedQuestion();assessmentConfigChanged();
@@ -1147,7 +1160,14 @@ function syncQuickSelectors(){
 }
 
 function renderSelectors(){
- const method=$('methodSelect');method.value=state.method;method.onchange=()=>{state.method=method.value;render()};
+ const method=$('methodSelect');method.value=state.method;
+ method.onchange=()=>{
+  state.method=method.value;
+  if(state.method==='stacked-margin'&&state.type!=='ll'){
+   state.type='ll';state.coreType='ll';state.factorRandom=false;state.signHigh=null;state.signLow=null;
+   refreshSelectedQuestion();
+  }else render();
+ };
  const q=[];for(let i=0;i<6;i++)q.push([i,String(i+1)]);
  function openBankQuestion(bank,index){
   if(assessment.started)return;
@@ -1378,7 +1398,7 @@ function drawAlternativeMethod(){
  terms(first).forEach((u,i)=>terms(second).forEach((v,j)=>pairs.push({i,j,left:u,right:v,value:u.coefficient*v.coefficient,power:u.power+v.power})));
  const worked=document.createElement('div');worked.className='alt-method-work';
  if(state.method==='split-brackets'){
-  const label=document.createElement('p');label.textContent='Distribute each term of the first factor across every term of the second.';worked.append(label);
+  // The exact split-brackets visual layout will be added from the teacher's reference images.
   terms(first).forEach(t=>{
    const line=document.createElement('div');line.className='alt-method-line';
    line.innerHTML='<span class="alt-method-side">'+signedTerm(t.coefficient,t.power)+' × ('+poly(second)+')</span><span>=</span><span>'+poly(product([t.coefficient],second).concat(Array(t.power).fill(0)))+'</span>';
@@ -1387,14 +1407,14 @@ function drawAlternativeMethod(){
    worked.append(line);
   });
  }else if(state.method==='stacked-margin'){
-  const instruction=document.createElement('p');instruction.textContent='Stack each distributive row and align equal powers, as in vertical multiplication.';worked.append(instruction);
+  // Stacked margin is currently restricted to a 2 × 2 expression.
   terms(second).reverse().forEach(t=>{
    const line=document.createElement('div');line.className='alt-method-line alt-stacked-row';
    line.innerHTML='<span class="alt-method-side">'+signedTerm(t.coefficient,t.power)+' × ('+poly(first)+')</span><span>=</span><span>'+poly(first.map(v=>v*t.coefficient).concat(Array(t.power).fill(0)))+'</span>';
    worked.append(line);
   });
  }else{
-  const instruction=document.createElement('p');instruction.textContent='Follow every arc: each term multiplies every term in the other factor.';worked.append(instruction);
+  // Rainbow arcs are to follow the teacher's diagram.
   const block=document.createElement('div');block.className='alt-rainbow-pairs';
   pairs.forEach(p=>{
    const item=document.createElement('span');item.className='alt-rainbow-item';
@@ -1405,11 +1425,9 @@ function drawAlternativeMethod(){
  }
  root.append(worked);
  const result=document.createElement('div');result.className='equation worked-conclusion';result.innerHTML='= '+poly(expanded(q));root.append(result);
- const insight=document.createElement('p');insight.className='alt-method-insight';
- insight.textContent='Multiplying by 1 leaves a value unchanged. A minus sign changes the sign of a partial product; combining terms uses addition and subtraction.';
- root.append(insight);
+ // Method explanations and comparisons belong in the book.
  const hcf=hcfData(q);
- root.append(drawReflection(hcf));
+ // Reflection is deliberately not included in the worked example.
 }
 
 function draw(){
@@ -1419,7 +1437,7 @@ function draw(){
  const mode=state.mode,displayStep=state.step;
  const step=mode==='worked'?6:mode==='question'?0:phaseOf(state.question,displayStep);
  const root=$('canvas');root.replaceChildren();
- if(mode==='worked'||(mode==='step'&&displayStep>0)){const concept=document.createElement('p');concept.className='live-concept';concept.textContent='Every term multiplies every term. Multiplying by 1 changes nothing; multiplying by a negative reverses the sign.';root.append(concept)}
+ // Reflection and commentary are reserved for the textbook, not the working view.
  $('heading').textContent='';
  $('help').textContent='';
  $('practiceArea').className=mode==='step'?'step-active'+(step===3&&state.partialCount&&!state.partialAll?' partial-theme-'+((state.partialCount-1)%3):''):'';
@@ -1618,7 +1636,7 @@ function draw(){
   if(step>=6){
    const eq=document.createElement('div');eq.className='equation worked-conclusion';
    eq.innerHTML=poly(expanded);
-   root.append(eq,drawReflection(hcf));
+   root.append(eq);
   }
 }
 
@@ -2767,12 +2785,21 @@ function render(){
  if(assessment.mode==='board')drawBoard();else if(assessment.mode==='worksheet')wsStatus();
 }
 window.addEventListener('resize',connectTableOperands);
-$('focusNext').onclick=()=>{
+function advanceWorkedExample(){
  if(assessment.started)return;
  if(Number.isInteger(state.slot))applyExerciseChoice(state.slot,state.bankQuestion+1);
  else freshQuestion();
  state.mode='worked';render();
-};
+}
+function advanceLessonExercise(){
+ if(assessment.started)return;
+ const next=Number.isInteger(state.slot)?(state.slot+1)%bankProfiles.length:0;
+ applyExerciseChoice(next,0);state.mode='worked';render();
+}
+$('nextWorkedExample').onclick=advanceWorkedExample;
+$('nextLessonExercise').onclick=advanceLessonExercise;
+$('regenerateWorkedExample').onclick=()=>{if(!assessment.started){freshQuestion();state.mode='worked';render()}};
+$('focusNext').onclick=advanceWorkedExample;
 const focusToggle=$('mathsOnlyToggle');
 focusToggle.onclick=()=>{
  const enabled=document.body.classList.toggle('maths-only');
