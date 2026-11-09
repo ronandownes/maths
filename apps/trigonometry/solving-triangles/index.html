@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solving Triangles · Maths Apps</title><link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#183452;background:#f2f5f8;--ink:#183452;--blue:#2868dc;--line:#dce5ed;--w:38%}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer;border:1px solid #c4d3e4;background:#fff;border-radius:9px;padding:8px 12px;color:#1b466f;font-weight:700}button:hover{background:#f1f6ff}button:disabled{opacity:.36;cursor:not-allowed}.primary{background:#2868dc;color:white;border-color:#2868dc}.primary:hover{background:#1556c7}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #9bc3ff;outline-offset:2px}
+.top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:9px clamp(12px,2vw,28px);background:white;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:13px}.dots{display:grid;grid-template-columns:repeat(2,9px);gap:4px}.dots i{width:9px;height:9px;border-radius:50%;background:#e63329}.dots i:nth-child(2){background:#3fae49}.dots i:nth-child(3){background:#2d7dd2}.dots i:nth-child(4){background:#1a1a1a}
+.crumb{font-size:13px;font-weight:750}.crumb a{color:#376da1}h1{margin:2px 0;font-size:clamp(20px,2.3vw,28px);letter-spacing:-.02em}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}.settings{display:flex;gap:9px;align-items:end;flex-wrap:wrap;padding:10px clamp(12px,2vw,28px);background:#f9fbfe;border-bottom:1px solid var(--line)}
+.settings label{display:grid;gap:4px;color:#506985;font-size:12px;font-weight:800}.settings select{border:1px solid #c7d4e0;border-radius:7px;background:white;color:#173c63;padding:7px 10px;min-width:104px;font-size:15px}
+.main{display:grid;grid-template-columns:minmax(210px,var(--w)) minmax(330px,1fr) minmax(205px,24%);gap:10px;padding:10px clamp(10px,1vw,18px);min-height:calc(100vh - 153px);align-items:start}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;min-width:0;overflow:hidden}
+.panel-head{padding:10px 13px;border-bottom:1px solid #e8edf3;color:#52708d;font-size:12px;font-weight:850;letter-spacing:.09em;text-transform:uppercase}
+.diagram{padding:9px}.diagram svg{width:100%;height:auto;display:block;max-height:395px}.resize{display:flex;align-items:center;gap:8px;color:#6b8197;font-size:12px;padding:5px 7px}.resize input{width:100%;accent-color:#2868dc}
+.diagram-info{font-size:12px;color:#71869c;padding:3px 7px 8px}.manual{margin:8px 3px 4px;border-top:1px solid #e1e8f1;padding:10px 5px}.manual[hidden]{display:none}.manual .inputs{display:flex;gap:6px;flex-wrap:wrap}.manual label{display:grid;gap:3px;flex:1;min-width:66px;font-size:14px;font-weight:800;color:#446382}.manual input{width:100%;min-width:0;border:1px solid #c4d2e0;border-radius:6px;padding:6px;font-size:18px;color:#244e79}.validation{min-height:18px;font-size:12px;color:#a73431}
+.work{min-height:600px}.mathboard{padding:15px clamp(13px,2.2vw,30px);min-height:555px;display:flex;flex-direction:column;gap:0}
+.mathrow{font:clamp(22px,2.25vw,39px)/1.47 "Cambria Math",Cambria,Georgia,serif;color:#123d78;border-bottom:1px solid #eef1f4;padding:9px 2px 11px;white-space:normal;overflow-wrap:anywhere}
+.mathrow:first-child{padding-top:0}.mathrow.prediction{color:#a65c21}.mathrow.final{font-weight:750}.mathrow .box{display:inline-block;border:3px solid #087b63;color:#056b54;border-radius:4px;padding:2px 13px}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.88em;line-height:1.12;margin:0 5px}.frac .num{padding:0 7px 4px;border-bottom:2px solid currentColor}.frac .den{padding:4px 7px 0}sup{font-size:.58em;vertical-align:super}
+.blank{margin:auto;color:#7990a4;font-size:clamp(17px,2vw,24px);text-align:center;line-height:1.5}
+.steps{padding:12px;display:flex;flex-direction:column;gap:11px}.step-title{font-size:21px;font-weight:850;color:#254867;margin:0}.step-next{border:2px solid #a9c6f0;background:#f2f7ff;border-radius:9px;padding:14px;font-size:clamp(16px,1.5vw,23px);font-weight:750;color:#174c8b;line-height:1.35;min-height:140px}.next-label{font-size:11px;letter-spacing:.09em;color:#5d80a9;margin-bottom:12px}.step-controls{display:flex;gap:7px;flex-wrap:wrap}.step-controls button{flex:1}.step-progress{font-size:13px;color:#71859b;font-weight:800}.mini-list{border-top:1px solid #e3eaf2;padding-top:8px;display:grid;gap:5px}.mini-list div{font-size:13px;color:#62768e;padding:5px 7px;border-radius:6px}.mini-list div.done{color:#0c7164;background:#edf8f4}.mini-list div.active{font-weight:850;color:#245fc5;background:#eef5ff}
+/* On classroom desktops, diagram, mathematics and instructions always remain in three distinct columns. */
+@media(max-width:1040px){.main{grid-template-columns:minmax(172px,var(--w)) minmax(0,1fr) minmax(207px,25%);gap:7px}.steps-panel{grid-column:auto}.work,.mathboard{min-height:490px}}
+@media(min-width:691px){.main{grid-template-columns:minmax(172px,var(--w)) minmax(0,1fr) minmax(212px,26%)}}
+@media(max-width:690px){.main{grid-template-columns:1fr}.steps-panel{grid-column:auto}.diagram svg{max-height:285px}.mathrow{font-size:clamp(22px,5vw,30px)}.steps{display:flex}.work,.mathboard{min-height:280px}.main{padding:6px}.settings{gap:6px}.settings label{flex:1 1 120px}.settings select{width:100%}.top-actions button{font-size:12px}}
+@media print{body{background:white}.settings,.top-actions,.resize,.steps-panel,.manual,.diagram-info{display:none!important}.main{grid-template-columns:28% 72%;padding:0}.panel{border:0}.mathboard{min-height:0}.mathrow{font-size:28px}}
+
+/* Classroom revision: unobstructed three-column workspace, clear type hierarchy */
+.main{grid-template-columns:minmax(172px,var(--w)) minmax(0,1fr) minmax(215px,24%);gap:8px}
+.panel{border:1px solid #ccd8e8;border-radius:7px}
+.panel-head{padding:9px 12px;background:#f6f9ff;border-bottom:2px solid #d5e0ee;font-size:14px;letter-spacing:.08em}
+.mathboard{padding:16px clamp(10px,1.7vw,25px);min-height:590px}
+.mathrow{font-size:clamp(21px,2vw,34px);line-height:1.4;padding:9px 0 11px;border-bottom:1px solid #ebf0f7;opacity:.85}
+.mathrow.current{font-size:clamp(28px,2.85vw,48px);line-height:1.38;opacity:1;padding:19px 1px 23px;color:#164f9b;border-bottom:2px solid #a8c1e7}
+.mathrow.current.prediction{color:#a65c21}
+.mathrow.current.final{color:#057963}
+.mathrow .box{border-width:3px}
+.mathrow .math-primary{display:block}
+.mathrow .math-sub{display:block;font-size:.68em;margin-top:12px;color:#6c7892}
+.mathrow .cutmark{position:relative;display:inline-block;color:#b43839;font-weight:800}
+.mathrow .cutmark::before{content:attr(data-arrow);position:absolute;top:-.77em;left:-.24em;color:#b6383f;font:900 .68em system-ui}
+.mathrow .round-final{display:block;margin-top:12px}
+.mathrow .round-alternative{display:block;color:#667d96;font-size:.65em;margin-top:9px}
+.mathrow .checkline{display:block;margin:7px 0}
+.steps{padding:0 10px 13px;display:block}
+.step-controls{position:sticky;top:0;background:white;padding:12px 0 8px;z-index:2}
+.step-controls button{font-size:15px;padding:10px 7px}
+.step-progress{font-size:15px;padding:3px 0 8px;margin:0;color:#647a90}
+.instruction-list{display:flex;flex-direction:column;gap:0;border-top:2px solid #d4e0ed}
+.step-button{display:flex;align-items:flex-start;text-align:left;gap:8px;min-height:39px;padding:10px 7px;background:transparent;border:0;border-bottom:1px solid #e5ebf3;border-radius:0;width:100%;color:#42617c;font-size:clamp(15px,1.16vw,20px);line-height:1.32;font-weight:650}
+.step-button .step-number{flex:0 0 23px;color:#8396a7;font-weight:850;text-align:right}
+.step-button.done{font-size:clamp(13px,.95vw,16px);color:#647d91;line-height:1.17;padding:7px 5px;opacity:.82}
+.step-button.done .step-number{color:#148075}
+.step-button.next-step{background:#eef5ff;border-left:4px solid #2868dc;padding:16px 8px;color:#164f91;font-size:clamp(20px,1.65vw,28px);line-height:1.27;font-weight:850}
+.step-button:hover{background:#eaf3fe}
+.step-button:focus-visible{outline:3px solid #72acfa;outline-offset:-3px;position:relative;z-index:3}
+.step-button:last-child{border-bottom:0}
+@media(max-width:1100px) and (min-width:691px){
+ .main{grid-template-columns:minmax(168px,var(--w)) minmax(0,1fr) minmax(207px,25%)}
+ .mathrow{font-size:clamp(19px,2vw,28px)}
+ .mathrow.current{font-size:clamp(25px,2.8vw,36px)}
+ .steps{padding:0 6px 10px}.step-button.next-step{font-size:clamp(18px,1.85vw,22px)}
+}
+@media(max-width:690px){
+ .main{grid-template-columns:1fr!important}
+ .steps{padding:0 10px 12px}
+ .mathrow.current{font-size:clamp(28px,6vw,42px)}
+}
+
+
+/* Start with an enlarged diagram; keep all three columns at desktop widths. */
+.main{grid-template-columns:minmax(175px,var(--w)) minmax(0,1fr) minmax(215px,23%)}
+.resize{gap:7px;flex-wrap:wrap}.resize button{background:#edf5ff;color:#1c5494;border-color:#b8cdec;white-space:nowrap;font-size:13px;padding:7px 10px}
+.resize label{font-size:12px;min-width:34px}.resize input{flex:1 1 80px;min-width:75px}
+.diagram svg{max-height:480px}
+.mathrow .keycap{display:inline-block;vertical-align:middle;padding:1px 6px;margin:0 4px;border:2px solid #8b9eba;border-radius:5px;background:#f5f8fd;color:#234a78;font:800 .75em/1.3 system-ui}
+.mathrow .math-primary{margin:0}
+.mathrow .round-final{margin-top:12px}
+.mathrow .round-alternative{font-size:.6em;margin-top:5px}
+.mathrow .cutmark::before{top:-.65em}
+@media(min-width:691px) and (max-width:1100px){.main{grid-template-columns:minmax(165px,var(--w)) minmax(0,1fr) minmax(205px,24%)}}
+@media(max-width:690px){.main{grid-template-columns:1fr!important}}
+
+.family-picker{display:flex;gap:9px;flex-wrap:wrap;padding:10px clamp(12px,2vw,28px) 0;background:#f9fbfe}
+.family-button{font-size:17px;padding:11px 18px;border:2px solid #c9d8eb;background:#fff}
+.family-button.selected{background:#204e88;color:white;border-color:#204e88}
+.settings{padding-top:9px}
+.settings #task{min-width:240px}
+.top-actions #all[aria-pressed="true"],.top-actions #reset[aria-pressed="true"]{background:#e7f2ff;border-color:#7eafe7;color:#154d86}
+.skip-paper{display:inline-block;margin-left:12px;background:#edf3fa;border-radius:5px;padding:2px 8px;color:#566f89;font:750 clamp(12px,1.1vw,17px) system-ui;vertical-align:middle}
+.mathrow.calculator-display{color:#61768d}.mathrow.truncated-value{color:#284f7a}
+.mathrow .cutmark{font-weight:850;color:#b72d36;position:relative}
+.mathrow .cutmark::before{content:attr(data-arrow);position:absolute;top:-.88em;left:-.1em;font-size:.75em;color:#b72d36}
+.mathrow .round-alternative{display:none}.mathrow .math-sub{display:none}
+.main{min-height:calc(100vh - 205px)}
+@media(max-width:690px){.family-button{flex:1}.settings #task{min-width:150px}.skip-paper{display:block;margin:4px 0}}
+</style></head>
+<body>
+<header class="top"><div class="brand"><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div><div class="crumb"><a href="../../../index.html">Maths Apps</a> / <a href="../../../trigonometry/index.html">Trigonometry</a></div><h1>Solving Triangles</h1></div></div>
+<div class="top-actions"><button id="edit">Data input</button><button id="all" aria-pressed="true">Show work</button><button id="reset" aria-pressed="false">Step by step</button><button id="restart">Start again</button><button id="screen">Full screen</button><button class="primary" id="new">↻ New question</button></div></header>
+<div class="family-picker" role="group" aria-label="Triangle family">
+<button id="general" class="family-button selected" aria-pressed="true">General triangles</button>
+<button id="right" class="family-button" aria-pressed="false">Right-angled triangles</button>
+</div>
+<div class="settings">
+<label>Method<select id="task" aria-label="Calculation method"></select></label>
+<label>Difficulty<select id="level"><option value="1" selected>Level 1 · easy</option><option value="2">Level 2 · intermediate</option><option value="3">Level 3 · challenge</option></select></label>
+<label>Angle category<select id="type"><option value="random">Random</option><option value="acute">Acute</option><option value="obtuse">Obtuse</option><option value="right">Right angle</option></select></label>
+<label>Working<select id="detail"><option value="high" selected>High steps</option><option value="short">Short steps</option></select></label>
+<label>Decimal places<select id="dp"><option value="0">0 d.p.</option><option value="1">1 d.p.</option><option value="2" selected>2 d.p.</option><option value="3">3 d.p.</option></select></label>
+</div>
+<main class="main" id="main">
+<section class="panel diagram-panel"><div class="panel-head">Diagram</div><div class="diagram">
+<svg id="triangle" viewBox="0 0 500 355" role="img" aria-label="Schematic triangle, not drawn to scale"><title>Schematic triangle</title></svg>
+<div class="diagram-info" id="diagram-info">Diagram not to scale. Angle category only.</div>
+<div class="resize"><button id="shrink" type="button">Shrink diagram</button><label for="width">Width</label><input id="width" type="range" min="18" max="43" value="38" step="1" aria-label="Adjust diagram width"></div>
+<div class="manual" id="manual" hidden><div class="inputs"><label id="label-a"><span id="la">a</span><input id="a" type="number" step="any" min="0"></label><label id="label-b"><span id="lb">b</span><input id="b" type="number" step="any" min="0"></label><label id="label-c"><span id="lc">c</span><input id="c" type="number" step="any" min="0"></label></div><div class="validation" id="validation" role="status"></div><button id="apply">Apply values</button></div>
+</div></section>
+<section class="panel work"><div class="panel-head">Mathematics</div><div class="mathboard" id="mathboard" aria-live="polite"><div class="blank">A = ?</div></div></section>
+<section class="panel steps-panel"><div class="panel-head">Steps</div><div class="steps"><div class="step-controls"><button id="back">← Back</button><button class="primary" id="next">Reveal next →</button></div>
+<p class="step-progress" id="progress">0 steps revealed</p>
+<div class="instruction-list" id="outline" aria-label="Click any step to reveal the corresponding mathematics"></div></div></section>
+</main>
+<script>
+
+(function(){
+'use strict';
+const el=id=>document.getElementById(id);
+const D=Math.PI/180, sind=x=>Math.sin(x*D), cosd=x=>Math.cos(x*D), tand=x=>Math.tan(x*D), rad=x=>x/D;
+const rng=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=x=>x[Math.floor(Math.random()*x.length)];
+const fmt=x=>Number(Number(x).toFixed(7)).toString();
+const pwr=x=>fmt(x)+'<sup>2</sup>';
+const frac=(a,b)=>'<span class="frac"><span class="num">'+a+'</span><span class="den">'+b+'</span></span>';
+const deg='°';
+let family='general',mode='cos-angle',level=1,viewMode='all',n=0,steps=[];
+let v={a:8,b:9,c:7};
+const tasks={
+ general:[
+ ['cos-angle','Cosine rule · find angle'],
+ ['cos-side','Cosine rule · find side'],
+ ['sin-angle','Sine rule · find angle'],
+ ['sin-side','Sine rule · find side']
+ ],
+ right:[
+ ['sin-opposite','Sine · find opposite'],
+ ['sin-hypotenuse','Sine · find hypotenuse'],
+ ['sin-angle','Sine · find angle'],
+ ['cos-adjacent','Cosine · find adjacent'],
+ ['cos-hypotenuse','Cosine · find hypotenuse'],
+ ['cos-angle','Cosine · find angle'],
+ ['tan-opposite','Tangent · find opposite'],
+ ['tan-adjacent','Tangent · find adjacent'],
+ ['tan-angle','Tangent · find angle'],
+ ['pyth-hypotenuse','Pythagoras · find hypotenuse'],
+ ['pyth-leg','Pythagoras · find a shorter side']
+ ]
+};
+function opts(){
+ el('task').replaceChildren();
+ for(const [value,label] of tasks[family]){
+   const o=document.createElement('option');o.value=value;o.textContent=label;el('task').append(o);
+ }
+ el('task').value=mode;
+ el('type').disabled=family==='right';
+ el('diagram-info').textContent=family==='right'?'Right angle shown. Diagram not to scale.':'Diagram not to scale. Only the angle category is represented.';
+ for(const k of ['general','right']){
+   el(k).classList.toggle('selected',family===k);
+   el(k).setAttribute('aria-pressed',String(family===k));
+ }
+}
+function measure(){
+ if(level===1)return rng(2,9);
+ if(level===2)return rng(10,99);
+ return Number(((rng(100,999)/100)*10**rng(-1,2)).toPrecision(3));
+}
+function angleChoice(kind){
+ if(kind==='right')return 90;
+ if(level===1)return kind==='obtuse'?pick([111,122,133,144,155]):pick([22,33,44,55,66,77]);
+ if(level===2)return Number((kind==='obtuse'?rng(1050,1550):rng(280,750))/10);
+ return Number((kind==='obtuse'?rng(10500,15500):rng(2800,7500))/100);
+}
+function acuteOrObtuse(){
+ const t=el('type').value;
+ return t==='random'?pick(['acute','obtuse','right']):t;
+}
+function generate(){
+ level=Number(el('level').value);
+ const kind=family==='right'?'right':acuteOrObtuse();
+ if(family==='general'){
+  if(mode==='cos-angle'){
+   if(kind==='right'){
+    const triples=level===1?[[3,4,5]]:level===2?[[5,12,13],[8,15,17],[9,12,15]]:[[30,40,50],[120,160,200],[0.3,0.4,0.5]];
+    const t=pick(triples);v={a:t[2],b:t[0],c:t[1]};
+   }else{
+    let result=null;
+    for(let i=0;i<4000;i++){
+     const a=measure(),b=measure(),c=measure();
+     if(a+b<=c||a+c<=b||b+c<=a)continue;
+     const A=rad(Math.acos(Math.max(-1,Math.min(1,(b*b+c*c-a*a)/(2*b*c)))));
+     if((kind==='acute'&&A>=26&&A<=77)||(kind==='obtuse'&&A>=106&&A<=153)){result={a,b,c};break;}
+    }
+    v=result||(kind==='acute'?{a:8,b:9,c:7}:{a:9,b:5,c:6});
+   }
+  } else if(mode==='cos-side')v={b:measure(),c:measure(),A:angleChoice(kind)};
+  else if(mode==='sin-side'){
+   const A=angleChoice(kind);
+   const B=rng(15,Math.max(16,Math.min(85,170-A)));
+   v={a:measure(),A,B};
+  }else{
+   const A=angleChoice(kind);
+   let a=measure(),b=measure();
+   if(b>=a){const t=a;a=b;b=t;}
+   if(a===b)a=a*1.25;
+   v={a,A,b};
+  }
+ }else{
+  const ratio=mode.split('-')[0];
+  const theta=level===1?pick([22,33,44,55,66,77]):level===2?rng(200,750)/10:rng(2000,7500)/100;
+  if(mode==='pyth-hypotenuse')v={O:measure(),J:measure()};
+  else if(mode==='pyth-leg'){
+    const J=measure(),O=measure();v={H:Math.hypot(J,O),J};
+    // For level 1 and 2 select a familiar exact right triangle.
+    if(level===1)v={H:5,J:4};
+    if(level===2)v={H:13,J:12};
+  }else{
+   const wanted=mode.split('-')[1],knownSide=(wanted==='opposite')?(ratio==='sin'?'H':'J'):(wanted==='hypotenuse')?(ratio==='sin'?'O':'J'):(wanted==='adjacent')?(ratio==='cos'?'H':'O'):'';
+   if(wanted==='angle'){
+    const O=measure(),J=measure();v={O,J,H:Math.hypot(O,J)};
+   }else{
+    v={theta};
+    const given=measure();
+    if(knownSide==='H')v.H=given;
+    else if(knownSide==='J')v.J=given;
+    else v.O=given;
+   }
+  }
+ }
+ if(!valid())throw Error('Generated measurements invalid: '+mode+' '+JSON.stringify(v));
+ refresh();
+}
+function valid(){
+ const ok=x=>Number.isFinite(x)&&x>0;
+ if(family==='general'){
+  if(mode==='cos-angle')return ok(v.a)&&ok(v.b)&&ok(v.c)&&v.a+v.b>v.c&&v.a+v.c>v.b&&v.b+v.c>v.a;
+  if(mode==='cos-side')return ok(v.b)&&ok(v.c)&&ok(v.A)&&v.A<180;
+  if(mode==='sin-side')return ok(v.a)&&ok(v.A)&&ok(v.B)&&v.A+v.B<180;
+  const x=v.b*sind(v.A)/v.a;
+  return ok(v.a)&&ok(v.b)&&ok(v.A)&&v.A<180&&x>0&&x<=1&&v.A+rad(Math.asin(Math.min(1,x)))<180;
+ }
+ if(mode==='pyth-hypotenuse')return ok(v.O)&&ok(v.J);
+ if(mode==='pyth-leg')return ok(v.H)&&ok(v.J)&&v.H>v.J;
+ const ending=mode.split('-')[1],ratio=mode.split('-')[0];
+ if(ending==='angle'){
+  return ratio==='sin'?ok(v.O)&&ok(v.H)&&v.O<v.H:ratio==='cos'?ok(v.J)&&ok(v.H)&&v.J<v.H:ok(v.O)&&ok(v.J);
+ }
+ if(!ok(v.theta)||v.theta>=90)return false;
+ if(ending==='opposite')return ratio==='sin'?ok(v.H):ok(v.J);
+ if(ending==='adjacent')return ratio==='cos'?ok(v.H):ok(v.O);
+ if(ending==='hypotenuse')return ratio==='sin'?ok(v.O):ok(v.J);
+ return false;
+}
+function getKeys(){
+ if(family==='general'){
+  if(mode==='cos-angle')return ['a','b','c'];
+  if(mode==='cos-side')return ['b','c','A'];
+  if(mode==='sin-side')return ['a','A','B'];
+  return ['a','b','A'];
+ }
+ if(mode==='pyth-hypotenuse')return ['O','J'];
+ if(mode==='pyth-leg')return ['H','J'];
+ const ending=mode.split('-')[1],ratio=mode.split('-')[0];
+ if(ending==='angle')return ratio==='sin'?['O','H']:ratio==='cos'?['J','H']:['O','J'];
+ if(ending==='opposite')return ratio==='sin'?['theta','H']:['theta','J'];
+ if(ending==='adjacent')return ratio==='cos'?['theta','H']:['theta','O'];
+ if(ending==='hypotenuse')return ratio==='sin'?['theta','O']:['theta','J'];
+ return [];
+}
+function labelKey(key){
+ return {a:'Side a',b:'Side b',c:'Side c',A:'Angle A (°)',B:'Angle B (°)',O:'Opposite',J:'Adjacent',H:'Hypotenuse',theta:'Angle θ (°)'}[key]||key;
+}
+function syncInputs(){
+ const keys=getKeys();
+ ['a','b','c'].forEach((id,i)=>{
+  const key=keys[i],parent=el('label-'+id);
+  parent.hidden=!key;
+  if(key){el('l'+id).textContent=labelKey(key);el(id).value=v[key]??'';}
+ });
+ el('validation').textContent='';
+}
+function solve(){
+ if(family==='general'){
+  if(mode==='cos-angle'){
+   const z=(v.b*v.b+v.c*v.c-v.a*v.a)/(2*v.b*v.c);
+   return {value:rad(Math.acos(Math.max(-1,Math.min(1,z)))),symbol:'A',unit:'°'};
+  }
+  if(mode==='cos-side')return {value:Math.sqrt(Math.max(0,v.b*v.b+v.c*v.c-2*v.b*v.c*cosd(v.A))),symbol:'a',unit:''};
+  if(mode==='sin-side')return {value:v.a*sind(v.B)/sind(v.A),symbol:'b',unit:''};
+  const s=v.b*sind(v.A)/v.a;
+  const first=rad(Math.asin(Math.min(1,s))),second=180-first;
+  return {value:first,symbol:'B',unit:'°',alternative:v.A+second<180-1e-8&&Math.abs(first-second)>1e-7?second:null};
+ }
+ if(mode==='pyth-hypotenuse')return {value:Math.hypot(v.O,v.J),symbol:'H',unit:''};
+ if(mode==='pyth-leg')return {value:Math.sqrt(Math.max(0,v.H*v.H-v.J*v.J)),symbol:'O',unit:''};
+ const [ratio,ending]=mode.split('-');
+ if(ending==='angle'){
+  const val=ratio==='sin'?rad(Math.asin(v.O/v.H)):ratio==='cos'?rad(Math.acos(v.J/v.H)):rad(Math.atan(v.O/v.J));
+  return {value:val,symbol:'θ',unit:'°'};
+ }
+ const theta=v.theta,fn=ratio==='sin'?sind(theta):ratio==='cos'?cosd(theta):tand(theta);
+ let val;
+ if(ending==='opposite')val=ratio==='sin'?v.H*fn:v.J*fn;
+ if(ending==='adjacent')val=ratio==='cos'?v.H*fn:v.O/fn;
+ if(ending==='hypotenuse')val=ratio==='sin'?v.O/fn:v.J/fn;
+ return {value:val,symbol:ending==='opposite'?'O':ending==='adjacent'?'J':'H',unit:''};
+}
+function classify(){
+ if(family!=='general')return 'right';
+ if(mode==='cos-angle'){
+  const delta=v.a*v.a-v.b*v.b-v.c*v.c;
+  return Math.abs(delta)<1e-9?'right':delta<0?'acute':'obtuse';
+ }
+ return mode==='cos-side'?v.A===90?'right':v.A<90?'acute':'obtuse':v.A>=90?'obtuse':'acute';
+}
+function numStage(value,symbol,unit,add,reference=''){
+ const dp=Number(el('dp').value),power=10**dp,extra=dp+1;
+ const full=value.toFixed(Math.min(12,dp+8))+'…';
+ const truncated=(Math.trunc(value*10**extra+1e-10)/10**extra).toFixed(extra);
+ const rounded=(Math.round((value+Number.EPSILON)*power)/power).toFixed(dp);
+ const digit=truncated.slice(-1),up=Number(digit)>=5;
+ const marked=truncated.slice(0,-1)+'<span class="cutmark" data-arrow="'+(up?'↑':'↓')+'">'+digit+'</span>';
+ add('Calculator value. Skip with pen and paper.',symbol+' ≈ '+full+unit+' <span class="skip-paper">Skip with pen and paper</span>','calculator-display');
+ add('Truncate to '+extra+' decimal place'+(extra===1?'':'s')+' (one more than '+dp+' d.p.).',
+     symbol+' ≈ '+marked+unit,'truncated-value');
+ add('Round to '+dp+' decimal place'+(dp===1?'':'s')+' and box the answer.',
+     symbol+' ≈ <span class="box">'+rounded+unit+'</span>','final');
+}
+function buildSteps(){
+ const high=el('detail').value==='high',z=solve(),items=[];
+ const add=(instruction,math,cls='',result='')=>items.push({instruction,math,cls,result});
+ if(family==='general'){
+  if(mode==='cos-angle'){
+   const type=classify(),sq=v.a*v.a,other=v.b*v.b+v.c*v.c,sign=type==='acute'?'&lt;':type==='obtuse'?'&gt;':'=';
+   add('Classify the angle from the opposite side.',pwr(v.a)+' ('+fmt(sq)+') '+sign+' '+pwr(v.b)+' + '+pwr(v.c)+' ('+fmt(other)+') &nbsp; ⇒ &nbsp; A '+sign+' 90°','prediction',type[0].toUpperCase()+type.slice(1)+' angle');
+   if(high)add('Write the cosine rule.','a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc cos A');
+   add('Make cos A the subject.','cos A = '+frac('b<sup>2</sup> + c<sup>2</sup> − a<sup>2</sup>','2bc'));
+   add('Substitute the three side lengths.','cos A = '+frac(pwr(v.b)+' + '+pwr(v.c)+' − '+pwr(v.a),'2 × '+fmt(v.b)+' × '+fmt(v.c)));
+   add('Calculate numerator and denominator.','cos A = '+frac(fmt(v.b*v.b+v.c*v.c-v.a*v.a),fmt(2*v.b*v.c)));
+   if(high)add('Apply inverse cosine.','A = cos<sup>−1</sup>('+frac(fmt(v.b*v.b+v.c*v.c-v.a*v.a),fmt(2*v.b*v.c))+')');
+   add('Enter SHIFT cos in DEG mode.','A = <span class="keycap">SHIFT</span><span class="keycap">cos</span>('+frac(fmt(v.b*v.b+v.c*v.c-v.a*v.a),fmt(2*v.b*v.c))+')');
+   numStage(z.value,z.symbol,z.unit,add);
+   add('Confirm the angle has the predicted classification.','A '+(type==='acute'?'&lt;':type==='obtuse'?'&gt;':'=')+' 90° &nbsp; ✓','prediction');
+  }else if(mode==='cos-side'){
+   const lo=Math.abs(v.b-v.c),hi=v.b+v.c;
+   add('Predict the side-length bounds.','|'+fmt(v.b)+' − '+fmt(v.c)+'| &lt; a &lt; '+fmt(v.b)+' + '+fmt(v.c),'prediction');
+   if(high)add('Write the cosine rule.','a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup> − 2bc cos A');
+   add('Substitute the sides and included angle.','a<sup>2</sup> = '+pwr(v.b)+' + '+pwr(v.c)+' − 2 × '+fmt(v.b)+' × '+fmt(v.c)+' cos '+fmt(v.A)+'°');
+   add('Calculate the square of the missing side.','a<sup>2</sup> ≈ '+(z.value*z.value).toFixed(Math.min(8,Number(el('dp').value)+2)));
+   add('Take the positive square root.','a = √('+pwr(v.b)+' + '+pwr(v.c)+' − 2 × '+fmt(v.b)+' × '+fmt(v.c)+' cos '+fmt(v.A)+'°)');
+   numStage(z.value,z.symbol,z.unit,add);
+   add('Check the side length lies within its bounds.',fmt(lo)+' &lt; '+z.value.toFixed(Number(el('dp').value)+1)+' &lt; '+fmt(hi)+' &nbsp; ✓','prediction');
+  }else if(mode==='sin-side'){
+   if(high)add('Identify the side–opposite-angle pair.','a ↔ A &nbsp;;&nbsp; b ↔ B');
+   add('Write the sine rule.','a / sin A = b / sin B');
+   add('Make the unknown side the subject.','b = '+frac('a sin B','sin A'));
+   add('Substitute the known measurements.','b = '+frac(fmt(v.a)+' sin '+fmt(v.B)+'°','sin '+fmt(v.A)+'°'));
+   if(high)add('Enter the expression in DEG mode.','b = '+frac(fmt(v.a)+' × sin '+fmt(v.B)+'°','sin '+fmt(v.A)+'°'));
+   numStage(z.value,z.symbol,z.unit,add);
+   add('Check the bigger angle faces the bigger side.',(v.B>v.A?'b &gt; a':v.B<v.A?'b &lt; a':'b = a')+' &nbsp; ✓','prediction');
+  }else{
+   if(high)add('Identify the known opposite pair.','a ↔ A &nbsp;;&nbsp; b ↔ B');
+   add('Write the sine rule.','a / sin A = b / sin B');
+   add('Make sin B the subject.','sin B = '+frac('b sin A','a'));
+   add('Substitute the known measurements.','sin B = '+frac(fmt(v.b)+' sin '+fmt(v.A)+'°',fmt(v.a)));
+   add('Use inverse sine in DEG mode.','B = sin<sup>−1</sup>('+frac(fmt(v.b)+' sin '+fmt(v.A)+'°',fmt(v.a))+')');
+   numStage(z.value,z.symbol,z.unit,add);
+   if(z.alternative!==null)add('Check for a second possible angle (SSA ambiguity).',
+    'B₂ = 180° − B₁ ≈ <span class="box">'+z.alternative.toFixed(Number(el('dp').value))+'°</span>','prediction');
+   add('Check the angle sum.','A + B &lt; 180° &nbsp; ✓','prediction');
+  }
+ }else{
+  const parts=mode.split('-'),ratio=parts[0],kind=parts[1];
+  if(ratio==='pyth'){
+   const equation='H<sup>2</sup> = O<sup>2</sup> + J<sup>2</sup>';
+   if(high)add('Write Pythagoras’ theorem.',equation);
+   if(kind==='hypotenuse'){
+    add('Substitute the two shorter sides.','H<sup>2</sup> = '+pwr(v.O)+' + '+pwr(v.J));
+    add('Calculate the square.','H<sup>2</sup> = '+fmt(v.O*v.O+v.J*v.J));
+    add('Take the positive square root.','H = √('+fmt(v.O*v.O+v.J*v.J)+')');
+   }else{
+    add('Rearrange to make the missing side the subject.','O<sup>2</sup> = H<sup>2</sup> − J<sup>2</sup>');
+    add('Substitute the known sides.','O<sup>2</sup> = '+pwr(v.H)+' − '+pwr(v.J));
+    add('Calculate the difference and take the square root.','O = √('+fmt(v.H*v.H-v.J*v.J)+')');
+   }
+   numStage(z.value,z.symbol,z.unit,add);
+   add('Check the hypotenuse is longest.',kind==='hypotenuse'?'H &gt; O &nbsp; and &nbsp; H &gt; J &nbsp; ✓':'H &gt; O &nbsp; ✓','prediction');
+  }else{
+   const names={sin:'sin',cos:'cos',tan:'tan'}, ratios={sin:['O','H'],cos:['J','H'],tan:['O','J']};
+   const top=ratios[ratio][0],bottom=ratios[ratio][1],R=names[ratio];
+   const tag={sin:'SOH',cos:'CAH',tan:'TOA'}[ratio];
+   if(high)add('Recall '+tag+'.',R+' θ = '+frac(top,bottom));
+   const symbol=z.symbol;
+   let formula,sub;
+   if(kind==='angle'){
+    const inv={sin:'sin',cos:'cos',tan:'tan'}[ratio];
+    formula='θ = '+inv+'<sup>−1</sup>('+frac(top,bottom)+')';
+    sub='θ = '+inv+'<sup>−1</sup>('+frac(fmt(v[top]),fmt(v[bottom]))+')';
+   }else if(symbol===top){
+    formula=top+' = '+bottom+' '+R+' θ';
+    sub=top+' = '+fmt(v[bottom])+' '+R+' '+fmt(v.theta)+'°';
+   }else{
+    formula=bottom+' = '+frac(top,R+' θ');
+    sub=bottom+' = '+frac(fmt(v[top]),R+' '+fmt(v.theta)+'°');
+   }
+   add('Make the unknown the subject.',formula);
+   add('Substitute the known values.',sub);
+   if(kind==='angle')add('Use SHIFT then '+R+' on the calculator in DEG mode.',sub);
+   else if(high)add('Enter the expression in DEG mode.',sub);
+   numStage(z.value,z.symbol,z.unit,add);
+   if(kind==='angle')add('Check the angle is acute.','0° &lt; θ &lt; 90° &nbsp; ✓','prediction');
+   else add('Check the side length is positive.',symbol+' &gt; 0 &nbsp; ✓','prediction');
+  }
+ }
+ steps=items;
+ n=viewMode==='all'?steps.length:0;
+}
+function drawNode(tag,attrs,label){
+ const e=document.createElementNS('http://www.w3.org/2000/svg',tag);
+ for(const [k,val] of Object.entries(attrs))e.setAttribute(k,String(val));
+ if(label!==undefined)e.textContent=label;
+ el('triangle').append(e);return e;
+}
+function textAt(x,y,label,color='#20558d',size=33){
+ drawNode('text',{x,y,'text-anchor':'middle','dominant-baseline':'middle','font-size':size,fill:color,'font-weight':800,'paint-order':'stroke',stroke:'#fff','stroke-width':8,'stroke-linejoin':'round'},label);
+}
+function drawSide(p,q,center,label,color='#20558d'){
+ let dx=q[0]-p[0],dy=q[1]-p[1],len=Math.hypot(dx,dy),nx=-dy/len,ny=dx/len;
+ let mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2;
+ if((mx-center[0])*nx+(my-center[1])*ny<0){nx=-nx;ny=-ny;}
+ textAt(Math.min(476,Math.max(26,mx+nx*35)),Math.min(330,Math.max(28,my+ny*35)),label,color,33);
+}
+function draw(){
+ const svg=el('triangle');svg.replaceChildren();
+ drawNode('rect',{x:0,y:0,width:500,height:355,rx:10,fill:'#fff'});
+ const z=solve();
+ if(family==='right'){
+  const P={A:[89,277],B:[419,277],C:[419,60]},ctr=[310,204];
+  drawNode('polygon',{points:Object.values(P).map(t=>t.join(',')).join(' '),stroke:'#2868dc','stroke-width':5,fill:'#edf4ff','stroke-linejoin':'round'});
+  const get=k=>k in v?fmt(v[k]):k===z.symbol?'?':'';
+  drawSide(P.B,P.C,ctr,get('O')||'O','#bc3344');
+  drawSide(P.A,P.B,ctr,get('J')||'J','#20558d');
+  drawSide(P.A,P.C,ctr,get('H')||'H','#20558d');
+  drawNode('polyline',{points:'390,277 390,248 419,248',fill:'none',stroke:'#0b8378','stroke-width':4});
+  textAt(170,242,v.theta!==undefined?fmt(v.theta)+'°':z.symbol==='θ'?'?':'θ','#087d76',30);
+  textAt(69,296,'A','#6c8298',18);
+ }else{
+  let cat=classify(),P={A:[108,275],B:[445,275],C:cat==='obtuse'?[26,48]:cat==='right'?[108,57]:[277,46]},ctr=[(P.A[0]+P.B[0]+P.C[0])/3,(P.A[1]+P.B[1]+P.C[1])/3];
+  drawNode('polygon',{points:['A','B','C'].map(k=>P[k].join(',')).join(' '),stroke:'#2868dc','stroke-width':5,fill:'#edf4ff','stroke-linejoin':'round'});
+  const display={a:mode==='cos-angle'?fmt(v.a):mode==='cos-side'?'?':mode==='sin-side'?fmt(v.a):fmt(v.a),
+                 b:mode==='cos-angle'||mode==='cos-side'?fmt(v.b):mode==='sin-side'?'?':fmt(v.b),
+                 c:mode==='cos-angle'||mode==='cos-side'?fmt(v.c):''};
+  drawSide(P.B,P.C,ctr,display.a,'#b92d3e');
+  drawSide(P.A,P.C,ctr,display.b,'#20558d');
+  if(display.c)drawSide(P.A,P.B,ctr,display.c,'#20558d');
+  const aa=Math.atan2(P.B[1]-P.A[1],P.B[0]-P.A[0]),ac=Math.atan2(P.C[1]-P.A[1],P.C[0]-P.A[0]),rr=43;
+  if(cat==='right')drawNode('polyline',{points:'135,275 135,248 108,248',fill:'none',stroke:'#0b8378','stroke-width':3});
+  else{let pts=[];for(let k=0;k<=24;k++){let t=ac+(aa-ac)*k/24;pts.push((P.A[0]+rr*Math.cos(t))+','+(P.A[1]+rr*Math.sin(t)));}
+   drawNode('polyline',{points:pts.join(' '),fill:'none',stroke:'#078579','stroke-width':3});
+  }
+  let at=(aa+ac)/2;
+  textAt(P.A[0]+83*Math.cos(at),P.A[1]+83*Math.sin(at),mode==='cos-angle'?'?':fmt(v.A)+'°','#087e72',29);
+  if(mode==='sin-side'||mode==='sin-angle')textAt(P.B[0]-70,P.B[1]-38,mode==='sin-side'?fmt(v.B)+'°':'?','#087e72',25);
+  textAt(P.A[0]-24,P.A[1]+26,'A','#72869b',20);
+ }
+}
+function render(){
+ draw();
+ const board=el('mathboard');board.replaceChildren();
+ if(n===0)board.innerHTML='<div class="blank">'+solve().symbol+' = ?</div>';
+ else steps.slice(0,n).forEach((s,i)=>{
+  const row=document.createElement('div');row.className='mathrow '+s.cls+(i===n-1?' current':'');
+  row.innerHTML=s.math;board.append(row);
+ });
+ el('all').setAttribute('aria-pressed',String(viewMode==='all'));
+ el('reset').setAttribute('aria-pressed',String(viewMode==='step'));
+ el('next').disabled=n>=steps.length;el('back').disabled=n===0;
+ el('progress').textContent=n+' / '+steps.length+' steps revealed · click any instruction';
+ const list=el('outline');list.replaceChildren();
+ steps.forEach((s,i)=>{
+   const b=document.createElement('button');b.type='button';
+   b.className='step-button '+(i<n?'done':i===n?'next-step':'later');
+   const num=document.createElement('span');num.className='step-number';num.textContent=(i<n?'✓':i+1)+'.';
+   const label=document.createElement('span');label.textContent=i<n&&s.result?s.result:s.instruction;
+   b.append(num,label);
+   b.addEventListener('click',()=>{viewMode='step';n=i+1;render();});
+   b.setAttribute('aria-label','Step '+(i+1)+': '+s.instruction);
+   list.append(b);
+ });
+}
+function refresh(){syncInputs();buildSteps();render();}
+function switchFamily(next){
+ family=next;mode=next==='general'?'cos-angle':'sin-opposite';
+ opts();generate();
+}
+el('general').addEventListener('click',()=>switchFamily('general'));
+el('right').addEventListener('click',()=>switchFamily('right'));
+el('task').addEventListener('change',()=>{mode=el('task').value;generate()});
+for(const k of ['level','type'])el(k).addEventListener('change',generate);
+for(const k of ['detail','dp'])el(k).addEventListener('change',()=>{buildSteps();render()});
+el('new').addEventListener('click',generate);
+el('all').addEventListener('click',()=>{viewMode='all';n=steps.length;render()});
+el('reset').addEventListener('click',()=>{viewMode='step';n=0;render()});
+el('restart').addEventListener('click',()=>{viewMode='step';n=0;render()});
+el('next').addEventListener('click',()=>{viewMode='step';n=Math.min(steps.length,n+1);render()});
+el('back').addEventListener('click',()=>{viewMode='step';n=Math.max(0,n-1);render()});
+el('edit').addEventListener('click',()=>{el('manual').hidden=!el('manual').hidden;syncInputs()});
+el('apply').addEventListener('click',()=>{
+ const keys=getKeys(),cand={};
+ for(let i=0;i<keys.length;i++)cand[keys[i]]=Number(el(['a','b','c'][i]).value);
+ const prev=v;v=cand;
+ if(!valid()){v=prev;el('validation').textContent='Check positive lengths, valid angles and triangle constraints.';return;}
+ refresh();
+});
+function setWidth(pct){
+ const width=Math.max(18,Math.min(43,Number(pct)));
+ document.documentElement.style.setProperty('--w',width+'%');
+ el('width').value=String(width);
+ el('shrink').textContent=width<=21?'Expand diagram':'Shrink diagram';
+}
+el('width').addEventListener('input',e=>setWidth(e.target.value));
+el('shrink').addEventListener('click',()=>setWidth(Number(el('width').value)<=21?38:20));
+el('screen').addEventListener('click',()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen?.()});
+setWidth(38);
+opts();
+const params=new URLSearchParams(location.search);
+if(params.get('family')==='right'){family='right';mode='sin-opposite';opts();generate();}
+else if(params.get('method') && tasks.general.some(x=>x[0]===params.get('method'))){mode=params.get('method');opts();generate();}
+else {v={a:8,b:9,c:7};refresh();}
+})();
+
+</script></body></html>
