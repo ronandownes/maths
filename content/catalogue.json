@@ -8,6 +8,13 @@
         "ready": true
       },
       {
+        "slug": "hcf-lcm",
+        "title": "Highest common factor and lowest common multiple",
+        "ready": true,
+        "app": "apps/number/hcf-lcm/index.html",
+        "description": "Prime factors, common factors and multiples, paired reasoning and student practice"
+      },
+      {
         "slug": "sequences",
         "title": "Sequences",
         "ready": true
@@ -217,6 +224,13 @@
         "slug": "describing-data",
         "title": "Describing data",
         "ready": true
+      },
+      {
+        "slug": "stem-and-leaf",
+        "title": "Stem-and-leaf plots",
+        "ready": true,
+        "app": "apps/statistics/stem-and-leaf/index.html",
+        "description": "One-sided and back-to-back displays, sampled data, incomplete diagrams and comparison"
       },
       {
         "slug": "charts",
