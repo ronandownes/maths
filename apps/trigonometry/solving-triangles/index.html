@@ -254,7 +254,12 @@ const tasks={
  ['cos-angle','Cosine rule · find angle'],
  ['cos-side','Cosine rule · find side'],
  ['sin-angle','Sine rule · find angle'],
- ['sin-side','Sine rule · find side']
+ ['sin-side','Sine rule · find side'],
+ ['area-value','Area · find area (SAS)'],
+ ['area-side','Area · find side'],
+ ['area-angle','Area · find angle(s)'],
+ ['area-heron','Area · three sides (Heron)'],
+ ['area-baseheight','Area · base and height']
  ],
  right:[
  ['sin-opposite','Sine · find opposite'],
@@ -369,7 +374,19 @@ function generate(){
     }
     v=result||(kind==='acute'?{a:8,b:9,c:7}:{a:9,b:5,c:6});
    }
-  } else if(mode==='cos-side')v={b:measure(),c:measure(),A:angleChoice(kind)};
+  } else if(mode==='area-value')v={b:measure(),c:measure(),A:angleChoice(kind)};
+  else if(mode==='area-side'){
+   const b=measure(),c=measure(),A=angleChoice(kind);
+   v={K:Number((.5*b*c*sind(A)).toPrecision(5)),b,A};
+  }else if(mode==='area-angle'){
+   const b=measure(),c=measure(),A=kind==='right'?90:kind==='obtuse'?rng(108,150):rng(30,73);
+   v={K:Number((.5*b*c*sind(A)).toPrecision(5)),b,c};
+  }else if(mode==='area-heron'){
+   let tri;
+   for(let i=0;i<300;i++){const a=measure(),b=measure(),c=measure();if(a+b>c&&a+c>b&&b+c>a){tri={a,b,c};break}}
+   v=tri||{a:13,b:14,c:15};
+  }else if(mode==='area-baseheight')v={base:measure(),height:measure()};
+  else if(mode==='cos-side')v={b:measure(),c:measure(),A:angleChoice(kind)};
   else if(mode==='sin-side'){
    const A=angleChoice(kind);
    const B=rng(15,Math.max(16,Math.min(85,170-A)));
@@ -419,6 +436,11 @@ function valid(){
   if(mode==='cos-angle')return ok(v.a)&&ok(v.b)&&ok(v.c)&&v.a+v.b>v.c&&v.a+v.c>v.b&&v.b+v.c>v.a;
   if(mode==='cos-side')return ok(v.b)&&ok(v.c)&&ok(v.A)&&v.A<180;
   if(mode==='sin-side')return ok(v.a)&&ok(v.A)&&ok(v.B)&&v.A+v.B<180;
+  if(mode==='area-value')return ok(v.b)&&ok(v.c)&&ok(v.A)&&v.A<180;
+  if(mode==='area-side')return ok(v.K)&&ok(v.b)&&ok(v.A)&&v.A<180;
+  if(mode==='area-angle')return ok(v.K)&&ok(v.b)&&ok(v.c)&&2*v.K<=v.b*v.c+1e-9;
+  if(mode==='area-heron')return ok(v.a)&&ok(v.b)&&ok(v.c)&&v.a+v.b>v.c&&v.a+v.c>v.b&&v.b+v.c>v.a;
+  if(mode==='area-baseheight')return ok(v.base)&&ok(v.height);
   const x=v.b*sind(v.A)/v.a;
   return ok(v.a)&&ok(v.b)&&ok(v.A)&&v.A<180&&x>0&&x<=1&&v.A+rad(Math.asin(Math.min(1,x)))<180;
  }
@@ -439,6 +461,11 @@ function getKeys(){
   if(mode==='cos-angle')return ['a','b','c'];
   if(mode==='cos-side')return ['b','c','A'];
   if(mode==='sin-side')return ['a','A','B'];
+  if(mode==='area-value')return ['b','c','A'];
+  if(mode==='area-side')return ['K','b','A'];
+  if(mode==='area-angle')return ['K','b','c'];
+  if(mode==='area-heron')return ['a','b','c'];
+  if(mode==='area-baseheight')return ['base','height'];
   return ['a','b','A'];
  }
  if(mode==='pyth-hypotenuse')return ['O','Adj'];
@@ -451,7 +478,7 @@ function getKeys(){
  return [];
 }
 function labelKey(key){
- return {a:'Side a',b:'Side b',c:'Side c',A:'Angle A (°)',B:'Angle B (°)',O:'Opposite',Adj:'Adjacent',H:'Hypotenuse',theta:'Angle θ (°)'}[key]||key;
+ return {a:'Side a',b:'Side b',c:'Side c',A:'Angle A (°)',B:'Angle B (°)',K:'Area',base:'Base',height:'Height',O:'Opposite',Adj:'Adjacent',H:'Hypotenuse',theta:'Angle θ (°)'}[key]||key;
 }
 function syncInputs(){
  const keys=getKeys();
@@ -469,6 +496,17 @@ function solve(){
    return {value:rad(Math.acos(Math.max(-1,Math.min(1,z)))),symbol:'A',unit:'°'};
   }
   if(mode==='cos-side')return {value:Math.sqrt(Math.max(0,v.b*v.b+v.c*v.c-2*v.b*v.c*cosd(v.A))),symbol:'a',unit:''};
+  if(mode==='area-value')return {value:.5*v.b*v.c*sind(v.A),symbol:'K',unit:' units²'};
+  if(mode==='area-side')return {value:2*v.K/(v.b*sind(v.A)),symbol:'c',unit:''};
+  if(mode==='area-angle'){
+   const ratio=Math.min(1,2*v.K/(v.b*v.c)),first=rad(Math.asin(ratio)),second=180-first;
+   return {value:first,symbol:'A',unit:'°',ratio,alternative:Math.abs(first-second)<1e-7?null:second};
+  }
+  if(mode==='area-heron'){
+   const t=(v.a+v.b+v.c)/2;
+   return {value:Math.sqrt(Math.max(0,t*(t-v.a)*(t-v.b)*(t-v.c))),symbol:'K',unit:' units²'};
+  }
+  if(mode==='area-baseheight')return {value:.5*v.base*v.height,symbol:'K',unit:' units²'};
   if(mode==='sin-side')return {value:v.a*sind(v.B)/sind(v.A),symbol:'b',unit:''};
   const s=v.b*sind(v.A)/v.a;
   const first=rad(Math.asin(Math.min(1,s))),second=180-first;
@@ -490,11 +528,12 @@ function solve(){
 }
 function classify(){
  if(family!=='general')return 'right';
- if(mode==='cos-angle'){
+ if(mode==='cos-angle'||mode==='area-heron'){
   const delta=v.a*v.a-v.b*v.b-v.c*v.c;
   return Math.abs(delta)<1e-9?'right':delta<0?'acute':'obtuse';
  }
- return mode==='cos-side'?v.A===90?'right':v.A<90?'acute':'obtuse':v.A>=90?'obtuse':'acute';
+ if(mode==='area-angle'||mode==='area-baseheight')return 'acute';
+ return (mode==='cos-side'||mode==='area-value'||mode==='area-side')?v.A===90?'right':v.A<90?'acute':'obtuse':v.A>=90?'obtuse':'acute';
 }
 function numStage(value,symbol,unit,add){
  const dp=Number(el('dp').value),extra=dp+1,near=Math.round(value);
