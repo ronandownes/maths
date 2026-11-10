@@ -80,6 +80,8 @@ main{max-width:1140px;margin:7px auto 25px;padding:12px 19px 18px;border:1px sol
 .board-number{position:absolute;top:6px;left:9px;color:#9ba8b7;font:700 13px Arial,sans-serif}
 .board-question,.board-answer{font-family:"Cambria Math",Cambria,Georgia,serif;line-height:1.26;max-width:100%;width:100%;text-align:center;overflow-wrap:anywhere}
 .board-answer{color:#176398}
+.fitted-math{display:inline-block;white-space:nowrap;max-width:none}
+.board-question sup,.board-answer sup{font-size:.62em;line-height:0;vertical-align:super}
 #boardPanel:fullscreen .board-controls{display:none}
 #assessmentPanel{padding:11px 0}
 .assessment-header{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
@@ -152,6 +154,7 @@ main#splitMain{max-width:1300px;padding:14px clamp(12px,1.8vw,26px);margin:8px a
 .math-row{display:grid;grid-template-columns:1.4em max-content;align-items:baseline;gap:.23em;margin:.16em 0;white-space:nowrap;font:normal clamp(1.5rem,2.7vw,2.75rem)/1.62 "Cambria Math",Cambria,Georgia,serif}
 .math-row .math-equals{text-align:right}
 .math-row .math-content{white-space:nowrap}
+.math-fallback sup{font-size:.62em;line-height:0;vertical-align:super}
 .math-row i{font-style:italic}
 .math-row .math-boxed{border:1.8px solid #202124;padding:.06em .23em}
 .tex-solution{position:absolute;left:-10000px;visibility:hidden;pointer-events:none;white-space:nowrap;font-size:clamp(1.6rem,2.75vw,2.8rem);line-height:1.5}
@@ -566,8 +569,11 @@ function latexMath(s){
  return String(s).replace(/−/g,'-');
 }
 function safeMathHTML(s){
- return safeText(s).replace(/([xy])/g,'<i>$1</i>');
+ // Text is escaped before superscripts and variables are rendered.
+ return safeText(s).replace(/([xy])\^(\d+)|([xy])/g,(_,letter,power,simple)=>
+   '<i>'+(letter||simple)+'</i>'+(power?'<sup>'+power+'</sup>':''));
 }
+function mathFragment(s){return '<span class="fitted-math">'+safeMathHTML(s)+'</span>'}
 function diagramHTML(q){
  const limit=procedureSteps(q).length;
  const step=state.view==='worked'?limit:Math.min(limit,state.step);
@@ -587,6 +593,18 @@ function diagramHTML(q){
   '<div class="math-fallback">'+fallback+'</div>'+
   '<div class="tex-solution" aria-hidden="true">'+tex+'</div></div>';
 }
+// Fit MathJax output by measuring the final rendered equation.
+function fitDiagramMath(){
+ const root=$('diagram'),math=root.querySelector('.tex-solution.ready');
+ if(!math||!root.clientWidth)return;
+ const baseline=48;
+ math.style.fontSize=baseline+'px';
+ const content=math.querySelector('mjx-container')||math;
+ const measured=content.getBoundingClientRect().width;
+ const css=getComputedStyle(root);
+ const usable=Math.max(1,root.clientWidth-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight));
+ if(measured>0)math.style.fontSize=(baseline*usable*.8/measured)+'px';
+}
 let typesetGeneration=0;
 function typesetDiagram(){
  const root=$('diagram');
@@ -597,6 +615,7 @@ function typesetDiagram(){
   if(generation===typesetGeneration&&math.isConnected&&root.contains(math)){
    math.classList.add('ready');math.setAttribute('aria-hidden','false');
    fallback.hidden=true;
+   requestAnimationFrame(fitDiagramMath);
   }
  }).catch(()=>{if(math.isConnected)math.hidden=true});
 }
@@ -710,24 +729,34 @@ function renderBoard(){
  boardItems().forEach((q,i)=>{
   const cell=document.createElement('article');cell.className='board-cell';
   const number=document.createElement('span');number.className='board-number';number.textContent=(i+1)+'.';
-  const question=document.createElement('div');question.className='board-question';question.innerHTML=state.direction==='expand'?factored(q):expanded(q);
+  const question=document.createElement('div');question.className='board-question';question.innerHTML=mathFragment(state.direction==='expand'?factored(q):expanded(q));
   cell.append(number,question);
-  if(board.answers){const answer=document.createElement('div');answer.className='board-answer';answer.innerHTML='= '+(state.direction==='expand'?expanded(q):factored(q));cell.append(answer)}
+  if(board.answers){const answer=document.createElement('div');answer.className='board-answer';answer.innerHTML=mathFragment('= '+(state.direction==='expand'?expanded(q):factored(q)));cell.append(answer)}
   grid.append(cell);
  });
  host.replaceChildren(controls,grid);
  requestAnimationFrame(fitBoard);
 }
+// Scale from the intrinsic rendered width, not a manually selected font-size.
+function fitMathToBox(element,width,height){
+ if(!element||width<=0||height<=0)return;
+ const inline=element.querySelector('.fitted-math')||element;
+ const baseline=100;
+ element.style.fontSize=baseline+'px';
+ const rect=inline.getBoundingClientRect();
+ if(!rect.width||!rect.height)return;
+ element.style.fontSize=(baseline*Math.min(width/rect.width,height/rect.height))+'px';
+}
 function fitBoard(){
  if(state.mode!=='display')return;
- const host=$('boardPanel'),grid=host.querySelector('.board-grid');if(!grid)return;
+ const grid=$('boardPanel').querySelector('.board-grid');if(!grid)return;
  grid.querySelectorAll('.board-cell').forEach(cell=>{
   const question=cell.querySelector('.board-question'),answer=cell.querySelector('.board-answer');
-  const w=Math.max(70,cell.clientWidth-25),h=Math.max(60,cell.clientHeight-25);
-  let font=Math.min(190,Math.floor(h*(answer?.32:.58)));
-  question.style.fontSize=font+'px';
-  while(font>16&&(question.scrollWidth>w||question.scrollHeight>h*(answer?.5:.88))){font-=2;question.style.fontSize=font+'px'}
-  if(answer){let af=Math.min(135,Math.floor(h*.29));answer.style.fontSize=af+'px';while(af>13&&(answer.scrollWidth>w||answer.scrollHeight>h*.48)){af-=2;answer.style.fontSize=af+'px'}}
+  const css=getComputedStyle(cell);
+  const width=Math.max(1,cell.clientWidth-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight))*.8;
+  const height=Math.max(1,cell.clientHeight-parseFloat(css.paddingTop)-parseFloat(css.paddingBottom));
+  fitMathToBox(question,width,height*(answer?.48:.8));
+  if(answer)fitMathToBox(answer,width,height*.34);
  });
 }
 function optionSet(q,direction){
@@ -765,12 +794,12 @@ function renderAssessment(){
   const card=document.createElement('div');card.className='assessment-card';
   const heading=document.createElement('strong');heading.textContent='Question '+(i+1)+' of 4';
   const question=document.createElement('div');question.className='assessment-question';
-  question.innerHTML=(state.direction==='expand'?'Expand: ':'Factorise: ')+(state.direction==='expand'?factored(q):expanded(q));
+  question.innerHTML=mathFragment((state.direction==='expand'?'Expand: ':'Factorise: ')+(state.direction==='expand'?factored(q):expanded(q)));
   card.append(heading,question);
   const choices=document.createElement('div');choices.className='assessment-choices';
   item.options.forEach((option,j)=>{
    const btn=document.createElement('button');btn.type='button';
-   btn.innerHTML=String.fromCharCode(65+j)+'. '+option.text;
+   btn.innerHTML=String.fromCharCode(65+j)+'. '+mathFragment(option.text);
    btn.setAttribute('aria-pressed',String(selected===j));
    const showMark=assessment.completed||(quiz&&selected>=0);
    if(showMark&&option.correct)btn.classList.add('correct');
@@ -878,7 +907,12 @@ document.addEventListener('keydown',e=>{
  if(e.key.toLowerCase()==='a'){e.preventDefault();board.answers=!board.answers;renderBoard()}
 });
 document.addEventListener('fullscreenchange',()=>requestAnimationFrame(fitBoard));
-window.addEventListener('resize',()=>{if(state.mode==='display')requestAnimationFrame(fitBoard)});
+window.addEventListener('resize',()=>{if(state.mode==='display')requestAnimationFrame(fitBoard);else requestAnimationFrame(fitDiagramMath)});
+if(typeof ResizeObserver!=='undefined'){
+ const resizeMath=new ResizeObserver(()=>{if(state.mode==='display')requestAnimationFrame(fitBoard);else requestAnimationFrame(fitDiagramMath)});
+ resizeMath.observe($('boardPanel'));
+ resizeMath.observe($('diagram'));
+}
 renderBankGrid();
 state.q=generator(state.questionIndex);
 render();
