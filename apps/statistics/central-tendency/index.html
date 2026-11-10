@@ -19,6 +19,21 @@ button.primary{background:#215e97;border-color:#215e97;color:#fff}button:hover{f
 button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid #79b9ed;outline-offset:2px}
 .switch{display:inline-flex;gap:6px;align-items:center;font-weight:650;font-size:.89rem;margin:6px 9px 4px 0}
 .switch input{min-height:0;width:18px;height:18px;accent-color:#245e99}
+.workspace{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:12px;align-items:start}
+.workspace.visual-full{grid-template-columns:minmax(0,2fr) minmax(0,3fr)}
+.workspace.visual-small{grid-template-columns:minmax(220px,1fr) minmax(0,4fr)}
+.workspace.visual-off{grid-template-columns:minmax(0,1fr)}
+.workspace.visual-off #visualPanel{display:none}
+.workspace>.panel{min-width:0;margin:0 0 12px}
+.work-list{margin:8px 0 14px}
+.work-label{font-size:.85rem;font-weight:750;color:#536b82;margin-bottom:5px}
+.working-steps{display:grid;gap:10px;margin-top:12px}
+.work-step{background:#f4f8fd;border:1px solid #d7e4ef;border-radius:9px;padding:11px 14px}
+.work-step h3{font-size:1rem;margin:0 0 5px}
+.work-step p{margin:4px 0;overflow-wrap:anywhere}
+.work-step .arithmetic{font-size:1.08rem;font-weight:650;line-height:1.7}
+#visualPanel #plot{max-height:290px}
+@media(max-width:760px){.workspace,.workspace.visual-full,.workspace.visual-small{grid-template-columns:1fr}#visualPanel #plot{max-height:280px}}
 #plot{width:100%;height:auto;display:block;max-height:min(47vh,400px);touch-action:none;user-select:none}
 .svg-dot{cursor:grab;touch-action:none}.svg-dot:active{cursor:grabbing}
 .dot-label{font:700 13px system-ui,sans-serif;fill:#24496d}
@@ -45,7 +60,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-v
 #studentTask input{max-width:105px}
 #feedback{font-weight:750;min-height:25px}
 #feedback.good{color:#1c814f}#feedback.bad{color:#b63246}
-@media print{@page{size:A4 landscape;margin:9mm}body{background:#fff}main{max-width:none;padding:0}header,.no-print{display:none!important}.panel{border:0;margin:0;break-inside:avoid;padding:3mm 0}#plot{height:80mm;max-height:none}.stat-panel{break-inside:avoid}}
+@media print{.workspace,.workspace.visual-full,.workspace.visual-small{display:block!important}.workspace.visual-off #visualPanel{display:none!important}.workspace>.panel{margin-bottom:8mm}.working-steps{gap:4mm}@page{size:A4 landscape;margin:9mm}body{background:#fff}main{max-width:none;padding:0}header,.no-print{display:none!important}.panel{border:0;margin:0;break-inside:avoid;padding:3mm 0}#plot{height:80mm;max-height:none}.stat-panel{break-inside:avoid}}
 </style></head>
 <body>
 <header><a href="../../../index.html"><img src="../../../assets/maths-logo.svg" alt="Irish School Maths — four dots"></a><nav>
@@ -61,13 +76,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-v
 <button id="random" class="primary" type="button">⟳ Random data</button>
 <button id="plus" type="button">+1 to all</button>
 <button id="minus" type="button">−1 from all</button>
-<label class="control">Display<select id="display"><option value="sorted">Sorted</option><option value="original">Original order</option></select></label>
+<label class="control">Visual<select id="visualSize"><option value="full">Full</option><option value="small" selected>Small</option><option value="off">Off</option></select></label>
 <label class="control">Task<select id="task"><option value="explore">Explore</option><option value="predict">Find the statistics</option></select></label>
 <button id="reset" type="button">Reset</button>
 <button id="print" type="button">Print</button>
 </div>
 </section>
-<section class="panel">
+<div class="workspace visual-small" id="workspace">
+<section class="panel" id="visualPanel">
 <h2>Interactive dot plot</h2>
 <svg id="plot" viewBox="0 0 1080 305" role="img" aria-label="Dot plot from 0 to 20; data points can be dragged horizontally"></svg>
 <div id="pointSummary">Drag a grey dot along the number line, or focus a dot and use the left and right arrow keys.</div>
@@ -78,8 +94,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-v
 <label class="switch"><input type="checkbox" id="showValues" checked><span>Show values</span></label>
 </div>
 </section>
+<div class="calculation-column">
 <section class="panel" id="dataDisplay">
-<h2>Data</h2><div class="data-list" id="numbers"></div>
+<h2>Data lists</h2>
+<div class="work-list"><div class="work-label">Original order — as entered</div><div class="data-list" id="originalNumbers"></div></div>
+<div class="work-list"><div class="work-label">Sorted — ascending order</div><div class="data-list" id="sortedNumbers"></div></div>
+<p class="explain">The original order is preserved. We sort a copy to find the median; repeated values must remain in the list.</p>
 </section>
 <section class="panel stat-panel">
 <h2>Measures of centre</h2>
@@ -99,6 +119,16 @@ button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-v
 <p class="explain">For multiple modes, enter every modal value separated by commas. If no value occurs more often than another, enter “none”.</p><p id="feedback" role="status" aria-live="polite"></p></div>
 </section>
 <section class="panel">
+<h2>Calculate and explain</h2>
+<div class="controls-end no-print" style="margin:0 0 12px">
+<label class="control">Working<select id="stepsLevel"><option value="all">All steps</option><option value="method" selected>Method only</option><option value="hide">Hide steps</option></select></label>
+<button id="nextStep" type="button">Reveal next step</button>
+<button id="hideSteps" type="button">Hide working</button>
+</div>
+<div class="working-steps" id="workingSteps" aria-live="polite"></div>
+</section>
+</div></div>
+<section class="panel">
 <h2>What happens when every value changes?</h2>
 <div class="no-print controls-end">
 <label class="switch"><input type="checkbox" id="trackShift">Compare with original dataset</label>
@@ -112,7 +142,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-v
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-const state={data:[9,10,10,11,13,13,18],initial:[],baseline:[],showNumbers:true};
+const state={data:[9,10,10,11,13,13,18],initial:[],baseline:[],showNumbers:true,visibleSteps:0};
 const MAX=20,MIN=0,LEFT=56,RIGHT=1036,Y=244;
 const ns='http://www.w3.org/2000/svg';
 function svg(tag,attrs={},text=''){const e=document.createElementNS(ns,tag);for(const [k,v]of Object.entries(attrs))e.setAttribute(k,String(v));if(text)e.textContent=text;return e}
@@ -190,7 +220,9 @@ function render(){
  $('minus').title=$('minus').disabled?'Cannot subtract 1 from all while a value is already 0':'Subtract 1 from every value';
  plot();
  $('dataDisplay').hidden=false;
- $('numbers').textContent=($('display').value==='sorted'?s.sorted:state.data).join('   ');
+ $('originalNumbers').textContent=state.data.join(', ');
+ $('sortedNumbers').textContent=s.sorted.join(', ');
+ renderWorking(s);
  $('meanValue').textContent=fmt(s.mean);$('medianValue').textContent=fmt(s.median);
  $('modeValue').textContent=s.modes.length?s.modes.join(', '):'No mode';
  $('meanWorking').textContent=$('revealWorking').checked?'('+state.data.join(' + ')+') ÷ '+s.n+' = '+fmt(s.mean):'Sum ÷ number of data values';
@@ -210,6 +242,33 @@ function render(){
  }
  $('shiftStudy').hidden=!$('trackShift').checked;
 }
+function renderWorking(s){
+ const a=state.data,sorted=s.sorted,n=s.n;
+ const middle=n%2 ? 'Position ('+n+' + 1) ÷ 2 = '+((n+1)/2)+' gives '+fmt(s.median)
+  : 'Positions '+(n/2)+' and '+(n/2+1)+' contain '+sorted[n/2-1]+' and '+sorted[n/2]+'. Their mean is ('+sorted[n/2-1]+' + '+sorted[n/2]+') ÷ 2 = '+fmt(s.median);
+ const freq=[...new Set(sorted)].map(v=>v+' occurs '+a.filter(x=>x===v).length+' time'+(a.filter(x=>x===v).length===1?'':'s')).join('; ');
+ const items=[
+ ['Mean: add the values','Sum = '+a.join(' + ')+' = '+s.total],
+ ['Mean: divide by how many','Mean = '+s.total+' ÷ '+n+' = '+fmt(s.mean)],
+ ['Median: order the values','Ascending order: '+sorted.join(', ')],
+ ['Median: identify the middle',middle],
+ ['Mode: count repetitions',freq],
+ ['Mode: draw a conclusion',s.modes.length?'The largest frequency is '+s.maxFrequency+'. Mode'+(s.modes.length>1?'s':'')+': '+s.modes.join(', '):'Each value occurs once, so there is no mode.']
+ ];
+ const level=$('stepsLevel').value;
+ const visible=level==='hide'?0:level==='all'?items.length:state.visibleSteps;
+ const root=$('workingSteps');root.replaceChildren();
+ for(let i=0;i<visible;i++){
+  const card=document.createElement('div');card.className='work-step';
+  const h=document.createElement('h3');h.textContent=(i+1)+'. '+items[i][0];
+  const p=document.createElement('p');p.className='arithmetic';p.textContent=items[i][1];
+  card.append(h,p);root.append(card);
+ }
+ if(level==='method'&&visible===0){
+  const p=document.createElement('p');p.className='explain';p.textContent='Reveal each step as you discuss it with the class: sum, divide, sort, locate the middle, count frequencies, conclude.';root.append(p);
+ }
+ $('nextStep').disabled=level==='all'||visible===items.length;
+}
 function setReveals(value){for(const id of ['revealMean','revealMedian','revealMode'])$(id).checked=value}
 $('size').onchange=()=>setData(randomData(Number($('size').value)));
 $('random').onclick=()=>setData(randomData(Number($('size').value)));
@@ -218,7 +277,10 @@ $('minus').onclick=()=>{if(state.data.every(x=>x>MIN)){state.data=state.data.map
 $('reset').onclick=()=>{state.data=state.initial.slice();dataChanged()};
 $('makeBaseline').onclick=()=>{state.baseline=state.data.slice();$('trackShift').checked=true;render()};
 $('print').onclick=()=>window.print();
-$('display').onchange=render;
+$('visualSize').onchange=()=>{$('workspace').className='workspace visual-'+$('visualSize').value;render()};
+$('stepsLevel').onchange=()=>{state.visibleSteps=0;render()};
+$('nextStep').onclick=()=>{state.visibleSteps=Math.min(6,state.visibleSteps+1);$('stepsLevel').value='method';render()};
+$('hideSteps').onclick=()=>{state.visibleSteps=0;$('stepsLevel').value='hide';render()};
 $('task').onchange=()=>{setReveals($('task').value!=='predict');$('guessMean').value='';$('guessMedian').value='';$('guessMode').value='';dataChanged()};
 for(const id of ['showMean','showMedian','showMode','showValues','revealMean','revealMedian','revealMode','revealWorking','trackShift'])$(id).onchange=render;
 $('showAnswers').onclick=()=>{setReveals(true);render()};
