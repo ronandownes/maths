@@ -61,6 +61,13 @@
     "introduction": "Expressions, equations, patterns, generalisation and algebraic reasoning.",
     "topics": [
       {
+        "slug": "expansions",
+        "title": "Expanding brackets",
+        "ready": true,
+        "app": "algebra/expansions/index.html",
+        "description": "One gateway to Split Brackets, FOIL, right-margin and place-value methods."
+      },
+      {
         "slug": "factorising",
         "title": "Factorising",
         "ready": true
@@ -170,47 +177,21 @@
     ]
   },
   "Trigonometry": {
-    "introduction": "Explore the sine, cosine and tangent ratios in right-angled triangles, calculate missing values, and see how each ratio changes with the angle.",
+    "introduction": "Explore right-angled and general triangles, from SOHCAHTOA and Pythagoras to the sine and cosine rules.",
     "topics": [
       {
-        "slug": "sine",
-        "title": "Sine ratio",
-        "ready": true,
-        "app": "apps/trigonometry/sine/index.html",
-        "description": "Explore opposite ÷ hypotenuse, calculate a side or angle, and see sine increase towards 1."
-      },
-      {
-        "slug": "cosine",
-        "title": "Cosine ratio",
-        "ready": true,
-        "app": "apps/trigonometry/cosine/index.html",
-        "description": "Explore adjacent ÷ hypotenuse, calculate a side or angle, and see cosine decrease towards 0."
-      },
-      {
-        "slug": "tangent",
-        "title": "Tangent ratio",
-        "ready": true,
-        "app": "apps/trigonometry/tangent/index.html",
-        "description": "Explore opposite ÷ adjacent, calculate a side or angle, and see tangent grow without bound."
-      },
-      {
         "slug": "right-angle-ratios",
-        "title": "Sine, cosine and tangent",
+        "title": "Right-angled triangles",
         "ready": true,
         "app": "apps/right-angle-ratios/index.html",
-        "description": "Compare all three ratios and practise choosing the right one."
+        "description": "One starting point for sine, cosine, tangent and SOHCAHTOA."
       },
       {
         "slug": "solving-triangles",
-        "title": "Solving Triangles",
+        "title": "Solving triangles",
         "ready": true,
         "app": "apps/trigonometry/solving-triangles/index.html",
-        "description": "General and right-angled triangles: cosine rule, sine rule, SOHCAHTOA and Pythagoras, with a three-column classroom view."
-      },
-      {
-        "slug": "triangle-rules",
-        "title": "Sine and cosine rules",
-        "ready": true
+        "description": "The main classroom app: right and general triangles, sine and cosine rules, and step-by-step solutions."
       },
       {
         "slug": "right-triangle-applications",

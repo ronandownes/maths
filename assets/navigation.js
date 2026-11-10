@@ -94,9 +94,9 @@
         L("Cosine ratio", "apps/trigonometry/cosine/index.html"),
         L("Tangent ratio", "apps/trigonometry/tangent/index.html")
       ]),
-      T("Sine and cosine rules", "trigonometry/triangle-rules/index.html", [
-        L("Triangle explorer", "apps/triangle-rules/index.html"),
-        L("Geometry triangle rules", "geometry/triangle-rules/index.html")
+      T("Solving triangles", "apps/trigonometry/solving-triangles/index.html", [
+        L("Sine and cosine rules — lesson", "trigonometry/triangle-rules/index.html"),
+        L("Triangle explorer — earlier app", "apps/triangle-rules/index.html")
       ])
     ]},
     { label: "Statistics", home: "statistics/index.html", topics: [

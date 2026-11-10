@@ -89,13 +89,14 @@ def build():
         if category == 'Geometry':
             tiles += '<a class="tile" href="../apps/pythagoras/index.html"><strong>Pythagoras</strong><small>Exact triples, non-triples, surds and missing-side reasoning.</small></a>'
         if category == 'Trigonometry':
-            tiles += '<a class="tile" href="../apps/triangle-rules/index.html"><strong>Triangle Rules App</strong><small>Sine and cosine rules in a draggable triangle.</small></a>'
-        if category == 'Algebra':
-            tiles += '<a class="tile" href="expansions/index.html"><strong>Expansions</strong><small>Compare the representations and see why each is useful.</small></a>'
-            tiles += '<a class="tile" href="../apps/split-brackets/index.html"><strong>Split the Brackets</strong><small>Two distributive groups and reverse factorisation.</small></a>'
-            tiles += '<a class="tile" href="../apps/vertical-foil/index.html"><strong>Vertical FOIL</strong><small>Four multiplication routes through stacked binomials.</small></a>'
-            tiles += '<a class="tile" href="../apps/inline-rainbow/index.html"><strong>Inline Rainbow</strong><small>Upper and lower arcs, four partial products and reverse grouping.</small></a>'
-            tiles += '<a class="tile" href="../apps/polynomial-place-value/index.html"><strong>Place-Value Multiplication</strong><small>Align by powers for larger expansions.</small></a>'
+            tiles += ('<details><summary>More trigonometry activities and teaching pages</summary>'
+                      '<ul><li><a href="../apps/trigonometry/sine/index.html">Sine ratio</a></li>'
+                      '<li><a href="../apps/trigonometry/cosine/index.html">Cosine ratio</a></li>'
+                      '<li><a href="../apps/trigonometry/tangent/index.html">Tangent ratio</a></li>'
+                      '<li><a href="triangle-rules/index.html">Sine and cosine rules — lesson</a></li>'
+                      '<li><a href="../apps/triangle-rules/index.html">Triangle explorer — earlier app</a></li>'
+                      '</ul></details>')
+        # Expanding brackets is one top-level topic. Individual methods live inside its teaching page.
         planned=''.join(f'<li>{e(t["title"])}</li>' for t in data['topics'] if not t['ready'])
         book_link='<p class="note"><a href="https://ronandownes.github.io/book/chapter-trigonometry.html#trig-intro">Book section: Right-angled triangles</a></p>' if category == 'Trigonometry' else ''
         overview=f'<p class="lead">{e(data["introduction"])}</p>{book_link}<h2>Ready lessons and apps</h2><div class="tile-grid">{tiles}</div><h2>Other topics in this section</h2><p>These have a place in the structure but have not yet been written:</p><ul>{planned}</ul>'
