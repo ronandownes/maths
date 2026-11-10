@@ -2,7 +2,7 @@
 <html lang="en-IE">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Expanding Algebraic Expressions | Maths Apps</title>
+<title>Distribution | Maths Apps</title>
 <link rel="stylesheet" href="../shared/assessment.css">
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <style>
@@ -813,14 +813,30 @@ body.maths-only #lessonNavigation{display:flex!important;margin:20px auto}
  #boardPanel:not([hidden]) .board-stack{white-space:nowrap!important}
  #boardPanel:not([hidden]) .board-exit,#boardPanel:not([hidden]) .board-controls{display:none!important}
 }
+.distribution-method{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px;padding:8px 11px;background:#f7f9fc;border:1px solid #dce3ec;border-radius:7px}
+.distribution-method label{font-size:.88rem;font-weight:750;color:#38475c}
+.distribution-method select{font:inherit;font-weight:650;max-width:100%;padding:7px 28px 7px 9px;background:#fff;border:1px solid #aebdce;border-radius:6px;color:#1b2c41}
+.distribution-method-note{color:#607086;font-size:.77rem}
+@media(max-width:650px){.distribution-method-note{flex-basis:100%}}
 </style>
 </head>
 <body>
 <header>
 <a href="../../index.html" class="brand-link" aria-label="Maths Apps home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"><span class="apps-name">Apps</span></a>
-<div class="app-heading"><nav class="app-breadcrumb" aria-label="Mathematics location"><a href="../../algebra/index.html">Algebra</a><span aria-hidden="true">›</span><a href="../../algebra/expansions/index.html">Expansions</a></nav><h1 title="The distributive property of multiplication over addition and subtraction">Expanding Algebraic Expressions</h1></div>
+<div class="app-heading"><nav class="app-breadcrumb" aria-label="Mathematics location"><a href="../../algebra/index.html">Algebra</a><span aria-hidden="true">›</span><a href="../../algebra/expansions/index.html">Expansions</a></nav><h1 title="The distributive law of multiplication over addition and subtraction">Distribution</h1></div>
 </header>
 <main>
+<div class="distribution-method">
+  <label for="distributionMethod">Method</label>
+  <select id="distributionMethod" aria-label="Choose a distribution method">
+    <option value="place">Place Value</option>
+    <option value="fan">Vertical Fan</option>
+    <option value="margin">Vertical Margin</option>
+    <option value="horizontal">Horizontal FOIL</option>
+    <option value="split">Split the Brackets</option>
+  </select>
+  <span class="distribution-method-note" id="methodNote">Choose a method. Other methods currently open their existing teaching pages.</span>
+</div>
 <div class="focus-tools" role="toolbar" aria-label="Classroom view controls">
 <button id="mathsOnlyToggle" type="button" aria-pressed="false" title="Show only the maths, or return to all controls">▣ Maths only</button>
 <button id="focusNext" type="button" title="Go to the next numbered question">Next example →</button>
@@ -890,6 +906,18 @@ LEVEL</label><div class="coefficient-quick-pair"><select id="coefficientSelect">
 <script src="../shared/assessment.js"></script>
 <script>(()=>{'use strict';
 const $ = id=>document.getElementById(id);
+const distributionMethod=document.getElementById('distributionMethod');
+const distributionRoutes={
+  fan:'../foil/index.html',
+  margin:'../linear-right-margin/index.html',
+  horizontal:'../inline-rainbow/index.html',
+  split:'../split-brackets/index.html'
+};
+distributionMethod.addEventListener('change',()=>{
+  const destination=distributionRoutes[distributionMethod.value];
+  if(destination)window.location.assign(destination);
+});
+
 const mobileSettingsPanel=$('mobileSettingsPanel'),mobileSettingsToggle=$('mobileSettingsToggle');
 const mobileSettingsBackdrop=$('mobileSettingsBackdrop'),mobileSettingsClose=$('mobileSettingsClose');
 function setMobileSettings(open){
