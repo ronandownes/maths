@@ -21,7 +21,9 @@ function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a;}
 function gcdArray(a){return a.reduce((v,x)=>gcd(v,x),0);}
 function coefficients(degree,level,next){
  const max=level===1?5:level===2?15:level===3?41:level===4?99:999;
- const values=Array.from({length:max-1},(_,i)=>i+2);
+ // Level 1 draws from 1–11; 2, 3, 5 and 7 have double weight.
+ const values=level===1?[1,2,2,3,3,4,5,5,6,7,7,8,9,10,11]
+  :Array.from({length:max-1},(_,i)=>i+2);
  let a=Array.from({length:degree+1},()=>values[next(0,values.length-1)]);
  if(degree===0)return a;
  if(gcdArray(a)>1){
@@ -89,6 +91,15 @@ function generate({degreeA,degreeB,level=1,onesMode='off',doublePattern='inner',
  for(let i=1;i<A.length;i++)if(signPatternA[i-1]==='−')A[i]*=-1;
  for(let i=1;i<B.length;i++)if(signPatternB[i-1]==='−')B[i]*=-1;
  const chosen=chooseSlots(A,B,onesMode,doublePattern,next);
+ // The 1s controls govern exactly which positions may be 1. Replace
+ // incidental ones elsewhere, preserving the Level 1 non-one weights.
+ const nonOnePool=level===1?[2,2,3,3,4,5,5,6,7,7,8,9,10,11]:null;
+ if(nonOnePool){
+  [A,B].forEach((arr,factor)=>arr.forEach((value,index)=>{
+   if(value===1&&!chosen.some(s=>s.factor===factor&&s.index===index))
+    arr[index]=nonOnePool[next(0,nonOnePool.length-1)];
+  }));
+ }
  // A central zero is allowed only at an interior (non-leading/non-constant)
  // position, never where an explicit coefficient-1 position was selected.
  if(centralZero){
