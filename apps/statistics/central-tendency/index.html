@@ -147,7 +147,23 @@ const MAX=20,MIN=0,LEFT=56,RIGHT=1036,Y=244;
 const ns='http://www.w3.org/2000/svg';
 function svg(tag,attrs={},text=''){const e=document.createElementNS(ns,tag);for(const [k,v]of Object.entries(attrs))e.setAttribute(k,String(v));if(text)e.textContent=text;return e}
 function clamp(n){return Math.round(Math.max(MIN,Math.min(MAX,n)))}
-function randomData(n){const mean=7+Math.random()*7;return Array.from({length:n},()=>clamp(mean+(Math.random()+Math.random()+Math.random()-1.5)*11))}
+function mixedOrder(values){
+ // Fisher–Yates: randomise the presentation order without changing the data values.
+ const ordered=values.slice();
+ for(let attempt=0;attempt<100;attempt++){
+  const a=ordered.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+  const ascending=a.every((v,i)=>i===0||a[i-1]<=v);
+  const descending=a.every((v,i)=>i===0||a[i-1]>=v);
+  if(!ascending&&!descending)return a;
+ }
+ return ordered;
+}
+function randomData(n){
+ const mean=7+Math.random()*7;
+ const values=Array.from({length:n},()=>clamp(mean+(Math.random()+Math.random()+Math.random()-1.5)*11));
+ return mixedOrder(values);
+}
 function stats(a){
  const sorted=[...a].sort((x,y)=>x-y),n=a.length,total=a.reduce((s,x)=>s+x,0);
  const mean=total/n,median=n%2?sorted[Math.floor(n/2)]:(sorted[n/2-1]+sorted[n/2])/2;
@@ -294,6 +310,6 @@ $('check').onclick=()=>{
  $('feedback').textContent=all?'All three correct. ✓':(meanCorrect?'Mean ✓  ':'Mean ✕  ')+(medianCorrect?'Median ✓  ':'Median ✕  ')+(modeCorrect?'Mode ✓':'Mode ✕');
  $('feedback').className=all?'good':'bad';
 };
-render();
+setData(randomData(Number($('size').value)));
 </script>
 </body></html>
