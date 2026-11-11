@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fff"><meta name="description" content="Falling Fan Method for Unlike Factors: worked example and unnumbered practice in the teacher's original layout.">
+<title>Falling Fan Method for Unlike Factors | Maths Apps</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<style>
+:root{font:17px/1.4 system-ui,Segoe UI,Arial,sans-serif;color:#233f60;background:#f2f5f8}*{box-sizing:border-box}
+body{margin:0}.topbar{display:flex;gap:15px;align-items:center;max-width:1380px;margin:auto;padding:9px 24px}.topbar img{width:108px;display:block}.topbar a{color:#245b96;font-weight:650;text-decoration:none}.topbar .back{font-size:.85rem}
+main{max-width:1380px;margin:0 auto 20px;padding:20px 30px 36px;background:white;box-shadow:0 2px 14px #26406113}
+h1{font-size:clamp(1.35rem,3.5vw,2.2rem);font-weight:540;color:#244d7c;letter-spacing:-.018em;margin:0;padding:4px 0 15px;border-bottom:2px solid #2c5f94}
+.controls{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin:8px 0 0}.controls button{font:600 .88rem system-ui;cursor:pointer;border:1px solid #b7c8d8;border-radius:8px;background:#f8fbff;color:#244e7d;padding:8px 12px}.controls button:focus-visible{outline:3px solid #6aa6df}
+.sheet{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(300px,1fr) minmax(225px,.85fr);gap:26px 30px}
+.cell{min-width:0;display:flex;align-items:flex-start;justify-content:center;padding:25px 3px 0}
+.cell.example{align-items:flex-start;padding-top:11px}.example-svg{width:100%;height:auto;max-height:305px;overflow:visible}
+.problem{min-width:190px;max-width:100%;text-align:center;font:clamp(1.5rem,2.9vw,2.05rem)/1.55 'Cambria Math',Cambria,Georgia,serif;color:#234c77}
+.stack{display:inline-block;min-width:175px}.stack>div:not(.rule){white-space:nowrap}.rule{border-top:2px solid #315e91;margin-top:6px;min-width:195px}
+.answer{margin-top:16px;font:600 .84rem/1.5 system-ui;color:#34618a}.answer summary{cursor:pointer}.answer-math{font:1.4rem/1.5 'Cambria Math',Cambria,Georgia,serif;color:#245b88;padding:4px}
+.note{font-size:.92rem;color:#596d80;margin:4px 0 0;line-height:1.5}.links{display:flex;gap:16px;margin:12px 0 0;font-size:.92rem}.links a{color:#235a93}
+.hidden-working .working{opacity:0}
+@media(max-width:760px){main{padding:13px 15px 24px}.topbar{padding:9px 13px}.sheet{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none;gap:12px 8px}.cell{padding-top:10px}.cell.example{grid-column:span 2;padding:4px 4px 0}.example-svg{max-height:235px}.problem{font-size:1.6rem}.stack{min-width:140px}.rule{min-width:140px}}
+@media(max-width:440px){.sheet{grid-template-columns:1fr}.cell.example{grid-column:auto}.cell{padding-top:15px}.problem{font-size:1.8rem}}
+@media print{@page{size:A4 landscape;margin:9mm}:root{background:white}main{box-shadow:none;padding:0}.topbar,.controls,.links,.note,.answer{display:none!important}.sheet{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,1fr);gap:0}.cell{break-inside:avoid;padding-top:9px}.example-svg{height:180px}.problem{font-size:1.45rem}.stack{min-width:145px}.rule{min-width:155px}h1{font-size:1.55rem}}
+</style></head><body>
+<header class="topbar"><a href="../../index.html" aria-label="Maths Apps home"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"></a><a class="back" href="../../algebra/expansions/index.html">Algebra / Expanding brackets</a></header>
+<main><h1>Falling Fan Method for Unlike Factors</h1>
+<div class="controls"><button type="button" id="workingToggle" aria-pressed="true">Hide worked steps</button><button type="button" onclick="window.print()">Print</button></div>
+<section class="sheet" aria-label="Worked example and five unnumbered practice questions"><article class="cell example"><svg class="example-svg" viewBox="0 0 550 300" role="img" aria-label="Falling fan from vertically stacked 3x minus 7 and 2y plus 9, showing four routes and the four products: negative 14y, positive 6xy, negative 63, positive 27x.">
+<defs><marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 Z" fill="#567fa5"/></marker></defs>
+<g fill="#234c77" font-family="Cambria Math, Cambria, Georgia, serif" font-size="40">
+<text x="75" y="67">3x</text><text x="218" y="67">−7</text>
+<text x="75" y="148">2y</text><text x="218" y="148">+9</text></g>
+<line x1="22" x2="518" y1="184" y2="184" stroke="#24558b" stroke-width="2"/>
+<g class="working" stroke="#567fa5" stroke-width="2.1" fill="none" marker-end="url(#arr)">
+<path d="M237 76 L67 221"/><path d="M105 148 L202 221"/>
+<path d="M253 146 L335 221"/><path d="M105 75 L468 221"/></g>
+<g class="working" fill="#234c77" font-family="Cambria Math, Cambria, Georgia, serif" font-size="30">
+<text x="13" y="262">−14y</text><text x="145" y="262">+6xy</text><text x="308" y="262">−63</text><text x="414" y="262">+27x</text></g></svg></article><article class="cell"><div class="problem"><div class="stack"><div>7 + 2m</div><div>3n + 5</div><div class="rule"></div></div><details class="answer"><summary>Answer</summary><div class="answer-math">6mn + 10m + 21n + 35</div></details></div></article><article class="cell"><div class="problem"><div class="stack"><div>3a² + 2</div><div>5b² + 7</div><div class="rule"></div></div><details class="answer"><summary>Answer</summary><div class="answer-math">15a²b² + 21a² + 10b² + 14</div></details></div></article><article class="cell"><div class="problem"><div class="stack"><div>2r + 7</div><div>5 + 2t</div><div class="rule"></div></div><details class="answer"><summary>Answer</summary><div class="answer-math">4rt + 10r + 14t + 35</div></details></div></article><article class="cell"><div class="problem"><div class="stack"><div>2u + 1</div><div>5v + 3</div><div class="rule"></div></div><details class="answer"><summary>Answer</summary><div class="answer-math">10uv + 6u + 5v + 3</div></details></div></article><article class="cell"><div class="problem"><div class="stack"><div>5e + f</div><div>f² + 3</div><div class="rule"></div></div><details class="answer"><summary>Answer</summary><div class="answer-math">5ef² + f³ + 15e + 3f</div></details></div></article></section>
+<p class="note">Each pair of terms produces its own partial product. Write all four; combine only when terms are alike.</p><div class="links"><a href="../../algebra/expansions/index.html">Other expansion methods</a><a href="https://ronandownes.github.io/book/expansions-unlike-factors.html">Open in the PreTeXt book</a></div>
+</main><script>const b=document.getElementById('workingToggle');b.addEventListener('click',()=>{const hidden=document.body.classList.toggle('hidden-working');b.textContent=hidden?'Show worked steps':'Hide worked steps';b.setAttribute('aria-pressed',String(!hidden))});</script>
+</body></html>
