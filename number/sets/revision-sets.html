@@ -183,7 +183,7 @@ function render(resetPart){
  E('partref').textContent='Part '+p.id;
  E('subquestion').textContent=p.q;
  const steps=p.steps, focus=stage?steps[stage-1][2]||[]:[], vals=[];
- for(let s=0;s<stage;s++){let a=steps[s]; if(a[3]!=null){let fs=a[2]||[]; if(fs.length===1)vals.push([fs[0],a[3]]);else if(String(a[3]).includes('|')){String(a[3]).split('|').forEach((v,j)=>vals.push([['left','both','right'][j],v]))}}}
+ for(let s=0;s<stage;s++){let a=steps[s]; if(a[3]!=null){let fs=a[2]||[]; if(fs.length===1)vals.push([fs[0],a[3]]);else if(String(a[3]).includes('|')){String(a[3]).split('|').forEach((v,j)=>{if(fs[j])vals.push([fs[j],v])})}}}
  E('diagram-wrap').innerHTML=q.diagram?diagram(q.diagram,focus,vals):'';
  E('steptext').textContent=stage?steps[stage-1][0]:'Think first. Explain your reasoning before revealing the answer.';
  E('mathexpr').textContent=stage?steps[stage-1][1]:'';
