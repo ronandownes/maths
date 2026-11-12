@@ -204,11 +204,11 @@ var questions=[
 {phase:"(a) Include Business only",ask:"Where are the students studying Business but not Art?",focus:["left","both","right"],ticks:["left","both","right"],eq:add([[6,"left"],[5,"both"],[13,"right"]]),reason:"The right-only region adds 13."},
 {phase:"(a) Complete the universal set",ask:"Who has not been counted yet? Are they still in the class?",focus:["left","both","right","neither"],ticks:["left","both","right","neither"],eq:add([[6,"left"],[5,"both"],[13,"right"],[1,"neither"]]),reason:"Even students studying neither subject belong to U."},
 {phase:"(a) Reveal the total",ask:"What is the value of #U?",focus:["left","both","right","neither"],ticks:["left","both","right","neither"],eq:add([[6,"left"],[5,"both"],[13,"right"],[1,"neither"]])+' = <strong class="answer">25</strong>',reason:"All four mutually exclusive regions partition the class.",universe:"25"},
-{phase:"(b) Both subjects",ask:"Which single region is the intersection A ∩ B?",focus:["both"],eq:"Think: A ∩ B = ?",reason:"Both means inside both circles."},
+{phase:"(b) Both subjects",ask:"Which single region is the intersection A ∩ B?",focus:["both"],eq:"Choose from the word wall.",reason:"Both means inside both circles."},
 {phase:"(b) Reveal",ask:"How many study both Art and Business?",focus:["both"],ticks:["both"],eq:"#(A ∩ B) = "+chip(5,"both"),reason:"Read the overlap, not the full Art or Business circle."},
-{phase:"(c) Business but not Art",ask:"Which part of B must be excluded from A?",focus:["right"],eq:"Think: B \\ A = ?",reason:"The shared five must be excluded."},
+{phase:"(c) Business but not Art",ask:"Which part of B must be excluded from A?",focus:["right"],eq:"Choose from the word wall.",reason:"The shared five must be excluded."},
 {phase:"(c) Reveal",ask:"How many study Business only?",focus:["right"],ticks:["right"],eq:"#(B \\ A) = "+chip(13,"right"),reason:"Right circle minus the overlap."},
-{phase:"(d) Neither",ask:"Where are students who study neither subject shown?",focus:["neither"],eq:"Think: outside A ∪ B",reason:"Inside the rectangle U, but outside both circles."},
+{phase:"(d) Neither",ask:"Where are students who study neither subject shown?",focus:["neither"],eq:"Which operation describes NEITHER?",reason:"Inside the rectangle U, but outside both circles."},
 {phase:"(d) Reveal",ask:"How many study neither Art nor Business?",focus:["neither"],ticks:["neither"],eq:chip(1,"neither")+' student',reason:"That one student is still included in the class total."}
 ]},
 {number:3,title:"Tourists in Cork and Galway",sets:["C","G"],universe:"50",problem:"Of 50 tourists, 16 visited Cork only, 19 visited Galway only, and 3 visited neither city. Complete the diagram, then find (i) Galway only, (ii) both cities, and (iii) neither.",facts:["U = 50 tourists","C = Cork","G = Galway"],initial:{left:16,right:19,neither:3},steps:[
@@ -266,7 +266,7 @@ function render(){
  $("problem").textContent=q.problem;
  $("facts").innerHTML="";
  q.facts.forEach(function(v){var x=document.createElement("span");x.className="fact";x.textContent=v;$("facts").appendChild(x);});
- $("ask").textContent=q.number!==1?s.ask:(step<=5?"(a) How many students are in the class?":step<=7?"(b) How many study both Art and Business?":step<=9?"(c) How many study Business but not Art?":"(d) How many study neither subject?");
+ $("ask").textContent=q.number!==1?s.ask:(step<=5?"(a) How many students are in the class?":step<=7?"(b) How many study both Art and Business? Which operation?":step<=9?"(c) How many study Business but not Art? Which operation?":"(d) How many study neither subject? Which operation?");
  $("phase").textContent=s.phase;
  $("expression").innerHTML=s.eq||"Predict before clicking to reveal the next part.";
  $("expression").classList.toggle("empty",!s.eq);
