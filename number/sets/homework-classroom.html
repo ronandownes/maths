@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Interactive, step-by-step Venn diagram homework corrections for First Year, Active Maths 1 Exercise 1.7, Questions 1, 3, 5, 7 and 9.">
+<title>Exercise 1.7 · Classroom View | JC and LC Maths</title>
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="stylesheet" href="../../assets/styles.css">
+<style>
+:root{--navy:#18324f;--blue:#2067b0;--line:#d3deea;--left:#3b82dc;--both:#9259ca;--right:#148f82;--neither:#ca741c}
+*{box-sizing:border-box}
+body{background:#edf2f7;color:var(--navy);margin:0}
+.review-header{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:8px clamp(12px,2vw,30px);min-height:63px}
+.review-header img{width:56px;height:auto;display:block}
+.review-header a{color:var(--navy);font-weight:750;text-decoration:none}
+.review-header a:hover{text-decoration:underline}
+.crumb{font-size:.93rem;color:#60758b}
+.push{margin-left:auto}
+.pill{font-size:.82rem;border:1px solid #c3d4e7;border-radius:999px;padding:3px 11px;color:#46637d;background:#f6f9fd}
+.shell{width:min(1560px,97vw);margin:12px auto 28px}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between;margin-bottom:10px}
+.question-picker{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.question-picker span{font-size:.83rem;color:#566e86;font-weight:750;margin-right:4px}
+button{font-family:inherit;cursor:pointer;font-weight:750}
+.question-picker button{border:1px solid #bed0e2;background:white;color:#39536c;border-radius:11px;padding:8px 17px;font-size:1rem;min-width:52px}
+.question-picker button[aria-current="true"]{background:#1765ae;color:white;border-color:#1765ae;box-shadow:0 3px 8px #1765ae24}
+.utility{display:flex;gap:8px;align-items:center}
+.utility button,.go button{background:#fff;border:1px solid #b7c9db;border-radius:10px;color:#27425d;padding:9px 15px}
+.utility button:hover,.go button:hover{background:#f2f7fd}
+.slide{background:white;border:1px solid #ced9e5;border-radius:18px;box-shadow:0 8px 35px #21385412;overflow:hidden;min-height:min(78vh,800px);display:flex;flex-direction:column}
+.slide-head{background:#f6faff;border-bottom:2px solid #dae8f5;display:flex;align-items:center;gap:12px;justify-content:space-between;padding:15px clamp(15px,2vw,31px)}
+.slide-title{font-size:clamp(1.16rem,2vw,1.65rem);font-weight:830;letter-spacing:-.03em;color:#143c67}
+.slide-meta{font-size:.84rem;color:#55718d;font-weight:700;white-space:nowrap}
+.slide-grid{display:grid;grid-template-columns:minmax(320px,0.93fr) minmax(410px,1.15fr);gap:clamp(12px,2vw,32px);padding:clamp(14px,2.2vw,34px);flex:1;align-items:stretch}
+.story{min-width:0;display:flex;flex-direction:column;gap:clamp(12px,1.4vw,22px)}
+.story-label{font-size:.74rem;font-weight:850;letter-spacing:.14em;text-transform:uppercase;color:#61809d}
+.problem{font-size:clamp(1.1rem,1.52vw,1.4rem);line-height:1.43;font-weight:650;margin:5px 0 0}
+.facts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.fact{background:#f0f5fa;border:1px solid #d7e5f1;color:#294b69;padding:5px 11px;border-radius:999px;font-weight:780;font-size:clamp(.87rem,1.2vw,1.08rem)}
+.ask-box{background:#fff7e9;border:1px solid #f1d69a;border-left:6px solid #db9331;border-radius:14px;padding:clamp(12px,1.5vw,20px);min-height:113px}
+.ask-title{color:#975b11;font-size:.76rem;letter-spacing:.13em;font-weight:850;text-transform:uppercase}
+.ask{font-size:clamp(1.13rem,1.8vw,1.65rem);line-height:1.29;font-weight:780;margin:6px 0 0}
+.work{background:#f8fbff;border:1px solid #d5e4f3;border-radius:15px;padding:clamp(13px,1.7vw,23px);margin-top:auto;min-height:156px}
+.phase{font-size:.85rem;color:#34668f;font-weight:800;margin-bottom:8px}
+.expression{min-height:40px;font-size:clamp(1.3rem,2.25vw,2rem);line-height:1.45;font-weight:790;letter-spacing:.003em;word-wrap:break-word}
+.expression.empty{color:#8799a9;font-weight:550;font-size:clamp(1rem,1.25vw,1.17rem)}
+.reason{font-size:clamp(.93rem,1.23vw,1.1rem);color:#435c76;line-height:1.35;margin:7px 0 0}
+.v{display:inline-block;padding:0 .26em;margin:1px .04em;border-radius:6px;border-bottom:3px solid transparent}
+.v.left{background:#dcedff;border-color:var(--left);color:#175a9c}
+.v.both{background:#efe1ff;border-color:var(--both);color:#6d368f}
+.v.right{background:#daf5f0;border-color:var(--right);color:#117267}
+.v.neither{background:#fff0d7;border-color:var(--neither);color:#925212}
+.answer{color:#0e6849}
+.visual{display:flex;flex-direction:column;justify-content:center;min-width:0;background:#fcfdff;border:1px solid #e0e8f1;border-radius:15px;padding:12px 8px 14px}
+.visual-hint{font-size:.77rem;color:#607a94;text-align:center;letter-spacing:.04em;font-weight:750}
+.venn{display:block;width:100%;height:auto;max-height:570px;overflow:visible}
+.venn .highlight{opacity:0;transition:opacity .32s ease;pointer-events:none}
+.venn .highlight.on{opacity:.43}
+.venn .diagram-border{fill:none;stroke:#47718d;stroke-width:3}
+.venn .circle{fill:none;stroke:#244b6a;stroke-width:3.4}
+.venn .label{font:italic 700 27px Georgia,serif;fill:#244b6a}
+.venn .universal{font:700 25px Arial,sans-serif;fill:#295f8c}
+.venn .number{font:750 48px Arial,sans-serif;fill:#173c5b;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:4;stroke-linejoin:round}
+.venn .number.unknown{font-weight:500;fill:#95a6b4;font-size:36px}
+.venn .tick{font:900 34px Arial,sans-serif;fill:#176c50;opacity:0;transition:opacity .15s ease;text-anchor:middle}
+.venn .tick.on{opacity:1}
+.venn .hit{fill:transparent;cursor:pointer}
+.venn .hit:focus{outline:none;stroke:#d48a2b;stroke-width:4}
+.venn-caption{font-size:clamp(.79rem,1vw,.96rem);color:#4c6882;line-height:1.35;text-align:center;min-height:2.6em}
+.legend{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;font-size:.78rem;color:#4c657b;font-weight:700;margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:4px;display:inline-block}
+.dot.left{background:var(--left)}.dot.both{background:var(--both)}.dot.right{background:var(--right)}.dot.neither{background:var(--neither)}
+.footer-controls{padding:12px 20px;display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;background:#fbfdff;border-top:1px solid #e1eaf2}
+.go{display:flex;align-items:center;gap:8px}
+.go.right{justify-content:flex-end}
+.go button{font-size:1rem}
+.go button:disabled{opacity:.4;cursor:not-allowed}
+.go .primary{background:#1765ae;border-color:#1765ae;color:#fff;padding:11px 24px}
+.go .primary:hover{background:#105492}
+.progress{text-align:center;color:#58738d;font-weight:750;font-size:.93rem}
+.progress-track{height:5px;background:#dde8f2;border-radius:100px;overflow:hidden;margin-top:7px;min-width:110px}
+.progress-fill{width:0;height:100%;background:#328acb;transition:width .2s}
+.notes{font-size:.78rem;color:#56718b;text-align:center;margin:8px 0 0}
+.link-back{color:#245c93;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:940px){.slide-grid{grid-template-columns:1fr}.visual{order:-1}.venn{max-height:400px}.work{margin-top:0}.slide{min-height:0}.story{gap:13px}}
+@media(max-width:650px){.shell{width:99vw;margin-top:7px}.slide-head{padding:10px}.slide-meta{white-space:normal;text-align:right;font-size:.7rem}.slide-grid{padding:10px}.review-header{padding:5px 10px}.crumb{font-size:.73rem}.question-picker button{padding:6px 10px;min-width:42px}.footer-controls{grid-template-columns:1fr 1fr;padding:10px}.progress{grid-row:1;grid-column:1/-1}.go.left{grid-row:2;grid-column:1}.go.right{grid-row:2;grid-column:2}.go button{padding:9px 11px!important}.venn{max-height:300px}}
+@media print{body{background:#fff}.review-header,.controls,.footer-controls,.notes,.visual-hint{display:none!important}.shell{width:100%;margin:0}.slide{border:0;box-shadow:none;min-height:0}.slide-grid{grid-template-columns:1fr 1.1fr;padding:10px}.visual{order:initial}.work{margin-top:15px}.slide-head{background:#fff}}
+
+/* Separate classroom-view variant: original homework page remains unmodified. */
+.slide-grid{display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:12px 22px}
+.story{display:contents}
+.story>div:first-child{order:1;padding:8px 14px}
+.ask-box{order:2;min-height:0;padding:11px 18px;border-left-width:5px}
+.ask{font-size:clamp(1.45rem,2.3vw,2.15rem);line-height:1.2;margin:3px 0}
+.ask-title{display:none}
+.visual{order:0;margin:0 auto;width:min(920px,100%);padding:8px 10px}
+.visual-hint,.legend{display:none}
+.venn{max-height:410px}
+.venn .label{font:italic 800 42px Georgia,serif}
+.venn .number{font:800 54px Arial,sans-serif}
+.venn-caption{font-size:clamp(1.03rem,1.4vw,1.26rem);min-height:0}
+.wordwall{order:3;display:flex;gap:9px;justify-content:center;align-items:center;flex-wrap:wrap;padding:9px 6px}
+.wordwall span{color:#476a88;font-size:1.05rem;font-weight:800}
+.wordwall strong{background:#f7fbff;border:2px solid #caddea;border-radius:9px;padding:8px 12px;font-size:clamp(1.12rem,1.6vw,1.48rem)}
+.work{order:4;min-height:0;margin:0 auto;width:min(940px,100%);padding:10px 17px}
+.expression{font-size:clamp(1.65rem,2.55vw,2.45rem)}
+.phase{font-size:1.09rem}
+.reason{font-size:clamp(1.03rem,1.35vw,1.26rem)}
+.qone .story>div:first-child{display:none}
+.qone .ask-box{order:-2;margin:0 auto;width:min(940px,100%)}
+.qone .wordwall{order:-1}
+.slide .controls{position:sticky;top:0;z-index:8;margin:0;padding:10px 18px;background:#f5faff;border-bottom:1px solid #cddfec}
+.slide:fullscreen{width:100vw;height:100vh;min-height:0;border-radius:0;overflow:auto;background:#fff}
+.slide:fullscreen .slide-grid{flex:1}
+.slide-head{padding:10px 22px}
+.slide-title{font-size:clamp(1.25rem,1.8vw,1.65rem)}
+.problem{font-size:clamp(1.17rem,1.5vw,1.37rem);line-height:1.32}
+.footer-controls{position:sticky;bottom:0;z-index:7;padding:8px 18px}
+@media(max-width:650px){.slide-grid{padding:8px}.wordwall strong{padding:5px 7px}.venn{max-height:310px}.slide .controls{padding:6px}.slide-head{padding:7px 10px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#slide">Skip to question</a>
+<header class="review-header">
+<a href="../../index.html" aria-label="Maths home"><img src="../../assets/maths-logo.svg" alt="Maths"></a>
+<a href="index.html">Sets</a>
+<span class="crumb">/ Exercise 1.7 / Classroom view</span>
+<div class="push"></div><span class="pill">First Year · Venn diagrams</span>
+</header>
+<main class="shell">
+<nav class="controls" aria-label="Choose a question">
+<div class="question-picker" id="question-picker"><span>Question</span><button type="button" data-question="0">1</button><button type="button" data-question="1">3</button><button type="button" data-question="2">5</button><button type="button" data-question="3">7</button><button type="button" data-question="4">9</button></div>
+<div class="utility"><button type="button" id="reset">↺ Restart</button><button type="button" id="fullscreen">⛶ Full screen</button></div>
+</nav>
+<section class="slide" id="slide" aria-label="Interactive Venn diagram question">
+<div class="slide-head"><div class="slide-title" id="slide-title">Question 1</div><div class="slide-meta" id="slide-meta">Active Maths 1</div></div>
+<div class="slide-grid">
+<article class="story">
+<div><div class="story-label">Read the question</div><p class="problem" id="problem"></p><div class="facts" id="facts"></div></div>
+<div class="ask-box"><div class="ask-title">Ask the class · Think before the reveal</div><p class="ask" id="ask" aria-live="polite"></p></div>
+<div class="wordwall" aria-label="Set vocabulary"><span>Which operation?</span><strong>Union ∪</strong><strong>Intersection ∩</strong><strong>Difference \</strong><strong>Complement ′</strong><strong>Cardinality #</strong></div>
+<div class="work"><div class="phase" id="phase"></div><div id="expression" class="expression" aria-live="polite"></div><p id="reason" class="reason"></p></div>
+</article>
+<div class="visual">
+<div class="visual-hint" id="visual-hint">Each coloured region represents a different part of U</div>
+<svg class="venn" viewBox="0 0 720 505" role="img" aria-labelledby="diagram-title diagram-description">
+<title id="diagram-title">Two-set Venn diagram</title><desc id="diagram-description">A rectangle for the universal set, overlapping circles, and four separate regions. Coloured shading and ticks appear as each solution is revealed.</desc>
+<defs>
+<clipPath id="clip-left"><circle cx="285" cy="260" r="153"/></clipPath>
+<mask id="mask-left"><rect x="0" y="0" width="720" height="505" fill="white"/><circle cx="435" cy="260" r="153" fill="black"/></mask>
+<mask id="mask-right"><rect x="0" y="0" width="720" height="505" fill="white"/><circle cx="285" cy="260" r="153" fill="black"/></mask>
+<mask id="mask-neither"><rect x="0" y="0" width="720" height="505" fill="white"/><circle cx="285" cy="260" r="153" fill="black"/><circle cx="435" cy="260" r="153" fill="black"/></mask>
+</defs>
+<rect x="50" y="85" width="620" height="385" rx="7" fill="#fff"/>
+<rect id="highlight-neither" class="highlight" x="50" y="85" width="620" height="385" fill="#efa54d" mask="url(#mask-neither)"/>
+<circle id="highlight-left" class="highlight" cx="285" cy="260" r="153" fill="#4e9ae8" mask="url(#mask-left)"/>
+<circle id="highlight-both" class="highlight" cx="435" cy="260" r="153" fill="#ad7cdd" clip-path="url(#clip-left)"/>
+<circle id="highlight-right" class="highlight" cx="435" cy="260" r="153" fill="#37bba9" mask="url(#mask-right)"/>
+<rect class="diagram-border" x="50" y="85" width="620" height="385" rx="7"/>
+<circle class="circle" cx="285" cy="260" r="153"/><circle class="circle" cx="435" cy="260" r="153"/>
+<text id="u-label" class="universal" x="55" y="66">U</text>
+<text id="label-left" class="label" x="200" y="102">A</text>
+<text id="label-right" class="label" x="512" y="102">B</text>
+<text id="number-left" class="number" x="204" y="276"></text>
+<text id="number-both" class="number" x="360" y="276"></text>
+<text id="number-right" class="number" x="519" y="276"></text>
+<text id="number-neither" class="number" x="99" y="449"></text>
+<text id="tick-left" class="tick" x="204" y="319">✓</text>
+<text id="tick-both" class="tick" x="360" y="319">✓</text>
+<text id="tick-right" class="tick" x="519" y="319">✓</text>
+<text id="tick-neither" class="tick" x="173" y="450">✓</text>
+<g aria-hidden="true">
+<ellipse class="hit" data-region="left" cx="210" cy="260" rx="48" ry="100"/>
+<ellipse class="hit" data-region="both" cx="360" cy="245" rx="46" ry="105"/>
+<ellipse class="hit" data-region="right" cx="514" cy="260" rx="48" ry="100"/>
+<rect class="hit" data-region="neither" x="60" y="401" width="88" height="65"/>
+</g>
+</svg>
+<div class="venn-caption" id="caption">Read the four regions before calculating.</div>
+<div class="legend"><span><i class="dot left"></i>Left only</span><span><i class="dot both"></i>Both</span><span><i class="dot right"></i>Right only</span><span><i class="dot neither"></i>Neither</span></div>
+</div>
+</div>
+<div class="footer-controls">
+<div class="go left"><button id="previous" type="button">← Previous</button></div>
+<div class="progress"><span id="stage-number">Reveal 1</span><div class="progress-track"><div class="progress-fill" id="fill"></div></div></div>
+<div class="go right"><button type="button" id="next" class="primary">Reveal next →</button></div>
+</div>
+</section>
+<p class="notes">Click “Reveal next” or press <strong>Space / →</strong>. Press <strong>←</strong> to go backwards. Click a Venn region to emphasise it; press <strong>R</strong> to restart the question. <a class="link-back" href="index.html">Return to Sets</a>.</p>
+</main>
+<script>
+(function(){
+"use strict";
+function chip(n,r){return '<span class="v '+r+'">'+n+'</span>';}
+function add(rs){return rs.map(function(x){return chip(x[0],x[1]);}).join(' + ');}
+var questions=[
+{number:1,title:"Art and Business",sets:["A","B"],universe:"?",problem:"The Venn diagram divides a class into students studying Art (A) and Business (B). Use the four regions to answer (a) the class size, (b) both subjects, (c) Business but not Art, and (d) neither subject.",facts:["Art: A","Business: B","Four regions shown"],initial:{left:6,both:5,right:13,neither:1},steps:[
+{phase:"(a) How many students are in the class?",ask:"(a) How many students are in the class?",caption:"Four regions. Each student is counted exactly once."},
+{phase:"(a) How many students are in the class?",ask:"Start counting. How many study Art only?",focus:["left"],ticks:["left"],eq:chip(6,"left"),reason:"First region: Art only."},
+{phase:"(a) Add the overlap",ask:"What must we add for the students studying both subjects?",focus:["left","both"],ticks:["left","both"],eq:add([[6,"left"],[5,"both"]]),reason:"The overlap is counted once, not twice."},
+{phase:"(a) Include Business only",ask:"Where are the students studying Business but not Art?",focus:["left","both","right"],ticks:["left","both","right"],eq:add([[6,"left"],[5,"both"],[13,"right"]]),reason:"The right-only region adds 13."},
+{phase:"(a) Complete the universal set",ask:"Who has not been counted yet? Are they still in the class?",focus:["left","both","right","neither"],ticks:["left","both","right","neither"],eq:add([[6,"left"],[5,"both"],[13,"right"],[1,"neither"]]),reason:"Even students studying neither subject belong to U."},
+{phase:"(a) Reveal the total",ask:"What is the value of #U?",focus:["left","both","right","neither"],ticks:["left","both","right","neither"],eq:add([[6,"left"],[5,"both"],[13,"right"],[1,"neither"]])+' = <strong class="answer">25</strong>',reason:"All four mutually exclusive regions partition the class.",universe:"25"},
+{phase:"(b) Both subjects",ask:"Which single region is the intersection A ∩ B?",focus:["both"],eq:"Think: A ∩ B = ?",reason:"Both means inside both circles."},
+{phase:"(b) Reveal",ask:"How many study both Art and Business?",focus:["both"],ticks:["both"],eq:"#(A ∩ B) = "+chip(5,"both"),reason:"Read the overlap, not the full Art or Business circle."},
+{phase:"(c) Business but not Art",ask:"Which part of B must be excluded from A?",focus:["right"],eq:"Think: B \\ A = ?",reason:"The shared five must be excluded."},
+{phase:"(c) Reveal",ask:"How many study Business only?",focus:["right"],ticks:["right"],eq:"#(B \\ A) = "+chip(13,"right"),reason:"Right circle minus the overlap."},
+{phase:"(d) Neither",ask:"Where are students who study neither subject shown?",focus:["neither"],eq:"Think: outside A ∪ B",reason:"Inside the rectangle U, but outside both circles."},
+{phase:"(d) Reveal",ask:"How many study neither Art nor Business?",focus:["neither"],ticks:["neither"],eq:chip(1,"neither")+' student',reason:"That one student is still included in the class total."}
+]},
+{number:3,title:"Tourists in Cork and Galway",sets:["C","G"],universe:"50",problem:"Of 50 tourists, 16 visited Cork only, 19 visited Galway only, and 3 visited neither city. Complete the diagram, then find (i) Galway only, (ii) both cities, and (iii) neither.",facts:["U = 50 tourists","C = Cork","G = Galway"],initial:{left:16,right:19,neither:3},steps:[
+{phase:"Read the information",ask:"Three regions are known. Which region is missing?",caption:"The overlap is deliberately blank."},
+{phase:"(a) Set up the total",ask:"How do four disjoint regions combine to give all 50 tourists?",focus:["left","right","neither"],eq:chip(16,"left")+' + ? + '+chip(19,"right")+' + '+chip(3,"neither")+' = 50',reason:"The unknown lies in the intersection."},
+{phase:"(a) Subtract what is known",ask:"How many tourists are already accounted for?",focus:["left","right","neither"],ticks:["left","right","neither"],eq:"16 + 19 + 3 = <strong>38</strong>",reason:"These are all outside the overlap."},
+{phase:"(a) Reveal the overlap",ask:"How many of the 50 must have visited both cities?",focus:["both"],ticks:["both"],show:{both:12},eq:"50 − 38 = "+chip(12,"both"),reason:"Place 12 in C ∩ G."},
+{phase:"(b)(i) Galway but not Cork",ask:"Do we include the shared 12 if the question says but not Cork?",focus:["right"],show:{both:12},eq:"Think: G \\ C",reason:"Only the right-hand exclusive region."},
+{phase:"(b)(i) Reveal",ask:"How many visited Galway only?",focus:["right"],ticks:["right"],show:{both:12},eq:chip(19,"right"),reason:"Galway but not Cork = 19."},
+{phase:"(b)(ii) Both cities",ask:"Which region gives the number who visited Cork and Galway?",focus:["both"],show:{both:12},eq:"Think: C ∩ G",reason:"Look where the circles overlap."},
+{phase:"(b)(ii) Reveal",ask:"How many visited both cities?",focus:["both"],ticks:["both"],show:{both:12},eq:chip(12,"both"),reason:"Both cities = 12."},
+{phase:"(b)(iii) Neither city",ask:"Are those outside both circles still part of U?",focus:["neither"],show:{both:12},eq:"Think: (C ∪ G)′",reason:"The outside region is inside the rectangle."},
+{phase:"(b)(iii) Reveal",ask:"How many visited neither?",focus:["neither"],ticks:["neither"],show:{both:12},eq:chip(3,"neither"),reason:"Check: 16 + 12 + 19 + 3 = 50."}
+]},
+{number:5,title:"Hockey and Tennis",sets:["H","T"],universe:"28",problem:"In a class of 28, 23 play hockey, 12 play tennis, and 9 play both. Complete the Venn diagram. Then find (i) neither game and (ii) hockey but not tennis.",facts:["#U = 28","#H = 23","#T = 12","Both = 9"],initial:{left:14},steps:[
+{phase:"Read the given 14",ask:"Why does the hockey-only region contain 14, not 23?",focus:["left"],eq:chip(23,"left")+' − 9 = '+chip(14,"left"),reason:"23 hockey players includes 9 who also play tennis."},
+{phase:"(a) Fill the intersection",ask:"Where should the nine students playing both games go?",focus:["both"],ticks:["both"],show:{both:9},eq:"#(H ∩ T) = "+chip(9,"both"),reason:"Put the shared nine in the overlap."},
+{phase:"(a) Find tennis only",ask:"What remains of the 12 tennis players after removing the nine who play both?",focus:["right","both"],ticks:["right"],show:{both:9,right:3},eq:"12 − 9 = "+chip(3,"right"),reason:"The tennis-only region has 3."},
+{phase:"(a) Find neither",ask:"How many students have we accounted for? Subtract that from 28.",focus:["left","both","right","neither"],ticks:["neither"],show:{both:9,right:3,neither:2},eq:"28 − (14 + 9 + 3) = "+chip(2,"neither"),reason:"Every member of the class must be somewhere in U."},
+{phase:"(a) Check the completed diagram",ask:"Can we verify that the four regions total 28?",focus:["left","both","right","neither"],show:{both:9,right:3,neither:2},eq:add([[14,"left"],[9,"both"],[3,"right"],[2,"neither"]])+" = 28",reason:"Each student is counted exactly once."},
+{phase:"(b)(i) Neither hockey nor tennis",ask:"Where do students who play neither game belong?",focus:["neither"],show:{both:9,right:3,neither:2},eq:"Think: outside H ∪ T",reason:"Inside U but outside both circles."},
+{phase:"(b)(i) Reveal",ask:"How many play neither game?",focus:["neither"],ticks:["neither"],show:{both:9,right:3,neither:2},eq:chip(2,"neither"),reason:"Neither = 2 students."},
+{phase:"(b)(ii) Hockey but not tennis",ask:"Do we count the nine who play both sports?",focus:["left"],show:{both:9,right:3,neither:2},eq:"Think: H \\ T",reason:"Only the hockey-only region."},
+{phase:"(b)(ii) Reveal",ask:"How many play hockey but not tennis?",focus:["left"],ticks:["left"],show:{both:9,right:3,neither:2},eq:"23 − 9 = "+chip(14,"left"),reason:"The left-only 14, already shown in the original diagram."}
+]},
+{number:7,title:"Two Test Questions",sets:["Q₁","Q₂"],universe:"28",problem:"In a test of 28 students, 10 answered both questions correctly, 8 answered Question 1 only, and 4 answered neither. Complete the diagram; find those answering Question 2 only; explain (Q₂)′.",facts:["#U = 28","Both correct: 10","Q₁ only: 8","Neither: 4"],initial:{both:10},steps:[
+{phase:"Read the diagram",ask:"What does the overlap of Q₁ and Q₂ represent?",focus:["both"],eq:chip(10,"both"),reason:"These ten answered both questions correctly."},
+{phase:"(a) Place the Q₁-only students",ask:"Where do the eight who answered only Question 1 correctly belong?",focus:["left"],ticks:["left"],show:{left:8},eq:chip(8,"left")+' students',reason:"Correct on Q₁, not on Q₂."},
+{phase:"(a) Place the neither group",ask:"Where do the four who answered neither correctly belong?",focus:["neither"],ticks:["neither"],show:{left:8,neither:4},eq:chip(4,"neither")+' students',reason:"Outside both circles, but inside U."},
+{phase:"(a) Complete Q₂ only",ask:"How many of 28 are not yet accounted for?",focus:["right"],ticks:["right"],show:{left:8,right:6,neither:4},eq:"28 − (8 + 10 + 4) = "+chip(6,"right"),reason:"Put 6 in the Question-2-only region."},
+{phase:"(b) Question 2 only",ask:"Does the phrase only Question 2 include the ten students who got both right?",focus:["right"],show:{left:8,right:6,neither:4},eq:"Think: Q₂ \\ Q₁",reason:"No: only excludes the overlap."},
+{phase:"(b) Reveal",ask:"How many answered only Question 2 correctly?",focus:["right"],ticks:["right"],show:{left:8,right:6,neither:4},eq:chip(6,"right"),reason:"Six students."},
+{phase:"(c) Interpret the complement",ask:"Who belongs to (Q₂)′ — everybody who did not answer Q₂ correctly?",focus:["left","neither"],show:{left:8,right:6,neither:4},eq:chip(8,"left")+' + '+chip(4,"neither")+' = ?',reason:"That includes Q₁-only students AND students who got neither right."},
+{phase:"(c) Reveal",ask:"How many students belong to (Q₂)′?",focus:["left","neither"],ticks:["left","neither"],show:{left:8,right:6,neither:4},eq:chip(8,"left")+' + '+chip(4,"neither")+' = <strong class="answer">12</strong>',reason:"(Q₂)′ means did not answer Question 2 correctly; it is not the same as neither."}
+]},
+{number:9,title:"Spanish and Polish",sets:["S","P"],universe:"500",problem:"Of 500 people, 200 speak neither Spanish nor Polish, 50 speak both, and 150 speak Spanish only. Complete the diagram. Find (i) everyone who speaks Polish and (ii) Polish only.",facts:["#U = 500","Neither = 200","Both = 50","Spanish only = 150"],initial:{},steps:[
+{phase:"Read the survey",ask:"Which four mutually exclusive regions will hold all 500 people?",caption:"Initially the diagram is empty: build it from the information."},
+{phase:"Place neither language",ask:"Where do the 200 people speaking neither language belong?",focus:["neither"],ticks:["neither"],show:{neither:200},eq:chip(200,"neither"),reason:"Neither is outside both circles, but still inside U."},
+{phase:"Place both languages",ask:"Where do the 50 people speaking both languages belong?",focus:["both"],ticks:["both"],show:{neither:200,both:50},eq:chip(50,"both"),reason:"Both means the overlap."},
+{phase:"Place Spanish only",ask:"Where do the 150 Spanish-only speakers go?",focus:["left"],ticks:["left"],show:{neither:200,both:50,left:150},eq:chip(150,"left"),reason:"Spanish only excludes the overlap."},
+{phase:"Complete Polish only",ask:"How many remain after accounting for the other three regions?",focus:["right"],ticks:["right"],show:{neither:200,both:50,left:150,right:100},eq:"500 − (200 + 50 + 150) = "+chip(100,"right"),reason:"The missing Polish-only region contains 100."},
+{phase:"(i) Everyone who speaks Polish",ask:"Which TWO regions together form the whole Polish circle?",focus:["both","right"],show:{neither:200,both:50,left:150,right:100},eq:chip(100,"right")+' + '+chip(50,"both"),reason:"Include both Polish-only and bilingual speakers."},
+{phase:"(i) Reveal",ask:"How many people speak Polish?",focus:["both","right"],ticks:["both","right"],show:{neither:200,both:50,left:150,right:100},eq:chip(100,"right")+' + '+chip(50,"both")+' = <strong class="answer">150</strong>',reason:"Polish speakers includes everyone inside circle P."},
+{phase:"(ii) Polish only",ask:"What changes when the question says Polish ONLY?",focus:["right"],show:{neither:200,both:50,left:150,right:100},eq:"Think: P \\ S",reason:"Exclude the bilingual 50."},
+{phase:"(ii) Reveal",ask:"How many speak Polish but not Spanish?",focus:["right"],ticks:["right"],show:{neither:200,both:50,left:150,right:100},eq:chip(100,"right"),reason:"Only the right-exclusive region; 150 + 50 + 100 + 200 = 500."}
+]}];
+var which=0,step=0,manual=null;
+var regions=["left","both","right","neither"];
+var $=function(id){return document.getElementById(id);};
+function render(){
+ var q=questions[which],s=q.steps[step],shown=Object.assign({},q.initial,s.show||{});
+ $("slide-title").textContent="Exercise 1.7 · Page "+(q.number<=3?14:15)+" · Question "+q.number;
+ $("slide-meta").textContent="Active Maths 1 · Question "+q.number;
+ document.body.classList.toggle("qone",q.number===1);
+ $("problem").textContent=q.problem;
+ $("facts").innerHTML="";
+ q.facts.forEach(function(v){var x=document.createElement("span");x.className="fact";x.textContent=v;$("facts").appendChild(x);});
+ $("ask").textContent=q.number!==1?s.ask:(step<=5?"(a) How many students are in the class?":step<=7?"(b) How many study both Art and Business?":step<=9?"(c) How many study Business but not Art?":"(d) How many study neither subject?");
+ $("phase").textContent=s.phase;
+ $("expression").innerHTML=s.eq||"Predict before clicking to reveal the next part.";
+ $("expression").classList.toggle("empty",!s.eq);
+ $("reason").textContent=s.reason||"Point to the diagram and ask students to justify their answers.";
+ $("u-label").textContent=(q.number===1&&step<5)?"U":("U = "+(s.universe||q.universe));
+ $("label-left").textContent=q.sets[0];
+ $("label-right").textContent=q.sets[1];
+ regions.forEach(function(r){
+   var t=$("number-"+r),v=shown[r];
+   t.textContent=v===undefined||v===null?"":v;
+   t.classList.remove("unknown");
+   $("highlight-"+r).classList.toggle("on",manual?manual===r:(s.focus||[]).indexOf(r)!==-1);
+   $("tick-"+r).classList.toggle("on",!manual&&(s.ticks||[]).indexOf(r)!==-1);
+ });
+ $("caption").textContent=manual?"Teacher focus: "+({left:"left only",both:"the overlap",right:"right only",neither:"outside both circles"}[manual])+". Click again to return to the guided reveal.":(s.caption||"Coloured areas show the region(s) used in this step. ✓ marks a value used in the calculation.");
+ $("stage-number").textContent="Step "+(step+1)+" of "+q.steps.length;
+ $("fill").style.width=(100*(step+1)/q.steps.length)+"%";
+ $("previous").disabled=(step===0&&which===0);
+ $("next").textContent=(step===q.steps.length-1?(which===questions.length-1?"Start again ↻":"Next question →"):"Reveal next →");
+ document.querySelectorAll("[data-question]").forEach(function(b){b.setAttribute("aria-current",b.getAttribute("data-question")===String(which)?"true":"false");});
+ var u=q.number;
+ try{history.replaceState(null,"","#q"+u+"-s"+(step+1));}catch(e){}
+}
+function next(){manual=null;if(step+1<questions[which].steps.length){step++;}else if(which+1<questions.length){which++;step=0;}else{which=0;step=0;}render();}
+function previous(){manual=null;if(step>0){step--;}else if(which>0){which--;step=questions[which].steps.length-1;}render();}
+function select(i){which=i;step=0;manual=null;render();}
+$("next").addEventListener("click",next);
+$("previous").addEventListener("click",previous);
+$("reset").addEventListener("click",function(){step=0;manual=null;render();});
+document.querySelectorAll("[data-question]").forEach(function(b){b.addEventListener("click",function(){select(Number(b.getAttribute("data-question")));});});
+$("slide").insertBefore(document.querySelector(".controls"),$("slide").firstChild);
+document.querySelectorAll("[data-region]").forEach(function(el){el.addEventListener("click",function(e){e.stopPropagation();var r=el.getAttribute("data-region");manual=manual===r?null:r;render();});});
+$("fullscreen").addEventListener("click",function(){if(document.fullscreenElement){document.exitFullscreen();}else if($("slide").requestFullscreen){$("slide").requestFullscreen();}});
+document.addEventListener("keydown",function(e){
+ var t=(e.target&&e.target.tagName)||"";
+ if(t==="INPUT"||t==="TEXTAREA"||t==="SELECT")return;
+ if((t==="BUTTON"||t==="A")&&(e.key===" "||e.key==="Enter"))return;
+ if(e.key==="ArrowRight"||e.key===" "||e.key==="PageDown"){e.preventDefault();next();}
+ else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();previous();}
+ else if(e.key.toLowerCase()==="r"&&!e.ctrlKey&&!e.metaKey){e.preventDefault();step=0;manual=null;render();}
+});
+var m=location.hash.match(/^#q(1|3|5|7|9)-s(\d+)$/);
+if(m){var i=questions.findIndex(function(q){return q.number===Number(m[1]);});if(i>=0){which=i;step=Math.min(Math.max(Number(m[2])-1,0),questions[i].steps.length-1);}}
+render();
+})();
+</script>
+</body>
+</html>
