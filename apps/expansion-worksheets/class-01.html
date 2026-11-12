@@ -1,0 +1,89 @@
+<!doctype html><html lang="en-IE"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Expansion Class 01 — Matched projector and printable sheet</title>
+<link rel="icon" href="../../assets/favicon.svg"><link rel="stylesheet" href="../../assets/styles.css">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#e9eef4;color:#213348}
+header{padding:9px max(14px,calc((100vw - 1150px)/2));background:#fff;border-bottom:1px solid #d0dbe6;display:flex;align-items:center;gap:14px}header img{width:76px}header a{color:#24568a;text-decoration:none}
+header h1{margin:0;font-size:1.2rem}header small{color:#5b6c7e}
+.controls{padding:12px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+button{background:#fff;color:#24568a;border:1px solid #a2b5c8;padding:9px 12px;border-radius:6px;font:inherit;cursor:pointer}
+button.on,button.emphasis{background:#24568a;color:#fff}
+.sheet{width:min(1200px,calc(100% - 22px));aspect-ratio:16/9;min-height:360px;margin:auto;background:white;box-shadow:0 4px 19px #bac7d5;position:relative;padding:2.7%;overflow:hidden}
+.sheet h2{font-size:clamp(21px,2.45vw,35px);font-weight:500;margin:0 0 5px;border-bottom:2px solid #2e445d;padding-bottom:11px}
+.descr{margin:14px 0;color:#567;font-size:clamp(15px,1.55vw,21px)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:35px 0}
+.q{text-align:center;min-width:0;min-height:130px}
+.q .num{text-align:left;font-size:13px;color:#6b7788}
+.q .expr{font-family:Cambria,'Cambria Math',Georgia,serif;font-size:clamp(16px,2.2vw,30px);white-space:nowrap}
+.q svg{width:100%;height:62px;display:block}
+.q .partials{height:30px;white-space:nowrap;color:#5b6b7b;font:clamp(12px,1.4vw,19px) Cambria,Georgia,serif}
+.q .answer{font:clamp(16px,2.0vw,28px) Cambria,Georgia,serif;color:#24568a;white-space:nowrap}
+#ink{position:absolute;inset:0;width:100%;height:100%;touch-action:none;pointer-events:none}
+.sheet.pen #ink{pointer-events:auto;cursor:crosshair}
+.foot{max-width:1200px;margin:9px auto;padding:0 8px;display:flex;justify-content:space-between;color:#586a7d}
+.printonly{display:none}
+@media(max-width:720px){.sheet{min-height:350px;padding:15px}.grid{gap:2px}.q .expr{font-size:14px}.q .answer{font-size:13px}.q svg{height:43px}}
+@page{size:A4 portrait;margin:0}
+@media print{body{background:#fff}header,.controls,.sheet,.foot{display:none!important}.printonly{display:block}.page{width:210mm;height:297mm;padding:11mm;break-after:page;overflow:hidden}.page:last-child{break-after:auto}.page h2{font:20px Arial;margin:0 0 3mm}.page h3{font:12px Arial;margin:4mm 0 3mm}.pgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2mm}.pgrid.review{grid-template-columns:repeat(3,minmax(0,1fr))}.pq{height:49mm;text-align:center}.pq .num{text-align:left;font:9px Arial;color:#778}.pq .expr{font:12px Cambria,Georgia,serif;white-space:nowrap}.pq svg{width:94%;height:15mm;display:block}.pq .partials{font:8px Cambria,Georgia,serif;color:#667}.pq .answer{font:11px Cambria,Georgia,serif}.reflection{margin-top:5mm;padding-top:3mm;border-top:1px solid #aaa;font:12px Arial}.reflection div{height:15mm;border-bottom:1px solid #ddd}}
+</style></head>
+<body><header><a href="../../index.html"><img src="../../assets/maths-logo.svg" alt="Maths home"></a><div><a href="../../algebra/expansions/index.html">Algebra / Expansions</a><h1>Class 01 — Matching projector and paper</h1><small>Five families, four sign patterns, 86 identical questions; use the pen over the screen</small></div></header>
+<nav class="controls">
+<button id="prev">← Previous row</button><button class="emphasis" id="next">Next row →</button>
+<button id="reveal">Reveal next step</button><button id="reset">Hide answers</button>
+<button id="pen">Pen</button><button id="erase">Eraser</button><button id="undo">Undo</button><button id="clear">Clear ink</button><button onclick="window.print()">Print matching set</button></nav>
+<div class="sheet" id="sheet"><h2 id="title"></h2><div class="descr" id="desc"></div><div class="grid" id="grid"></div><canvas id="ink"></canvas></div>
+<div class="foot"><span id="index"></span><span>Use ← → to change row, Space to reveal steps. All question numbers match the LaTeX PDF.</span></div>
+<div class="printonly" id="paper"></div>
+<script>
+const BANK = {"groups":[{"family":"general","positive":[[4,3,3,10],[11,12,7,10],[2,7,12,7],[3,5,5,8]],"mixed":[[11,9,2,9,-1,1],[2,7,12,5,1,-1],[7,8,12,5,1,-1],[7,2,8,11,-1,1]]},{"family":"monic","positive":[[1,4,1,2],[1,7,1,11],[1,12,1,4],[1,2,1,7]],"mixed":[[1,5,1,7,-1,1],[1,5,1,9,-1,1],[1,4,1,7,-1,1],[1,7,1,9,-1,1]]},{"family":"x1","positive":[[1,1,2,7],[1,1,7,11],[1,1,11,8],[1,1,7,2]],"mixed":[[1,1,2,3,-1,1],[1,1,6,7,-1,1],[1,1,5,9,-1,1],[1,1,7,4,1,-1]]},{"family":"ax1","positive":[[2,1,1,9],[5,1,1,4],[7,1,1,5],[12,1,1,3]],"mixed":[[3,1,1,3,-1,1],[5,1,1,3,-1,1],[3,1,1,5,-1,1],[3,1,1,12,-1,1]]},{"family":"unit","positive":[[4,1,10,1],[5,1,11,1],[11,1,2,1],[12,1,12,1]],"mixed":[[5,1,4,1,-1,1],[7,1,8,1,1,-1],[2,1,7,1,1,-1],[12,1,2,1,-1,1]]}],"review":[[1,5,1,2,1,1],[3,7,7,5,1,-1],[1,1,5,3,-1,-1],[2,1,1,7,1,-1],[3,1,5,1,1,1],[3,7,5,7,1,1]]};
+(function(){
+const $=s=>document.getElementById(s),names=[
+"General: (ax ± b)(cx ± d)",
+"Two monic factors: (x ± b)(x ± d)",
+"(x ± 1) times (ax ± b)",
+"(ax ± 1) times (x ± b)",
+"(ax ± 1)(cx ± 1): product plus one"
+];
+const suffixes=["Both positive: + +","Both negative: − − (same coefficients)","Mixed: positive middle coefficient","Mixed: signs reversed, negative middle coefficient"];
+const rows=[];let number=1;
+function fromArray(v){return {a:v[0],b:v[1],c:v[2],d:v[3],s:v[4]||1,t:v[5]||1}}
+for(let g=0;g<BANK.groups.length;g++){
+const x=BANK.groups[g],p=x.positive.map(fromArray),m=x.mixed.map(fromArray);
+const sets=[p,p.map(z=>({...z,s:-1,t:-1})),m,m.map(z=>({...z,s:-z.s,t:-z.t}))];
+for(let r=0;r<4;r++) rows.push({title:names[g],desc:suffixes[r],items:sets[r].map((q,i)=>({q,n:number++,mode:["worked","scaffolded","answered","plain"][i]}))})
+}
+rows.push({title:"Mixed review",desc:"Six questions: one from each pattern or special family",items:BANK.review.map(v=>({q:fromArray(v),n:number++,mode:"plain"}))});
+function signed(n){return (n<0?" − ":" + ")+Math.abs(n)}
+function form(q){return "("+ (q.a===1?"":q.a)+"x"+signed(q.b*q.s)+")("+ (q.c===1?"":q.c)+"x"+signed(q.d*q.t)+")"}
+function values(q){return {leading:q.a*q.c,outer:q.a*q.d*q.t,inner:q.b*q.c*q.s,last:q.b*q.d*q.s*q.t}}
+function solution(q){let v=values(q),middle=v.outer+v.inner;return (v.leading===1?"":v.leading)+"x²"+(middle===0?"":middle===1?" + x":middle===-1?" − x":signed(middle)+"x")+signed(v.last)}
+function paths(){return '<svg viewBox="0 0 350 75"><defs><marker id="arrTip" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0 0 L5 2.5 L0 5" fill="#8597aa"/></marker></defs><g fill="none" stroke="#8597aa" stroke-width="2" marker-end="url(#arrTip)"><path d="M42 4 C5 25 13 51 58 62"/><path d="M111 4 C113 25 145 54 172 62"/><path d="M239 4 C237 25 205 54 178 62"/><path d="M308 4 C345 25 337 51 292 62"/></g></svg>'}
+function task(t,stage,printing){const q=t.q,v=values(q),mode=t.mode;
+const arcs=printing?["worked","scaffolded"].includes(mode):stage>=1,
+products=printing?mode==="worked":stage>=2,
+answer=printing?["worked","answered"].includes(mode):stage>=3;
+return '<div class="'+(printing?'pq':'q')+'"><div class="num">'+t.n+'.</div><div class="expr">'+form(q)+'</div>'+(arcs?paths():'')+'<div class="partials">'+(products?v.leading+'x²'+signed(v.outer)+'x'+signed(v.inner)+'x'+signed(v.last):'')+'</div>'+(answer?'<div class="answer">'+solution(q)+'</div>':'')+'</div>'}
+let slide=0,stage=0,pen=false,eraser=false,strokes=[],drawing=null,canvas=$("ink"),ctx=canvas.getContext("2d");
+function paint(){const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);ctx.lineJoin="round";ctx.lineCap="round";for(let s of strokes){ctx.beginPath();ctx.strokeStyle=s.erase?"white":"#24568a";ctx.lineWidth=s.erase?22:3.3;s.points.forEach(([x,y],i)=>i?ctx.lineTo(x*r.width,y*r.height):ctx.moveTo(x*r.width,y*r.height));ctx.stroke()}}
+function resize(){const b=canvas.getBoundingClientRect(),d=window.devicePixelRatio||1;canvas.width=b.width*d;canvas.height=b.height*d;ctx.setTransform(d,0,0,d,0,0);paint()}
+function render(){const r=rows[slide];$("title").textContent=r.title;$("desc").textContent=r.desc;$("grid").style.gridTemplateColumns="repeat("+r.items.length+",minmax(0,1fr))";$("grid").innerHTML=r.items.map(t=>task(t,stage,false)).join("");$("index").textContent="Row "+(slide+1)+"/"+rows.length+" — reveal stage "+(stage+1)+"/4";resize()}
+function go(delta){slide=(slide+delta+rows.length)%rows.length;stage=0;strokes=[];render()}
+$("next").onclick=()=>go(1);$("prev").onclick=()=>go(-1);$("reveal").onclick=()=>{stage=Math.min(stage+1,3);render()};$("reset").onclick=()=>{stage=0;render()};
+$("pen").onclick=()=>{pen=!pen;$("sheet").classList.toggle("pen",pen);$("pen").classList.toggle("on",pen)};
+$("erase").onclick=()=>{eraser=!eraser;$("erase").classList.toggle("on",eraser)};
+$("undo").onclick=()=>{strokes.pop();paint()};$("clear").onclick=()=>{strokes=[];paint()};
+function point(e){let b=canvas.getBoundingClientRect();return [(e.clientX-b.left)/b.width,(e.clientY-b.top)/b.height]}
+canvas.addEventListener("pointerdown",e=>{if(!pen)return;canvas.setPointerCapture(e.pointerId);drawing={erase:eraser,points:[point(e)]};strokes.push(drawing);paint()});
+canvas.addEventListener("pointermove",e=>{if(!drawing)return;drawing.points.push(point(e));paint()});canvas.addEventListener("pointerup",()=>drawing=null);
+document.addEventListener("keydown",e=>{if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1);if(e.code==="Space"){e.preventDefault();$("reveal").click()}});
+window.addEventListener("resize",resize);
+let printHTML="";
+for(let g=0;g<5;g++){
+printHTML+='<section class="page"><h2>'+names[g]+'</h2><p>Expand and simplify. Compare pairs with identical coefficients and reversed signs.</p>';
+for(let r=0;r<4;r++){let row=rows[g*4+r];printHTML+='<h3>'+row.desc+'</h3><div class="pgrid">'+row.items.map(t=>task(t,0,true)).join("")+'</div>'}
+printHTML+='<div class="reflection"><strong>Reflection:</strong> What changes when both signs reverse?<div></div></div></section>';
+}
+printHTML+='<section class="page"><h2>Mixed review</h2><p>Six practice questions</p><div class="pgrid review">'+rows[20].items.map(t=>task(t,0,true)).join("")+'</div><div class="reflection">Reflection:<div></div><div></div></div></section>';
+$("paper").innerHTML=printHTML;render();
+})();
+</script></body></html>
