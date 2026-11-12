@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff"><title>Expansions | Homework correction slides</title>
+<link rel="icon" href="../../assets/favicon.svg"><link rel="stylesheet" href="../../assets/styles.css">
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#1c3047}
+*{box-sizing:border-box}
+body{margin:0;background:#eef2f6}
+header{display:flex;align-items:center;gap:14px;padding:14px max(18px,calc((100vw - 1120px)/2));background:white;border-bottom:1px solid #cad7e2}
+header img{width:80px;display:block}
+header a{color:#24568a;text-decoration:none}
+main{width:min(880px,calc(100% - 30px));margin:48px auto;background:white;border:1px solid #d5e2eb;padding:32px;box-shadow:0 4px 18px #ccd5de}
+h1{font-size:1.5rem;margin:0 0 10px}p{line-height:1.52}
+button,a.action{font:inherit;cursor:pointer;background:white;color:#24568a;border:1px solid #9ab0c6;padding:10px 16px;border-radius:6px;text-decoration:none}
+button.primary,a.action.primary{background:#24568a;color:#fff;border-color:#24568a;font-weight:bold}
+button:focus-visible,a:focus-visible{outline:3px solid #eda42b;outline-offset:2px}
+.rowlinks{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0}
+#overlay[hidden]{display:none!important}
+#overlay{position:fixed;inset:0;background:#101d2fef;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px}
+.toolbar{width:min(100%,1380px);display:flex;align-items:center;justify-content:space-between;color:white;gap:9px;padding:0 4px 9px}
+.toolbar button{padding:7px 12px;color:#15324e;background:white}
+.counter{color:#dce7f2;font-weight:bold;font-size:.9rem}
+.slide{width:min(100%,1380px);height:min(calc((100vw - 18px)*.5625),calc(100vh - 85px));min-height:350px;background:white;display:flex;flex-direction:column;box-shadow:0 4px 30px #07111b;position:relative;overflow:hidden}
+.slide-head{padding:2% 3% 1%;border-bottom:2px solid #35526c;display:flex;justify-content:space-between;gap:12px;align-items:end}
+.slide-head h2{font-size:clamp(17px,2vw,33px);font-weight:500;margin:0;color:#234567}
+.slide-head small{color:#607084;display:block;font-size:clamp(11px,1vw,16px)}
+.slide-head .stage{font-size:clamp(10px,1.1vw,17px);color:#335d87;text-align:right;white-space:nowrap}
+.cards{flex:1;min-height:0;display:grid;grid-template-columns:repeat(var(--cols,4),minmax(0,1fr));gap:1.2%;padding:2%}
+.card{min-width:0;padding:10px 10px 6px;border:1px solid #d8e2eb;display:flex;flex-direction:column;align-items:center;background:#fff}
+.card .tag{font-size:12px;align-self:start;color:#66788a}
+.card .expression{font:clamp(18px,2vw,32px) Cambria,'Cambria Math',Georgia,serif;margin:6px 0 4px;text-align:center;white-space:nowrap}
+.card svg{width:100%;max-width:300px;height:clamp(55px,9vw,100px)}
+.card svg path{stroke:#6e839c;stroke-width:2.4;fill:none;stroke-linecap:round}
+.steps{width:100%;font:clamp(13px,1.18vw,19px)/1.45 Cambria,'Cambria Math',Georgia,serif;text-align:left;padding:4px 7px;flex:1}
+.steps .step{margin:4px 0;white-space:nowrap}
+.steps b{font-weight:normal;color:#52799f;font:12px Arial}
+.steps .final{font-size:clamp(17px,1.75vw,28px);color:#224f79;font-weight:bold;margin-top:8px;white-space:nowrap}
+.rule{border-top:1px solid #d7e0e7;min-height:52px;padding:10px 3%;font-size:clamp(13px,1.13vw,18px);background:#f8fafc;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.rule strong{color:#234567}
+.rule .prompt{color:#526678;font-size:.92em}
+.slidefoot{background:white;border-top:1px solid #d1dae3;padding:3px 10px;color:#85909d;font-size:12px;text-align:right}
+.arrowhint{font-size:15px;color:#8698a9;margin:12px}
+@media(max-height:620px){.card{padding:4px}.slide-head{padding:7px 15px}.cards{padding:7px}.slide .rule{min-height:34px;padding:5px 15px}.card svg{height:45px}.steps{font-size:14px;line-height:1.25}}
+@media(max-width:780px){.card{padding:3px}.card .expression{font-size:clamp(12px,2vw,18px)}.steps{font-size:clamp(10px,1.4vw,13px)}.steps .final{font-size:clamp(12px,1.6vw,16px)}.rule{padding:4px 10px}.toolbar button{padding:6px}}
+</style>
+</head>
+<body>
+<header><a href="../../index.html"><img src="../../assets/maths-logo.svg" alt="Maths home"></a><div><a href="../../algebra/expansions/index.html">Algebra / Expansions</a> · <a href="class-01.html">Class 01 paper display</a></div></header>
+<main>
+<h1>Expansions: homework corrections</h1>
+<p>The exact same Class 01 coefficients as the <a href="https://docs.google.com/spreadsheets/d/1TLA4FlbMIg8sx2bvD2YpJ7MYQBZgcLbTaHCKG4m1d7Q/edit">Expansion Questions Google Sheet</a>. Four questions appear together. Each click reveals the routes, partial products, collection of the middle term, final answers and the mathematical pattern.</p>
+<div class="rowlinks">
+<button class="primary" id="open">Open full-screen correction slides</button>
+<a class="action" href="class-01.html">Original matching classroom display</a>
+</div>
+<p>Use <strong>Next</strong> or the right-arrow key. Use <strong>Previous</strong> to revisit a step. The final stage of each row explains the pattern and asks students to reflect before the next row.</p>
+</main>
+<div id="overlay" role="dialog" aria-modal="true" aria-label="Homework correction slides" hidden>
+<div class="toolbar">
+<div><button id="back">◀ Previous</button> <button id="forward" class="primary">Next ▶</button></div>
+<div class="counter" id="counter"></div>
+<div><button id="restart">Restart row</button> <button id="close" aria-label="Close full-screen corrections">✕ Close</button></div>
+</div>
+<section class="slide" id="slide">
+ <div class="slide-head"><div><h2 id="title">Expansion patterns</h2><small id="subtitle"></small></div><div class="stage" id="stage"></div></div>
+ <div class="cards" id="cards"></div>
+ <div class="rule"><div id="pattern"></div><div class="prompt" id="prompt"></div></div>
+ <div class="slidefoot">FIRST · INNER · OUTER · LAST  |  Combine like terms  |  Name the pattern</div>
+</section>
+</div>
+<script>
+const BANK = {"groups":[{"family":"general","positive":[[4,3,3,10],[11,12,7,10],[2,7,12,7],[3,5,5,8]],"mixed":[[11,9,2,9,-1,1],[2,7,12,5,1,-1],[7,8,12,5,1,-1],[7,2,8,11,-1,1]]},{"family":"monic","positive":[[1,4,1,2],[1,7,1,11],[1,12,1,4],[1,2,1,7]],"mixed":[[1,5,1,7,-1,1],[1,5,1,9,-1,1],[1,4,1,7,-1,1],[1,7,1,9,-1,1]]},{"family":"x1","positive":[[1,1,2,7],[1,1,7,11],[1,1,11,8],[1,1,7,2]],"mixed":[[1,1,2,3,-1,1],[1,1,6,7,-1,1],[1,1,5,9,-1,1],[1,1,7,4,1,-1]]},{"family":"ax1","positive":[[2,1,1,9],[5,1,1,4],[7,1,1,5],[12,1,1,3]],"mixed":[[3,1,1,3,-1,1],[5,1,1,3,-1,1],[3,1,1,5,-1,1],[3,1,1,12,-1,1]]},{"family":"unit","positive":[[4,1,10,1],[5,1,11,1],[11,1,2,1],[12,1,12,1]],"mixed":[[5,1,4,1,-1,1],[7,1,8,1,1,-1],[2,1,7,1,1,-1],[12,1,2,1,-1,1]]}],"review":[[1,5,1,2,1,1],[3,7,7,5,1,-1],[1,1,5,3,-1,-1],[2,1,1,7,1,-1],[3,1,5,1,1,1],[3,7,5,7,1,1]]};
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const names=[
+"General: (ax ± b)(cx ± d)",
+"Two monic factors: (x ± b)(x ± d)",
+"(x ± 1) multiplied by (ax ± b)",
+"(ax ± 1) multiplied by (x ± b)",
+"Unit constants: (ax ± 1)(cx ± 1)"];
+const sub=["Both constants positive (+ +)","Both constants negative (− −) — compare identical numbers","Mixed constants: positive middle term","Mixed constants: reverse both signs"];
+const rows=[];
+function obj(q){return {a:q[0],b:q[1],c:q[2],d:q[3],s:q.length>4?q[4]:1,t:q.length>5?q[5]:1};}
+for(let f=0;f<5;f++){
+const g=BANK.groups[f];
+const p=g.positive.map(obj),m=g.mixed.map(obj);
+const variants=[p,p.map(q=>({...q,s:-1,t:-1})),m,m.map(q=>({...q,s:-q.s,t:-q.t}))];
+for(let k=0;k<4;k++)rows.push({family:f,sign:k,title:names[f],desc:sub[k],questions:variants[k]});
+}
+const review=BANK.review.map(obj);
+rows.push({family:5,sign:4,title:"Review: all sign patterns",desc:"Three review examples — first half",questions:review.slice(0,3)});
+rows.push({family:5,sign:4,title:"Review: all sign patterns",desc:"Three review examples — second half",questions:review.slice(3)});
+function sgn(n){return n<0?" − "+Math.abs(n):" + "+n}
+function xcoeff(n){return n===1?"":String(n)}
+function format(q){return "("+xcoeff(q.a)+"x"+sgn(q.s*q.b)+")("+xcoeff(q.c)+"x"+sgn(q.t*q.d)+")"}
+function sx(n,pow){return n===0?"0":(Math.abs(n)===1?"":Math.abs(n))+"x"+(pow===2?"²":"")}
+function term(n,pow){return (n<0?"−":"+")+(Math.abs(n)===1?"":Math.abs(n))+"x"+(pow===2?"²":"")}
+function leading(n){return xcoeff(n)+"x²"}
+function poly(q){
+ const v=parts(q), mid=v.i+v.o;
+ return leading(v.f)+(mid===0?"":(mid<0?" − ":" + ")+(Math.abs(mid)===1?"":Math.abs(mid))+"x")+sgn(v.l);
+}
+function parts(q){return {f:q.a*q.c, i:q.s*q.b*q.c, o:q.a*q.t*q.d,l:q.s*q.t*q.b*q.d}}
+function arrows(){return '<svg viewBox="0 0 300 102" aria-label="Four multiplication routes: first, inner, outer, last"><defs><marker id="arr" orient="auto" markerWidth="5" markerHeight="5" refX="4" refY="2.5"><path d="M0 0 L5 2.5 L0 5" fill="#70849b" stroke="none"/></marker></defs><g marker-end="url(#arr)"><path d="M52 7 C 15 22 12 58 35 84"/><path d="M112 7 C 122 30 124 56 143 84"/><path d="M211 7 C 191 26 175 60 153 84"/><path d="M255 7 C 286 21 285 60 266 84"/></g><g fill="#536c87" font="bold 12px Arial"><text x="18" y="100">F</text><text x="125" y="100">I</text><text x="162" y="100">O</text><text x="270" y="100">L</text></g></svg>'}
+let row=0,step=0,oldFocus=null;
+function explanation(r){
+ const same=r.sign===0||r.sign===1, g=r.family;
+ const rule0=same?(r.sign===0?"Both cross-products are positive, so add their coefficients. The constant term is positive.":"Both cross-products are negative: add their magnitudes and keep the negative sign. The constant term is positive."):(r.sign===2?"One middle product is positive and the other negative. Subtract their magnitudes; the positive product dominates.":"Reversing both signs negates the middle coefficient without changing the leading or constant coefficients.");
+ const special=g===1?"Monic means coefficient 1 on x. The leading term is x² and the middle coefficient is the sum or signed difference of the constants.":
+ g===2?"The factor x ± 1 contributes one cross-product equal in magnitude to the other factor's x-coefficient.":
+ g===3?"The factor with ±1 contributes a cross-product of magnitude 1; combine this with the other cross-product.":
+ g===4?"With two constants ±1, the constant product is +1 when signs agree and −1 when signs differ. The middle coefficient uses a sum or difference of the leading coefficients.":
+ g===5?"Describe the leading coefficient, the middle coefficient and the constant term separately.":
+ "In (ax+b)(cx+d), the x² coefficient is ac, the middle coefficient is ad+bc, and the constant is bd.";
+ return [rule0,special];
+}
+const stages=["Question: identify the four terms","Reveal the four multiplication routes","First and last partial products","Inner and outer partial products","Collect the two middle terms","Final simplified answer","Explain the mathematical pattern"];
+function card(q,i){
+ const v=parts(q);const showPaths=step>=1;let h='<article class="card"><span class="tag">Example '+(i+1)+'</span><div class="expression">'+format(q)+'</div>';
+ h+=showPaths?arrows():'<div class="arrowhint">Predict the first and last products</div>';
+ h+='<div class="steps">';
+ if(step>=2){h+='<div class="step"><b>FIRST</b> '+q.a+' × '+q.c+' = '+leading(v.f)+'</div>';
+ h+='<div class="step"><b>LAST</b> ('+(q.s*q.b)+') × ('+(q.t*q.d)+') = '+(v.l<0?'− ':'+ ')+Math.abs(v.l)+'</div>';}
+ if(step>=3){h+='<div class="step"><b>INNER</b> ('+(q.s*q.b)+') × '+q.c+' = '+v.i+'x</div>';
+ h+='<div class="step"><b>OUTER</b> '+q.a+' × ('+(q.t*q.d)+') = '+v.o+'x</div>';}
+ if(step>=4)h+='<div class="step"><b>MIDDLE</b> ('+v.i+')x + ('+v.o+')x = '+(v.i+v.o)+'x</div>';
+ if(step>=5)h+='<div class="final">'+poly(q)+'</div>';
+ h+='</div></article>';return h;
+}
+function render(){
+const r=rows[row],pair=explanation(r);
+$('title').textContent=r.title;$('subtitle').textContent=r.desc;$('stage').textContent=stages[step];
+$('cards').style.setProperty('--cols',r.questions.length);$('cards').innerHTML=r.questions.map(card).join('');
+$('counter').textContent='Row '+(row+1)+' / '+rows.length+' · Step '+(step+1)+' / '+stages.length;
+$('pattern').innerHTML=step===6?'<strong>Describe it mathematically:</strong> '+pair[0]+' '+pair[1]:'<strong>Instruction:</strong> '+stages[step]+'.';
+$('prompt').textContent=step===6?'Ask: Which coefficients have changed, and why?':'';
+}
+function go(n){if(n>0){if(step<6)step++;else if(row<rows.length-1){row++;step=0;}else{row=0;step=0;}}else{if(step>0)step--;else if(row>0){row--;step=6;}}render()}
+$('open').onclick=()=>{oldFocus=document.activeElement;$('overlay').hidden=false;row=0;step=0;render();$('forward').focus();try{$('overlay').requestFullscreen?.().catch(()=>{});}catch(e){}};
+function close(){if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});$('overlay').hidden=true;if(oldFocus?.focus)oldFocus.focus();}
+$('forward').onclick=()=>go(1);$('back').onclick=()=>go(-1);$('restart').onclick=()=>{step=0;render()};$('close').onclick=close;
+document.addEventListener('keydown',e=>{
+if($('overlay').hidden)return;
+if(e.key==='Escape'){close();return;}
+if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();go(1);}
+else if(e.key==='ArrowLeft'||e.key==='Backspace'){e.preventDefault();go(-1);}
+});
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&!$('overlay').hidden){/* Continue as fixed modal. */}});
+})();
+</script>
+</body></html>
