@@ -59,3 +59,9 @@
  #sets-learning .sets-think,#sets-learning .sets-feature{break-inside:avoid}
  #sets-learning details:not([open])>p{display:none!important}
 }
+
+/* Classroom resources stay visible without occupying half the first screen. */
+#sets-learning > .sets-action { padding: 10px 14px; margin: 8px 0; gap: 8px 14px; }
+#sets-learning > .sets-action strong { font-size: 1rem; }
+#sets-learning > .sets-action p { font-size: .87rem; line-height: 1.35; margin: 3px 0 0; }
+#sets-learning > .sets-action .button-link { white-space: nowrap; padding: 7px 10px; }
