@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Expansion Worksheet Generator | Maths</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/styles.css">
+<style>
+:root{--navy:#24568a;--text:#1d2938;--muted:#586778}
+*{box-sizing:border-box}
+body{margin:0;background:#eaf0f5;color:var(--text);font:15px/1.45 Arial,Helvetica,sans-serif}
+.sitehead{background:#fff;border-bottom:1px solid #cfd9e2;padding:9px max(14px,calc((100% - 1150px)/2));display:flex;align-items:center;gap:15px}
+.sitehead img{width:92px;display:block}
+.sitehead a{color:var(--navy);text-decoration:none}
+.sitehead h1{font-size:1.26rem;margin:1px 0}
+main{max-width:1150px;margin:auto;padding:12px}
+.controls{background:white;padding:10px 12px;border:1px solid #d7e0e8;border-radius:9px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.controls label{display:flex;gap:5px;align-items:center;font-size:.9rem}
+button,select,input{font:inherit;padding:7px 9px;border:1px solid #a9bacb;border-radius:5px;background:white;color:#24364a}
+button{cursor:pointer}
+button.primary,button.on{background:var(--navy);color:white;border-color:var(--navy)}
+input[type=number]{width:112px}
+.tip{font-size:.87rem;color:#4e6071;margin:8px 0 12px}
+.paper{width:min(100%,210mm);min-height:297mm;margin:0 auto 20px;background:#fff;box-shadow:0 3px 18px #b8c4cf;padding:12mm 11mm;position:relative}
+.paper h2{font-size:1.26rem;margin:0}
+.paper .subtitle{font-size:.75rem;color:var(--muted);margin-bottom:10px}
+.family{margin:0 0 10px}
+.family h3{margin:6px 0 4px;font-size:.91rem}
+.grid{display:grid;grid-template-columns:repeat(var(--columns,4),minmax(0,1fr));column-gap:5px;row-gap:4px}
+.q{min-width:0;position:relative;border-bottom:1px solid #dbe2e9;height:42mm;padding:5px 2px 2px}
+.q .number{display:block;font-size:11px;color:#6f7d8e;text-align:left}
+.q .expression{font:22px/1.6 "Cambria Math",Cambria,Georgia,serif;white-space:nowrap;text-align:center;display:block}
+.q .working{display:none;font:13px/1.6 Cambria,Georgia,serif;color:#546b81;white-space:nowrap;text-align:center}
+.q .answer{display:none;font:17px/1.6 Cambria,Georgia,serif;text-align:center;color:var(--navy);white-space:nowrap}
+.showanswers .answer{display:block}
+.showsteps .q.example .working{display:block}
+.reflection{margin-top:15px;border-top:1px solid #97a7b5;padding-top:6px;font-size:.86rem}
+.line{height:30px;border-bottom:1px solid #d6dfe7}
+#review .q{height:71mm}
+#review .grid{--columns:3}
+.project{display:none;position:relative;background:#fff;width:min(100%,1150px);aspect-ratio:16/9;margin:0 auto 22px;box-shadow:0 4px 18px #b5c3ce;padding:28px 32px}
+.project h2{margin:0 0 5px;color:var(--navy);font-size:clamp(1.25rem,2.4vw,2rem)}
+.project .desc{font-size:clamp(.8rem,1.45vw,1.15rem);color:#506173}
+.project-grid{display:grid;grid-template-columns:repeat(var(--columns,4),minmax(0,1fr));gap:12px;height:72%;align-items:start;margin-top:25px}
+.project .q{border:0;height:100%;border-right:1px solid #edf0f3}
+.project .q:last-child{border:0}
+.project .q .expression{font-size:clamp(22px,2.8vw,38px)}
+.project .q .answer{font-size:clamp(20px,2.3vw,30px)}
+.project .q .working{font-size:clamp(15px,1.8vw,22px)}
+.project .q .number{font-size:17px}
+#inkCanvas{position:absolute;inset:0;z-index:3;touch-action:none;width:100%;height:100%;pointer-events:none}
+.project.inking #inkCanvas{pointer-events:auto;cursor:crosshair}
+.projectnav{display:none;justify-content:space-between;align-items:center;margin:0 auto 14px;max-width:1150px}
+.projectnav button{min-width:100px}
+body.projectmode .paper{display:none}
+body.projectmode .project{display:block}
+body.projectmode .projectnav{display:flex}
+body.projectmode .project-controls{display:contents}
+@media(max-width:640px){.sitehead img{width:60px}.paper{padding:17px 9px}.q{height:125px}.q .expression{font-size:17px}.project{padding:16px}.project-grid{gap:1px}.project .q .expression{font-size:15px}}
+@page{size:A4 portrait;margin:0}
+@media print{
+ body,main{margin:0;padding:0;background:white}
+ .sitehead,.controls,.tip,.projectnav,.project{display:none!important}
+ body.projectmode .paper{display:block!important}
+ .paper{width:210mm;height:297mm;min-height:297mm;margin:0;padding:11mm;box-shadow:none;break-after:page;page-break-after:always}
+ .paper:last-of-type{break-after:auto;page-break-after:auto}
+ .q{height:40mm}.q .expression{font-size:16px!important}
+ #review .q{height:68mm}
+ .showanswers .q .answer{display:block}
+}
+</style>
+</head>
+<body>
+<header class="sitehead">
+<a href="../../index.html"><img src="../../assets/maths-logo.svg" alt="Maths four-dot logo"></a>
+<div><a href="../../algebra/expansions/index.html">Algebra / Expansions</a><h1>Worksheet Generator</h1></div>
+</header>
+<main>
+<div class="controls" aria-label="Worksheet options">
+<label>Questions across <select id="across"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></label>
+<label>Set <input type="number" id="seed" value="20261112" step="1"></label>
+<button id="newset" class="primary">New questions</button>
+<button id="mode">Project like Beamer</button>
+<button id="answers">Show solutions</button>
+<button id="steps">Show first workings</button>
+<button id="print">Print / Save PDF</button>
+<button id="write" class="project-controls" hidden>Pen</button>
+<button id="erase" class="project-controls" hidden>Eraser</button>
+<button id="undo" class="project-controls" hidden>Undo</button>
+<button id="clear" class="project-controls" hidden>Clear ink</button>
+</div>
+<p class="tip">Expand (ax ± b)(cx ± d). Coefficients 2–12; gcd(a,b) = gcd(c,d) = 1. Positive and negative rows reuse the <strong>same four numbers</strong>. Mixed-sign rows reverse the signs. Positive middle sums require <strong>no carrying</strong>. Printing produces two A4 portrait pages.</p>
+<div class="projectnav"><button id="prev">◀ Previous</button><span id="position"></span><button id="next">Next ▶</button></div>
+<section class="project" id="project"><h2 id="projecttitle"></h2><div class="desc" id="projectdesc"></div><div class="project-grid" id="projectgrid"></div><canvas id="inkCanvas" aria-label="Write over slide"></canvas></section>
+<div id="papers"></div>
+</main>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id),S=$('seed'),C=$('across'),papers=$('papers');
+let data=[],mode=false,sol=false,steps=false,index=0,inking=false,eraser=false,ink=[];
+function random(seed){let x=seed|0;return function(){x=(x+0x6d2b79f5)|0;let t=Math.imul(x^(x>>>15),1|x);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;}}
+function gcd(a,b){while(b){let t=a%b;a=b;b=t}return a}
+function noCarry(a,b){while(a||b){if(a%10+b%10>9)return false;a=Math.floor(a/10);b=Math.floor(b/10)}return true}
+function pick(r,small,used,kind){let pool=small?[2,3,5,7]:[2,3,4,5,6,7,8,9,10,11,12];for(let i=0;i<120000;i++){let q=Array.from({length:4},()=>pool[Math.floor(r()*pool.length)]),[a,b,c,d]=q;if(gcd(a,b)!==1||gcd(c,d)!==1)continue;let p=b*c,t=a*d;
+ if((kind==='positive'||kind==='reviewplus')&&!noCarry(p,t))continue;
+ if(kind==='mixed'&&p<=t)continue;
+ let key=q.join('/');if(used.has(key))continue;used.add(key);return q
+}throw new Error('Unable to make a distinct question')}
+function calc(q,s,t){let [a,b,c,d]=q;return [a*c,t*a*d+s*b*c,s*t*b*d,t*a*d,s*b*c]}
+function signed(n){return n<0?' − '+Math.abs(n):' + '+n}
+function problem(q,s,t){return '('+q[0]+'x'+signed(s*q[1])+')('+q[2]+'x'+signed(t*q[3])+')'}
+function expression(q,s,t){let [x,m,k]=calc(q,s,t);return x+'x²'+signed(m)+'x'+signed(k)}
+function working(q,s,t){let [x,m,k,p,u]=calc(q,s,t);return x+'x²'+signed(p)+'x'+signed(u)+'x'+signed(k)}
+function qHTML(obj,num,first){return '<div class="q'+(first?' example':'')+'"><span class="number">'+num+'.</span><span class="expression">'+problem(obj.q,obj.s,obj.t)+'</span><div class="working">'+working(obj.q,obj.s,obj.t)+'</div><div class="answer">'+expression(obj.q,obj.s,obj.t)+'</div></div>'}
+function make(){
+ let n=+C.value||4,r=random(+S.value||20261112),used=new Set(),pos=[],mixed=[];
+ for(let i=0;i<n;i++)pos.push(pick(r,false,used,'positive'));
+ for(let i=0;i<n;i++)mixed.push(pick(r,false,used,'mixed'));
+ data=[
+ {title:'1. Both positive',desc:'The middle coefficient is positive. Add without carrying.',qs:pos.map(q=>({q,s:1,t:1}))},
+ {title:'2. Both negative — the same numbers',desc:'The middle coefficient changes sign; the first and last terms stay positive.',qs:pos.map(q=>({q,s:-1,t:-1}))},
+ {title:'3. Mixed signs — positive middle term',desc:'The positive cross-product dominates.',qs:mixed.map(q=>({q,s:1,t:-1}))},
+ {title:'4. Mixed signs — reverse the signs',desc:'Exactly the same coefficients; the middle term becomes negative.',qs:mixed.map(q=>({q,s:-1,t:1}))}
+ ];
+ let kinds=[[1,1],[-1,-1],[1,-1],[-1,1],[1,1],[-1,1]];
+ let review=kinds.map(([s,t])=>({q:pick(r,true,used,(s===t?'reviewplus':'mixed')),s,t}));
+ // Guarantee review mixed signs have the required positive-dominant orientation.
+ data.push({title:'5. Review — six questions',desc:'All four sign patterns, with smaller coefficients (2, 3, 5, 7).',qs:review});
+ let text='<section class="paper" id="patterns"><h2>Expanding two binomials</h2><div class="subtitle">Name: _______________________ Date: ______________ Set '+S.value+'</div>';
+ let count=1;
+ for(let i=0;i<4;i++){let f=data[i];text+='<div class="family"><h3>'+f.title+'</h3><div class="grid" style="--columns:'+n+'">';for(let j=0;j<f.qs.length;j++)text+=qHTML(f.qs[j],count++,j===0);text+='</div></div>'}
+ text+='</section><section class="paper" id="review"><h2>Review: all four sign patterns</h2><div class="subtitle">Six questions · coefficients 2, 3, 5 and 7</div><div class="grid" style="--columns:3">';
+ for(let j=0;j<review.length;j++)text+=qHTML(review[j],count++,false);
+ text+='</div><div class="reflection"><strong>Reflection:</strong> What changes when both constant signs are reversed?<div class="line"></div><div class="line"></div></div></section>';
+ papers.innerHTML=text;papers.classList.toggle('showanswers',sol);papers.classList.toggle('showsteps',steps);resizeProblems();index=0;drawProject();
+ try{let url=new URL(location.href);url.searchParams.set('seed',S.value);url.searchParams.set('across',C.value);history.replaceState(null,'',url)}catch(e){}
+}
+function resizeProblems(){document.querySelectorAll('.paper .q .expression').forEach(e=>{let size=22;e.style.fontSize=size+'px';while(e.scrollWidth>e.clientWidth+1&&size>9){size-=.5;e.style.fontSize=size+'px'}})}
+function drawProject(){const f=data[index];$('projecttitle').textContent=f.title;$('projectdesc').textContent=f.desc;
+ $('position').textContent='Slide '+(index+1)+' of '+data.length;
+ $('projectgrid').style.setProperty('--columns',f.qs.length);
+ $('projectgrid').innerHTML=f.qs.map((q,i)=>qHTML(q,i+1,i===0)).join('');
+ $('project').classList.toggle('showanswers',sol);$('project').classList.toggle('showsteps',steps);
+ resizeProject();ink=[];resizeCanvas();
+}
+function resizeProject(){document.querySelectorAll('.project .q .expression').forEach(e=>{let size=Math.min(37,Math.max(16,e.clientWidth*.19));e.style.fontSize=size+'px';while(e.scrollWidth>e.clientWidth&&size>12){size-=.5;e.style.fontSize=size+'px'}})}
+function redraw(){make()}
+$('newset').onclick=()=>{S.value=(+S.value||0)+1;redraw()};
+C.onchange=redraw;S.onchange=redraw;
+$('answers').onclick=()=>{sol=!sol;$('answers').textContent=sol?'Hide solutions':'Show solutions';$('answers').classList.toggle('on',sol);papers.classList.toggle('showanswers',sol);$('project').classList.toggle('showanswers',sol)};
+$('steps').onclick=()=>{steps=!steps;$('steps').textContent=steps?'Hide workings':'Show first workings';papers.classList.toggle('showsteps',steps);$('project').classList.toggle('showsteps',steps)};
+$('mode').onclick=()=>{mode=!mode;document.body.classList.toggle('projectmode',mode);$('mode').textContent=mode?'Show paper worksheet':'Project like Beamer';['write','erase','undo','clear'].forEach(id=>$(id).hidden=!mode);drawProject()};
+$('prev').onclick=()=>{index=(index+data.length-1)%data.length;drawProject()};
+$('next').onclick=()=>{index=(index+1)%data.length;drawProject()};
+document.addEventListener('keydown',e=>{if(!mode||['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight')$('next').click();if(e.key==='ArrowLeft')$('prev').click()});
+$('print').onclick=()=>window.print();
+const canvas=$('inkCanvas'),ctx=canvas.getContext('2d');let drawing=null;
+function resizeCanvas(){const b=canvas.getBoundingClientRect();let d=window.devicePixelRatio||1;canvas.width=Math.max(1,Math.round(b.width*d));canvas.height=Math.max(1,Math.round(b.height*d));ctx.setTransform(d,0,0,d,0,0);repaint()}
+function repaint(){const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);ink.forEach(s=>{ctx.strokeStyle=s.erase?'#fff':'#24568a';ctx.lineWidth=s.erase?22:3.2;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();s.pts.forEach(([x,y],i)=>{if(!i)ctx.moveTo(x*r.width,y*r.height);else ctx.lineTo(x*r.width,y*r.height)});ctx.stroke()})}
+function point(e){const r=canvas.getBoundingClientRect();return [(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height]}
+canvas.addEventListener('pointerdown',e=>{if(!inking)return;e.preventDefault();canvas.setPointerCapture(e.pointerId);drawing={erase:eraser,pts:[point(e)]};ink.push(drawing);repaint()});
+canvas.addEventListener('pointermove',e=>{if(!drawing)return;e.preventDefault();drawing.pts.push(point(e));repaint()});
+canvas.addEventListener('pointerup',()=>drawing=null);canvas.addEventListener('pointercancel',()=>drawing=null);
+$('write').onclick=()=>{inking=!inking;$('project').classList.toggle('inking',inking);$('write').classList.toggle('on',inking)};
+$('erase').onclick=()=>{eraser=!eraser;$('erase').classList.toggle('on',eraser)};
+$('undo').onclick=()=>{ink.pop();repaint()};$('clear').onclick=()=>{ink=[];repaint()};
+window.addEventListener('resize',()=>{resizeProblems();resizeProject();resizeCanvas()});
+const params=new URLSearchParams(location.search);if(params.has('seed'))S.value=params.get('seed');if(params.has('across')&&[2,3,4,5,6].includes(+params.get('across')))C.value=params.get('across');
+redraw();
+})();
+</script>
+</body>
+</html>
