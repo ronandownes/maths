@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Interactive Leaving Certificate Ordinary Level Probability and Statistics past-paper worked solutions.">
+<title>Past papers &amp; solutions | Maths</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+.pp-shell{max-width:1450px;margin:0 auto;padding:22px 22px 70px}
+.pp-eyebrow{font-size:.82rem;text-transform:uppercase;letter-spacing:.12em;color:#526379}
+.pp-title{margin:.35rem 0;font-size:clamp(1.55rem,3vw,2.25rem)}
+.pp-subtitle{max-width:900px;color:#475569;line-height:1.55}
+.pp-controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px;background:#f1f5f9;padding:14px;border-radius:12px;margin:16px 0}
+.pp-controls label{display:grid;gap:5px;font-size:.85rem;font-weight:600;color:#334155}
+.pp-controls select,.pp-controls input{font:inherit;border:1px solid #cbd5e1;background:white;border-radius:7px;padding:9px;max-width:270px}
+.pp-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(310px,.82fr);gap:18px;align-items:start}
+.pp-paper,.pp-steps{background:#fff;border:1px solid #d6dce5;border-radius:12px;overflow:hidden;box-shadow:0 3px 16px rgba(20,30,50,.06)}
+.pp-bar{background:#eef2f7;padding:9px 13px;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.pp-toolbar{display:flex;flex-wrap:wrap;gap:7px}
+.pp-bar button,.pp-steps button{font:inherit;border:1px solid #9babc2;background:white;color:#183657;padding:8px 11px;border-radius:8px;cursor:pointer}
+.pp-bar button:hover,.pp-steps button:hover{background:#e4eefb}
+.pp-bar button:disabled,.pp-steps button:disabled{opacity:.36;cursor:not-allowed}
+.pp-steps button.primary{background:#1957a6;color:white;border-color:#1957a6}
+.pp-pdf-scroll{max-height:78vh;overflow:auto;background:#dce3eb;padding:10px;min-height:330px}
+.pp-sheet{position:relative;margin:auto;width:100%;max-width:770px;background:white;box-shadow:0 2px 12px #0002;overflow:hidden}
+.pp-sheet canvas,.pp-sheet img{display:block;width:100%;height:auto}
+.pp-sheet canvas[hidden],.pp-sheet img[hidden]{display:none}
+.pp-empty{background:white;color:#475569;min-height:360px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:25px;text-align:center;line-height:1.6}
+.pp-empty[hidden]{display:none}
+.pp-focus{position:absolute;box-sizing:border-box;pointer-events:none;border:2.5px solid #ed9113;outline:3px solid #ffd96688;border-radius:5px;background:#ffd96612}
+.pp-ink{position:absolute;color:#0b4e9f;font-size:clamp(7px,1.2vw,14px);line-height:1.45;white-space:nowrap;font-weight:500;pointer-events:none}
+.pp-dots{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.pp-steps-inner{padding:17px}
+.pp-steps h2{font-size:1.25rem;margin:0 0 7px}
+.pp-explanation{color:#475569;line-height:1.5;font-size:.92rem}
+.pp-work{border-left:3px solid #2764a9;margin:14px 0;padding:5px 11px;background:#f4f8fe}
+.pp-step-label{font-weight:700;color:#1e3a61}
+.pp-step-result{font-size:1.1rem;color:#0b4e9f;font-weight:700;margin:6px 0}
+.pp-nextrow{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.pp-step-list{display:grid;gap:6px;margin-top:13px}
+.pp-step-item{display:flex;text-align:left;gap:12px;align-items:center;width:100%;background:#fff}
+.pp-step-item strong{font-size:.88rem}
+.pp-step-item.on{border-color:#1957a6;background:#eaf3ff}
+.pp-number{display:grid;place-items:center;flex:0 0 26px;height:26px;border:1px solid #bccbdb;border-radius:50%;font-size:.77rem}
+.pp-note{font-size:.83rem;color:#526379;line-height:1.5}
+.pp-warning{color:#933c10;font-weight:650}
+.pp-plainlink{display:inline-block;margin-top:12px}
+@media(max-width:850px){.pp-layout{grid-template-columns:1fr}.pp-pdf-scroll{max-height:none}.pp-ink{font-size:clamp(6px,1.6vw,12px)}}
+@media print{.topbar,.pp-controls,.pp-bar,.pp-nextrow,.pp-step-list{display:none!important}.pp-layout{display:block}.pp-steps{break-before:page}.pp-pdf-scroll{max-height:none;overflow:visible}.pp-shell{padding:0}}
+</style>
+</head>
+<body>
+<a href="#pp-main" class="skip">Skip to past papers</a>
+<header class="topbar"><a class="brand" href="../index.html" aria-label="Maths home"><img src="../assets/maths-logo.svg" alt="Maths – four coloured dots"></a>
+<nav class="menu" style="display:flex;gap:14px;flex-wrap:wrap"><a href="../index.html">Maths home</a><a href="../probability/index.html">Probability lessons</a><a href="../statistics/index.html">Statistics lessons</a></nav></header>
+<main class="pp-shell" id="pp-main">
+<p class="pp-eyebrow">Leaving Certificate · Ordinary Level · Paper 2</p>
+<h1 class="pp-title">Past papers and step-by-step solutions</h1>
+<p class="pp-subtitle">Study the <strong>unchanged original question</strong>, then reveal the blue working one stage at a time. The original PDF is selected from your own device: no question-paper files are uploaded or stored on this website.</p>
+<div class="pp-controls">
+<label>Topic <select id="topic"><option value="probability">Probability — first</option><option value="statistics">Statistics</option></select></label>
+<label>Question <select id="question"></select></label>
+<label>Open your original topic PDF <input id="pdf-upload" type="file" accept="application/pdf,.pdf"></label>
+<button id="clear-pdf" type="button">Clear local PDF</button>
+</div>
+<div class="pp-layout">
+<section class="pp-paper" aria-label="Original exam page">
+<div class="pp-bar"><strong id="page-label">Original question</strong><div class="pp-toolbar"><button id="previous-page" type="button" aria-label="Previous original page">◀ Page</button><button id="next-page" type="button" aria-label="Next original page">Page ▶</button></div></div>
+<div class="pp-pdf-scroll"><div class="pp-sheet" id="sheet"><canvas id="pdf-canvas" hidden></canvas><img id="preview-img" alt="Exact original examination question (local preview)" hidden><div class="pp-empty" id="empty"><strong>Open the matching topic PDF above.</strong><span>Probability by Topic.pdf or Statistics by Topic.pdf, from your PastPapers Library. Your browser renders its original examination page here.</span><span class="pp-note">The solution steps on the right can be explored without choosing a file.</span></div><div id="overlay"></div></div></div>
+</section>
+<section class="pp-steps" aria-label="Worked solution"><div class="pp-bar"><strong>Teacher-led reveal</strong><span id="reveal-counter">Question first</span></div>
+<div class="pp-steps-inner"><h2 id="solution-title"></h2><p id="solution-intro" class="pp-explanation"></p>
+<div class="pp-nextrow"><button id="previous" type="button">← Previous</button><button class="primary" id="next" type="button">Reveal next step →</button><button id="all" type="button">Show all</button><button id="reset" type="button">Reset</button></div>
+<div id="work"></div><div class="pp-step-list" id="step-list"></div>
+<p class="pp-note">Teaching sequence: show the exam question; ask students to predict a method; reveal the next calculation; explain why it works; then continue. Use ←/→ keyboard keys to step through.</p>
+<a class="pp-plainlink" href="https://www.examinations.ie/exammaterial/" target="_blank" rel="noopener">Official SEC examination archive</a>
+</div></section>
+</div>
+<p class="pp-note">Question pages belong to their respective State Examinations Commission examination papers. The mathematical explanations and annotations are independent teaching materials. The website does not reproduce or distribute the source PDFs.</p>
+</main>
+<script type="module">
+const BOOKS = {
+  probability:{
+    title:'Probability by Topic.pdf',
+    questions:[
+      {id:'prob15',name:'2015 · Question 1 — passwords and counting',intro:'The leading zero is allowed. Keep multiplication, complement and combinations distinct.',pages:[2],preview:{2:'original-page-previews/prob2015.png'},steps:[
+        {label:'(a) Count all passwords',result:'10⁶ = 1,000,000',why:'There are 10 choices for each of six positions. The positions are independent and digits may repeat.',page:2,focus:[12,32.5,78,5],ink:[15,37.4,['10 choices for each of 6 digits.','10 × 10 × 10 × 10 × 10 × 10 = 1,000,000']]},
+        {label:'(b)(i) Exclude zero',result:'9⁶ = 531,441',why:'Each position now has nine possibilities: 1 to 9.',page:2,focus:[12,43.6,78,5],ink:[15,48.1,['9 choices for each position:','9 × 9 × 9 × 9 × 9 × 9 = 531,441']]},
+        {label:'(b)(ii) Use the complement',result:'1 − 0.531441 = 0.468559',why:'At least one zero is the complement of no zero. Do not count overlapping zero arrangements directly.',page:2,focus:[12,55,79,6],ink:[15,61.7,['P(at least one 0) = 1 − P(no 0)','= 1 − 531441/1000000 = 0.468559']]},
+        {label:'(c) Select three positions',result:'⁶C₃ = 20',why:'Only which three positions are selected matters, not the order of selection.',page:2,focus:[12,70.2,79,9],ink:[15,82.7,['Choose 3 positions from 6.','(6 × 5 × 4)/(3 × 2 × 1) = 20']]}
+      ]},
+      {id:'prob17',name:'2017 · Question 1 — births and independence',intro:'Use the requested 2 d.p. probability in the subsequent independent-event questions.',pages:[4],preview:{4:'original-page-previews/prob2017.png'},steps:[
+        {label:'(a)(i) Count boys',result:'65,909 − 32,290 = 33,619',why:'The total includes boys and girls.',page:4,focus:[12,26.4,78,4],ink:[15,29.8,['65,909 − 32,290 = 33,619 boys']]},
+        {label:'(a)(ii) Probability of a boy',result:'33,619 / 65,909 ≈ 0.51',why:'The question requires a probability to two decimal places.',page:4,focus:[12,33.8,78,5],ink:[15,38.8,['P(boy) = 33,619/65,909 = 0.51']]},
+        {label:'(b)(i) First three boys',result:'0.51³ = 0.1327 (4 d.p.)',why:'Under the independence assumption, multiply the probabilities.',page:4,focus:[12,45,78,6],ink:[15,50.3,['P(BBB) = 0.51 × 0.51 × 0.51','= 0.1327 (4 d.p.)']]},
+        {label:'(b)(ii) First girl is third',result:'0.51² × 0.49 = 0.1274',why:'The required order is boy, boy, girl.',page:4,focus:[12,55.5,78,6],ink:[15,60.7,['P(BBG) = 0.51 × 0.51 × 0.49','= 0.1274 (4 d.p.)']]},
+        {label:'(c)(i) Complete Tuesday',result:'P(Tuesday) = 0.16',why:'Probabilities across all seven days sum to 1.',page:4,focus:[14,70.7,77,6],ink:[15,79.6,['1 − (0.14 + 0.15 + 0.18 + 0.15 + 0.12 + 0.10) = 0.16']]},
+        {label:'(c)(ii) Expected Tuesday births',result:'1300 × 0.16 = 208',why:'Expected frequency equals the number of trials multiplied by the event probability.',page:4,focus:[12,84.1,78,5],ink:[15,89.7,['Expected number = 1300 × 0.16 = 208']]}
+      ]}
+    ]
+  },
+  statistics:{
+    title:'Statistics by Topic.pdf',
+    questions:[
+      {id:'stats15',name:'2015 · Question 6 — correlation and confidence',intro:'There are many valid choices of scatter points. The 95% margin-of-error expression is the exam approximation.',pages:[2,3],preview:{2:'original-page-previews/stats2015a.png',3:'original-page-previews/stats2015b.png'},steps:[
+        {label:'(a)(i) Strong positive correlation',result:'12 sample points trending upwards',why:'As x increases, y generally increases; points remain close to a rising line.',page:2,focus:[12,15,37,38],dots:'positive'},
+        {label:'(a)(ii) Strong negative correlation',result:'12 sample points trending downwards',why:'As x increases, y generally decreases; points remain close to a falling line.',page:2,focus:[54,39,38,39],dots:'negative'},
+        {label:'(a)(iii) No correlation',result:'12 sample points without a directional trend',why:'There should be no visible rising or falling linear pattern.',page:2,focus:[12,63,38,36],dots:'none'},
+        {label:'(b)(i) Margin of error',result:'1/√1000 ≈ 3.2%',why:'Use the approximate 95% margin-of-error formula 1/√n, and report as a percentage to one decimal place.',page:3,focus:[12,12,79,9],ink:[15,18,['Margin of error = 1/√1000 = 0.03162','= 3.2% (to 1 decimal place)']]},
+        {label:'(b)(ii) Confidence interval',result:'[50.8%, 57.2%]',why:'Sample estimate ± margin of error = 54% ± 3.2%. It estimates the population proportion, not the number in this one sample.',page:3,focus:[12,36,79,9],ink:[15,42,['54% ± 3.2%','95% CI: [50.8%, 57.2%]']]}
+      ]}
+    ]
+  }
+};
+const $ = id=>document.getElementById(id);
+const state={topic:'probability',qi:0,step:-1,all:false,pdf:null,pdfJs:null,manualPage:null,fileUrl:null,renderKey:0,previewOK:false};
+const topicEl=$('topic'), questionEl=$('question');
+function current(){return BOOKS[state.topic].questions[state.qi]}
+function shown(step){return state.all || step<=state.step}
+function openTopic(topic){state.topic=topic;state.qi=0;state.step=-1;state.all=false;state.manualPage=null;topicEl.value=topic;questionEl.innerHTML='';BOOKS[topic].questions.forEach((q,i)=>{const o=document.createElement('option');o.value=i;o.textContent=q.name;questionEl.append(o)});renderAll()}
+function setQuestion(i){state.qi=i;state.step=-1;state.all=false;state.manualPage=null;renderAll()}
+function next(){const q=current();state.all=false;state.step=Math.min(state.step+1,q.steps.length-1);state.manualPage=null;renderAll()}
+function previous(){state.all=false;state.step=Math.max(state.step-1,-1);state.manualPage=null;renderAll()}
+function reset(){state.step=-1;state.all=false;state.manualPage=null;renderAll()}
+function showAll(){state.all=true;state.step=current().steps.length-1;state.manualPage=null;renderAll()}
+function pageNumber(){const q=current();return state.manualPage || ((state.step>=0)?q.steps[state.step].page:q.pages[0])}
+function reveal(){const q=current();const steps=q.steps;const s=$('step-list');s.innerHTML='';steps.forEach((step,i)=>{const b=document.createElement('button');b.type='button';b.className='pp-step-item'+(shown(i)?' on':'');b.innerHTML='<span class="pp-number">'+(i+1)+'</span><strong>'+step.label+'</strong>';b.onclick=()=>{state.step=i;state.all=false;state.manualPage=null;renderAll()};s.append(b)});
+ $('solution-title').textContent=q.name;
+ $('solution-intro').textContent=q.intro;
+ $('reveal-counter').textContent=state.step<0?'Question first':state.all?'All '+steps.length+' steps':'Step '+(state.step+1)+' of '+steps.length;
+ $('previous').disabled=(state.step<0&&!state.all);
+ $('next').disabled=(state.step===steps.length-1);
+ const w=$('work');w.innerHTML='';
+ if(state.step<0){const p=document.createElement('p');p.className='pp-explanation';p.textContent='Ask students to identify the information, the mathematical idea and the first step before you reveal any working.';w.append(p);return}
+ steps.forEach((step,i)=>{if(!shown(i))return;const box=document.createElement('div');box.className='pp-work';const label=document.createElement('div');label.className='pp-step-label';label.textContent=step.label;const answer=document.createElement('div');answer.className='pp-step-result';answer.textContent=step.result;const why=document.createElement('div');why.className='pp-explanation';why.textContent=step.why;box.append(label,answer,why);w.append(box)});
+}
+function dotsFor(kind){
+ const X=[.06,.14,.21,.29,.37,.45,.53,.61,.70,.78,.87,.94];
+ const J=[.035,-.025,.055,-.03,.02,-.01,.025,-.055,.03,-.035,.015,-.03];
+ const no=[.38,.82,.14,.72,.30,.55,.89,.20,.61,.09,.76,.43];
+ const grid=kind==='positive'?[83,128,199,199]:kind==='negative'?[329,339,198,199]:[83,544,199,199];
+ return X.map((x,i)=>{const y=kind==='positive'?.90-.82*x+J[i]:kind==='negative'?.08+.83*x+J[i]:no[i];return [grid[0]+16+(grid[2]-32)*x,grid[1]+16+(grid[3]-32)*y]})
+}
+function overlay(){
+ const pane=$('overlay');pane.innerHTML='';const page=pageNumber(),q=current();
+ const visible=q.steps.filter((step,i)=>shown(i)&&step.page===page);
+ visible.forEach(step=>{
+  if(step.ink){const div=document.createElement('div');div.className='pp-ink';div.style.left=step.ink[0]+'%';div.style.top=step.ink[1]+'%';div.innerHTML=step.ink[2].map(x=>x.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')).join('<br>');pane.append(div)}
+  if(step.dots){const ns='http://www.w3.org/2000/svg';const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 595 842');svg.setAttribute('class','pp-dots');dotsFor(step.dots).forEach(([x,y])=>{const c=document.createElementNS(ns,'circle');c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r','3.4');c.setAttribute('fill','#026a70');svg.append(c)});pane.append(svg)}
+ });
+ if(state.step>=0&&!state.all){
+  const active=q.steps[state.step];
+  if(active.page===page && active.focus){const div=document.createElement('div');div.className='pp-focus';const [x,y,w,h]=active.focus;Object.assign(div.style,{left:x+'%',top:y+'%',width:w+'%',height:h+'%'});pane.append(div)}
+ }
+}
+async function renderPage(){
+ const q=current(),pageNo=pageNumber();
+ $('page-label').textContent=state.topic.toUpperCase()+' · '+q.name.split(' — ')[0]+' · PDF page '+pageNo;
+ const idx=q.pages.indexOf(pageNo);
+ $('previous-page').disabled=idx<=0;$('next-page').disabled=idx===q.pages.length-1;
+ const canvas=$('pdf-canvas'),preview=$('preview-img'),empty=$('empty'),sheet=$('sheet');
+ canvas.hidden=true;preview.hidden=true;empty.hidden=true;
+ const key=++state.renderKey;
+ if(state.pdf){
+   try{
+     const pg=await state.pdf.getPage(pageNo);if(key!==state.renderKey)return;
+     const viewport=pg.getViewport({scale:1.6});
+     canvas.width=viewport.width;canvas.height=viewport.height;
+     const ctx=canvas.getContext('2d',{alpha:false});await pg.render({canvasContext:ctx,viewport}).promise;
+     if(key!==state.renderKey)return;
+     canvas.hidden=false;sheet.style.aspectRatio=String(viewport.width)+'/'+String(viewport.height);overlay();return;
+   }catch(e){console.warn('Could not render selected PDF page',e)}
+ }
+ const src=q.preview[pageNo];preview.src=src;
+ preview.onload=()=>{if(key!==state.renderKey)return;preview.hidden=false;empty.hidden=true;sheet.style.aspectRatio=String(preview.naturalWidth)+'/'+String(preview.naturalHeight);overlay()};
+ preview.onerror=()=>{if(key!==state.renderKey)return;preview.hidden=true;empty.hidden=false;sheet.style.aspectRatio='595/895';$('overlay').innerHTML=''};
+ // Preview images are included in the private comparison ZIP, but deliberately not on the public site.
+}
+function renderAll(){reveal();renderPage()}
+topicEl.addEventListener('change',e=>openTopic(e.target.value));
+questionEl.addEventListener('change',e=>setQuestion(Number(e.target.value)));
+$('next').onclick=next;$('previous').onclick=previous;$('reset').onclick=reset;$('all').onclick=showAll;
+$('previous-page').onclick=()=>{const q=current(),i=q.pages.indexOf(pageNumber());if(i>0){state.manualPage=q.pages[i-1];renderPage()}};
+$('next-page').onclick=()=>{const q=current(),i=q.pages.indexOf(pageNumber());if(i>=0&&i<q.pages.length-1){state.manualPage=q.pages[i+1];renderPage()}};
+$('clear-pdf').onclick=()=>{state.pdf=null;$('pdf-upload').value='';renderPage()};
+$('pdf-upload').onchange=async e=>{
+ const file=e.target.files[0];if(!file)return;
+ const status=$('page-label');status.textContent='Opening '+file.name+'…';
+ try{
+  const mod=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs');
+  mod.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
+  const task=mod.getDocument({data:new Uint8Array(await file.arrayBuffer())});
+  const pdf=await task.promise;state.pdf=pdf;
+  const expected=state.topic==='probability'?50:76;
+  if(pdf.numPages!==expected){alert('This file has '+pdf.numPages+' pages; the '+state.topic+' booklet has '+expected+'. Check that you chose the matching PDF.')}
+  renderPage();
+ }catch(err){console.error(err);status.textContent='Could not open PDF — preview mode';alert('PDF renderer could not load. Check your connection or use the standalone PDF example.');state.pdf=null;renderPage()}
+};
+document.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight'){next();e.preventDefault()}if(e.key==='ArrowLeft'){previous();e.preventDefault()}});
+openTopic('probability');
+</script>
+</body></html>
