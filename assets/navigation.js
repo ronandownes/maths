@@ -103,20 +103,22 @@
       T("Describing data", "statistics/describing-data/index.html")
     ]},
     { label: "Probability", home: "probability/index.html", topics: [
-      T("Probability", "probability/index.html", [
-        L("Experimental probability activity", "probability/theoretical-experimental/index.html"),
-        L("Tree diagrams", "probability/tree-diagrams/index.html"),
-        L("Counting principles", "probability/counting/index.html")
+      T("Experimental probability", "probability/theoretical-experimental/index.html", [
+        L("Marble bag probability", "apps/probability/marble-bag/index.html")
+      ]),
+      T("Tree diagrams", "probability/tree-diagrams/index.html", [
+        L("Tree diagram explorer", "apps/probability/tree-diagrams/index.html")
+      ]),
+      T("Two-way tables", "apps/probability/two-way-tables/index.html"),
+      T("Counting & combinatorics", "probability/counting/index.html", [
+        L("Combinatorics", "combinatorics/counting/index.html")
       ])
-    ]},
-    { label: "Combinatorics", home: "combinatorics/index.html", topics: [
-      T("Counting", "combinatorics/counting/index.html")
     ]}
   ];
 
   const referenceEntries = [{"label":"Sets","home":"reference/am1/chapter-01/index.html","activities":[],"source":"am1","chapter":1,"lc":false,"strand":"Number"},{"label":"Natural Numbers","home":"reference/am1/chapter-02/index.html","activities":[],"source":"am1","chapter":2,"lc":false,"strand":"Number"},{"label":"Integers","home":"reference/am1/chapter-03/index.html","activities":[],"source":"am1","chapter":3,"lc":false,"strand":"Number"},{"label":"Rational Numbers","home":"reference/am1/chapter-04/index.html","activities":[],"source":"am1","chapter":4,"lc":false,"strand":"Number"},{"label":"Geometry I","home":"reference/am1/chapter-05/index.html","activities":[],"source":"am1","chapter":5,"lc":false,"strand":"Geometry"},{"label":"Constructions I","home":"reference/am1/chapter-06/index.html","activities":[],"source":"am1","chapter":6,"lc":false,"strand":"Geometry"},{"label":"Rational Numbers II","home":"reference/am1/chapter-07/index.html","activities":[],"source":"am1","chapter":7,"lc":false,"strand":"Number"},{"label":"Decimals and Percentages","home":"reference/am1/chapter-08/index.html","activities":[],"source":"am1","chapter":8,"lc":false,"strand":"Number"},{"label":"Fundamental Principle of Counting and Probability","home":"reference/am1/chapter-09/index.html","activities":[],"source":"am1","chapter":9,"lc":false,"strand":"Probability"},{"label":"Co-ordinate Geometry I","home":"reference/am1/chapter-10/index.html","activities":[],"source":"am1","chapter":10,"lc":false,"strand":"Geometry"},{"label":"Transformation Geometry","home":"reference/am1/chapter-11/index.html","activities":[],"source":"am1","chapter":11,"lc":false,"strand":"Geometry"},{"label":"Number Patterns I","home":"reference/am1/chapter-12/index.html","activities":[],"source":"am1","chapter":12,"lc":false,"strand":"Number"},{"label":"Indices and Scientific Notation","home":"reference/am1/chapter-13/index.html","activities":[],"source":"am1","chapter":13,"lc":false,"strand":"Number"},{"label":"Algebra I: An Introduction","home":"reference/am1/chapter-14/index.html","activities":[],"source":"am1","chapter":14,"lc":false,"strand":"Algebra"},{"label":"Algebra II: Solving Linear Equations","home":"reference/am1/chapter-15/index.html","activities":[],"source":"am1","chapter":15,"lc":false,"strand":"Algebra"},{"label":"Applied Arithmetic II","home":"reference/am1/chapter-16/index.html","activities":[],"source":"am1","chapter":16,"lc":false,"strand":"Number"},{"label":"Functions I","home":"reference/am1/chapter-17/index.html","activities":[],"source":"am1","chapter":17,"lc":false,"strand":"Functions"},{"label":"Statistics I: Collecting Data","home":"reference/am1/chapter-18/index.html","activities":[],"source":"am1","chapter":18,"lc":false,"strand":"Statistics"},{"label":"Statistics II: Representing Data Graphically","home":"reference/am1/chapter-19/index.html","activities":[],"source":"am1","chapter":19,"lc":false,"strand":"Statistics"},{"label":"Applied Measure","home":"reference/am1/chapter-20/index.html","activities":[],"source":"am1","chapter":20,"lc":false,"strand":"Geometry"},{"label":"Geometry II: Theorems","home":"reference/am1/chapter-21/index.html","activities":[],"source":"am1","chapter":21,"lc":false,"strand":"Geometry"},{"label":"Algebra III: Problem-Solving with Linear Equations","home":"reference/am1/chapter-22/index.html","activities":[],"source":"am1","chapter":22,"lc":false,"strand":"Algebra"},{"label":"Geometry III: Further Theorems","home":"reference/am1/chapter-23/index.html","activities":[],"source":"am1","chapter":23,"lc":false,"strand":"Geometry"},{"label":"Co-ordinate Geometry II","home":"reference/am1/chapter-24/index.html","activities":[],"source":"am1","chapter":24,"lc":false,"strand":"Geometry"},{"label":"Constructions II","home":"reference/am1/chapter-25/index.html","activities":[],"source":"am1","chapter":25,"lc":false,"strand":"Geometry"},{"label":"Statistics III: Representing Data Numerically and Interpreting Data","home":"reference/am1/chapter-26/index.html","activities":[],"source":"am1","chapter":26,"lc":false,"strand":"Statistics"},{"label":"Co-ordinate Geometry III","home":"reference/am1/chapter-27/index.html","activities":[],"source":"am1","chapter":27,"lc":false,"strand":"Geometry"},{"label":"Algebra IV: Linear Inequalities","home":"reference/am1/chapter-28/index.html","activities":[],"source":"am1","chapter":28,"lc":false,"strand":"Algebra"},{"label":"Algebra V: Simultaneous Equations","home":"reference/am1/chapter-29/index.html","activities":[],"source":"am1","chapter":29,"lc":false,"strand":"Algebra"},{"label":"Applied Measure II","home":"reference/am1/chapter-30/index.html","activities":[],"source":"am1","chapter":30,"lc":false,"strand":"Geometry"},{"label":"Algebra VI: Algebraic Factorising","home":"reference/am1/chapter-31/index.html","activities":[],"source":"am1","chapter":31,"lc":false,"strand":"Algebra"},{"label":"Distance, Speed, Time and Graphs","home":"reference/am1/chapter-32/index.html","activities":[],"source":"am1","chapter":32,"lc":false,"strand":"Functions"},{"label":"Trigonometry","home":"reference/am1/chapter-33/index.html","activities":[],"source":"am1","chapter":33,"lc":false,"strand":"Trigonometry"},{"label":"Applied Arithmetic III","home":"reference/am1/chapter-34/index.html","activities":[],"source":"am1","chapter":34,"lc":false,"strand":"Number"},{"label":"Algebra VII: Solving Quadratic Equations","home":"reference/am1/chapter-35/index.html","activities":[],"source":"am1","chapter":35,"lc":false,"strand":"Algebra"},{"label":"Functions II","home":"reference/am1/chapter-36/index.html","activities":[],"source":"am1","chapter":36,"lc":false,"strand":"Functions"},{"label":"Number Patterns II","home":"reference/am1/chapter-37/index.html","activities":[],"source":"am1","chapter":37,"lc":false,"strand":"Number"},{"label":"Algebra VIII: Algebraic Fractions","home":"reference/am1/chapter-38/index.html","activities":[],"source":"am1","chapter":38,"lc":false,"strand":"Algebra"},{"label":"Algebra IX: Expansions and Division in Algebra","home":"reference/am1/chapter-39/index.html","activities":[],"source":"am1","chapter":39,"lc":false,"strand":"Algebra"},{"label":"Sets","home":"reference/am2/chapter-01/index.html","activities":[],"source":"am2","chapter":1,"lc":false,"strand":"Number"},{"label":"Counting and Probability","home":"reference/am2/chapter-02/index.html","activities":[],"source":"am2","chapter":2,"lc":false,"strand":"Probability"},{"label":"Statistics","home":"reference/am2/chapter-03/index.html","activities":[],"source":"am2","chapter":3,"lc":false,"strand":"Statistics"},{"label":"Alg I: Expressions","home":"reference/am2/chapter-04/index.html","activities":[],"source":"am2","chapter":4,"lc":false,"strand":"Number"},{"label":"Alg II: Factorising","home":"reference/am2/chapter-05/index.html","activities":[],"source":"am2","chapter":5,"lc":false,"strand":"Number"},{"label":"Co-ordinate Geo I","home":"reference/am2/chapter-06/index.html","activities":[],"source":"am2","chapter":6,"lc":false,"strand":"Number"},{"label":"Applied Arithmetic","home":"reference/am2/chapter-07/index.html","activities":[],"source":"am2","chapter":7,"lc":false,"strand":"Number"},{"label":"Geometry I","home":"reference/am2/chapter-08/index.html","activities":[],"source":"am2","chapter":8,"lc":false,"strand":"Geometry"},{"label":"Indices","home":"reference/am2/chapter-09/index.html","activities":[],"source":"am2","chapter":9,"lc":false,"strand":"Number"},{"label":"Algebra III: Algebraic Fractions and Manipulation of Formulae","home":"reference/am2/chapter-10/index.html","activities":[],"source":"am2","chapter":10,"lc":false,"strand":"Algebra"},{"label":"Applied Measure I","home":"reference/am2/chapter-11/index.html","activities":[],"source":"am2","chapter":11,"lc":false,"strand":"Geometry"},{"label":"Distance, Speed, Time and Real-Life Graphs","home":"reference/am2/chapter-12/index.html","activities":[],"source":"am2","chapter":12,"lc":false,"strand":"Functions"},{"label":"Algebra IV: Linear Equations","home":"reference/am2/chapter-13/index.html","activities":[],"source":"am2","chapter":13,"lc":false,"strand":"Algebra"},{"label":"Algebra V: Linear Inequalities","home":"reference/am2/chapter-14/index.html","activities":[],"source":"am2","chapter":14,"lc":false,"strand":"Algebra"},{"label":"Number Systems","home":"reference/am2/chapter-15/index.html","activities":[],"source":"am2","chapter":15,"lc":false,"strand":"Number"},{"label":"Algebra VI: Quadratic Equations","home":"reference/am2/chapter-16/index.html","activities":[],"source":"am2","chapter":16,"lc":false,"strand":"Algebra"},{"label":"Co-ordinate Geometry II","home":"reference/am2/chapter-17/index.html","activities":[],"source":"am2","chapter":17,"lc":false,"strand":"Geometry"},{"label":"Number Patterns","home":"reference/am2/chapter-18/index.html","activities":[],"source":"am2","chapter":18,"lc":false,"strand":"Number"},{"label":"Graphing Functions","home":"reference/am2/chapter-19/index.html","activities":[],"source":"am2","chapter":19,"lc":false,"strand":"Functions"},{"label":"Geometry II","home":"reference/am2/chapter-20/index.html","activities":[],"source":"am2","chapter":20,"lc":false,"strand":"Geometry"},{"label":"Constructions","home":"reference/am2/chapter-21/index.html","activities":[],"source":"am2","chapter":21,"lc":false,"strand":"Geometry"},{"label":"Applied Measure II","home":"reference/am2/chapter-22/index.html","activities":[],"source":"am2","chapter":22,"lc":false,"strand":"Geometry"},{"label":"Trigonometry","home":"reference/am2/chapter-23/index.html","activities":[],"source":"am2","chapter":23,"lc":false,"strand":"Trigonometry"},{"label":"Geometry III: Proofs","home":"reference/am2/chapter-24/index.html","activities":[],"source":"am2","chapter":24,"lc":false,"strand":"Geometry"},{"label":"Real Numbers","home":"reference/am3/chapter-01/index.html","activities":[],"source":"am3","chapter":1,"lc":false,"strand":"Number"},{"label":"Arithmetic","home":"reference/am3/chapter-02/index.html","activities":[],"source":"am3","chapter":2,"lc":false,"strand":"Number"},{"label":"Algebra I","home":"reference/am3/chapter-03/index.html","activities":[],"source":"am3","chapter":3,"lc":false,"strand":"Algebra"},{"label":"Indices and Surds","home":"reference/am3/chapter-04/index.html","activities":[],"source":"am3","chapter":4,"lc":false,"strand":"Number"},{"label":"Algebra II","home":"reference/am3/chapter-05/index.html","activities":[],"source":"am3","chapter":5,"lc":false,"strand":"Algebra"},{"label":"Linear and Quadratic Functions","home":"reference/am3/chapter-06/index.html","activities":[],"source":"am3","chapter":6,"lc":false,"strand":"Functions"},{"label":"Complex Numbers","home":"reference/am3/chapter-07/index.html","activities":[],"source":"am3","chapter":7,"lc":true,"strand":"Number"},{"label":"Cubic and Exponential Functions","home":"reference/am3/chapter-08/index.html","activities":[],"source":"am3","chapter":8,"lc":false,"strand":"Functions"},{"label":"Number Patterns","home":"reference/am3/chapter-09/index.html","activities":[],"source":"am3","chapter":9,"lc":false,"strand":"Number"},{"label":"Calculus","home":"reference/am3/chapter-10/index.html","activities":[],"source":"am3","chapter":10,"lc":true,"strand":"Functions"},{"label":"Applied Measure","home":"reference/am3/chapter-11/index.html","activities":[],"source":"am3","chapter":11,"lc":false,"strand":"Geometry"},{"label":"Counting and Arrangements","home":"reference/am3/chapter-12/index.html","activities":[],"source":"am3","chapter":12,"lc":false,"strand":"Combinatorics"},{"label":"Probability","home":"reference/am3/chapter-13/index.html","activities":[],"source":"am3","chapter":13,"lc":false,"strand":"Probability"},{"label":"Statistics I","home":"reference/am3/chapter-14/index.html","activities":[],"source":"am3","chapter":14,"lc":false,"strand":"Statistics"},{"label":"Statistics II","home":"reference/am3/chapter-15/index.html","activities":[],"source":"am3","chapter":15,"lc":false,"strand":"Statistics"},{"label":"Geometry","home":"reference/am3/chapter-16/index.html","activities":[],"source":"am3","chapter":16,"lc":false,"strand":"Geometry"},{"label":"Trigonometry","home":"reference/am3/chapter-17/index.html","activities":[],"source":"am3","chapter":17,"lc":false,"strand":"Trigonometry"},{"label":"Coordinate Geometry: The Line","home":"reference/am3/chapter-18/index.html","activities":[],"source":"am3","chapter":18,"lc":false,"strand":"Geometry"},{"label":"Constructions, Transformations and Enlargements","home":"reference/am3/chapter-19/index.html","activities":[],"source":"am3","chapter":19,"lc":false,"strand":"Geometry"},{"label":"Coordinate Geometry: The Circle","home":"reference/am3/chapter-20/index.html","activities":[],"source":"am3","chapter":20,"lc":true,"strand":"Geometry"}];
   for (const item of referenceEntries) {
-    const strand = strands.find(s => s.label === item.strand);
+    const strand = strands.find(s => s.label === (item.strand === "Combinatorics" ? "Probability" : item.strand));
     if (strand) strand.topics.push(item);
   }
 
@@ -167,11 +169,9 @@
       const details = document.createElement("details");
       details.className = "maths-strand" + (s === strand ? " maths-selected-strand" : "");
       const summary = document.createElement("summary");
-      summary.append(document.createTextNode(s.label + " "));
-      const arrow = document.createElement("span");
-      arrow.textContent = "⌄";
-      arrow.setAttribute("aria-hidden", "true");
-      summary.append(arrow);
+      // The entire strand name opens its topic menu; no decorative chevron.
+      summary.textContent = ({ Trigonometry: "Trig", Statistics: "Stats" })[s.label] || s.label;
+      summary.setAttribute("aria-label", "Explore " + s.label + " topics");
       details.append(summary);
       const dropdown = document.createElement("div");
       dropdown.className = "maths-dropdown";
@@ -257,7 +257,7 @@
     heading.textContent = topic ? topic.label : strand ? strand.label : "Explore Maths";
     element.append(heading);
     if (topic && bookChapter[topic.home]) {
-      const read = bookLink("Read this topic in the Book", bookChapter[topic.home]);
+      const read = bookLink("Read in the Book", bookChapter[topic.home]);
       read.classList.add("maths-side-book-link");
       element.append(read);
     }
@@ -278,17 +278,17 @@
     element.append(caption("Sections"));
     const sectionsSlot = document.createElement("div");
     sectionsSlot.className = "maths-side-list maths-section-links";
-    const intro = link(L("Introduction", topic.home), "", path === topic.home && !location.hash);
+    const intro = link(L("Top of page", topic.home), "maths-top-link", path === topic.home && !location.hash);
     sectionsSlot.append(intro);
     element.append(sectionsSlot);
 
 
     const renderSections = doc => {
       const sections = extractSections(doc);
-      if (topic.home === "number/sets/index.html") sectionsSlot.replaceChildren();
-      for (const [index, item] of sections.entries()) {
-        const label = topic.home === "number/sets/index.html"
-          ? "2." + (index + 1) + " " + item.title : item.title;
+      sectionsSlot.replaceChildren();
+      sectionsSlot.append(intro);
+      for (const item of sections) {
+        const label = item.title.replace(/^\s*\d+(?:\.\d+)*[.)]\s+/, "");
         const a = link(L(label, topic.home + "#" + encodeURIComponent(item.id)), "maths-section-link");
         a.dataset.sectionId = item.id;
         sectionsSlot.append(a);
@@ -297,7 +297,7 @@
         sectionsSlot.querySelectorAll("a").forEach(a => {
           const selected = a.dataset.sectionId
             ? path === topic.home && (location.hash === "#" + encodeURIComponent(a.dataset.sectionId)
-              || (!location.hash && topic.home === "number/sets/index.html" && a === sectionsSlot.querySelector("a")))
+              )
             : path === topic.home && !location.hash;
           a.classList.toggle("maths-current", selected);
           if (selected) a.setAttribute("aria-current", "location");
@@ -327,9 +327,17 @@
   function start() {
     if (window.self !== window.top) return;
     // Page titles remain consistent even on older generated HTML pages.
-    document.title = document.title.replace(/ \| Maths$/, " | Irish School Maths Apps");
+    document.title = document.title.replace(/ \| (?:Irish School Maths Apps|Maths)$/, " | JC and LC Maths");
     const mainBrand = document.querySelector(".topbar .brand img");
-    if (mainBrand) mainBrand.alt = "Irish School Maths Apps";
+    if (mainBrand) mainBrand.alt = "JC and LC Maths, by Mr Ronan Downes";
+    const mainBrandLink = document.querySelector(".topbar .brand");
+    if (mainBrandLink) mainBrandLink.setAttribute("aria-label", "JC and LC Maths home");
+    if (topic) {
+      document.body.classList.add("maths-topic-page");
+      const paper = document.querySelector("main.paper");
+      const toolbar = paper?.querySelector(":scope > .toolbar");
+      if (paper && toolbar) paper.insertBefore(toolbar, paper.firstElementChild);
+    }
  // Embedded explorer already has its book's navigation.
     if (document.documentElement.dataset.mathsNavReady) return;
     document.documentElement.dataset.mathsNavReady = "yes";
@@ -345,9 +353,9 @@
       const bar = document.createElement("div");
       bar.className = "maths-unified-top";
       const brand = link(L("", "index.html"), "maths-unified-brand");
-      brand.setAttribute("aria-label", "Irish School Maths Apps home");
+      brand.setAttribute("aria-label", "JC and LC Maths home");
       const logo = document.createElement("img");
-      logo.alt = "Irish School Maths Apps four-dot logo";
+      logo.alt = "JC and LC Maths, by Mr Ronan Downes";
       logo.src = url("assets/maths-logo.svg");
       brand.append(logo);
       bar.append(brand);
