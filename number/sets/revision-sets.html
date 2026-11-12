@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Revision Exercises · Sets | JC and LC Maths</title>
+<meta name="description" content="First Year Sets: Active Maths 1 revision questions 1–6 and worked examples 1.10–1.11 with step-by-step visual solutions.">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="stylesheet" href="../../assets/styles.css">
+<style>
+:root{--ink:#183450;--blue:#165f9d;--line:#cadcec;--pale:#eff6fd;--green:#13775c;--amber:#ad6210}
+*{box-sizing:border-box}body{background:#eef4f9;color:var(--ink);margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif}
+a{color:var(--blue)}button{cursor:pointer;font:inherit;font-weight:750}
+#board{width:min(1550px,98vw);margin:12px auto 25px;background:white;border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 26px #143c6120;overflow:auto}
+#board:fullscreen{width:100%;height:100%;margin:0;border:0;border-radius:0;display:flex;flex-direction:column}
+.top{padding:11px 22px;background:#f7fbff;border-bottom:2px solid #dce9f4;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.brand{display:flex;gap:14px;align-items:center;text-decoration:none;font-weight:800;color:var(--ink)}.brand img{width:55px}.top h1{font-size:clamp(1.3rem,2vw,1.85rem);margin:0;font-weight:800}.top .grow{flex:1}
+.top button,.tabs button,.qnav button,.parts button,.foot button{border:1px solid #b8cede;background:#fff;color:#284c6a;border-radius:11px;padding:9px 14px}
+.top button:hover,.tabs button:hover,.qnav button:hover,.parts button:hover,.foot button:hover{background:#e9f3ff}
+.tabs{padding:10px 22px;display:flex;gap:9px;flex-wrap:wrap;align-items:center;border-bottom:1px solid #e2edf5}
+.tabs button.active,.qnav button[aria-current=true],.parts button[aria-current=true]{background:var(--blue);color:#fff;border-color:var(--blue)}
+.tabs a{margin-left:auto;font-weight:700}
+.qnav{padding:11px 22px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#f3f8fd}
+.qnav strong{margin-right:5px}.qnav button{min-width:49px;font-size:1.12rem}
+.reference{font-size:clamp(.95rem,1.5vw,1.18rem);font-weight:800;color:#57718a;padding:12px 25px 4px}
+#prompt{padding:4px 25px 10px;font-size:clamp(1.45rem,2.6vw,2.35rem);line-height:1.35;font-weight:740;max-width:1200px}
+#definitions{padding:0 25px;display:flex;gap:13px;flex-wrap:wrap}
+.definition{background:#eef6fd;border:1px solid #cbdff0;border-radius:10px;padding:9px 13px;font-size:clamp(1.05rem,1.55vw,1.43rem);font-weight:700}
+#diagram-wrap{margin:0 auto;width:min(760px,96%);max-height:47vh}
+#diagram-wrap:empty{display:none}.diagram{display:block;width:100%;height:auto;max-height:46vh}
+.diagram .area{stroke:#2b5475;stroke-width:3.6;fill:#fff}
+.diagram .setname{font:italic 750 35px Georgia,serif;fill:#173f63}
+.diagram .value{font:750 38px system-ui,sans-serif;fill:#163c5c;text-anchor:middle}
+.diagram .vwide{font-size:22px}
+.diagram .paint{opacity:.22}.diagram .sel{opacity:.58}
+.diagram .u{font:750 28px system-ui,sans-serif;fill:#26587d}
+.wordwall{padding:5px 25px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.wordwall .cue{font-size:1.03rem;color:#526d86;font-weight:800}
+.wordwall span.term{font-size:clamp(1.12rem,1.65vw,1.55rem);font-weight:780;border:2px solid #c9d9e5;background:#fff;border-radius:10px;padding:8px 15px}
+.partbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;padding:12px 25px;border-top:1px solid #e0ebf4;background:#f8fbff;margin-top:10px}
+.partbar strong{font-size:1.12rem}.parts{display:flex;gap:7px;flex-wrap:wrap}.parts button{font-size:1.05rem}
+.question{padding:12px 25px 14px}
+.question .kind{font-size:.96rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:#5a7d9c;margin-bottom:4px}
+.question #subquestion{font-size:clamp(1.5rem,2.5vw,2.25rem);font-weight:780;line-height:1.31}
+.solution{border-top:2px solid #d9e9f7;margin:0 25px;padding:14px 0 15px;min-height:130px}
+.solution .step{font-size:clamp(1.15rem,1.75vw,1.6rem);color:#31536d;font-weight:740}
+.solution .math{font-size:clamp(1.55rem,2.5vw,2.4rem);color:#0e654a;font-weight:850;margin-top:10px;line-height:1.4;white-space:normal}
+.solution .hint{font-size:clamp(1.1rem,1.5vw,1.4rem);color:#60768a}
+.foot{padding:12px 25px;display:flex;gap:14px;justify-content:space-between;align-items:center;border-top:1px solid #dbe8f3;background:#f9fcff}
+.foot .primary{background:#1764a3;border-color:#1764a3;color:#fff;font-size:1.15rem;padding:12px 22px}.foot .primary:hover{background:#134e80}
+.foot .status{font-weight:750;color:#4e6c86}.foot button:disabled{opacity:.43;cursor:default}
+.caption{font-size:.94rem;color:#607b91;padding:10px 25px}
+#board:fullscreen .top{flex:none}#board:fullscreen .tabs,#board:fullscreen .qnav{flex:none}#board:fullscreen .slidebody{flex:1;overflow:auto}#board:fullscreen .foot{flex:none}
+@media(max-width:680px){.top,.tabs,.qnav,.reference,.partbar,.question,.foot,.caption{padding-left:12px;padding-right:12px}#prompt,#definitions,.wordwall{padding-left:12px;padding-right:12px}#diagram-wrap{max-height:none}.diagram{max-height:320px}.wordwall span.term{padding:5px 8px}.foot{flex-wrap:wrap}.top h1{font-size:1.2rem}}
+@media print{body{background:#fff}#board{border:0;box-shadow:none;width:100%}.top button,.tabs,.qnav,.foot,.partbar{display:none}.solution{break-inside:avoid}.diagram{max-height:330px}}
+</style>
+</head>
+<body>
+<div id="board">
+<header class="top">
+<a class="brand" href="index.html"><img src="../../assets/maths-logo.svg" alt="Four-dot Maths logo"><span>Sets</span></a>
+<h1>Revision &amp; Problem Solving</h1><div class="grow"></div>
+<button id="restart" type="button">↻ Restart</button><button id="full" type="button">⛶ Full screen</button>
+</header>
+<div class="tabs" role="navigation" aria-label="Choose section">
+<button type="button" data-mode="worked">Worked Examples 1.10–1.11</button>
+<button type="button" data-mode="revision">Revision Exercises 1–6</button>
+<a href="homework-reveal.html">Exercise 1.7 · Homework corrections</a>
+</div>
+<div class="qnav" id="qnav" aria-label="Choose question"></div>
+<main class="slidebody" aria-live="off">
+<div class="reference" id="reference"></div>
+<div id="prompt"></div>
+<div id="definitions"></div>
+<div id="diagram-wrap"></div>
+<div class="wordwall" id="wordwall"><span class="cue">Vocabulary:</span><span class="term">Union ∪</span><span class="term">Intersection ∩</span><span class="term">Difference \</span><span class="term">Complement ′</span><span class="term">Cardinality #</span></div>
+<div class="partbar"><strong>Part</strong><nav class="parts" id="parts" aria-label="Choose part"></nav></div>
+<div class="question"><div class="kind" id="partref">Question</div><div id="subquestion"></div></div>
+<div class="solution" aria-live="polite"><div class="step" id="steptext"></div><div class="math" id="mathexpr"></div></div>
+</main>
+<footer class="foot">
+<button id="previous" type="button">← Previous part</button>
+<span class="status" id="status"></span>
+<button class="primary" id="next" type="button">Reveal next →</button>
+</footer>
+<div class="caption">Active Maths 1, pages 13 and 16–17. Questions retain the textbook numbering. Answers are hidden until revealed. Space / → reveals; ← goes back. This study presentation supplements the printed book.</div>
+</div>
+<script>
+(function(){
+'use strict';
+const D={
+worked:[
+{n:'1.10',page:13,title:'Maths and Science',stem:'Students in a First Year class were asked whether they liked Maths or Science. Explain what each number in the Venn diagram represents.',defs:['M = students who like Maths','S = students who like Science'],diagram:{names:['Maths','Science'],u:'U',given:['4','8','3','2']},parts:[
+{id:'(a)',q:'What does the 8 mean?',steps:[['The overlap belongs to BOTH sets.','8 like Maths and Science.',['both']]]},
+{id:'(b)',q:'What does the 4 mean?',steps:[['Maths but not Science.','4 like Maths only.',['left']]]},
+{id:'(c)',q:'What does the 3 mean?',steps:[['Science but not Maths.','3 like Science only.',['right']]]},
+{id:'(d)',q:'What does the 2 mean?',steps:[['Outside both circles, but inside U.','2 like neither Maths nor Science.',['neither']]]}]},
+{n:'1.11',page:13,title:'French and German',stem:'There are 30 people in a class. 15 study French (F) and 18 study German (G). Six study both French and German.',defs:['#U = 30','#F = 15','#G = 18','#(F ∩ G) = 6'],diagram:{names:['F','G'],u:'30',given:['?','6','?','?']},parts:[
+{id:'(a)',q:'Represent this information on a Venn diagram.',steps:[['Put the overlap in FIRST.','F ∩ G = 6',['both']],['Now subtract the overlap from the French total.','15 − 6 = 9 (French only)',['left'],'9'],['Subtract the overlap from the German total.','18 − 6 = 12 (German only)',['right'],'12'],['Subtract the union from the class total.','30 − (9 + 6 + 12) = 3 (neither)',['neither'],'3']]},
+{id:'(b)(i)',q:'How many study neither French nor German?',steps:[['Count outside the two circles.','30 − (9 + 6 + 12) = 3',['neither'],'3']]},
+{id:'(b)(ii)',q:'How many study French but not German?',steps:[['French ONLY is the left region: F \\ G.','15 − 6 = 9',['left'],'9']]},
+{id:'(b)(iii)',q:'How many study one language only?',steps:[['Add the two non-overlapping outer regions.','9 + 12 = 21',['left','right'],'9|12']]}]}
+],
+revision:[
+{n:'1',page:16,title:'Sets and statements',stem:'A = {11, 13, 15, 17, 19, 21}, B = {12, 14, 16, 18, 20, 22}, C = {11, 13, 17, 19}. State whether each statement is true and explain false statements.',defs:['A = {11, 13, 15, 17, 19, 21}','B = {12, 14, 16, 18, 20, 22}','C = {11, 13, 17, 19}'],parts:[
+{id:'(a)(i)',q:'A = B',steps:[['Compare the elements.','FALSE. 11 ∈ A, but 11 ∉ B.']]},
+{id:'(a)(ii)',q:'C is the set of all odd numbers between 10 and 20.',steps:[['Check every odd number in the interval.','FALSE. 15 belongs to the described set but 15 ∉ C.']]},
+{id:'(a)(iii)',q:'17 ∉ B',steps:[['Is 17 an element of B?','TRUE. B contains the even numbers 12, 14, 16, 18, 20, 22.']]},
+{id:'(a)(iv)',q:'2² ∈ B',steps:[['Calculate 2² before deciding membership.','FALSE. 2² = 4 and 4 ∉ B.']]},
+{id:'(b)',q:'A new set E is formed by adding 1 to every element of A. Is E = B? Explain.',steps:[['Add 1 to each element of A.','E = {12, 14, 16, 18, 20, 22}'],['Compare the two sets.','E = B.']]}]},
+{n:'2',page:16,title:'List elements from a Venn diagram',stem:'The Venn diagram shows the sets U, X and Y. List the elements of each required set.',defs:['U = {1, 2, 3, 4, 5, 6, 7, 8, 9}'],diagram:{names:['X','Y'],u:'U',given:['1, 3, 5','2, 4','6, 8','7, 9']},parts:[
+{id:'(i)',q:'List the elements of X.',steps:[['Include the left-only part AND the overlap.','X = {1, 2, 3, 4, 5}',['left','both']]]},
+{id:'(ii)',q:'List the elements of Y.',steps:[['Include the right-only part AND the overlap.','Y = {2, 4, 6, 8}',['both','right']]]},
+{id:'(iii)',q:'List the elements of U.',steps:[['Every element inside the rectangle belongs to U.','U = {1, 2, 3, 4, 5, 6, 7, 8, 9}',['left','both','right','neither']]]},
+{id:'(iv)',q:'List the elements of X ∪ Y.',steps:[['Union means X OR Y OR BOTH.','X ∪ Y = {1, 2, 3, 4, 5, 6, 8}',['left','both','right']]]},
+{id:'(v)',q:'List the elements of X ∩ Y.',steps:[['Intersection means IN BOTH.','X ∩ Y = {2, 4}',['both']]]},
+{id:'(vi)',q:'List the elements of X′.',steps:[['Complement means NOT IN X (but still in U).','X′ = {6, 7, 8, 9}',['right','neither']]]},
+{id:'(vii)',q:'List the elements of X \\ Y.',steps:[['Difference means X WITHOUT Y.','X \\ Y = {1, 3, 5}',['left']]]},
+{id:'(viii)',q:'List the elements of Y \\ X.',steps:[['Reverse the difference: Y WITHOUT X.','Y \\ X = {6, 8}',['right']]]},
+{id:'(ix)',q:'List the elements of (X ∩ Y)′.',steps:[['First find the intersection: {2, 4}.','X ∩ Y = {2, 4}',['both']],['Now take everything in U OUTSIDE that overlap.','(X ∩ Y)′ = {1, 3, 5, 6, 7, 8, 9}',['left','right','neither']]]}]},
+{n:'3',page:17,title:'Subsets, equality and union',stem:'Y = {2, 4, 6, 8, 10}. Sets A and B are subsets of Y, #A = #B = 4, A ∩ B = {2, 8, 10} and A ≠ B.',defs:['Y = {2, 4, 6, 8, 10}','#A = #B = 4','A ∩ B = {2, 8, 10}','A ≠ B'],diagram:{names:['A','B'],universe:false,given:['4','2','?',''],display:['4','2, 8, 10','?','']},parts:[
+{id:'(a)(i)',q:'List two subsets of Y containing one element only.',steps:[['There are several correct examples.','{2} and {4}.']]},
+{id:'(a)(ii)',q:'List two subsets of Y containing two elements only.',steps:[['Choose two distinct members each time.','{2, 4} and {6, 8}.']]},
+{id:'(a)(iii)',q:'List two subsets of Y containing three elements only.',steps:[['Choose three distinct members each time.','{2, 4, 6} and {4, 8, 10}.']]},
+{id:'(b)',q:'Copy and complete the Venn diagram.',steps:[['The intersection has three elements, and each set has four.','A \\ B = {4}'],['The fourth element of B must be 6.','B \\ A = {6}',['right'],'6']]},
+{id:'(c)',q:'List the elements of A ∪ B.',steps:[['Union includes every element in either circle once.','A ∪ B = {2, 4, 6, 8, 10}',['left','both','right']]]},
+{id:'(d)',q:'Explain why {2, 4, 5} is not a subset of Y.',steps:[['A subset cannot contain an element absent from Y.','5 ∉ Y, so {2, 4, 5} ⊄ Y.']]}]},
+{n:'4',page:17,title:'Intersection, union and cardinality',stem:'X = {1, 4, 9} and Y = {2, 4, 6, 8, 10}.',defs:['X = {1, 4, 9}','Y = {2, 4, 6, 8, 10}'],diagram:{names:['X','Y'],universe:false,given:['?','?','2',''],display:['?','?','2','']},parts:[
+{id:'(a)',q:'Copy and complete the Venn diagram.',steps:[['Find the element common to both sets first.','X ∩ Y = {4}',['both'],'4'],['Put the remaining X elements on the left.','X \\ Y = {1, 9}',['left'],'1, 9'],['Put the remaining Y elements on the right.','Y \\ X = {2, 6, 8, 10}',['right'],'2, 6, 8, 10']]},
+{id:'(b)(i)',q:'List the elements of X ∩ Y.',steps:[['The overlap contains common elements.','X ∩ Y = {4}',['both'],'4']]},
+{id:'(b)(ii)',q:'List the elements of X ∪ Y.',steps:[['Count each distinct element once.','X ∪ Y = {1, 2, 4, 6, 8, 9, 10}',['left','both','right'],'1, 9|4|2, 6, 8, 10']]},
+{id:'(c)(i)',q:'Work out #X.',steps:[['# means the number of elements.','#X = 3.']]},
+{id:'(c)(ii)',q:'Work out #(Y \\ X).',steps:[['Remove the common element 4 from Y.','#(Y \\ X) = 4.',['right'],'2, 6, 8, 10']]},
+{id:'(d)',q:'Explain why X \\ Y is a subset of X.',steps:[['Every element in X \\ Y must already belong to X.','X \\ Y = {1, 9} ⊂ X.',['left'],'1, 9']]}]},
+{n:'5',page:17,title:'Holidaying abroad or in Ireland',stem:'100 people were asked whether they liked holidaying abroad (A) or in Ireland (I). 70 liked holidaying in Ireland and 20 liked both. The diagram shows 5 liked neither.',defs:['#U = 100','#I = 70','#(A ∩ I) = 20','Neither = 5'],diagram:{names:['A','I'],u:'100',given:['?','20','?','5']},parts:[
+{id:'(a)',q:'Copy and complete the Venn diagram.',steps:[['Start with both: the overlap is 20.','#(A ∩ I) = 20',['both']],['The Ireland total is 70, including 20 in the overlap.','Ireland only = 70 − 20 = 50',['right'],'50'],['Subtract all known regions from 100.','Abroad only = 100 − (20 + 50 + 5) = 25',['left'],'25']]},
+{id:'(b)(i)',q:'How many like neither holidaying abroad nor in Ireland?',steps:[['Read outside the two circles.','5 people.',['neither']]]},
+{id:'(b)(ii)',q:'How many like holidaying in Ireland only?',steps:[['Take away those who like both.','70 − 20 = 50',['right'],'50']]},
+{id:'(b)(iii)',q:'How many like holidaying abroad only?',steps:[['Subtract the other three regions from the universal total.','100 − 50 − 20 − 5 = 25',['left'],'25']]},
+{id:'(c)',q:'What does the set A′ represent?',steps:[['A′ is the complement of A.','People who do NOT like holidaying abroad (within U).',['right','neither']]]},
+{id:'(d)',q:'Work out #A′.',steps:[['Count every region outside A.','#A′ = 50 + 5 = 55',['right','neither'],'50']]}]},
+{n:'6',page:17,title:'Letters, sets and notation',stem:'X = {N, I, C, O, L, A} and Y = {S, O, P, H, I, A}.',defs:['X = {N, I, C, O, L, A}','Y = {S, O, P, H, I, A}'],diagram:{names:['X','Y'],universe:false,given:['?','?','?',''],display:['?','?','?','']},parts:[
+{id:'(a)',q:'Copy and complete the Venn diagram.',steps:[['Put the letters common to both sets in the overlap first.','X ∩ Y = {I, O, A}',['both'],'I, O, A'],['Which letters are in X but not Y?','X \\ Y = {N, C, L}',['left'],'N, C, L'],['Which letters are in Y but not X?','Y \\ X = {S, P, H}',['right'],'S, P, H']]},
+{id:'(b)',q:'Give a subset of X with exactly 2 elements which is also a subset of Y.',steps:[['Choose two letters from X ∩ Y.','{I, O} ⊂ X and {I, O} ⊂ Y.']]},
+{id:'(c)',q:'Give a subset of X with exactly 2 elements which is NOT a subset of Y.',steps:[['Choose two letters from X that do not both belong to Y.','{N, C} ⊂ X, but {N, C} ⊄ Y.']]},
+{id:'(d)(i)',q:'Write “Letters in both X and Y” in set notation.',steps:[['Both means intersection.','X ∩ Y.',['both']]]},
+{id:'(d)(ii)',q:'Translate X \\ Y into words.',steps:[['Set difference retains X elements that are not in Y.','Letters in X but not in Y.',['left']]]},
+{id:'(d)(iii)',q:'Write “Letters in X or Y or both” in set notation.',steps:[['Or (including both) means union.','X ∪ Y.',['left','both','right']]]}]}
+]};
+let mode='revision',qi=0,pi=0,stage=0;
+const $=s=>document.querySelector(s), E=s=>document.getElementById(s);
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function cur(){return D[mode][qi]}function part(){return cur().parts[pi]}
+function g(region){return ['left','both','right','neither'].indexOf(region)}
+function diagram(data,highlight,values){
+ if(!data)return '';
+ const names=data.names||['A','B'], uni=data.universe!==false;
+ const given=(data.display||data.given).slice(), isFull=data.given;
+ (values||[]).forEach(pair=>{if(pair&&pair[0]&&pair[1]!=null)given[g(pair[0])]=pair[1]});
+ const clips='<defs><clipPath id="overlapClip"><circle cx="350" cy="270" r="169"/></clipPath><mask id="lMask"><rect width="900" height="520" fill="white"/><circle cx="550" cy="270" r="169" fill="black"/></mask><mask id="rMask"><rect width="900" height="520" fill="white"/><circle cx="350" cy="270" r="169" fill="black"/></mask><mask id="nMask"><rect width="900" height="520" fill="white"/><circle cx="350" cy="270" r="169" fill="black"/><circle cx="550" cy="270" r="169" fill="black"/></mask></defs>';
+ const fill=(r,s)=>'<'+(r==='neither'?'rect':'circle')+' class="paint'+(highlight.includes(r)?' sel':'')+'" '+s+' fill="'+({left:'#4c9ae4',both:'#aa71cc',right:'#32a68e',neither:'#df9a41'}[r])+'" />';
+ let shapes='';
+ if(uni)shapes+='<rect class="area" x="106" y="81" width="688" height="390" rx="6"/>';
+ shapes+=fill('neither','x="106" y="81" width="688" height="390" mask="url(#nMask)"');
+ shapes+=fill('left','cx="350" cy="270" r="169" mask="url(#lMask)"');
+ shapes+=fill('both','cx="550" cy="270" r="169" clip-path="url(#overlapClip)"');
+ shapes+=fill('right','cx="550" cy="270" r="169" mask="url(#rMask)"');
+ shapes+='<circle cx="350" cy="270" r="169" class="area" fill="none" style="fill:none"/><circle cx="550" cy="270" r="169" class="area" fill="none" style="fill:none"/>';
+ const slots=[[255,275],[450,275],[645,275],[153,435]];
+ let nums=slots.map((pos,i)=>{let t=given[i]||'';return '<text x="'+pos[0]+'" y="'+pos[1]+'" class="value'+(String(t).length>5?' vwide':'')+'">'+h(t)+'</text>'}).join('');
+ let labels='<text x="285" y="93" class="setname">'+h(names[0])+'</text><text x="612" y="93" class="setname">'+h(names[1])+'</text>';
+ if(uni)labels+='<text x="110" y="69" class="u">'+h(data.u||'U')+'</text>';
+ return '<svg class="diagram" viewBox="0 0 900 510" role="img" aria-label="Venn diagram for '+h(names.join(' and '))+'">'+clips+shapes+labels+nums+'</svg>';
+}
+function render(resetPart){
+ const q=cur(),p=part();
+ document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+ E('qnav').innerHTML='<strong>Question</strong>'+D[mode].map((x,i)=>'<button type="button" data-q="'+i+'" aria-current="'+(qi===i)+'">'+h(x.n)+'</button>').join('');
+ E('reference').textContent='Active Maths 1 · Page '+q.page+' · '+(mode==='worked'?'Worked Example ':'Revision Exercise ')+q.n;
+ E('prompt').textContent=q.stem;
+ E('definitions').innerHTML=(q.defs||[]).map(x=>'<span class="definition">'+h(x)+'</span>').join('');
+ E('parts').innerHTML=q.parts.map((x,i)=>'<button type="button" data-part="'+i+'" aria-current="'+(pi===i)+'">'+h(x.id)+'</button>').join('');
+ E('partref').textContent='Part '+p.id;
+ E('subquestion').textContent=p.q;
+ const steps=p.steps, focus=stage?steps[stage-1][2]||[]:[], vals=[];
+ for(let s=0;s<stage;s++){let a=steps[s]; if(a[3]!=null){let fs=a[2]||[]; if(fs.length===1)vals.push([fs[0],a[3]]);else if(String(a[3]).includes('|')){String(a[3]).split('|').forEach((v,j)=>vals.push([['left','both','right'][j],v]))}}}
+ E('diagram-wrap').innerHTML=q.diagram?diagram(q.diagram,focus,vals):'';
+ E('steptext').textContent=stage?steps[stage-1][0]:'Think first. Explain your reasoning before revealing the answer.';
+ E('mathexpr').textContent=stage?steps[stage-1][1]:'';
+ E('status').textContent=(pi+1)+' / '+q.parts.length+' parts · '+stage+' / '+steps.length+' reveals';
+ E('next').textContent=stage<steps.length?'Reveal next →':(pi<q.parts.length-1?'Next part →':(qi<D[mode].length-1?'Next question →':'Finished ✓'));
+ E('next').disabled=stage===steps.length&&pi===q.parts.length-1&&qi===D[mode].length-1;
+ E('previous').disabled=stage===0&&pi===0&&qi===0;
+ const u=new URL(location.href);u.searchParams.set('section',mode);u.searchParams.set('q',q.n);u.searchParams.set('part',p.id);history.replaceState({},'',u);
+}
+function moveNext(){
+ const p=part();if(stage<p.steps.length){stage++;render();return}
+ if(pi<cur().parts.length-1){pi++;stage=0;render();return}
+ if(qi<D[mode].length-1){qi++;pi=0;stage=0;render()}
+}
+function movePrev(){
+ if(stage>0){stage--;render();return}
+ if(pi>0){pi--;stage=0;render();return}
+ if(qi>0){qi--;pi=0;stage=0;render()}
+}
+document.querySelector('.tabs').addEventListener('click',e=>{let b=e.target.closest('button[data-mode]');if(!b)return;mode=b.dataset.mode;qi=0;pi=0;stage=0;render()});
+E('qnav').addEventListener('click',e=>{let b=e.target.closest('button[data-q]');if(!b)return;qi=+b.dataset.q;pi=0;stage=0;render()});
+E('parts').addEventListener('click',e=>{let b=e.target.closest('button[data-part]');if(!b)return;pi=+b.dataset.part;stage=0;render()});
+E('next').addEventListener('click',moveNext);E('previous').addEventListener('click',movePrev);
+E('restart').addEventListener('click',()=>{stage=0;render()});
+E('full').addEventListener('click',()=>{if(document.fullscreenElement)document.exitFullscreen();else E('board').requestFullscreen?.()});
+document.addEventListener('fullscreenchange',()=>{E('full').textContent=document.fullscreenElement?'✕ Exit full screen':'⛶ Full screen'});
+document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select,button,a'))return;if(e.key===' '||e.key==='ArrowRight'){e.preventDefault();moveNext()}if(e.key==='ArrowLeft'){e.preventDefault();movePrev()}});
+const qp=new URLSearchParams(location.search);if(qp.get('section')==='worked')mode='worked';
+let initialQ=qp.get('q');if(initialQ){let idx=D[mode].findIndex(x=>x.n===initialQ);if(idx>=0)qi=idx}
+let initialPart=qp.get('part');if(initialPart){let idx=D[mode][qi].parts.findIndex(x=>x.id===initialPart);if(idx>=0)pi=idx}
+render();
+})();
+</script>
+</body></html>
