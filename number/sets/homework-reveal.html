@@ -138,7 +138,7 @@ button{font-family:inherit;cursor:pointer;font-weight:750}
 <text id="tick-left" class="tick" x="204" y="319">✓</text>
 <text id="tick-both" class="tick" x="360" y="319">✓</text>
 <text id="tick-right" class="tick" x="519" y="319">✓</text>
-<text id="tick-neither" class="tick" x="99" y="464">✓</text>
+<text id="tick-neither" class="tick" x="173" y="450">✓</text>
 <g aria-hidden="true">
 <ellipse class="hit" data-region="left" cx="210" cy="260" rx="48" ry="100"/>
 <ellipse class="hit" data-region="both" cx="360" cy="245" rx="46" ry="105"/>
@@ -267,6 +267,7 @@ $("fullscreen").addEventListener("click",function(){if(document.fullscreenElemen
 document.addEventListener("keydown",function(e){
  var t=(e.target&&e.target.tagName)||"";
  if(t==="INPUT"||t==="TEXTAREA"||t==="SELECT")return;
+ if((t==="BUTTON"||t==="A")&&(e.key===" "||e.key==="Enter"))return;
  if(e.key==="ArrowRight"||e.key===" "||e.key==="PageDown"){e.preventDefault();next();}
  else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();previous();}
  else if(e.key.toLowerCase()==="r"&&!e.ctrlKey&&!e.metaKey){e.preventDefault();step=0;manual=null;render();}
