@@ -332,6 +332,37 @@
     if (mainBrand) mainBrand.alt = "JC and LC Maths, by Mr Ronan Downes";
     const mainBrandLink = document.querySelector(".topbar .brand");
     if (mainBrandLink) mainBrandLink.setAttribute("aria-label", "JC and LC Maths home");
+
+    // Four-dot quick links are separate from the Maths logo. Logo remains Home.
+    function addQuickLinks(bar){
+      if(!bar||bar.querySelector(".maths-quick-links"))return;
+      const links=[
+        ["red","A · Apps","https://ronandownes.github.io/maths/"],
+        ["green","B · Maths Book","https://ronandownes.github.io/book/"],
+        ["blue","C · Calculator","https://ronandownes.github.io/calculator/"],
+        ["black","D · Desmos","https://www.desmos.com/calculator"]
+      ];
+      const nav=document.createElement("nav");
+      nav.className="maths-quick-links";
+      nav.setAttribute("aria-label","Quick links: A Apps, B Book, C Calculator, D Desmos");
+      links.forEach(([colour,label,href])=>{
+        const link=document.createElement("a");
+        link.className="maths-quick-dot maths-quick-"+colour;
+        link.href=href;
+        link.title=label;
+        link.setAttribute("aria-label",label);
+        if(colour==="black"){link.target="_blank";link.rel="noopener noreferrer";}
+        const dot=document.createElement("i");
+        dot.setAttribute("aria-hidden","true");
+        link.append(dot);
+        nav.append(link);
+      });
+      const before=bar.querySelector(".menu-toggle,#menu-toggle,#main-menu,#maths-app-menu-toggle,#maths-app-strands");
+      if(before)bar.insertBefore(nav,before);
+      else bar.append(nav);
+    }
+    addQuickLinks(document.querySelector(".topbar"));
+
     if (topic) {
       document.body.classList.add("maths-topic-page");
       const paper = document.querySelector("main.paper");
@@ -359,6 +390,7 @@
       logo.src = url("assets/maths-logo.svg");
       brand.append(logo);
       bar.append(brand);
+      addQuickLinks(bar);
 
       const toggle = document.createElement("button");
       toggle.id = "maths-app-menu-toggle";
