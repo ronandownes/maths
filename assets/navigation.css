@@ -157,3 +157,34 @@ body.maths-standalone-page button.primary,body.maths-standalone-page button.acti
 @media print {
   .maths-topic-page .paper > .intro { display: block; }
 }
+
+
+/* A–B–C–D shortcuts are deliberately separate from the Maths brand/logo.
+   Red Apps, green Book, blue Calculator, black Desmos. Tooltips on hover. */
+.maths-quick-links{
+ display:flex;flex:0 0 auto;align-items:center;justify-content:center;gap:3px;
+ margin:0 7px;padding:4px 5px;
+ background:#fff;border:1px solid #e3e7eb;border-radius:9px
+}
+.maths-quick-links .maths-quick-dot{
+ display:flex;align-items:center;justify-content:center;
+ min-width:26px;min-height:31px;text-decoration:none;border-radius:6px
+}
+.maths-quick-links .maths-quick-dot i{
+ display:block;width:16px;height:16px;border:2px solid #fff;
+ border-radius:50%;box-shadow:0 0 0 1px #bac6d3
+}
+.maths-quick-links .maths-quick-red i{background:#e63329}
+.maths-quick-links .maths-quick-green i{background:#3fae49}
+.maths-quick-links .maths-quick-blue i{background:#2d7dd2}
+.maths-quick-links .maths-quick-black i{background:#171b22}
+.maths-quick-links a:hover i{transform:scale(1.10)}
+.maths-quick-links a:focus-visible{
+ outline:3px solid #2d7dd2;outline-offset:2px
+}
+@media(max-width:850px){
+ .maths-quick-links{gap:1px;padding:3px;margin:0 3px}
+ .maths-quick-links .maths-quick-dot{min-width:23px;min-height:28px}
+ .maths-quick-links .maths-quick-dot i{width:14px;height:14px}
+}
+@media print{.maths-quick-links{display:none!important}}
