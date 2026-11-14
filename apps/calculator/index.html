@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en-IE">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Scientific and menu-driven Maths calculators, embedded in JC and LC Maths Apps.">
+<title>Calculator · Maths Apps</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{font:15px/1.45 Arial,Helvetica,sans-serif;color:#243548;background:#f0f3f7}
+*{box-sizing:border-box}body{margin:0}
+header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:12px 18px;background:#fff;border-bottom:1px solid #dce3ea}
+.brand{color:#253e59;text-decoration:none;font-weight:800;display:flex;gap:10px;align-items:center}
+.brand img{width:34px;height:34px;object-fit:contain}
+.controls{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.controls button{padding:8px 11px;min-height:38px;background:#f8fafc;border:1px solid #c5d1df;border-radius:8px;color:#34465d;font:700 13px Arial;cursor:pointer}
+.controls button[aria-pressed="true"]{background:#1c4162;color:#fff;border-color:#1c4162}
+.controls button:focus-visible,.links a:focus-visible{outline:3px solid #3285cf;outline-offset:2px}
+main{max-width:1600px;margin:0 auto;padding:10px 14px 22px}
+.links{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:0 0 10px;font-size:12px}
+.links a{color:#1d5a91;font-weight:700}
+h1{font-size:19px;margin:0}.description{font-size:12px;color:#66788c;margin:4px 0 0}
+.calculator-frame{display:block;width:100%;height:calc(100dvh - 164px);min-height:550px;border:1px solid #bbc8d6;background:#e8e8e8;border-radius:10px}
+@media(max-width:600px){header{padding:10px}.controls button{padding:8px}.calculator-frame{height:calc(100dvh - 214px);min-height:500px}main{padding:8px}}
+</style>
+</head>
+<body>
+<header>
+<div><a class="brand" href="../../index.html"><img src="../../assets/maths-logo.svg" alt="">Maths Apps</a><h1>Calculator</h1><p class="description">One live calculator system — no duplicate code.</p></div>
+<nav class="controls" aria-label="Calculator model">
+<button data-view="scientific" aria-pressed="true">Scientific</button>
+<button data-view="menu" aria-pressed="false">Menu-driven</button>
+<button data-view="both" aria-pressed="false">Both</button>
+</nav>
+</header>
+<main>
+<div class="links">
+<a href="../../index.html">Maths home</a>
+<a id="direct" href="https://ronandownes.github.io/calculator/" target="_blank" rel="noopener noreferrer">Open calculator in its own tab</a>
+<a href="https://ronandownes.github.io/calculator/resources/" target="_blank" rel="noopener noreferrer">Free resources</a>
+</div>
+<iframe id="calculator" class="calculator-frame" title="Interactive scientific calculator" src="https://ronandownes.github.io/calculator/" allow="fullscreen" loading="eager"></iframe>
+<p class="description">You are using the original calculator. Changes to the calculator are reflected here automatically. If you need a larger working area, open it in its own tab.</p>
+</main>
+<script src="../../assets/navigation.js" defer></script>
+<script>
+(()=>{
+ "use strict";
+ const urls={
+  scientific:"https://ronandownes.github.io/calculator/",
+  menu:"https://ronandownes.github.io/calculator/menu/",
+  both:"https://ronandownes.github.io/calculator/compare/"
+ };
+ const iframe=document.getElementById("calculator"),direct=document.getElementById("direct");
+ const buttons=[...document.querySelectorAll("[data-view]")];
+ function setView(view){
+  if(!urls[view])return;
+  buttons.forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.view===view)));
+  iframe.title=({scientific:"Interactive scientific calculator",menu:"Interactive menu-driven calculator",both:"Compare both calculator models"})[view];
+  if(iframe.src!==urls[view])iframe.src=urls[view];
+  direct.href=urls[view];
+  try{history.replaceState(null,"","#"+view)}catch(_){}
+ }
+ buttons.forEach(button=>button.addEventListener("click",()=>setView(button.dataset.view)));
+ const initially=location.hash.slice(1);
+ if(urls[initially])setView(initially);
+})();
+</script>
+</body>
+</html>
